@@ -34,6 +34,13 @@
         newValue (any)
             The new value stored for the key.
 
+    Example Usage:
+        ```lua
+        hook.Add("NetVarChanged", "liaExampleNetVarChanged", function(entity, key, oldValue, newValue)
+            print("[MyModule] handled NetVarChanged")
+        end)
+        ```
+
     Realm:
         Server
 ]]

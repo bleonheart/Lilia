@@ -25,8 +25,51 @@
         reserved (table)
             Lookup table keyed by numeric key code. Set reserved[keyCode] to true to reserve a key.
 
+    Example Usage:
+        ```lua
+        hook.Add("AddReservedKeybinds", "liaExampleAddReservedKeybinds", function(reserved)
+            print("[MyModule] handled AddReservedKeybinds")
+        end)
+        ```
+
     Realm:
         Client
+]]
+--[[
+    Hooks:
+        CanTakeEntity(Player client, Entity targetEntity, string itemUniqueID)
+
+    Purpose:
+        Determines whether the convert-entity keybind may turn a traced world entity into an inventory item.
+
+    Category:
+        Inventory
+
+    Parameters:
+        client (Player)
+            The player attempting the conversion.
+
+        targetEntity (Entity)
+            The traced entity that would be removed and converted.
+
+        itemUniqueID (string)
+            The item unique ID mapped from the entity class.
+
+    Returns:
+        boolean|nil
+            Return false to block the conversion. Returning nil allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("CanTakeEntity", "liaExampleCanTakeEntity", function(client, targetEntity, itemUniqueID)
+            if targetEntity:IsOnFire() then
+                return false
+            end
+        end)
+        ```
+
+    Realm:
+        Server
 ]]
 --[[
     Hooks:
@@ -37,6 +80,13 @@
 
     Category:
         Keybinds
+
+    Example Usage:
+        ```lua
+        hook.Add("InitializedKeybinds", "liaExampleInitializedKeybinds", function()
+            print("[MyModule] handled InitializedKeybinds")
+        end)
+        ```
 
     Realm:
         Client
@@ -739,14 +789,34 @@ if CLIENT then
             local description = lia.keybind.getDisplayDescription(action)
             SetStyledTooltip(p, description)
             local l = p:Add("DLabel")
-            l:Dock(LEFT)
-            l:DockMargin(15, 0, 0, 0)
-            l:SetWidth(250)
+            l:Dock(FILL)
+            l:DockMargin(15, 8, 15, 8)
             l:SetText(localizeKeybindLabel(action))
             l:SetFont("LiliaFont.18")
             l:SetTextColor(lia.color.theme.text or color_white)
-            l:SetContentAlignment(4)
+            l:SetWrap(true)
+            l:SetAutoStretchVertical(true)
+            l:SetContentAlignment(7)
             SetStyledTooltip(l, description)
+            local control
+            local function updateRowHeight()
+                if not IsValid(p) or not IsValid(l) then return end
+                local minHeight = 45
+                local labelHeight = select(2, l:GetContentSize())
+                local controlHeight = IsValid(control) and control:GetTall() + 16 or minHeight
+                p:SetTall(math.max(minHeight, labelHeight + 16, controlHeight))
+            end
+
+            p.PerformLayout = function(_, w, h)
+                if IsValid(l) then
+                    local controlWidth = IsValid(control) and control:GetWide() + 30 or 30
+                    l:SetWide(math.max(120, w - controlWidth))
+                    l:InvalidateLayout(true)
+                end
+
+                updateRowHeight()
+            end
+
             local currentKey = lia.keybind.get(action, KEY_NONE)
             if allowEdit then
                 local combo = p:Add("liaComboBox")
@@ -819,6 +889,7 @@ if CLIENT then
                     local client = LocalPlayer()
                     if IsValid(client) then client:notifySuccess(L("keybindChanged", localizeKeybindLabel(action), getDisplayKeyName(newKey))) end
                 end
+                control = combo
             else
                 local lKey = p:Add("DLabel")
                 lKey:Dock(RIGHT)
@@ -829,7 +900,10 @@ if CLIENT then
                 lKey:SetTextColor(lia.color.theme.text)
                 lKey:SetContentAlignment(6)
                 SetStyledTooltip(lKey, description)
+                control = lKey
             end
+
+            timer.Simple(0, function() if IsValid(p) then p:InvalidateLayout(true) end end)
         end
 
         pages[#pages + 1] = {

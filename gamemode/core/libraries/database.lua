@@ -21,6 +21,15 @@
     Category:
         Database
 
+    Example Usage:
+        ```lua
+        hook.Add("OnDatabaseLoaded", "liaExampleOnDatabaseLoaded", function()
+            lia.db.selectOne("*", "players", nil, 1):next(function(row)
+                PrintTable(row or {})
+            end)
+        end)
+        ```
+
     Realm:
         Server
 ]]
@@ -34,6 +43,13 @@
     Category:
         Database
 
+    Example Usage:
+        ```lua
+        hook.Add("OnLoadTables", "liaExampleOnLoadTables", function()
+            print("Database table creation query was submitted.")
+        end)
+        ```
+
     Realm:
         Server
 ]]
@@ -46,6 +62,7 @@ local function devLog(...)
     for i = 1, #parts do
         parts[i] = tostring(parts[i])
     end
+
     MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 200, 0), "[DevMode] ", Color(255, 255, 255), table.concat(parts, " "), "\n")
 end
 
@@ -67,15 +84,13 @@ lia.db.modules = {
             local data = sql.Query(query)
             local duration = SysTime() - started
             local err = sql.LastError()
-            if lia.devmode and duration >= 0.25 then
-                devLog(string.format("SQLite query took %.3fs:", duration), query)
-            end
-
+            if lia.devmode and duration >= 0.25 then devLog(string.format("SQLite query took %.3fs:", duration), query) end
             if data == false then
                 if lia.devmode then
                     devLog("SQLite query failed:", query)
                     devLog("SQLite error:", tostring(err))
                 end
+
                 if string.find(err, "duplicate column name:") or string.find(err, "UNIQUE constraint failed: lia_config") then
                     if d then
                         d:resolve({
@@ -855,6 +870,13 @@ end
     Parameters:
         None.
 
+    Example Usage:
+        ```lua
+        lia.db.waitForTablesToLoad():next(function()
+            lia.db.ensureIndexes()
+        end)
+        ```
+
     Returns:
         nil
 
@@ -862,13 +884,7 @@ end
         Server
 ]]
 function lia.db.ensureIndexes()
-    local queries = {
-        "CREATE INDEX IF NOT EXISTS idx_lia_players_steamID ON lia_players(steamID)",
-        "CREATE INDEX IF NOT EXISTS idx_lia_characters_steamID_schema ON lia_characters(steamID, schema)",
-        "CREATE INDEX IF NOT EXISTS idx_lia_inventories_charID ON lia_inventories(charID)",
-        "CREATE INDEX IF NOT EXISTS idx_lia_items_invID ON lia_items(invID)"
-    }
-
+    local queries = {"CREATE INDEX IF NOT EXISTS idx_lia_players_steamID ON lia_players(steamID)", "CREATE INDEX IF NOT EXISTS idx_lia_characters_steamID_schema ON lia_characters(steamID, schema)", "CREATE INDEX IF NOT EXISTS idx_lia_inventories_charID ON lia_inventories(charID)", "CREATE INDEX IF NOT EXISTS idx_lia_items_invID ON lia_items(invID)"}
     for _, query in ipairs(queries) do
         lia.db.query(query)
     end

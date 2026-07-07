@@ -28,6 +28,13 @@
         parent (Panel|nil)
             Optional parent panel for the created inventory panel.
 
+    Example Usage:
+        ```lua
+        hook.Add("CreateInventoryPanel", "liaExampleCreateInventoryPanel", function(inventory, parent)
+            print("[MyModule] handled CreateInventoryPanel")
+        end)
+        ```
+
     Returns:
         Panel
             The created inventory panel.
@@ -52,6 +59,14 @@
         inventory (table)
             The inventory instance displayed by the panel.
 
+    Example Usage:
+        ```lua
+        hook.Add("InventoryOpened", "liaExampleInventoryOpened", function(panel, inventory)
+            if not IsValid(panel) then return end
+            panel:SetTooltip("InventoryOpened handled by MyModule")
+        end)
+        ```
+
     Returns:
         None
 
@@ -74,6 +89,14 @@
 
         inventory (table)
             The inventory instance that was displayed by the panel.
+
+    Example Usage:
+        ```lua
+        hook.Add("InventoryClosed", "liaExampleInventoryClosed", function(panel, inventory)
+            if not IsValid(panel) then return end
+            panel:SetTooltip("InventoryClosed handled by MyModule")
+        end)
+        ```
 
     Returns:
         None
@@ -103,6 +126,13 @@
 
         inventory2 (table)
             The second inventory instance.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnCreateDualInventoryPanels", "liaExampleOnCreateDualInventoryPanels", function(panel1, panel2, inventory1, inventory2)
+            print("[MyModule] handled OnCreateDualInventoryPanels")
+        end)
+        ```
 
     Returns:
         None
@@ -210,6 +240,7 @@ if SERVER then
         for i = 1, #parts do
             parts[i] = tostring(parts[i])
         end
+
         MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 200, 0), "[DevMode] ", Color(255, 255, 255), table.concat(parts, " "), "\n")
     end
 
@@ -308,9 +339,7 @@ if SERVER then
             lia.inventory.instances[id] = instance
             instance:onLoaded()
             return instance:loadItems():next(function()
-                if lia.devmode then
-                    inventoryDevLog(string.format("Loaded inventory %s for char %s in %.3fs", tostring(id), tostring(instance.data.char or "nil"), SysTime() - started))
-                end
+                if lia.devmode then inventoryDevLog(string.format("Loaded inventory %s for char %s in %.3fs", tostring(id), tostring(instance.data.char or "nil"), SysTime() - started)) end
                 return instance
             end)
         end, function(err)
@@ -407,9 +436,7 @@ if SERVER then
             if lia.devmode then inventoryDevLog("Loading", tostring(#rows), "inventories for char", tostring(charID)) end
             return deferred.map(rows, function(result) return lia.inventory.loadByID(tonumber(result.invID)) end)
         end):next(function(inventories)
-            if lia.devmode then
-                inventoryDevLog(string.format("Finished loading inventories for char %s in %.3fs", tostring(charID), SysTime() - started))
-            end
+            if lia.devmode then inventoryDevLog(string.format("Finished loading inventories for char %s in %.3fs", tostring(charID), SysTime() - started)) end
             return inventories
         end)
     end

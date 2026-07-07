@@ -6,6 +6,7 @@ import sys
 import argparse
 import urllib.request
 import json
+import shutil
 from pathlib import Path
 from io import StringIO
 from typing import List, Dict, Tuple, Optional
@@ -397,7 +398,6 @@ def normalize_doc_folder(folder: Optional[str]) -> Optional[str]:
         'library': 'developer/libraries',
         'core libraries': 'developer/libraries',
         'hooks': 'developer/hooks',
-        'compatibility': 'developer/compatibility',
     }
 
     return folder_map.get(compact, normalized)
@@ -555,6 +555,9 @@ def find_functions_in_file(file_path, is_library=False):
             comment_line = content[:comment_start].count('\n') + 1
             if comment_line < func_line and (preceding_comment is None or comment_line > preceding_comment[0]):
                 if any(header in comment_text for header in ['Purpose:', 'When Called:', 'When Used:', 'Category:', 'Parameters:', 'Returns:', 'Realm:', 'Explanation of Panel:', 'Example Usage:']):
+                    gap_text = content[comment_end:match.start()]
+                    if gap_text.strip():
+                        continue
                     preceding_comment = (comment_line, comment_text)
 
         if preceding_comment:
@@ -900,6 +903,26 @@ def find_top_comment_blocks_in_file(file_path: Path):
     return content, blocks
 
 
+def find_all_comment_blocks_in_file(file_path: Path):
+    try:
+        with open(file_path, 'r', encoding='utf-8-sig') as f:
+            content = f.read()
+    except UnicodeDecodeError:
+        print(f"Warning: Could not read {file_path} due to encoding issues")
+        return '', []
+
+    comment_pattern = re.compile(r'--\[\[.*?\]\]', re.DOTALL)
+    blocks = []
+
+    for match in comment_pattern.finditer(content):
+        blocks.append({
+            'text': match.group(0),
+            'line': content[:match.start()].count('\n') + 1
+        })
+
+    return content, blocks
+
+
 def extract_hook_name_from_block(comment_text: str) -> Optional[str]:
     lines = comment_text.splitlines()
     in_hooks = False
@@ -929,10 +952,11 @@ def extract_hook_name_from_block(comment_text: str) -> Optional[str]:
 
 
 def find_hook_docs_in_file(file_path: Path):
-    file_content, top_blocks = find_top_comment_blocks_in_file(file_path)
-    if not top_blocks:
+    file_content, all_blocks = find_all_comment_blocks_in_file(file_path)
+    if not all_blocks:
         return file_content, None, None, []
 
+    _, top_blocks = find_top_comment_blocks_in_file(file_path)
     file_header = None
     overview_section = None
     hooks = []
@@ -946,16 +970,24 @@ def find_hook_docs_in_file(file_path: Path):
                 overview_section = comment_text
             continue
         if 'Hooks:' in comment_text:
-            hook_name = extract_hook_name_from_block(comment_text)
-            if hook_name:
-                hooks.append({
-                    'name': hook_name,
-                    'comment': comment_text,
-                    'line': block['line']
-                })
             continue
         if file_header is None:
             file_header = comment_text
+
+    for block in all_blocks:
+        comment_text = block['text']
+        if 'Folder:' in comment_text or 'File:' in comment_text or 'Append:' in comment_text:
+            continue
+        if 'Hooks:' not in comment_text:
+            continue
+
+        hook_name = extract_hook_name_from_block(comment_text)
+        if hook_name:
+            hooks.append({
+                'name': hook_name,
+                'comment': comment_text,
+                'line': block['line']
+            })
 
     return file_content, file_header, overview_section, hooks
 
@@ -1093,6 +1125,26 @@ def classify_hook_group(file_path: Path, base_dir: Path, file_content: str) -> D
     }
 
 
+def classify_hook_category_group(category_name: str) -> Dict[str, str]:
+    normalized_category = (category_name or '').strip()
+    if not normalized_category:
+        return {
+            'section': 'module',
+            'key': 'category:uncategorized',
+            'filename': 'uncategorized.md',
+            'title': 'Uncategorized',
+            'subtitle': 'This page documents hooks that do not declare a category.'
+        }
+
+    return {
+        'section': 'module',
+        'key': f'category:{normalized_category.lower()}',
+        'filename': f'{slugify_filename(normalized_category)}.md',
+        'title': normalized_category,
+        'subtitle': f'This page documents hooks in the {normalized_category.lower()} category.'
+    }
+
+
 def should_include_hook_file(file_path: Path, group_info: Dict[str, str], file_content: str) -> bool:
     custom_folder, custom_filename, _ = parse_folder_directives(file_content)
     if not custom_filename:
@@ -1114,6 +1166,13 @@ def clear_generated_markdown(output_dir: Path) -> None:
     for md_file in output_dir.glob('*.md'):
         if md_file.name != 'index.md':
             md_file.unlink()
+
+
+def remove_legacy_generated_docs(docs_dir: Path) -> None:
+    legacy_modules_dir = docs_dir / 'developer' / 'modules'
+    if legacy_modules_dir.exists():
+        shutil.rmtree(legacy_modules_dir)
+        print(" Removed legacy developer/modules docs")
 
 
 def get_documented_output_filename(file_path: Path, file_content: str) -> str:
@@ -1188,6 +1247,78 @@ details > summary .source-link-button--summary {
     print(f" Generated {output_path.name}")
 
 
+def extract_generated_hook_category(markdown_text: str, hook_name: str) -> Optional[str]:
+    anchor = f'<a id="{hook_name}"></a>'
+    anchor_index = markdown_text.find(anchor)
+    if anchor_index == -1:
+        return None
+
+    category_header_index = markdown_text.find('>Category</h3>', anchor_index)
+    if category_header_index == -1:
+        return None
+
+    next_section_index = markdown_text.find('<h3', category_header_index + 1)
+    if next_section_index == -1:
+        next_section_index = len(markdown_text)
+    category_section = markdown_text[category_header_index:next_section_index]
+
+    match = re.search(r'<p>(.*?)</p>', category_section, re.DOTALL)
+    if not match:
+        return None
+    return match.group(1).strip()
+
+
+def validate_hook_group_categories(group: Dict[str, object], output_dir: Path) -> None:
+    output_path = output_dir / group['filename']
+    if not output_path.exists():
+        raise RuntimeError(f"Hook documentation page was not generated: {output_path}")
+
+    markdown_text = output_path.read_text(encoding='utf-8')
+    mismatches = []
+    for hook in group['hooks']:
+        parsed = parse_comment_block(hook['comment'])
+        expected_category = (parsed.get('category') or '').strip()
+        actual_category = extract_generated_hook_category(markdown_text, hook['name'])
+        if actual_category is None:
+            mismatches.append(f"{hook['name']}: missing generated category block")
+        elif actual_category != expected_category:
+            mismatches.append(f"{hook['name']}: expected '{expected_category}' but found '{actual_category}'")
+
+    if mismatches:
+        mismatch_text = '\n'.join(f" - {item}" for item in mismatches)
+        raise RuntimeError(f"Generated hook categories did not match source comments in {output_path}:\n{mismatch_text}")
+
+
+def validate_no_duplicate_documented_hooks(grouped_hooks: Dict[str, Dict[str, object]], base_dir: Path) -> None:
+    hooks_by_name: Dict[str, List[Dict[str, object]]] = {}
+
+    for group in grouped_hooks.values():
+        for hook in group['hooks']:
+            hooks_by_name.setdefault(hook['name'], []).append(hook)
+
+    duplicates = []
+    for hook_name, entries in sorted(hooks_by_name.items(), key=lambda item: item[0].lower()):
+        if len(entries) < 2:
+            continue
+
+        locations = []
+        for entry in sorted(entries, key=lambda item: (str(item['file_path']).lower(), item['line'])):
+            try:
+                relative_path = entry['file_path'].resolve().relative_to(base_dir.resolve())
+            except ValueError:
+                relative_path = entry['file_path']
+            locations.append(f"{relative_path}:{entry['line']}")
+
+        duplicates.append(f" - {hook_name}\n   " + "\n   ".join(locations))
+
+    if duplicates:
+        duplicate_text = '\n'.join(duplicates)
+        raise RuntimeError(
+            "Duplicate documented hooks were found. Each documented hook should only appear once:\n"
+            f"{duplicate_text}"
+        )
+
+
 def generate_hook_documentation(core_output_dir: Path, module_output_dir: Path, base_dir: Path) -> None:
     gamemode_dir = base_dir / 'gamemode'
     grouped_hooks: Dict[str, Dict[str, object]] = {}
@@ -1198,33 +1329,41 @@ def generate_hook_documentation(core_output_dir: Path, module_output_dir: Path, 
             continue
 
         group_info = classify_hook_group(file_path, base_dir, file_content)
-        if is_library_hook_group(group_info):
-            continue
         if not should_include_hook_file(file_path, group_info, file_content):
             continue
-        group = grouped_hooks.setdefault(group_info['key'], {
-            'key': group_info['key'],
-            'section': group_info['section'],
-            'filename': group_info['filename'],
-            'title': group_info['title'],
-            'subtitle': group_info['subtitle'],
-            'hooks': [],
-            'file_header': None,
-            'overview_section': None,
-        })
-
-        if group['key'] != 'module-uncategorized' and group['file_header'] is None and file_header:
-            group['file_header'] = file_header
-        if group['key'] != 'module-uncategorized' and group['overview_section'] is None and overview_section:
-            group['overview_section'] = overview_section
 
         for hook in hooks:
+            parsed = parse_comment_block(hook['comment'])
+            category_name = (parsed.get('category') or '').strip()
+            hook_group_info = classify_hook_category_group(category_name) if category_name else group_info
+            group = grouped_hooks.setdefault(hook_group_info['key'], {
+                'key': hook_group_info['key'],
+                'section': hook_group_info['section'],
+                'filename': hook_group_info['filename'],
+                'title': hook_group_info['title'],
+                'subtitle': hook_group_info['subtitle'],
+                'hooks': [],
+                'file_header': None,
+                'overview_section': None,
+            })
+
+            if category_name:
+                group['file_header'] = None
+                group['overview_section'] = None
+            else:
+                if group['key'] != 'module-uncategorized' and group['file_header'] is None and file_header:
+                    group['file_header'] = file_header
+                if group['key'] != 'module-uncategorized' and group['overview_section'] is None and overview_section:
+                    group['overview_section'] = overview_section
+
             group['hooks'].append({
                 'name': hook['name'],
                 'comment': hook['comment'],
                 'line': hook['line'],
                 'file_path': file_path
             })
+
+    validate_no_duplicate_documented_hooks(grouped_hooks, base_dir)
 
     clear_generated_markdown(core_output_dir)
     clear_generated_markdown(module_output_dir)
@@ -1233,6 +1372,7 @@ def generate_hook_documentation(core_output_dir: Path, module_output_dir: Path, 
         group['hooks'].sort(key=lambda hook: hook['name'].lower())
         target_dir = module_output_dir if group['section'] == 'module' else core_output_dir
         write_hook_group_page(group, target_dir, base_dir)
+        validate_hook_group_categories(group, target_dir)
 
 
 def generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=None, force=False, no_realm=False, no_icon=False):
@@ -1678,13 +1818,9 @@ def run_hooks_generation(base_dir: Path, docs_dir: Path) -> None:
     generate_index_file(core_output_dir, 'hooks')
 
 
-def run_compatibility_generation(base_dir: Path, docs_dir: Path, force: bool) -> None:
-    comp_dir = base_dir / 'gamemode' / 'core' / 'libraries' / 'compatibility'
-    output_dir = docs_dir / 'developer' / 'compatibility'
-    if comp_dir.exists():
-        for file_path in comp_dir.rglob('*.lua'):
-            generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=docs_dir, force=force, no_realm=False, no_icon=True)
-    generate_index_file(output_dir, 'compatibility')
+def run_compatibility_generation(base_dir: Path, docs_dir: Path) -> None:
+    """Legacy alias for compatibility hook docs generation."""
+    run_hooks_generation(base_dir, docs_dir)
 
 
 def run_generators_generation(docs_dir: Path) -> None:
@@ -1715,7 +1851,7 @@ def main():
     hooks_parser.add_argument('--force', action='store_true', help='Force regeneration of existing files')
 
     # Compatibility command
-    compatibility_parser = subparsers.add_parser('compatibility', help='Generate compatibility documentation')
+    compatibility_parser = subparsers.add_parser('compatibility', help='Generate compatibility documentation (legacy alias for hook category pages)')
     compatibility_parser.add_argument('--force', action='store_true', help='Force regeneration of existing files')
 
     # Generators command
@@ -1737,6 +1873,8 @@ def main():
     should_sync_nav = True
     force = getattr(args, 'force', False)
 
+    remove_legacy_generated_docs(docs_dir)
+
     if args.command == 'meta':
         run_meta_generation(base_dir, docs_dir, force)
 
@@ -1745,10 +1883,9 @@ def main():
 
     elif args.command == 'hooks':
         run_hooks_generation(base_dir, docs_dir)
-        should_sync_nav = False
 
     elif args.command == 'compatibility':
-        run_compatibility_generation(base_dir, docs_dir, force)
+        run_compatibility_generation(base_dir, docs_dir)
 
     elif args.command == 'generators':
         run_generators_generation(docs_dir)
@@ -1760,7 +1897,6 @@ def main():
         run_meta_generation(base_dir, docs_dir, force)
         run_library_generation(base_dir, docs_dir, force)
         run_hooks_generation(base_dir, docs_dir)
-        run_compatibility_generation(base_dir, docs_dir, force)
         run_generators_generation(docs_dir)
         run_about_generation(docs_dir, force)
 
@@ -2028,7 +2164,6 @@ GENERATOR_TITLES = {
 TITLE_MAP = {
     'meta': 'Meta Tables',
     'library': 'Libraries',
-    'compatibility': 'Compatibility',
     'hooks': 'Hooks',
     'guides': 'Guides',
     'generators': 'Generators',

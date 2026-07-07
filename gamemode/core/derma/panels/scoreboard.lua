@@ -1,30 +1,27 @@
 ﻿local PANEL = {}
-local rowPaint = {
-    [0] = function(_, w, h)
-        surface.SetDrawColor(0, 0, 0, 120)
-        surface.DrawRect(0, 0, w, h)
-    end,
-    [1] = function(_, w, h)
-        surface.SetDrawColor(0, 0, 0, 80)
-        surface.DrawRect(0, 0, w, h)
-    end
+local rowColors = {
+    [0] = Color(14, 22, 33, 238),
+    [1] = Color(17, 26, 38, 238)
 }
 
+local borderColor = Color(78, 130, 165, 110)
+local dividerColor = Color(255, 255, 255, 24)
+local mutedTextColor = Color(178, 194, 207)
 local function wrap(text, maxWidth, font)
     surface.SetFont(font)
     local words, lines, current = {}, {}, ""
-    for w in text:gmatch("%S+") do
-        words[#words + 1] = w
+    for word in text:gmatch("%S+") do
+        words[#words + 1] = word
     end
 
-    for _, w in ipairs(words) do
-        local trial = current == "" and w or current .. " " .. w
+    for _, word in ipairs(words) do
+        local trial = current == "" and word or current .. " " .. word
         if select(1, surface.GetTextSize(trial)) > maxWidth then
             if current == "" then
-                lines[#lines + 1] = w
+                lines[#lines + 1] = word
             else
                 lines[#lines + 1] = current
-                current = w
+                current = word
             end
         else
             current = trial
@@ -35,9 +32,51 @@ local function wrap(text, maxWidth, font)
     return lines
 end
 
+local function tintColor(base, accent, amount, alpha)
+    return Color(math.Clamp(base.r + (accent.r - base.r) * amount, 0, 255), math.Clamp(base.g + (accent.g - base.g) * amount, 0, 255), math.Clamp(base.b + (accent.b - base.b) * amount, 0, 255), alpha or base.a)
+end
+
+local function resolveHeaderColor(primary, fallback)
+    if IsColor(primary) then return Color(primary.r, primary.g, primary.b, primary.a or 255) end
+    if istable(primary) then
+        if isnumber(primary.r) and isnumber(primary.g) and isnumber(primary.b) then return Color(primary.r, primary.g, primary.b, primary.a or 255) end
+        if isnumber(primary[1]) and isnumber(primary[2]) and isnumber(primary[3]) then return Color(primary[1], primary[2], primary[3], primary[4] or 255) end
+    end
+    return Color(fallback.r, fallback.g, fallback.b, fallback.a or 255)
+end
+
+local function getColorLuminance(color)
+    return color.r * 0.2126 + color.g * 0.7152 + color.b * 0.0722
+end
+
+function getPingColor(ping)
+    if ping <= 60 then return Color(92, 225, 180) end
+    if ping <= 120 then return Color(239, 198, 98) end
+    return Color(235, 104, 104)
+end
+
+local function getValidMaterial(path)
+    if not isstring(path) or path == "" then return nil end
+    local material = Material(path, "smooth")
+    if not material or material:IsError() then return nil end
+    return material
+end
+
+local function paintScoreboardHeader(header, w, h, accentColor)
+    lia.util.drawBlur(header, 4, 2, 255)
+    local background = tintColor(Color(11, 22, 31, 255), accentColor, 0.18, 255)
+    draw.RoundedBox(8, 0, 0, w, h, background)
+    draw.RoundedBoxEx(8, 0, 0, 6, h, accentColor, true, false, true, false)
+    surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 75)
+    surface.DrawOutlinedRect(0, 0, w, h, 1)
+    surface.SetDrawColor(255, 255, 255, 12)
+    surface.DrawLine(10, h - 1, w - 10, h - 1)
+end
+
 function PANEL:ApplyConfig()
     local screenW, screenH = ScrW(), ScrH()
-    local w, h = screenW * lia.config.get("sbWidth", 0.35), screenH * lia.config.get("sbHeight", 0.65)
+    local w = screenW * lia.config.get("sbWidth", 0.35)
+    local h = screenH * lia.config.get("sbHeight", 0.65)
     self:SetSize(w, h)
     local dock = string.lower(lia.config.get("sbDock", "center"))
     if dock == "left" then
@@ -49,6 +88,48 @@ function PANEL:ApplyConfig()
     end
 end
 
+local function paintServerHeader(header, w, h, accentColor)
+    lia.util.drawBlur(header, 4, 2, 255)
+    local startColor = tintColor(Color(10, 24, 30, 255), accentColor, 0.16, 255)
+    local endColor = tintColor(Color(7, 17, 24, 255), accentColor, 0.08, 255)
+    local steps = 64
+    local stepWidth = math.ceil(w / steps)
+    for i = 0, steps - 1 do
+        local fraction = i / (steps - 1)
+        local color = Color(Lerp(fraction, startColor.r, endColor.r), Lerp(fraction, startColor.g, endColor.g), Lerp(fraction, startColor.b, endColor.b), 255)
+        surface.SetDrawColor(color)
+        surface.DrawRect(math.floor(i * w / steps), 0, stepWidth + 1, h)
+    end
+
+    draw.RoundedBoxEx(8, 0, 0, 5, h, accentColor, true, false, true, false)
+    surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 95)
+    surface.DrawOutlinedRect(0, 0, w, h, 1)
+    surface.SetDrawColor(255, 255, 255, 14)
+    surface.DrawLine(12, h - 1, w - 12, h - 1)
+end
+
+local function paintClassHeader(header, w, h, accentColor)
+    lia.util.drawBlur(header, 4, 2, 255)
+    local startColor = Color(accentColor.r, accentColor.g, accentColor.b, 255)
+    local endColor = tintColor(accentColor, Color(8, 18, 28), 0.55, 255)
+    local edgeColor = Color(78, 130, 165, 255)
+    local steps = 64
+    local stepWidth = math.ceil(w / steps)
+    for i = 0, steps - 1 do
+        local fraction = i / (steps - 1)
+        local eased = fraction * fraction
+        local color = Color(Lerp(eased, startColor.r, endColor.r), Lerp(eased, startColor.g, endColor.g), Lerp(eased, startColor.b, endColor.b), 255)
+        surface.SetDrawColor(color)
+        surface.DrawRect(math.floor(i * w / steps), 0, stepWidth + 1, h)
+    end
+
+    draw.RoundedBoxEx(8, 0, 0, 5, h, edgeColor, true, false, true, false)
+    surface.SetDrawColor(edgeColor.r, edgeColor.g, edgeColor.b, 140)
+    surface.DrawOutlinedRect(0, 0, w, h, 1)
+    surface.SetDrawColor(255, 255, 255, 16)
+    surface.DrawLine(10, h - 1, w - 10, h - 1)
+end
+
 function PANEL:Init()
     if IsValid(lia.gui.score) then lia.gui.score:Remove() end
     lia.gui.score = self
@@ -57,8 +138,63 @@ function PANEL:Init()
     self:ApplyConfig()
     self:ShowCloseButton(false)
     self:SetTitle("")
-    self:SetCenterTitle(GetHostName())
+    self:SetCenterTitle("")
+    self:SetDraggable(false)
+    self:LiteMode()
     self.playerOptionFrames = {}
+    local accentColor = lia.color.theme and (lia.color.theme.accent or lia.color.theme.theme) or Color(48, 194, 132)
+    self.serverHeader = self:Add("DPanel")
+    self.serverHeader:Dock(TOP)
+    self.serverHeader:DockMargin(0, 0, 0, 8)
+    self.serverHeader:SetTall(math.Clamp(ScrH() * 0.082, 72, 90))
+    self.serverHeader.Paint = function(header, w, h) paintServerHeader(header, w, h, accentColor) end
+    local schemaLogoMaterial = SCHEMA and getValidMaterial(SCHEMA.icon) or nil
+    if schemaLogoMaterial then
+        self.serverLogo = self.serverHeader:Add("DImage")
+        self.serverLogo:SetMaterial(schemaLogoMaterial)
+    end
+
+    self.serverTitle = self.serverHeader:Add("DLabel")
+    self.serverTitle:SetFont("LiliaFont.25b")
+    self.serverTitle:SetTextColor(color_white)
+    self.serverTitle:SetExpensiveShadow(1, Color(0, 0, 0, 190))
+    self.serverTitle:SetText(GetHostName())
+    self.serverTitle:SizeToContents()
+    self.serverTitle:SetMouseInputEnabled(false)
+    self.onlineBadge = self.serverHeader:Add("DPanel")
+    self.onlineBadge:SetMouseInputEnabled(false)
+    self.onlineBadge.Paint = function(_, w, h)
+        draw.RoundedBox(6, 0, 0, w, h, Color(7, 24, 29, 230))
+        surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 110)
+        surface.DrawOutlinedRect(0, 0, w, h, 1)
+        draw.RoundedBox(h * 0.18, 14, h * 0.41, h * 0.18, h * 0.18, accentColor)
+    end
+
+    self.onlineLabel = self.onlineBadge:Add("DLabel")
+    self.onlineLabel:SetFont("LiliaFont.17")
+    self.onlineLabel:SetTextColor(color_white)
+    self.onlineLabel:SetContentAlignment(5)
+    self.onlineLabel:SetMouseInputEnabled(false)
+    self.serverHeader.PerformLayout = function(_, w, h)
+        local padding = 22
+        local logoSize = IsValid(self.serverLogo) and math.min(h - 24, 48) or 0
+        local titleX = padding
+        if IsValid(self.serverLogo) then
+            self.serverLogo:SetPos(padding, (h - logoSize) * 0.5)
+            self.serverLogo:SetSize(logoSize, logoSize)
+            titleX = padding + logoSize + 14
+        end
+
+        self.serverTitle:SizeToContents()
+        self.serverTitle:SetPos(titleX, (h - self.serverTitle:GetTall()) * 0.5)
+        local badgeW = math.Clamp(w * 0.145, 130, 165)
+        local badgeH = math.Clamp(h * 0.52, 38, 46)
+        self.onlineBadge:SetSize(badgeW, badgeH)
+        self.onlineBadge:SetPos(w - padding - badgeW, (h - badgeH) * 0.5)
+        self.onlineLabel:SetPos(24, 0)
+        self.onlineLabel:SetSize(badgeW - 30, badgeH)
+    end
+
     local viewer = LocalPlayer()
     local viewerTeam = IsValid(viewer) and viewer:Team() or nil
     local viewerFaction = viewerTeam and lia.faction and lia.faction.indices and lia.faction.indices[viewerTeam] or nil
@@ -73,63 +209,96 @@ function PANEL:Init()
     self.playerSlots, self.factionLists = {}, {}
     local sortedFactions = {}
     for facID, facData in ipairs(lia.faction.indices) do
-        table.insert(sortedFactions, {
+        sortedFactions[#sortedFactions + 1] = {
             id = facID,
             data = facData
-        })
+        }
     end
 
-    table.sort(sortedFactions, function(a, b)
-        local aPriority = a.data.scoreboardPriority or 999
-        local bPriority = b.data.scoreboardPriority or 999
-        return aPriority < bPriority
-    end)
-
+    table.sort(sortedFactions, function(a, b) return (a.data.scoreboardPriority or 999) < (b.data.scoreboardPriority or 999) end)
     for _, factionInfo in ipairs(sortedFactions) do
         local facID, facData = factionInfo.id, factionInfo.data
         local facColor = team.GetColor(facID)
+        local factionTitle = string.upper(L(facData.name))
+        local factionSubtitle = facData.scoreboardSubtitle and L(facData.scoreboardSubtitle) or ""
         local facCat = layout:Add("DCollapsibleCategory")
         facCat:SetLabel("")
         facCat:SetExpanded(true)
+        facCat:DockMargin(0, 0, 0, 8)
+        local factionLogo
+        local factionTitleLabel
+        local factionSubtitleLabel
+        local factionMemberLabel
         if IsValid(facCat.Header) then
-            facCat.Header:SetTall(50)
-            facCat.Header.Paint = function(_, ww, hh)
-                local blurAmount = 4
-                local blurPasses = 2
-                local blurAlpha = 255
-                lia.util.drawBlur(_, blurAmount, blurPasses, blurAlpha)
-                local radius = 8
-                local baseColor = Color(25, 28, 35, 250)
-                local tintedColor = Color(math.Clamp((baseColor.r + facColor.r) * 0.5, 0, 255), math.Clamp((baseColor.g + facColor.g) * 0.5, 0, 255), math.Clamp((baseColor.b + facColor.b) * 0.5, 0, 255), baseColor.a)
-                lia.derma.rect(0, 0, ww, hh):Rad(radius):Color(tintedColor):Shape(lia.derma.SHAPE_IOS):Draw()
+            facCat.Header:SetTall(math.Clamp(ScrH() * 0.08, 68, 90))
+            facCat.Header.Paint = function() end
+            facCat.Header.PaintOver = function(_, w, h)
+                paintScoreboardHeader(facCat.Header, w, h, facColor)
+                local logoSize = IsValid(factionLogo) and factionLogo:GetMaterial() and math.min(h - 18, 62) or 0
+                local textX = logoSize > 0 and 18 + logoSize + 16 or 20
+                if logoSize > 0 then
+                    surface.SetMaterial(factionLogo:GetMaterial())
+                    surface.SetDrawColor(255, 255, 255, 255)
+                    surface.DrawTexturedRect(16, (h - logoSize) * 0.5, logoSize, logoSize)
+                end
+
+                if factionSubtitle ~= "" then
+                    draw.SimpleText(factionTitle, "LiliaFont.25b", textX, h * 0.25, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(factionSubtitle, "LiliaFont.16", textX, h * 0.68, tintColor(Color(150, 180, 195), facColor, 0.55, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                else
+                    draw.SimpleText(factionTitle, "LiliaFont.25b", textX, h * 0.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                end
+
+                if IsValid(factionMemberLabel) then draw.SimpleText(factionMemberLabel:GetText(), "LiliaFont.16", w - 20, h * 0.5, tintColor(Color(180, 205, 215), facColor, 0.55, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER) end
             end
-        end
 
-        if facData.logo and facData.logo ~= "" and IsValid(facCat.Header) then
-            local img = facCat.Header:Add("DImage")
-            img:Dock(LEFT)
-            img:DockMargin(5, 5, 5, 5)
-            img:SetWide(45)
-            img:SetMaterial(Material(facData.logo))
-        end
+            local factionLogoMaterial = getValidMaterial(facData.logo)
+            if factionLogoMaterial then
+                factionLogo = facCat.Header:Add("DImage")
+                factionLogo:SetMaterial(factionLogoMaterial)
+            end
 
-        local lbl
-        if IsValid(facCat.Header) then
-            lbl = facCat.Header:Add("DLabel")
-        else
-            lbl = vgui.Create("DLabel")
-        end
+            factionTitleLabel = facCat.Header:Add("DLabel")
+            factionTitleLabel:SetFont("LiliaFont.25b")
+            factionTitleLabel:SetTextColor(color_white)
+            factionTitleLabel:SetExpensiveShadow(1, Color(0, 0, 0, 180))
+            factionTitleLabel:SetText(factionTitle)
+            factionTitleLabel:SizeToContents()
+            factionTitleLabel:SetMouseInputEnabled(false)
+            factionSubtitleLabel = facCat.Header:Add("DLabel")
+            factionSubtitleLabel:SetFont("LiliaFont.16")
+            factionSubtitleLabel:SetTextColor(tintColor(Color(150, 180, 195), facColor, 0.55, 255))
+            factionSubtitleLabel:SetText(factionSubtitle)
+            factionSubtitleLabel:SizeToContents()
+            factionSubtitleLabel:SetMouseInputEnabled(false)
+            factionMemberLabel = facCat.Header:Add("DLabel")
+            factionMemberLabel:SetFont("LiliaFont.16")
+            factionMemberLabel:SetTextColor(tintColor(Color(180, 205, 215), facColor, 0.55, 255))
+            factionMemberLabel:SetContentAlignment(6)
+            factionMemberLabel:SetMouseInputEnabled(false)
+            factionTitleLabel:SetVisible(false)
+            factionSubtitleLabel:SetVisible(false)
+            factionMemberLabel:SetVisible(false)
+            if IsValid(factionLogo) then factionLogo:SetVisible(false) end
+            facCat.Header.PerformLayout = function(_, w, h)
+                local logoSize = factionLogo and math.min(h - 18, 62) or 0
+                local textX = factionLogo and 18 + logoSize + 16 or 20
+                if factionLogo then
+                    factionLogo:SetPos(16, (h - logoSize) * 0.5)
+                    factionLogo:SetSize(logoSize, logoSize)
+                end
 
-        lbl:SetFont("LiliaFont.25")
-        lbl:SetTextColor(color_white)
-        lbl:SetExpensiveShadow(1, color_black)
-        lbl:SetText(L(facData.name))
-        lbl:SizeToContents()
-        lbl:SetContentAlignment(5)
-        if IsValid(facCat.Header) then
-            facCat.Header.PerformLayout = function(_, ww, hh)
-                lbl:SizeToContents()
-                lbl:SetPos((ww - lbl:GetWide()) * 0.5, (hh - lbl:GetTall()) * 0.5)
+                factionTitleLabel:SizeToContents()
+                factionSubtitleLabel:SizeToContents()
+                factionMemberLabel:SetSize(150, h)
+                factionMemberLabel:SetPos(w - 170, 0)
+                if factionSubtitle ~= "" then
+                    factionTitleLabel:SetPos(textX, h * 0.25 - factionTitleLabel:GetTall() * 0.5)
+                    factionSubtitleLabel:SetPos(textX, h * 0.68 - factionSubtitleLabel:GetTall() * 0.5)
+                else
+                    factionTitleLabel:SetPos(textX, (h - factionTitleLabel:GetTall()) * 0.5)
+                    factionSubtitleLabel:SetVisible(false)
+                end
             end
         end
 
@@ -138,66 +307,89 @@ function PANEL:Init()
         facCont.noClass = facCont:Add("DListLayout")
         facCont.noClass:Dock(TOP)
         facCont.classLists = {}
-        local canSeeFactionClasses = viewerCanSeeAllClasses or viewerTeam == facID or facData.scoreboardClassesPublic
-        if canSeeFactionClasses and lia.config.get("ClassHeaders", true) and lia.config.get("ClassDisplay", true) and lia.class and lia.class.list then
+        facCont.memberLabel = factionMemberLabel
+        facCont.factionID = facID
+        if lia.config.get("ClassHeaders", true) then
             for clsID, clsData in pairs(lia.class.list) do
                 if clsData.faction ~= facID then continue end
                 if clsData.scoreboardHidden or hook.Run("ShouldShowClassOnScoreboard", clsData) == false then
-                    local lst = facCont:Add("DListLayout")
-                    lst:Dock(TOP)
-                    facCont.classLists[clsID] = lst
+                    local hiddenList = facCont:Add("DListLayout")
+                    hiddenList:Dock(TOP)
+                    facCont.classLists[clsID] = hiddenList
                     continue
                 end
 
                 local cat = facCont:Add("DCollapsibleCategory")
                 cat:SetLabel("")
                 cat:SetExpanded(true)
+                cat:DockMargin(8, 4, 8, 0)
+                local classColor = resolveHeaderColor(clsData.color, facColor)
+                if getColorLuminance(classColor) < 45 then classColor = Color(accentColor.r, accentColor.g, accentColor.b, accentColor.a or 255) end
+                local headerClassColor = Color(classColor.r, classColor.g, classColor.b, classColor.a or 255)
+                local list
+                local classLogo
+                local classLabel
                 if IsValid(cat.Header) then
-                    cat.Header:SetTall(30)
-                    cat.Header.Paint = function(_, ww, hh)
-                        local blurAmount = 4
-                        local blurPasses = 2
-                        local blurAlpha = 255
-                        lia.util.drawBlur(_, blurAmount, blurPasses, blurAlpha)
-                        local radius = 6
-                        local c = clsData.color or facColor
-                        local baseColor = Color(25, 28, 35, 250)
-                        local tintedColor = Color(math.Clamp((baseColor.r + c.r) * 0.5, 0, 255), math.Clamp((baseColor.g + c.g) * 0.5, 0, 255), math.Clamp((baseColor.b + c.b) * 0.5, 0, 255), baseColor.a)
-                        lia.derma.rect(0, 0, ww, hh):Rad(radius):Color(tintedColor):Shape(lia.derma.SHAPE_IOS):Draw()
+                    cat.Header:SetTall(42)
+                    cat.Header.Paint = function(header, w, h) end
+                    cat.Header.PaintOver = function(_, w, h)
+                        paintClassHeader(cat.Header, w, h, headerClassColor)
+                        local centerY = h * 0.5
+                        surface.SetDrawColor(headerClassColor.r, headerClassColor.g, headerClassColor.b, 255)
+                        if cat:GetExpanded() then
+                            surface.DrawLine(14, centerY - 3, 19, centerY + 2)
+                            surface.DrawLine(19, centerY + 2, 24, centerY - 3)
+                        else
+                            surface.DrawLine(16, centerY - 5, 21, centerY)
+                            surface.DrawLine(21, centerY, 16, centerY + 5)
+                        end
+
+                        local textX = 34
+                        if IsValid(classLogo) and classLogo:GetMaterial() then
+                            local logoSize = 22
+                            surface.SetMaterial(classLogo:GetMaterial())
+                            surface.SetDrawColor(255, 255, 255, 255)
+                            surface.DrawTexturedRect(textX, (h - logoSize) * 0.5, logoSize, logoSize)
+                            textX = textX + 30
+                        end
+
+                        draw.SimpleText(string.upper(L(clsData.name)), "LiliaFont.15b", textX, centerY, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        local count = IsValid(list) and list:ChildCount() or 0
+                        draw.SimpleText(count == 1 and "1 PLAYER" or count .. " PLAYERS", "LiliaFont.16", w - 14, centerY, tintColor(mutedTextColor, headerClassColor, 0.7, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+                    end
+
+                    local classLogoMaterial = getValidMaterial(clsData.logo)
+                    if classLogoMaterial then
+                        classLogo = cat.Header:Add("DImage")
+                        classLogo:SetMaterial(classLogoMaterial)
+                    end
+
+                    classLabel = cat.Header:Add("DLabel")
+                    classLabel:SetFont("LiliaFont.15b")
+                    classLabel:SetTextColor(color_white)
+                    classLabel:SetExpensiveShadow(1, Color(0, 0, 0, 170))
+                    classLabel:SetText(string.upper(L(clsData.name)))
+                    classLabel:SizeToContents()
+                    classLabel:SetMouseInputEnabled(false)
+                    classLabel:SetVisible(false)
+                    if IsValid(classLogo) then classLogo:SetVisible(false) end
+                    cat.Header.PerformLayout = function(_, _, h)
+                        local x = 34
+                        if classLogo then
+                            classLogo:SetPos(x, (h - 22) * 0.5)
+                            classLogo:SetSize(22, 22)
+                            x = x + 30
+                        end
+
+                        classLabel:SizeToContents()
+                        classLabel:SetPos(x, (h - classLabel:GetTall()) * 0.5)
                     end
                 end
 
-                if clsData.logo and clsData.logo ~= "" and IsValid(cat.Header) then
-                    local ico = cat.Header:Add("DImage")
-                    ico:Dock(RIGHT)
-                    ico:DockMargin(5, 4, 5, 4)
-                    ico:SetWide(20)
-                    ico:SetMaterial(Material(clsData.logo))
-                end
-
-                local hlbl
-                if IsValid(cat.Header) then
-                    hlbl = cat.Header:Add("DLabel")
-                else
-                    hlbl = vgui.Create("DLabel")
-                end
-
-                hlbl:SetFont("LiliaFont.17")
-                hlbl:SetTextColor(color_white)
-                hlbl:SetExpensiveShadow(1, color_black)
-                hlbl:SetText(L(clsData.name))
-                hlbl:SizeToContents()
-                hlbl:SetContentAlignment(4)
-                if IsValid(cat.Header) then
-                    cat.Header.PerformLayout = function(_, _, hh)
-                        hlbl:SizeToContents()
-                        hlbl:SetPos(10, (hh - hlbl:GetTall()) * 0.5)
-                    end
-                end
-
-                local lst = vgui.Create("DListLayout", cat)
-                cat:SetContents(lst)
-                facCont.classLists[clsID] = lst
+                list = vgui.Create("DListLayout", cat)
+                list.category = cat
+                cat:SetContents(list)
+                facCont.classLists[clsID] = list
             end
         end
 
@@ -207,13 +399,21 @@ end
 
 function PANEL:Think()
     if not self:IsVisible() then return end
+    if IsValid(self.onlineLabel) then
+        local online = player.GetCount()
+        self.onlineLabel:SetText(online .. " Online")
+    end
+
     if (self.nextUpdate or 0) > CurTime() then return end
     for _, ply in player.Iterator() do
-        if hook.Run("ShouldShowPlayerOnScoreboard", ply) == false or hook.Run("ShouldShowFactionOnScoreboard", ply) == false or (lia.faction.indices[ply:Team()] and lia.faction.indices[ply:Team()].scoreboardHidden) then continue end
+        local factionData = lia.faction.indices[ply:Team()]
+        if hook.Run("ShouldShowPlayerOnScoreboard", ply) == false or hook.Run("ShouldShowFactionOnScoreboard", ply) == false or factionData and factionData.scoreboardHidden then continue end
         local char = ply:getChar()
         if not char then continue end
         local facCont = self.factionLists[ply:Team()]
+        if not IsValid(facCont) then continue end
         local parent = facCont.classLists[char:getClass()] or facCont.noClass
+        if not IsValid(parent) then continue end
         if not IsValid(ply.liaScoreSlot) then
             self:addPlayer(ply, parent)
         elseif ply.liaScoreSlot:GetParent() ~= parent then
@@ -224,12 +424,20 @@ function PANEL:Think()
 
     for _, facCont in pairs(self.factionLists) do
         local showFaction = facCont.noClass:ChildCount() > 0
-        for _, lst in pairs(facCont.classLists) do
-            local cat, hasPlayers = lst:GetParent(), lst:ChildCount() > 0
-            cat:SetVisible(hasPlayers)
-            if hasPlayers then showFaction = true end
+        local memberCount = facCont.noClass:ChildCount()
+        for _, list in pairs(facCont.classLists) do
+            local count = list:ChildCount()
+            memberCount = memberCount + count
+            if IsValid(list.category) then
+                local hasPlayers = count > 0
+                list.category:SetVisible(hasPlayers)
+                if hasPlayers then showFaction = true end
+            elseif count > 0 then
+                showFaction = true
+            end
         end
 
+        if IsValid(facCont.memberLabel) then facCont.memberLabel:SetText(memberCount == 1 and "1 MEMBER" or memberCount .. " MEMBERS") end
         local facCat = facCont:GetParent()
         if IsValid(facCat) then facCat:SetVisible(showFaction) end
     end
@@ -244,15 +452,40 @@ end
 function PANEL:addPlayer(ply, parent)
     local slot = parent:Add("DPanel")
     slot:Dock(TOP)
-    local height = ScrH() * 0.08
+    slot:DockMargin(10, 4, 10, 0)
+    local height = math.Clamp(ScrH() * 0.075, 64, 84)
     slot:SetTall(height)
-    slot.Paint = function() end
     slot.player = ply
     slot.character = ply:getChar()
     ply.liaScoreSlot = slot
-    local margin, iconSize = 5, height * 0.75
+    local margin = 9
+    local iconSize = height - margin * 2
+    slot.Paint = function(s, w, h)
+        local index = s.rowIndex or 0
+        local base = rowColors[index % 2]
+        draw.RoundedBox(6, 0, 0, w, h, base)
+        surface.SetDrawColor(borderColor)
+        surface.DrawOutlinedRect(0, 0, w, h, 1)
+        if s.pingX then
+            surface.SetDrawColor(dividerColor)
+            surface.DrawLine(s.pingX - 12, 14, s.pingX - 12, h - 14)
+        end
+
+        if IsValid(ply) and s.pingX then
+            local ping = ply:Ping()
+            local color = getPingColor(ping)
+            local barX = s.pingX + 8
+            local baseY = h * 0.5 + 7
+            surface.SetDrawColor(color)
+            for i = 1, 4 do
+                local barHeight = 3 + i * 3
+                surface.DrawRect(barX + (i - 1) * 4, baseY - barHeight, 2, barHeight)
+            end
+        end
+    end
+
     slot.model = slot:Add("liaSpawnIcon")
-    slot.model:SetPos(margin, (height - iconSize) * 0.5)
+    slot.model:SetPos(margin, margin)
     slot.model:SetSize(iconSize, iconSize)
     slot.model:SetModel(ply:GetModel(), ply:GetSkin())
     slot.model:SetCamPos(Vector(0, 0, 55))
@@ -270,59 +503,57 @@ function PANEL:addPlayer(ply, parent)
     slot.model.DoClick = function()
         local opts = {}
         hook.Run("ShowPlayerOptions", ply, opts)
-        if #opts > 0 then
-            local frame = vgui.Create("liaFrame", self)
-            frame:SetSize(360, 450)
-            frame:Center()
-            frame:MakePopup()
-            frame:SetTitle(L("sbOptions"))
-            frame:LiteMode()
-            table.insert(self.playerOptionFrames, frame)
-            frame.OnRemove = function()
-                if not self.playerOptionFrames then return end
-                for i, f in ipairs(self.playerOptionFrames) do
-                    if f == frame then
-                        table.remove(self.playerOptionFrames, i)
-                        break
-                    end
+        if #opts == 0 then return end
+        local frame = vgui.Create("liaFrame", self)
+        frame:SetSize(360, 450)
+        frame:Center()
+        frame:MakePopup()
+        frame:SetTitle(L("sbOptions"))
+        frame:LiteMode()
+        self.playerOptionFrames[#self.playerOptionFrames + 1] = frame
+        frame.OnRemove = function()
+            if not self.playerOptionFrames then return end
+            for i, optionFrame in ipairs(self.playerOptionFrames) do
+                if optionFrame == frame then
+                    table.remove(self.playerOptionFrames, i)
+                    break
                 end
             end
+        end
 
-            local scrollPanel = vgui.Create("liaScrollPanel", frame)
-            scrollPanel:Dock(FILL)
-            scrollPanel:DockMargin(5, 5, 5, 5)
-            for _, o in ipairs(opts) do
-                local button = vgui.Create("DButton", scrollPanel)
-                button:Dock(TOP)
-                button:DockMargin(5, 5, 5, 0)
-                button:SetTall(32)
-                button:SetText("")
-                button:SetCursor("hand")
-                button.Paint = function(s, w, h)
-                    local baseColor = s:IsHovered() and lia.color.theme.button_hovered or lia.color.theme.button
-                    draw.RoundedBox(8, 0, 0, w, h, baseColor)
-                    local iconDrawSize = 16
-                    if o.image then
-                        surface.SetMaterial(Material(o.image))
-                        surface.SetDrawColor(lia.color.theme.text)
-                        surface.DrawTexturedRect(8, (h - iconDrawSize) / 2, iconDrawSize, iconDrawSize)
-                    end
-
-                    draw.SimpleText(L(o.name), "LiliaFont.17", 32, h / 2, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        local scrollPanel = vgui.Create("liaScrollPanel", frame)
+        scrollPanel:Dock(FILL)
+        scrollPanel:DockMargin(5, 5, 5, 5)
+        for _, option in ipairs(opts) do
+            local button = vgui.Create("DButton", scrollPanel)
+            button:Dock(TOP)
+            button:DockMargin(5, 5, 5, 0)
+            button:SetTall(32)
+            button:SetText("")
+            button:SetCursor("hand")
+            button.Paint = function(s, w, h)
+                local baseColor = s:IsHovered() and lia.color.theme.button_hovered or lia.color.theme.button
+                draw.RoundedBox(8, 0, 0, w, h, baseColor)
+                if option.image then
+                    surface.SetMaterial(Material(option.image))
+                    surface.SetDrawColor(lia.color.theme.text)
+                    surface.DrawTexturedRect(8, (h - 16) * 0.5, 16, 16)
                 end
 
-                button.DoClick = function()
-                    o.func()
-                    frame:Remove()
-                end
+                draw.SimpleText(L(option.name), "LiliaFont.17", 32, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            end
+
+            button.DoClick = function()
+                option.func()
+                frame:Remove()
             end
         end
     end
 
     timer.Simple(0, function()
         if not IsValid(slot.model) or not IsValid(slot.model.Entity) then return end
-        for _, bg in ipairs(ply:GetBodyGroups()) do
-            slot.model.Entity:SetBodygroup(bg.id, ply:GetBodygroup(bg.id))
+        for _, bodygroup in ipairs(ply:GetBodyGroups()) do
+            slot.model.Entity:SetBodygroup(bodygroup.id, ply:GetBodygroup(bodygroup.id))
         end
 
         for i in ipairs(ply:GetMaterials()) do
@@ -333,54 +564,39 @@ function PANEL:addPlayer(ply, parent)
     end)
 
     slot.name = vgui.Create("DLabel", slot)
-    slot.name:SetFont("LiliaFont.25")
+    slot.name:SetFont("LiliaFont.25b")
     slot.name:SetTextColor(color_white)
-    slot.name:SetExpensiveShadow(1, color_black)
+    slot.name:SetExpensiveShadow(1, Color(0, 0, 0, 190))
     slot.desc = vgui.Create("DLabel", slot)
     slot.desc:SetAutoStretchVertical(true)
     slot.desc:SetWrap(true)
     slot.desc:SetContentAlignment(7)
-    slot.desc:SetFont("LiliaFont.17")
-    slot.desc:SetTextColor(color_white)
+    slot.desc:SetFont("LiliaFont.16")
+    slot.desc:SetTextColor(mutedTextColor)
     slot.desc:SetExpensiveShadow(1, Color(0, 0, 0, 100))
     slot.ping = vgui.Create("DLabel", slot)
     slot.ping:SetFont("LiliaFont.16")
-    slot.ping:SetContentAlignment(6)
-    slot.ping:SetTextColor(color_white)
-    slot.ping:SetTextInset(16, 0)
-    local logoSize, logoOffset = height * 0.6, 8
-    slot.classLogo = vgui.Create("DImage", slot)
-    slot.classLogo:SetSize(logoSize, logoSize)
+    slot.ping:SetContentAlignment(5)
     function slot:layout()
-        self.ping:SizeToContents()
-        local pingW, totalW = self.ping:GetWide(), self:GetWide()
-        local hasLogo = lia.config.get("ClassLogo", false) and self.classLogo:GetMaterial() and not self.hideLogo
-        local extra = hasLogo and logoSize + logoOffset or 0
-        local availW = totalW - (iconSize + margin * 2) - extra - pingW - margin
-        self.name:SetPos(iconSize + margin * 2, height * 0.08)
-        self.name:SetWide(availW)
-        self.name:SetTall(height * 0.4)
-        self.desc:SetPos(iconSize + margin * 2, height * 0.52)
-        self.desc:SetWide(availW - 5)
-        self.desc:SetTall(height * 0.4)
-        if hasLogo then
-            self.classLogo:SetVisible(true)
-            self.classLogo:SetPos(totalW - pingW - logoSize - logoOffset, (height - logoSize) * 0.5)
-        else
-            self.classLogo:SetVisible(false)
-        end
-
-        self.ping:SetPos(totalW - pingW, (height - self.ping:GetTall()) * 0.5)
+        local totalW = self:GetWide()
+        local pingColumnW = math.Clamp(totalW * 0.12, 90, 125)
+        local contentX = iconSize + margin * 2
+        self.pingX = totalW - pingColumnW
+        local textWidth = math.max(80, self.pingX - contentX - 18)
+        self.name:SetPos(contentX, height * 0.14)
+        self.name:SetSize(textWidth, height * 0.36)
+        self.desc:SetPos(contentX, height * 0.53)
+        self.desc:SetSize(textWidth, height * 0.3)
+        self.ping:SetPos(self.pingX + 26, 0)
+        self.ping:SetSize(pingColumnW - 30, height)
     end
 
-    slot.ping.Think = function(lbl)
+    slot.ping.Think = function(label)
         if not IsValid(ply) or not IsValid(self) or not self:IsVisible() then return end
-        local txt = tostring(ply:Ping())
-        if lbl:GetText() ~= txt then
-            lbl:SetText(txt)
-            lbl:SizeToContentsX()
-            slot:layout()
-        end
+        local ping = ply:Ping()
+        local text = ping .. " ms"
+        if label:GetText() ~= text then label:SetText(text) end
+        label:SetTextColor(getPingColor(ping))
     end
 
     function slot:update()
@@ -399,7 +615,7 @@ function PANEL:addPlayer(ply, parent)
 
         local overrideModel = hook.Run("ShouldAllowScoreboardOverride", ply, "model")
         if self.lastHidden ~= overrideModel then
-            slot.model:setHidden(overrideModel)
+            self.model:setHidden(overrideModel)
             self.lastHidden = overrideModel
         end
 
@@ -410,66 +626,47 @@ function PANEL:addPlayer(ply, parent)
             self.lastName = name
         end
 
-        local desc = hook.Run("ShouldAllowScoreboardOverride", ply, "desc") and hook.Run("GetDisplayedDescription", ply, false) or char:getDesc()
-        desc = desc:gsub("#", "\226\128\139#")
-        local wrapped = wrap(desc, self.desc:GetWide(), "LiliaFont.17")
-        surface.SetFont("LiliaFont.17")
-        local maxLines = 2
-        if #wrapped > maxLines then
-            wrapped[maxLines] = wrapped[maxLines] .. " (...)"
-            for i = maxLines + 1, #wrapped do
+        local description = hook.Run("ShouldAllowScoreboardOverride", ply, "desc") and hook.Run("GetDisplayedDescription", ply, false) or char:getDesc()
+        description = description:gsub("#", "\226\128\139#")
+        local wrapped = wrap(description, math.max(self.desc:GetWide(), 80), "LiliaFont.16")
+        if #wrapped > 1 then
+            wrapped[1] = wrapped[1] .. " (...)"
+            for i = 2, #wrapped do
                 wrapped[i] = nil
             end
         end
 
-        local finalDesc = table.concat(wrapped, "\n")
-        if self.lastDesc ~= finalDesc then
-            self.desc:SetText(finalDesc)
-            self.lastDesc = finalDesc
+        local finalDescription = table.concat(wrapped, "\n")
+        if self.lastDesc ~= finalDescription then
+            self.desc:SetText(finalDescription)
+            self.lastDesc = finalDescription
         end
 
-        local mdl, sk = ply:GetModel(), ply:GetSkin()
-        if self.lastModel ~= mdl or self.lastSkin ~= sk then
-            slot.model:SetModel(mdl, sk)
-            for _, bg in ipairs(ply:GetBodyGroups()) do
-                slot.model.Entity:SetBodygroup(bg.id, ply:GetBodygroup(bg.id))
+        local model = ply:GetModel()
+        local skin = ply:GetSkin()
+        if self.lastModel ~= model or self.lastSkin ~= skin then
+            self.model:SetModel(model, skin)
+            if IsValid(self.model.Entity) then
+                for _, bodygroup in ipairs(ply:GetBodyGroups()) do
+                    self.model.Entity:SetBodygroup(bodygroup.id, ply:GetBodygroup(bodygroup.id))
+                end
+
+                hook.Run("ModifyScoreboardModel", self.model.Entity, ply)
             end
 
-            hook.Run("ModifyScoreboardModel", slot.model.Entity, ply)
-            self.lastModel, self.lastSkin = mdl, sk
+            self.lastModel, self.lastSkin = model, skin
         end
 
-        local clsData = lia.class.list[char:getClass()]
-        local showLogo = lia.config.get("ClassLogo", false) and clsData and not clsData.scoreboardHidden and hook.Run("ShouldShowClassOnScoreboard", clsData) ~= false and clsData.logo and clsData.logo ~= ""
-        if showLogo then
-            local logoMat = clsData.logo
-            if self.lastClassLogo ~= logoMat then
-                self.classLogo:SetMaterial(Material(logoMat))
-                self.lastClassLogo = logoMat
-            end
-
-            self.hideLogo = false
-        else
-            self.classLogo:SetMaterial(nil)
-            self.lastClassLogo = nil
-            self.hideLogo = true
-        end
-
-        slot:layout()
+        self:layout()
     end
 
     parent:InvalidateLayout(true)
     self.playerSlots[#self.playerSlots + 1] = slot
-    local idx = 0
+    local index = 0
     for _, child in ipairs(parent:GetChildren()) do
         if IsValid(child.model) then
-            idx = idx + 1
-            local fn = rowPaint[idx % 2]
-            child.Paint = function(s, w, h)
-                fn(s, w, h)
-                surface.SetDrawColor(255, 255, 255, 50)
-                surface.DrawLine(0, h - 1, w, h - 1)
-            end
+            index = index + 1
+            child.rowIndex = index
         end
     end
 

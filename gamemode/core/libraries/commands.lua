@@ -13,6 +13,213 @@
 ]]
 --[[
     Hooks:
+        CharListExtraDetails(client, entry, stored)
+
+    Purpose:
+        temp
+
+    Category:
+        temp
+
+    Parameters:
+        temp
+
+    Example Usage:
+        ```lua
+        hook.Add("CharListExtraDetails", "liaExampleCharListExtraDetails", function(client, entry, stored)
+            temp
+        end)
+        ```
+
+    Realm:
+        temp
+]]
+--[[
+    Hooks:
+        DoorEnabledToggled(client, door, newState)
+
+    Purpose:
+        temp
+
+    Category:
+        temp
+
+    Parameters:
+        temp
+
+    Example Usage:
+        ```lua
+        hook.Add("DoorEnabledToggled", "liaExampleDoorEnabledToggled", function(client, door, newState)
+            temp
+        end)
+        ```
+
+    Realm:
+        temp
+]]
+--[[
+    Hooks:
+        DoorHiddenToggled(client, entity, newState)
+
+    Purpose:
+        temp
+
+    Category:
+        temp
+
+    Parameters:
+        temp
+
+    Example Usage:
+        ```lua
+        hook.Add("DoorHiddenToggled", "liaExampleDoorHiddenToggled", function(client, entity, newState)
+            temp
+        end)
+        ```
+
+    Realm:
+        temp
+]]
+--[[
+    Hooks:
+        DoorOwnableToggled(client, door, newState)
+
+    Purpose:
+        temp
+
+    Category:
+        temp
+
+    Parameters:
+        temp
+
+    Example Usage:
+        ```lua
+        hook.Add("DoorOwnableToggled", "liaExampleDoorOwnableToggled", function(client, door, newState)
+            temp
+        end)
+        ```
+
+    Realm:
+        temp
+]]
+--[[
+    Hooks:
+        DoorPriceSet(client, door, price)
+
+    Purpose:
+        temp
+
+    Category:
+        temp
+
+    Parameters:
+        temp
+
+    Example Usage:
+        ```lua
+        hook.Add("DoorPriceSet", "liaExampleDoorPriceSet", function(client, door, price)
+            temp
+        end)
+        ```
+
+    Realm:
+        temp
+]]
+--[[
+    Hooks:
+        DoorTitleSet(client, door, name)
+
+    Purpose:
+        temp
+
+    Category:
+        temp
+
+    Parameters:
+        temp
+
+    Example Usage:
+        ```lua
+        hook.Add("DoorTitleSet", "liaExampleDoorTitleSet", function(client, door, name)
+            temp
+        end)
+        ```
+
+    Realm:
+        temp
+]]
+--[[
+    Hooks:
+        ForceRecognizeRange(ply, range, fakeName)
+
+    Purpose:
+        temp
+
+    Category:
+        temp
+
+    Parameters:
+        temp
+
+    Example Usage:
+        ```lua
+        hook.Add("ForceRecognizeRange", "liaExampleForceRecognizeRange", function(ply, range, fakeName)
+            temp
+        end)
+        ```
+
+    Realm:
+        temp
+]]
+--[[
+    Hooks:
+        OnPlayerPurchaseDoor(client, door, arg3)
+
+    Purpose:
+        temp
+
+    Category:
+        temp
+
+    Parameters:
+        temp
+
+    Example Usage:
+        ```lua
+        hook.Add("OnPlayerPurchaseDoor", "liaExampleOnPlayerPurchaseDoor", function(client, door, arg3)
+            temp
+        end)
+        ```
+
+    Realm:
+        temp
+]]
+--[[
+    Hooks:
+        OnTransferred(target)
+
+    Purpose:
+        temp
+
+    Category:
+        temp
+
+    Parameters:
+        temp
+
+    Example Usage:
+        ```lua
+        hook.Add("OnTransferred", "liaExampleOnTransferred", function(target)
+            temp
+        end)
+        ```
+
+    Realm:
+        temp
+]]
+--[[
+    Hooks:
         CommandAdded(string command, table data)
 
     Purpose:
@@ -27,6 +234,13 @@
 
         data (table)
             The command definition table stored in `lia.command.list`.
+
+    Example Usage:
+        ```lua
+        hook.Add("CommandAdded", "liaExampleCommandAdded", function(command, data)
+            print("[MyModule] handled CommandAdded")
+        end)
+        ```
 
     Realm:
         Shared
@@ -47,6 +261,15 @@
 
         command (string)
             The command name being checked.
+
+    Example Usage:
+        ```lua
+        hook.Add("CanPlayerUseCommand", "liaExampleCanPlayerUseCommand", function(client, command)
+            if IsValid(client) and client:IsAdmin() then
+                return true
+            end
+        end)
+        ```
 
     Returns:
         boolean|nil
@@ -77,6 +300,14 @@
 
         results (table)
             The return values from the command callback.
+
+    Example Usage:
+        ```lua
+        hook.Add("CommandRan", "liaExampleCommandRan", function(client, command, arguments, results)
+            if not IsValid(client) then return end
+            print(string.format("[MyModule] handled CommandRan for %s", client:Name()))
+        end)
+        ```
 
     Realm:
         Server
@@ -1298,6 +1529,7 @@ if SERVER then
         lia.information(L("assetsRedownloaded"))
     end)
 
+
     concommand.Add("print_vector", function(client)
         if not IsValid(client) then
             MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
@@ -1381,6 +1613,11 @@ if SERVER then
     end)
 else
     concommand.Add("weighpoint_stop", function() hook.Remove("HUDPaint", "WeighPoint") end)
+    concommand.Add("lia_scoreboard_reload", function()
+        if IsValid(lia.gui.score) then lia.gui.score:Remove() end
+        vgui.Create("liaScoreboard")
+    end)
+
     concommand.Add("lia_vgui_cleanup", function()
         for _, v in pairs(vgui.GetWorldPanel():GetChildren()) do
             if not (v.Init and debug.getinfo(v.Init, "Sln").short_src:find("chatbox")) then v:Remove() end
@@ -3069,6 +3306,38 @@ lia.command.add("forcefallover", {
     end
 })
 
+--[[
+    Hooks:
+        OnCharGetup(Player target, Entity entity)
+
+    Purpose:
+        Runs just before a ragdolled character gets up and their ragdoll entity is removed.
+
+    Category:
+        Character
+
+    Parameters:
+        target (Player)
+            The player getting up from ragdoll state.
+
+        entity (Entity)
+            The ragdoll entity that is about to be removed.
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        hook.Add("OnCharGetup", "liaExampleOnCharGetup", function(target, entity)
+            if IsValid(target) then
+                print(target:Nick(), "got up")
+            end
+        end)
+        ```
+
+    Realm:
+        Server
+]]
 lia.command.add("forcegetup", {
     adminOnly = true,
     desc = "@forceGetUpDesc",
@@ -6871,7 +7140,7 @@ lia.command.add("setclass", {
             if target:Team() == classData.faction then
                 target:getChar():joinClass(classID, true)
                 lia.log.add(client, "setClass", target:Name(), classData.name)
-                target:notifyInfoLocalized("classSet", classData.name, client:GetName())
+                target:notifyInfoLocalized("classSet", classData.name)
                 if client ~= target then client:notifySuccessLocalized("classSetOther", target:GetName(), classData.name) end
                 hook.Run("PlayerLoadout", target)
             else

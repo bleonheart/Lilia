@@ -28,6 +28,15 @@
         noticeType (string)
             The notice type used to style the notice.
 
+    Example Usage:
+        ```lua
+        hook.Add("LiliaNoticeOverride", "liaExampleLiliaNoticeOverride", function(message, noticeType)
+            return {
+                {name = "Example", value = 1}
+            }
+        end)
+        ```
+
     Returns:
         boolean|table|nil
             Return true to block the notice. Return a table with `message` or `msg` and/or `type` to replace the notice data. Return nil or any other value to continue with the original notice.

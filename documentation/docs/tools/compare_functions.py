@@ -354,6 +354,7 @@ class DocumentationParser:
         global_lia_functions = {
             'bootstrap', 'error', 'warning', 'information', 'relaydiscordMessage'
         }
+        is_core_library_page = file_path.stem == "lia.core"
 
         # Look for function headers in the format "### functionName" or "### lia.util.functionName"
         for line_num, line in enumerate(lines, 1):
@@ -368,6 +369,9 @@ class DocumentationParser:
                 if '.' in header_name:
                     qualified_name = header_name
                 else:
+                    # Bare names on non-core library pages are hook docs, not library functions.
+                    if not is_core_library_page and header_name not in global_lia_functions:
+                        continue
                     # Special handling for global lia functions
                     if header_name in global_lia_functions:
                         qualified_name = f"lia.{header_name}"
@@ -400,6 +404,9 @@ class DocumentationParser:
             if '.' in func_name:
                 qualified_name = func_name
             else:
+                # Bare summaries on non-core library pages are library-local hook docs.
+                if not is_core_library_page and func_name not in global_lia_functions:
+                    continue
                 # Special handling for global lia functions
                 if func_name in global_lia_functions:
                     qualified_name = f"lia.{func_name}"

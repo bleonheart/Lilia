@@ -1,21 +1,21 @@
 ## Executive Summary
 
 ### Function Documentation
-- **Total Functions:** 696
-- **Documented:** 644 (92.5%)
-- **Missing Functions:** 52 unique (52 total occurrences)
-  - **Library Functions:** 41
-  - **Hook Functions:** 5
+- **Total Functions:** 690
+- **Documented:** 684 (99.1%)
+- **Missing Functions:** 6 unique (6 total occurrences)
+  - **Library Functions:** 6
+  - **Hook Functions:** 0
   - **Meta Functions:** 0
 
 ### Hooks Documentation
-- **Missing Hooks:** 454 (used but undocumented)
+- **Missing Hooks:** 2 (used but undocumented)
 - **Unused Hooks:** 0 (documented but unused)
-- **Total Documented Hooks:** 0
+- **Total Documented Hooks:** 452
 - **Total Registered Hooks:** 454
 
 ### Localization Analysis
-- **Undefined Calls:** 16 unique
+- **Undefined Calls:** 3 unique
 - **@xxxxx Patterns:** 0 unique
 - **Module Key Conflicts:** 0 keys
 - **Argument Mismatches:** 0
@@ -34,83 +34,27 @@
 ## Function Documentation Analysis
 
 ### Summary
-- **Files Analyzed:** 45
-- **Missing Documentation:** 52 unique functions
+- **Files Analyzed:** 43
+- **Missing Documentation:** 6 unique functions
 
 ### Missing Library Functions
-Total: 41 functions
+Total: 6 functions
 
-#### lia.admin
-Count: 28 functions
-
-- `lia.admin.addPermission(groupName, permission, silent)`
-- `lia.admin.applyInheritance(groupName)`
-- `lia.admin.applyPunishment(client, infraction, kick, ban, time, kickKey, banKey)`
-- `lia.admin.createGroup(groupName, info)`
-- `lia.admin.execCommand(cmd, victim, dur, reason)`
-- `lia.admin.getCommandPrivilegeID(cmd)`
-- `lia.admin.getDefaultUserGroup()`
-- `lia.admin.getExternalPrivilegeName(id)`
-- `lia.admin.getUsergroupIcon(groupOrPlayer)`
-- `lia.admin.hasAccess(ply, privilege)`
-- `lia.admin.hasChanges()`
-- `lia.admin.isProtectedStaffTarget(cmd, target)`
-- `lia.admin.isValidGroup(groupName)`
-- `lia.admin.load()`
-- `lia.admin.normalizePrivilege(privilege)`
-- `lia.admin.notifyAdmin(notification)`
-- `lia.admin.notifyProtectedStaffTarget(admin)`
-- `lia.admin.registerPrivilege(priv)`
-- `lia.admin.removeGroup(groupName)`
-- `lia.admin.removePermission(groupName, permission, silent)`
-- `lia.admin.renameGroup(oldName, newName)`
-- `lia.admin.save(noNetwork)`
-- `lia.admin.serverExecCommand(cmd, victim, dur, reason, admin)`
-- `lia.admin.setPlayerUsergroup(ply, newGroup, source)`
-- `lia.admin.setSteamIDUsergroup(steamId, newGroup, source)`
-- `lia.admin.shouldShowUsergroupIcons()`
-- `lia.admin.sync(c)`
-- `lia.admin.unregisterPrivilege(id)`
-
-#### lia.db
-Count: 1 functions
-
-- `lia.db.ensureIndexes()`
-
-#### lia.vendor
+#### lia
 Count: 6 functions
 
-- `lia.vendor.addPreset(name, items)`
-- `lia.vendor.getAllVendorData(entity)`
-- `lia.vendor.getPreset(name)`
-- `lia.vendor.getVendorProperty(entity, property)`
-- `lia.vendor.setVendorProperty(entity, property, value)`
-- `lia.vendor.syncVendorProperty(entity, property, value, isDefault)`
-
-#### lia.worldPreview
-Count: 6 functions
-
-- `lia.worldPreview.begin(owner, config)`
-- `lia.worldPreview.close(owner)`
-- `lia.worldPreview.getEntity(owner)`
-- `lia.worldPreview.rotate(owner, deltaYaw)`
-- `lia.worldPreview.setModel(owner, modelPath, options)`
-- `lia.worldPreview.shouldHidePlayer(player)`
-
-### Missing Hook Functions
-Total: 5 functions
-
-- `playerMeta:addPart(partID)`
-- `playerMeta:getParts()`
-- `playerMeta:removePart(partID)`
-- `playerMeta:resetParts()`
-- `playerMeta:syncParts()`
+- `lia.bootstrap(section, msg)`
+- `lia.debug(...)`
+- `lia.error(msg)`
+- `lia.information(msg)`
+- `lia.relaydiscordMessage(embed)`
+- `lia.warning(msg)`
 
 ## Hooks Documentation Analysis
 
 ### Summary
-- **Missing Hooks:** 454 (used in code but not documented)
-- **Documented Hooks:** 0
+- **Missing Hooks:** 2 (used in code but not documented)
+- **Documented Hooks:** 452
 - **Registered Hooks:** 454
 - **Method Hooks:** 19 (`function GM:HookName(...)`, `function MODULE:HookName(...)`, `function SCHEMA:HookName(...)`)
 - **Standard Hooks:** 435 (`hook.Add(...)`, `hook.Run(...)`, `hook.Call(...)`)
@@ -285,6 +229,8 @@ These entries show hooks registered from framework libraries.
   - library `notice.lua` [standard] in `core/libraries/notice.lua`
 - `LoadData`
   - library `dialog.lua` [standard] in `core/libraries/dialog.lua`
+- `ModifyCharacterModel`
+  - library `view.lua` [standard] in `core/libraries/view.lua`
 - `NetVarChanged`
   - library `net.lua` [standard] in `core/libraries/net.lua`
 - `OnAdminSystemLoaded`
@@ -433,6 +379,8 @@ These entries show hooks registered from framework libraries.
   - library `loader.lua` [standard] in `core/libraries/loader.lua`
 - `SetupPACDataFromItems`
   - library `compatibility` [standard] in `core/libraries/compatibility/pac.lua`
+- `SetupPlayerModel`
+  - library `view.lua` [standard] in `core/libraries/view.lua`
 - `SetupQuickMenu`
   - library `camera.lua` [standard] in `core/libraries/camera.lua`
 - `ShouldBarDraw`
@@ -980,7 +928,6 @@ These entries show hooks registered outside libraries and outside external modul
 - `LoadData`
   - other [method] in `modules/doors/libraries/server.lua`
   - other [method] in `modules/chatbox/libraries/server.lua`
-  - other [method] in `modules/administration/submodules/permaremove/libraries/server.lua`
   - core `hooks` [method] in `core/hooks/server.lua`
   - core `hooks` [standard] in `core/hooks/server.lua`
 - `LoadMainCharacter`
@@ -990,10 +937,8 @@ These entries show hooks registered outside libraries and outside external modul
 - `ModifyCharacterCreationSummary`
   - core `derma` [standard] in `core/derma/mainmenu/steps/summary.lua`
 - `ModifyCharacterModel`
-  - core `netcalls` [standard] in `core/netcalls/client.lua`
   - core `derma` [standard] in `core/derma/mainmenu/character.lua`
   - core `derma` [standard] in `core/derma/mainmenu/creation.lua`
-  - core `derma` [standard] in `core/derma/panels/bodygrouper.lua`
 - `ModifyScoreboardModel`
   - core `derma` [standard] in `core/derma/panels/scoreboard.lua`
 - `ModifyVoiceIndicatorText`
@@ -1302,9 +1247,7 @@ These entries show hooks registered outside libraries and outside external modul
   - core `hooks` [standard] in `core/hooks/server.lua`
 - `SetupPlayerModel`
   - meta `character` [standard] in `core/meta/character.lua`
-  - core `netcalls` [standard] in `core/netcalls/client.lua`
   - core `derma` [standard] in `core/derma/mainmenu/character.lua`
-  - core `derma` [standard] in `core/derma/panels/bodygrouper.lua`
 - `SetupQuickMenu`
   - core `derma` [standard] in `core/derma/panels/panels.lua`
 - `ShouldAllowScoreboardOverride`
@@ -1472,501 +1415,23 @@ These entries show hooks registered outside libraries and outside external modul
 
 ### Missing Hook Documentation:
 These hooks are registered in code but missing from documentation:
-- `AddBarField(sectionName, fieldName, labelText, minFunc, maxFunc, valueFunc)`
-- `AddFilteredWord(word)`
-- `AddReservedKeybinds(reserved)`
-- `AddSection(sectionName, color, priority, location)`
-- `AddTextField(sectionName, fieldName, labelText, valueFunc)`
-- `AddToAdminStickHUD(client, target, information)`
-- `AddWarning(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID, severity)`
-- `AdjustCreationData(client, data, newData, originalData)`
-- `AdjustPACPartData(wearer, id, data)`
-- `AdjustStaminaOffset(client, offset)`
-- `AdminPrivilegesUpdated()`
-- `AdminStickAddModels(allModList, tgt)`
 - `AdvDupe_FinishPasting(tbl)`
-- `AttachPart(client, id)`
-- `BagInventoryReady(self, inventory)`
-- `BagInventoryRemoved(self, inv)`
-- `CanCharBeTransfered(tChar, faction, arg3)`
-- `CanDeleteChar(client, character)`
-- `CanDisplayCharInfo(name)`
-- `CanDrawEntityHoverInfo(e, category)`
-- `CanInviteToClass(client, target)`
-- `CanInviteToFaction(client, target)`
-- `CanItemBeTransfered(item, inventory, VendorInventoryMeasure, client)`
-- `CanManageFilteredWords(client)`
-- `CanOpenBagPanel(item)`
-- `CanOutfitChangeModel(self)`
-- `CanPerformVendorEdit(self, vendor)`
-- `CanPersistEntity(entity)`
-- `CanPickupMoney(activator, self)`
-- `CanPlayerAccessDoor(client, self, access)`
-- `CanPlayerAccessVendor(client, vendor)`
-- `CanPlayerChooseWeapon(weapon)`
-- `CanPlayerCreateChar(client, data)`
-- `CanPlayerDropItem(client, item)`
-- `CanPlayerEarnSalary(client)`
-- `CanPlayerEquipItem(client, item)`
-- `CanPlayerHoldObject(client, entity)`
-- `CanPlayerInteractItem(client, action, self, data)`
-- `CanPlayerJoinClass(client, class, info)`
-- `CanPlayerKnock(arg1)`
-- `CanPlayerLock(client, door)`
-- `CanPlayerModifyConfig(client, key)`
-- `CanPlayerOpenScoreboard(arg1)`
-- `CanPlayerRespawn(client, timePassed, baseTime, lastDeath)`
-- `CanPlayerRotateItem(client, item)`
-- `CanPlayerSeeLogCategory(client, category)`
-- `CanPlayerSeeLogs(client)`
-- `CanPlayerSpawnStorage(client, entity, info)`
-- `CanPlayerSwitchChar(client, currentCharacter, newCharacter)`
-- `CanPlayerTakeItem(client, item)`
-- `CanPlayerThrowPunch(client)`
-- `CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVendor)`
-- `CanPlayerUnequipItem(client, item)`
-- `CanPlayerUnlock(client, door)`
-- `CanPlayerUseAmmoBox(activator, self)`
-- `CanPlayerUseChar(client, character)`
-- `CanPlayerUseCommand(client, command)`
-- `CanPlayerUseDoor(client, door)`
-- `CanPlayerViewInventory()`
-- `CanRunItemAction(tempItem, key)`
-- `CanSaveData(ent, inventory)`
-- `CanTakeEntity(client, targetEntity, itemUniqueID)`
-- `CharCleanUp(character)`
-- `CharDeleted(client, character)`
-- `CharForceRecognized(ply, range)`
-- `CharHasFlags(self, flags)`
-- `CharListColumns(columns)`
-- `CharListEntry(entry, row)`
-- `CharListExtraDetails(client, entry, stored)`
-- `CharListLoaded(newCharList)`
-- `CharListUpdated(oldCharList, newCharList)`
-- `CharLoaded(character)`
-- `CharMenuClosed()`
-- `CharMenuOpened(self)`
-- `CharPostSave(self)`
-- `CharPreSave(character)`
-- `CharRestored(character)`
-- `ChatAddText(text, ...)`
-- `ChatParsed(client, chatType, message, anonymous)`
-- `ChatboxPanelCreated(arg1)`
-- `ChatboxTextAdded(arg1)`
-- `CheckFactionLimitReached(faction, character, client)`
-- `ChooseCharacter(id)`
-- `CollectDoorDataFields(extras)`
-- `CommandAdded(command, data)`
-- `CommandRan(client, command, arg3, results)`
-- `ConfigChanged(key, value, oldValue, client)`
-- `ConfigureCharacterCreationSteps(self)`
-- `CreateCharacter(data)`
-- `CreateChatboxPanel()`
-- `CreateDefaultInventory(character)`
-- `CreateInformationButtons(pages)`
-- `CreateInventoryPanel(inventory, parent)`
-- `CreateLogsUI(panel, categories)`
-- `CreateMenuButtons(tabs)`
-- `CreateSalaryTimers()`
-- `CreateTicketFrame(requester, message, claimed)`
-- `DatabaseConnected()`
-- `DeleteCharacter(id)`
-- `DermaSkinChanged(newSkin)`
-- `DiscordRelaySend(embed)`
-- `DiscordRelayUnavailable()`
-- `DiscordRelayed(embed)`
-- `DisplayPlayerHUDInformation(client, hudInfos)`
-- `DoModuleIncludes(path, MODULE)`
-- `DoorDataReceived(door, syncData)`
-- `DoorEnabledToggled(client, door, newState)`
-- `DoorHiddenToggled(client, entity, newState)`
-- `DoorLockToggled(client, door, state)`
-- `DoorOwnableToggled(client, door, newState)`
-- `DoorPriceSet(client, door, price)`
-- `DoorTitleSet(client, door, name)`
-- `DrawCharInfo(client, character, info)`
-- `DrawEntityInfo(e, a, pos)`
-- `DrawItemEntityInfo(self, item, infoTable, alpha)`
-- `DrawLiliaModelView(client, entity)`
-- `DrawPlayerInfoBackground(e, panelX, panelY, panelWidth, panelHeight, a)`
-- `DrawPlayerRagdoll(entity)`
-- `F1MenuClosed()`
-- `F1MenuOpened(self)`
-- `FetchSpawns()`
-- `FilterCharModels(arg1)`
-- `FilterDoorInfo(entity, doorData, doorInfo)`
-- `ForceRecognizeRange(ply, range, fakeName)`
-- `FreelookToggled(arg1)`
-- `GetAdjustedPartData(wearer, id)`
-- `GetAdminESPTarget(ent, client)`
-- `GetAdminStickLists(tgt, lists)`
-- `GetAllCaseClaims()`
-- `GetAttributeMax(client, id)`
-- `GetAttributeStartingMax(client, attribute)`
-- `GetBotModel(client, faction)`
-- `GetCharMaxStamina(char)`
-- `GetCharacterCreateButtonTooltip(client, currentChars, maxChars)`
-- `GetCharacterCreationSummary(arg1)`
-- `GetCharacterDisconnectButtonTooltip(client)`
-- `GetCharacterDiscordButtonTooltip(client, discordURL)`
-- `GetCharacterLoadButtonTooltip(client)`
-- `GetCharacterLoadMainButtonTooltip(client)`
-- `GetCharacterMountButtonTooltip(client)`
-- `GetCharacterReturnButtonTooltip(client)`
-- `GetCharacterStaffButtonTooltip(client, hasStaffChar)`
-- `GetCharacterWorkshopButtonTooltip(client, workshopURL)`
-- `GetDamageScale(hitgroup, dmgInfo, damageScale)`
-- `GetDefaultCharDesc(client, arg2, data)`
-- `GetDefaultCharName(client, faction, data)`
-- `GetDefaultInventorySize(client, char)`
-- `GetDefaultInventoryType(character)`
-- `GetDisplayedDescription(client, isHUD)`
-- `GetDisplayedName(client, chatType)`
-- `GetDoorInfo(entity, doorData, doorInfo)`
-- `GetDoorInfoForAdminStick(target, extraInfo)`
-- `GetEntitySaveData(ent)`
-- `GetFilteredWords()`
-- `GetHandsAttackSpeed(arg1)`
-- `GetInjuredText(c)`
-- `GetInventoryMaxWeight(self, maxWeight)`
-- `GetItemDropModel(itemTable, self)`
-- `GetMainCharacterID()`
-- `GetMainMenuPosition(character)`
-- `GetMaxPlayerChar(client)`
-- `GetMaxStartingAttributePoints(client, default)`
-- `GetModelGender(model)`
-- `GetMoneyModel(arg1)`
-- `GetNPCDialogOptions(arg1)`
-- `GetOOCDelay(speaker)`
-- `GetPlayTime(self)`
-- `GetPlayerDeathSound(client, isFemale)`
-- `GetPlayerPainSound(client, paintype, isFemale)`
-- `GetPlayerPunchDamage(arg1)`
-- `GetPlayerPunchRagdollTime(arg1)`
-- `GetPlayerRespawnLocation(client, character)`
-- `GetPlayerSpawnLocation(client, character)`
-- `GetPrestigePayBonus(client, char, pay, charFaction, class)`
-- `GetPriceOverride(client, self, uniqueID, price, isSellingToVendor)`
-- `GetRagdollTime(self, time)`
-- `GetSalaryAmount(client, charFaction, class)`
-- `GetUsergroupIcon(groupName, groupData, groupOrPlayer)`
-- `GetWarnings(charID)`
-- `GetWeaponName(wep)`
-- `HandleItemTransferRequest(client, itemID, x, y, invID)`
-- `InitializeStorage(entity)`
-- `InitializedConfig()`
-- `InitializedItems()`
-- `InitializedKeybinds()`
-- `InitializedModules()`
-- `InitializedOptions()`
-- `InitializedSchema()`
-- `InteractionMenuClosed()`
-- `InteractionMenuOpened(frame)`
-- `InterceptClickItemIcon(self, itemIcon, keyCode)`
-- `InventoryClosed(self, inventory)`
-- `InventoryDataChanged(instance, key, oldValue, value)`
-- `InventoryDeleted(instance)`
-- `InventoryInitialized(instance)`
-- `InventoryItemAdded(inventory, item)`
-- `InventoryItemIconCreated(icon, item, self)`
-- `InventoryItemRemoved(self, instance, preserveItem)`
-- `InventoryOpened(panel, inventory)`
-- `InventoryPanelCreated(panel, inventory, parent)`
-- `IsCharFakeRecognized(character, id)`
-- `IsCharRecognized(a, arg2)`
-- `IsCharacterCreationOverridden()`
-- `IsRecognizedChatType(chatType)`
-- `IsSuitableForTrunk(ent)`
-- `ItemCombine(client, item, target)`
-- `ItemDataChanged(item, key, oldValue, newValue)`
-- `ItemDefaultFunctions(arg1)`
-- `ItemDeleted(instance)`
-- `ItemDraggedOutOfInventory(client, item)`
-- `ItemFunctionCalled(self, method, client, entity, results)`
-- `ItemInitialized(item)`
-- `ItemPaintOver(self, itemTable, w, h)`
-- `ItemQuantityChanged(item, oldValue, quantity)`
-- `ItemShowEntityMenu(entity)`
-- `ItemTransfered(context)`
-- `KeyLock(client, door, time)`
-- `KeyUnlock(client, door, time)`
-- `KickedFromChar(characterID, isCurrentChar)`
-- `LiliaLoaded()`
-- `LiliaModelPanelPostDrawModel(self, ent)`
-- `LiliaNoticeOverride(msg, ntype)`
-- `LoadCharInformation()`
-- `LoadData()`
-- `LoadMainCharacter()`
-- `LoadMainMenuInformation(info, character)`
-- `ModifyCharacterCreationSummary(arg1)`
-- `ModifyCharacterModel(arg1, arg2)`
-- `ModifyScoreboardModel(arg1, ply)`
-- `ModifyVoiceIndicatorText(client, voiceText, voiceType)`
-- `NetVarChanged(arg1, key, oldValue, value)`
-- `OnAdminStickMenuClosed()`
-- `OnAdminSystemLoaded(arg1, arg2)`
-- `OnAmmoBoxUsed(activator, self, weapon, ammoType, givenAmount)`
-- `OnCharAttribBoosted(client, self, attribID, boostID, arg5)`
-- `OnCharAttribUpdated(client, self, key, arg4)`
-- `OnCharCreated(client, character, originalData)`
-- `OnCharDelete(client, id)`
-- `OnCharDisconnect(client, character)`
-- `OnCharFallover(self, entity, arg3)`
-- `OnCharFlagsGiven(ply, self, addedFlags)`
-- `OnCharFlagsTaken(ply, self, removedFlags)`
-- `OnCharGetup(target, entity)`
-- `OnCharKick(self, client)`
-- `OnCharNetVarChanged(character, key, oldVar, value)`
-- `OnCharPermakilled(self, arg2)`
-- `OnCharRecognized(client, arg2)`
-- `OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, itemType, isFailed)`
-- `OnCharVarChanged(character, varName, oldVar, newVar)`
-- `OnCharacterCreationModelIconSet(icon, model, skin, bodyGroups)`
-- `OnChatReceived(client, chatType, text, anonymous)`
-- `OnCheaterCaught(client)`
-- `OnConfigUpdated(key, oldValue, newValue)`
-- `OnCreateDualInventoryPanels(panel1, panel2, inventory1, inventory2)`
-- `OnCreateItemInteractionMenu(self, menu, itemTable)`
-- `OnCreateStoragePanel(localInvPanel, storageInvPanel, storage)`
-- `OnDataSet(key, value, gamemode, map)`
-- `OnDatabaseLoaded()`
-- `OnDeathSoundPlayed(client, deathSound)`
-- `OnDialogNPCTypeSet(client, npc)`
-- `OnEntityLoaded(ent, data)`
-- `OnEntityPersistUpdated(ent, data)`
-- `OnEntityPersisted(ent, entData)`
-- `OnItemAdded(owner, item)`
-- `OnItemCreated(itemTable, self)`
-- `OnItemOverridden(item, overrides)`
-- `OnItemRegistered(ITEM)`
-- `OnItemSpawned(self)`
-- `OnLoadTables()`
-- `OnLocalVarSet(key, value)`
-- `OnLocalizationLoaded()`
-- `OnModelPanelSetup(self)`
-- `OnNPCTypeSet(client, npc, npcID, filteredData)`
-- `OnOOCMessageSent(client, message)`
-- `OnOpenVendorMenu(self, vendor)`
-- `OnPAC3PartTransfered(part)`
-- `OnPainSoundPlayed(entity, painSound)`
-- `OnPickupMoney(activator, self)`
-- `OnPlayerDroppedItem(client, spawnedItem)`
-- `OnPlayerInteractItem(client, action, self, result, data)`
-- `OnPlayerJoinClass(target, arg2, oldClass)`
-- `OnPlayerLostStackItem(itemTypeOrItem)`
-- `OnPlayerObserve(ply, enabled)`
-- `OnPlayerPurchaseDoor(client, door, arg3)`
-- `OnPlayerRotateItem(arg1, item, newRot)`
-- `OnPlayerSwitchClass(client, class, oldClass)`
-- `OnPlayerTakeItem(client, item)`
-- `OnPrivilegeRegistered(arg1, arg2, arg3, arg4)`
-- `OnPrivilegeUnregistered(arg1, arg2)`
-- `OnRequestItemTransfer(self, arg2)`
-- `OnRespawnKeyPressed(ply, key, left, baseTime, lastDeath)`
-- `OnSalaryAdjust(client)`
-- `OnSalaryGiven(client, char, pay, charFaction, class)`
-- `OnSavedItemLoaded(loadedItems)`
-- `OnServerLog(client, logType, logString, category)`
-- `OnSetUsergroup(sid, new, source, ply)`
-- `OnThemeChanged(themeName, useTransition)`
-- `OnTicketClaimed(client, requester, ticketMessage)`
-- `OnTicketClosed(client, requester, ticketMessage)`
-- `OnTicketCreated(client, message)`
-- `OnTransferred(target)`
-- `OnUsergroupCreated(groupName, arg2)`
-- `OnUsergroupPermissionsChanged(groupName, arg2)`
-- `OnUsergroupRemoved(groupName)`
-- `OnUsergroupRenamed(oldName, newName)`
-- `OnVendorEdited(client, vendor, key)`
-- `OnVoiceTypeChanged(client)`
-- `OnWeaponOverrideUpdated(className, key, value)`
-- `OnWeaponOverridesBulkSynced(overrides)`
-- `OnWeaponRuntimeOverrideUpdated(className, dotPath, value)`
-- `OnWeaponRuntimeOverridesBulkSynced(overrides)`
-- `OnlineStaffDataReceived(staffData)`
-- `OpenAdminStickUI(tgt)`
-- `OpenCharacterMenu()`
-- `OpenCharacterMenuOverride()`
-- `OptionAdded(key, name, option)`
-- `OptionChanged(key, old, value)`
-- `OptionReceived(arg1, key, value)`
-- `OverrideFactionDesc(uniqueID, arg2)`
-- `OverrideFactionModelCustomization(client, faction, context, skinAllowed, bodygroupsAllowed)`
-- `OverrideFactionModels(uniqueID, arg2)`
-- `OverrideFactionName(uniqueID, arg2)`
-- `OverrideSpawnTime(ply, baseTime)`
-- `OverrideVoiceHearingStatus(listener, speaker, arg3)`
-- `PaintItem(item)`
-- `PlayerAccessVendor(client, vendor)`
-- `PlayerBodyGroupChanged(client, oldVar, appliedGroups)`
-- `PlayerCheatDetected(client)`
-- `PlayerGagged(target, admin)`
-- `PlayerLiliaDataLoaded(client)`
-- `PlayerLoadedChar(client, character, currentChar)`
-- `PlayerMessageSend(speaker, chatType, text, anonymous, receivers)`
-- `PlayerModelChanged(client, newVar)`
-- `PlayerMuted(target, admin)`
-- `PlayerShouldPermaKill(client, inflictor, attacker)`
-- `PlayerSpawnPointSelected(client, pos, ang)`
-- `PlayerStaminaGained(client)`
-- `PlayerStaminaLost(client)`
-- `PlayerThrowPunch(client)`
-- `PlayerUngagged(target, admin)`
-- `PlayerUnmuted(target, admin)`
-- `PlayerUseDoor(client, door)`
-- `PopulateAdminStick(currentMenu, currentTarget, currentStores)`
-- `PopulateAdminTabs(pages)`
-- `PopulateConfigurationButtons(pages)`
-- `PopulateFactionRosterOptions(list, members)`
-- `PostBotSetup(client, character, inventory)`
-- `PostDoorDataLoad(ent, doorData)`
-- `PostDrawInventory(mainPanel, parentPanel)`
-- `PostLoadData()`
-- `PostLoadFonts(mainFont, mainFont)`
-- `PostPlayerInitialSpawn(client)`
-- `PostPlayerLoadedChar(client, character, currentChar)`
-- `PostPlayerLoadout(client)`
-- `PostPlayerSay(client, message, chatType, anonymous)`
-- `PostScaleDamage(hitgroup, dmgInfo, damageScale)`
-- `PreCharDelete(id)`
-- `PreDoorDataSave(door, doorData)`
-- `PreFreelookToggle(arg1)`
-- `PreLiliaLoaded()`
-- `PrePlayerInteractItem(client, action, self)`
-- `PrePlayerLoadedChar(client, character, currentChar)`
-- `PreSalaryGive(client, char, pay, charFaction, class)`
-- `PreScaleDamage(hitgroup, dmgInfo, damageScale)`
-- `ReadLogEntries(category, page)`
-- `RefreshFonts()`
-- `RemoveFilteredWord(word)`
-- `RemovePart(client, id)`
-- `RemoveWarning(charID, index)`
-- `ResetCharacterPanel()`
-- `RunAdminSystemCommand(cmd, admin, victim, dur, reason)`
 - `SAM.LoadedRanks()`
-- `SaveData()`
-- `ScoreboardClosed(self)`
-- `ScoreboardOpened(self)`
-- `ScoreboardRowCreated(slot, ply)`
-- `ScoreboardRowRemoved(self, ply)`
-- `SetMainCharacter(charID)`
-- `SetupBagInventoryAccessRules(inventory)`
-- `SetupBotPlayer(client)`
-- `SetupDatabase()`
-- `SetupPACDataFromItems()`
-- `SetupPlayerModel(client, self)`
-- `SetupQuickMenu(menu)`
-- `ShouldAllowScoreboardOverride(client, var)`
-- `ShouldBarDraw(bar)`
-- `ShouldDataBeSaved()`
-- `ShouldDeleteSavedItems()`
-- `ShouldDisableThirdperson(client)`
-- `ShouldDrawAmmo(wpn)`
-- `ShouldDrawCrosshair(client, wpn)`
-- `ShouldDrawEntityInfo(e)`
-- `ShouldDrawPlayerInfo(e)`
-- `ShouldDrawWepSelect(client)`
-- `ShouldEntityLoad(ent)`
-- `ShouldEntitySave(ent)`
-- `ShouldHideBars()`
-- `ShouldMenuButtonShow(arg1)`
-- `ShouldOverrideSalaryTimers()`
-- `ShouldPlayDeathSound(client, deathSound)`
-- `ShouldPlayPainSound(client, paintype)`
-- `ShouldRespawnScreenAppear(ply, left, baseTime, lastDeath)`
-- `ShouldSaveItem(itemTable, self)`
-- `ShouldShowCharVarInCreation(key)`
-- `ShouldShowClassOnScoreboard(clsData)`
-- `ShouldShowFactionOnScoreboard(ply)`
-- `ShouldShowPlayerOnScoreboard(ply)`
-- `ShouldShowQuickMenu()`
-- `ShouldSpawnClientRagdoll(client)`
-- `ShouldUseFreelook(owner)`
-- `ShouldUseMapSpawns(client, character, isRespawning)`
-- `ShowPlayerOptions(target, options)`
-- `StorageCanTransferItem(client, storage, item)`
-- `StorageEntityRemoved(self, inventory)`
-- `StorageInventorySet(entity, inventory, isCar)`
-- `StorageOpen(storage, isCar)`
-- `StorageRestored(ent, inventory)`
-- `StorageUnlockPrompt(entity)`
-- `StoreSpawns(spawns)`
-- `SuppressHint(hint)`
-- `SyncCharList(client)`
-- `SyncFilteredWords(targets)`
-- `ThirdPersonToggled(arg1)`
-- `TicketSystemClaim(client, requester, ticketMessage)`
-- `TicketSystemClose(client, requester, ticketMessage)`
-- `TooltipInitialize(var, panel)`
-- `TooltipLayout(var)`
-- `TooltipPaint(var, w, h)`
-- `TryViewModel(entity)`
-- `UpdateEntityPersistence(ent)`
-- `VendorClassUpdated(vendor, id, allowed)`
-- `VendorEdited(liaVendorEnt, key)`
-- `VendorExited()`
-- `VendorFactionBuyScaleUpdated(vendor, factionID, scale)`
-- `VendorFactionSellScaleUpdated(vendor, factionID, scale)`
-- `VendorFactionUpdated(vendor, id, allowed)`
-- `VendorItemBuyPriceUpdated(vendor, itemType, value)`
-- `VendorItemMaxStockUpdated(vendor, itemType, value)`
-- `VendorItemModeUpdated(vendor, itemType, value)`
-- `VendorItemSellPriceUpdated(vendor, itemType, value)`
-- `VendorItemStockUpdated(vendor, itemType, value)`
-- `VendorMessagesUpdated(vendor)`
-- `VendorOpened(vendor)`
-- `VendorPropertyUpdated(vendor, propertyName, propertyValue)`
-- `VendorSynchronized(vendor)`
-- `VendorTradeEvent(client, vendor, itemType, isSellingToVendor)`
-- `VerifyCheats()`
-- `VoiceToggled(enabled)`
-- `WarningIssued(client, target, reason, severity, count, warnerSteamID, arg7)`
-- `WarningRemoved(client, targetClient, arg3, arg4, arg5, arg6)`
-- `WeaponCycleSound()`
-- `WeaponSelectSound()`
-- `WebImageDownloaded(n, arg2)`
-- `WebSoundDownloaded(name, path)`
 
 ## Localization Analysis
 
-- **Unique Keys:** 3890
-- **Undefined Calls:** 16
+- **Unique Keys:** 3907
+- **Undefined Calls:** 3
 - **Argument Mismatch:** 0
 
 ### Undefined Calls
 
-- **exampleDesc** in core\libraries\commands.lua:135
-  - Context: desc = "@exampleDesc",
-- **exampleEnabled** in core\libraries\config.lua:226
-  - Context: lia.config.add("ExampleEnabled", "@exampleEnabled", true, nil, {
-- **exampleEnabledDesc** in core\libraries\config.lua:227
-  - Context: desc = "@exampleEnabledDesc",
-- **inspect** in core\libraries\derma.lua:102
-  - Context: inspect = {label = L("inspect"), callback = function() end}
-- **enterName** in core\libraries\derma.lua:3833
-  - Context: lia.derma.requestString(L("name"), L("enterName"), function(value) end, "", 32)
-- **chooseOptions** in core\libraries\derma.lua:3921
-  - Context: lia.derma.requestOptions(L("options"), L("chooseOptions"), options, function(selected) end)
-- **pickOne** in core\libraries\derma.lua:4157
-  - Context: lia.derma.requestButtons(L("choose"), {"A", "B"}, function(index, text) end, L("pickOne"))
-- **continue** in core\libraries\derma.lua:4256
+- **continue** in core\libraries\derma.lua:4277
   - Context: lia.derma.requestPopupQuestion(L("continue"), {{L("yes"), function() end}, L("no")})
-- **citizen** in core\libraries\factions.lua:129
-  - Context: name = "@citizen",
-- **citizenDesc** in core\libraries\factions.lua:130
-  - Context: desc = "@citizenDesc",
-- **toggleExampleDesc** in core\libraries\keybind.lua:190
-  - Context: desc = "@toggleExampleDesc",
-- **exampleOption** in core\libraries\option.lua:193
-  - Context: lia.option.add("exampleOption", "@exampleOption", "@exampleOptionDesc", true, nil, {
-- **exampleOptionDesc** in core\libraries\option.lua:193
-  - Context: lia.option.add("exampleOption", "@exampleOption", "@exampleOptionDesc", true, nil, {
-- **permRemoveSuccess** in modules\administration\submodules\permaremove\commands.lua:12
-  - Context: client:notifyLocalized("permRemoveSuccess")
-- **permRemoveInvalid** in modules\administration\submodules\permaremove\commands.lua:14
-  - Context: client:notifyLocalized("permRemoveInvalid")
-- **usedFilteredWord** in modules\chatbox\libraries\shared.lua:479
-  - Context: client:notifyLocalized("usedFilteredWord")
+- **invalidChar** in core\netcalls\server.lua:91
+  - Context: return false, L("invalidChar")
+- **charLoaded** in core\netcalls\server.lua:297
+  - Context: client:notifySuccessLocalized("charLoaded", character:getName())
 
 ### Argument Mismatches
 
@@ -1984,7 +1449,117 @@ These string literals are stored in localization-by-convention fields (e.g. `ITE
 
 ### Summary
 - **Languages Compared:** 6
-- **Total Missing Keys:** 0
+- **Total Missing Keys:** 85
+
+### French
+
+- **Missing Keys:**
+  - **From English:** 17 keys
+    - `chooseOptions()`
+    - `citizen()`
+    - `citizenDesc()`
+    - `enterName()`
+    - `exampleDesc()`
+    - `exampleEnabled()`
+    - `exampleEnabledDesc()`
+    - `exampleOption()`
+    - `exampleOptionDesc()`
+    - `inspect()`
+    - `permRemoveInvalid()`
+    - `permRemoveSuccess()`
+    - `pickOne()`
+    - `samImmutableBaseGroupGrantIgnored()`
+    - `samImmutableBaseGroupRevokeIgnored()`
+    - `toggleExampleDesc()`
+    - `usedFilteredWord()`
+
+### German
+
+- **Missing Keys:**
+  - **From English:** 17 keys
+    - `chooseOptions()`
+    - `citizen()`
+    - `citizenDesc()`
+    - `enterName()`
+    - `exampleDesc()`
+    - `exampleEnabled()`
+    - `exampleEnabledDesc()`
+    - `exampleOption()`
+    - `exampleOptionDesc()`
+    - `inspect()`
+    - `permRemoveInvalid()`
+    - `permRemoveSuccess()`
+    - `pickOne()`
+    - `samImmutableBaseGroupGrantIgnored()`
+    - `samImmutableBaseGroupRevokeIgnored()`
+    - `toggleExampleDesc()`
+    - `usedFilteredWord()`
+
+### Portuguese
+
+- **Missing Keys:**
+  - **From English:** 17 keys
+    - `chooseOptions()`
+    - `citizen()`
+    - `citizenDesc()`
+    - `enterName()`
+    - `exampleDesc()`
+    - `exampleEnabled()`
+    - `exampleEnabledDesc()`
+    - `exampleOption()`
+    - `exampleOptionDesc()`
+    - `inspect()`
+    - `permRemoveInvalid()`
+    - `permRemoveSuccess()`
+    - `pickOne()`
+    - `samImmutableBaseGroupGrantIgnored()`
+    - `samImmutableBaseGroupRevokeIgnored()`
+    - `toggleExampleDesc()`
+    - `usedFilteredWord()`
+
+### Russian
+
+- **Missing Keys:**
+  - **From English:** 17 keys
+    - `chooseOptions()`
+    - `citizen()`
+    - `citizenDesc()`
+    - `enterName()`
+    - `exampleDesc()`
+    - `exampleEnabled()`
+    - `exampleEnabledDesc()`
+    - `exampleOption()`
+    - `exampleOptionDesc()`
+    - `inspect()`
+    - `permRemoveInvalid()`
+    - `permRemoveSuccess()`
+    - `pickOne()`
+    - `samImmutableBaseGroupGrantIgnored()`
+    - `samImmutableBaseGroupRevokeIgnored()`
+    - `toggleExampleDesc()`
+    - `usedFilteredWord()`
+
+### Spanish
+
+- **Missing Keys:**
+  - **From English:** 17 keys
+    - `chooseOptions()`
+    - `citizen()`
+    - `citizenDesc()`
+    - `enterName()`
+    - `exampleDesc()`
+    - `exampleEnabled()`
+    - `exampleEnabledDesc()`
+    - `exampleOption()`
+    - `exampleOptionDesc()`
+    - `inspect()`
+    - `permRemoveInvalid()`
+    - `permRemoveSuccess()`
+    - `pickOne()`
+    - `samImmutableBaseGroupGrantIgnored()`
+    - `samImmutableBaseGroupRevokeIgnored()`
+    - `toggleExampleDesc()`
+    - `usedFilteredWord()`
 
 ## Net Message Analysis
 
@@ -2029,31 +1604,31 @@ Total suspicious patterns: **27**
   - Send sides: none
   - Receive sides: server
   - Sender sites: None
-  - Receiver sites: core/netcalls/server.lua:860
+  - Receiver sites: core/netcalls/server.lua:869
 - `liaDoorData`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
   - Receive sides: client
   - Sender sites: None
-  - Receiver sites: core/netcalls/client.lua:1416
+  - Receiver sites: core/netcalls/client.lua:1434
 - `liaItemData`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
   - Receive sides: client
   - Sender sites: None
-  - Receiver sites: core/netcalls/client.lua:546
+  - Receiver sites: core/netcalls/client.lua:564
 - `liaJobNpcCloseDialog`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
   - Receive sides: client
   - Sender sites: None
-  - Receiver sites: core/netcalls/client.lua:1585
+  - Receiver sites: core/netcalls/client.lua:1603
 - `liaKickCharacter`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
   - Receive sides: server
   - Sender sites: None
-  - Receiver sites: core/netcalls/server.lua:197
+  - Receiver sites: core/netcalls/server.lua:206
 - `liaMapEntities`
   - Reason: Message has senders but no detected receivers
   - Send sides: server
@@ -2065,13 +1640,13 @@ Total suspicious patterns: **27**
   - Send sides: none
   - Receive sides: client, server
   - Sender sites: None
-  - Receiver sites: core/netcalls/client.lua:1226; core/netcalls/server.lua:1105
+  - Receiver sites: core/netcalls/client.lua:1244; core/netcalls/server.lua:1114
 - `liaNPCWeaponChange`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
   - Receive sides: server
   - Sender sites: None
-  - Receiver sites: core/netcalls/server.lua:641
+  - Receiver sites: core/netcalls/server.lua:650
 - `liaPksCount`
   - Reason: Message has senders but no detected receivers
   - Send sides: server
@@ -2083,13 +1658,13 @@ Total suspicious patterns: **27**
   - Send sides: none
   - Receive sides: server
   - Sender sites: None
-  - Receiver sites: core/netcalls/server.lua:845
+  - Receiver sites: core/netcalls/server.lua:854
 - `liaProvideServerPassword`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
   - Receive sides: client
   - Sender sites: None
-  - Receiver sites: core/netcalls/client.lua:365
+  - Receiver sites: core/netcalls/client.lua:383
 - `liaRequestMapEntities`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
@@ -2125,19 +1700,19 @@ Total suspicious patterns: **27**
   - Send sides: none
   - Receive sides: server
   - Sender sites: None
-  - Receiver sites: core/netcalls/server.lua:907
+  - Receiver sites: core/netcalls/server.lua:916
 - `liaSeqSet`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
   - Receive sides: client
   - Sender sites: None
-  - Receiver sites: core/netcalls/client.lua:397
+  - Receiver sites: core/netcalls/client.lua:415
 - `liaSetWaypointWithLogo`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
   - Receive sides: client
   - Sender sites: None
-  - Receiver sites: core/netcalls/client.lua:8
+  - Receiver sites: core/netcalls/client.lua:26
 - `liaStorageTransfer`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
@@ -2200,21 +1775,21 @@ None
 | Panel | Module | Location |
 |---|---|---|
 | `liaAttribBar` | `framework` | `core/derma/panels/attribs.lua:124` |
-| `liaBlurredDFrame` | `framework` | `core/derma/panels/panels.lua:50` |
+| `liaBlurredDFrame` | `framework` | `core/derma/panels/panels.lua:51` |
 | `liaCategory` | `framework` | `core/derma/panels/category.lua:116` |
 | `liaCharacterAttribs` | `framework` | `core/derma/panels/attribs.lua:199` |
 | `liaCharacterAttribsRow` | `framework` | `core/derma/panels/attribs.lua:321` |
-| `liaCharacterCreation` | `framework` | `core/derma/mainmenu/creation.lua:392` |
-| `liaClasses` | `framework` | `core/derma/panels/f1menu.lua:978` |
+| `liaCharacterCreation` | `framework` | `core/derma/mainmenu/creation.lua:394` |
+| `liaClasses` | `framework` | `core/derma/panels/f1menu.lua:987` |
 | `liaHeaderPanel` | `framework` | `core/derma/panels/headerpanel.lua:22` |
 | `liaHorizontalScroll` | `framework` | `core/derma/panels/horizontal_scroll.lua:70` |
 | `liaHorizontalScrollBar` | `framework` | `core/derma/panels/horizontal_scroll.lua:128` |
 | `liaItemList` | `framework` | `core/derma/panels/genericitemlist.lua:63` |
 | `liaItemSelector` | `framework` | `core/derma/panels/genericitemlist.lua:150` |
 | `liaMarkupPanel` | `framework` | `core/libraries/thirdparty/cl_markup.lua:540` |
-| `liaModelPanel` | `framework` | `core/derma/panels/modelpanel.lua:90` |
+| `liaModelPanel` | `framework` | `core/derma/panels/modelpanel.lua:92` |
 | `liaPrivilegeRow` | `framework` | `core/derma/panels/privilege_row.lua:101` |
-| `liaSemiTransparentDFrame` | `framework` | `core/derma/panels/panels.lua:69` |
+| `liaSemiTransparentDFrame` | `framework` | `core/derma/panels/panels.lua:70` |
 | `liaSimpleCheckbox` | `framework` | `core/derma/panels/checkbox.lua:176` |
 | `liaSlider` | `framework` | `core/derma/panels/slider.lua:179` |
 | `liaTable` | `framework` | `core/derma/panels/table.lua:633` |
@@ -2242,20 +1817,20 @@ None
 
 | Module | Location | Expected Folder | Reason |
 |---|---|---|---|
-| `mainmenu` | `modules/mainmenu/module.lua:50` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\mainmenu\netcalls` | Module net handler is outside the netcalls folder |
-| `mainmenu` | `modules/mainmenu/module.lua:93` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\mainmenu\netcalls` | Module net handler is outside the netcalls folder |
+| `mainmenu` | `modules/mainmenu/module.lua:64` | `C:\Users\Administrator\Documents\GitHub\Lilia\gamemode\modules\mainmenu\netcalls` | Module net handler is outside the netcalls folder |
+| `mainmenu` | `modules/mainmenu/module.lua:107` | `C:\Users\Administrator\Documents\GitHub\Lilia\gamemode\modules\mainmenu\netcalls` | Module net handler is outside the netcalls folder |
 
 ### UI / Derma Code Outside derma
 
 | Module | Location | Expected Folder | Reason |
 |---|---|---|---|
-| `administration` | `modules/administration/entities/weapons/lia_mapconfigurer/cl_init.lua:146` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
-| `administration` | `modules/administration/libraries/client.lua:581` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
-| `administration` | `modules/administration/netcalls/client.lua:91` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
-| `adminstick` | `modules/administration/submodules/adminstick/libraries/client.lua:427` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\submodules\adminstick\derma` | Module UI-heavy code is outside the derma folder |
-| `protection` | `modules/protection/libraries/client.lua:3166` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\protection\derma` | Module UI-heavy code is outside the derma folder |
-| `storage` | `modules/inventory/types/gridinv/submodules/storage/libraries/client.lua:89` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\inventory\types\gridinv\submodules\storage\derma` | Module UI-heavy code is outside the derma folder |
-| `tickets` | `modules/administration/submodules/tickets/libraries/client.lua:42` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\submodules\tickets\derma` | Module UI-heavy code is outside the derma folder |
+| `administration` | `modules/administration/entities/weapons/lia_mapconfigurer/cl_init.lua:146` | `C:\Users\Administrator\Documents\GitHub\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
+| `administration` | `modules/administration/libraries/client.lua:582` | `C:\Users\Administrator\Documents\GitHub\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
+| `administration` | `modules/administration/netcalls/client.lua:92` | `C:\Users\Administrator\Documents\GitHub\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
+| `adminstick` | `modules/administration/submodules/adminstick/libraries/client.lua:433` | `C:\Users\Administrator\Documents\GitHub\Lilia\gamemode\modules\administration\submodules\adminstick\derma` | Module UI-heavy code is outside the derma folder |
+| `protection` | `modules/protection/libraries/client.lua:3166` | `C:\Users\Administrator\Documents\GitHub\Lilia\gamemode\modules\protection\derma` | Module UI-heavy code is outside the derma folder |
+| `storage` | `modules/inventory/types/gridinv/submodules/storage/libraries/client.lua:89` | `C:\Users\Administrator\Documents\GitHub\Lilia\gamemode\modules\inventory\types\gridinv\submodules\storage\derma` | Module UI-heavy code is outside the derma folder |
+| `tickets` | `modules/administration/submodules/tickets/libraries/client.lua:42` | `C:\Users\Administrator\Documents\GitHub\Lilia\gamemode\modules\administration\submodules\tickets\derma` | Module UI-heavy code is outside the derma folder |
 
 ---
 

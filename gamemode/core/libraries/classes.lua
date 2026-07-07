@@ -31,6 +31,15 @@
         classData (table)
             The registered class data for the class being checked.
 
+    Example Usage:
+        ```lua
+        hook.Add("CanPlayerJoinClass", "liaExampleCanPlayerJoinClass", function(client, class, classData)
+            if IsValid(client) and client:IsAdmin() then
+                return true
+            end
+        end)
+        ```
+
     Returns:
         boolean|nil
             Return false to prevent the player from joining the class. Return nil or any non-false value to continue normal class validation.

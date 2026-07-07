@@ -28,6 +28,13 @@
         fontName (string)
             The second font argument passed by this library. It currently receives the same value as `mainFont`.
 
+    Example Usage:
+        ```lua
+        hook.Add("PostLoadFonts", "liaExamplePostLoadFonts", function(mainFont, fontName)
+            print("[MyModule] handled PostLoadFonts")
+        end)
+        ```
+
     Realm:
         Shared
 ]]
@@ -40,6 +47,13 @@
 
     Category:
         Fonts
+
+    Example Usage:
+        ```lua
+        hook.Add("RefreshFonts", "liaExampleRefreshFonts", function()
+            print("[MyModule] handled RefreshFonts")
+        end)
+        ```
 
     Realm:
         Client
@@ -397,8 +411,8 @@ if CLIENT then
     local oldSurfaceSetFont = surface.SetFont
     function surface.SetFont(font)
         if isstring(font) and not lia.font.stored[font] and #font <= 63 then
-            local mainFont = lia.config and lia.config.get("Font", "Montserrat Medium") or "Montserrat Medium"
-            local hudFont = lia.config and lia.config.get("HUDFont", "Montserrat Medium") or "Montserrat Medium"
+            local mainFont = lia.config.get("Font", "Montserrat Medium") or "Montserrat Medium"
+            local hudFont = lia.config.get("HUDFont", "Montserrat Medium") or "Montserrat Medium"
             local fontData = {
                 font = font,
                 size = 16,

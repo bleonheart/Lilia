@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Folder: Developer - Libraries
     File: lia.view.md
 ]]
@@ -10,6 +10,66 @@
 --[[
     Overview:
         The view library centralizes world-space preview behavior under `lia.view`. It can start and stop a preview session for a panel owner, spawn and manage a clientside model, rotate that model, expose the active preview entity, and temporarily hide players or entities while the preview is active.
+]]
+--[[
+    Hooks:
+        SetupPlayerModel(Entity entity, Character|nil character)
+
+    Purpose:
+        Allows code to configure a clientside player preview model after it is spawned but before character-specific appearance tweaks are applied.
+
+    Category:
+        Main Menu
+
+    Parameters:
+        entity (Entity)
+            The clientside model entity being prepared for preview.
+
+        character (Character|nil)
+            An optional loaded character when the preview is built from character selection data.
+
+    Example Usage:
+        ```lua
+        hook.Add("SetupPlayerModel", "liaExampleSetupPlayerModel", function(entity, character)
+            entity:SetCycle(0)
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ModifyCharacterModel(Entity entity, table|Character|nil contextOrCharacter)
+
+    Purpose:
+        Allows code to adjust a preview model after its base model, skin, and bodygroups have been applied for character creation or character selection scenes.
+
+    Category:
+        Main Menu
+
+    Parameters:
+        entity (Entity)
+            The clientside model entity being displayed.
+
+        contextOrCharacter (table|Character|nil)
+            Either the creation context table, the loaded character being previewed, or nil when no extra context is supplied.
+
+    Example Usage:
+        ```lua
+        hook.Add("ModifyCharacterModel", "liaExampleModifyCharacterModel", function(entity, contextOrCharacter)
+            entity:SetAngles(Angle(0, 180, 0))
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
 ]]
 lia.view = lia.view or {}
 local function getPreviewAngle(client)
@@ -91,6 +151,14 @@ end
         player (Player)
             The player being considered for drawing.
 
+    Example Usage:
+        ```lua
+        local previewOwner = lia.view.activeOwner
+        if IsValid(previewOwner) and lia.view.shouldHidePlayer(LocalPlayer()) then
+            chat.AddText(Color(255, 200, 0), "The active preview is hiding the local player.")
+        end
+        ```
+
     Returns:
         boolean
             True when the player is part of the active preview's hidden player set.
@@ -113,6 +181,13 @@ end
     Parameters:
         owner (Panel)
             The panel or owner object that started the preview session.
+
+    Example Usage:
+        ```lua
+        local panel = vgui.Create("EditablePanel")
+        lia.view.begin(panel, {hideEntities = {LocalPlayer()}})
+        lia.view.close(panel)
+        ```
 
     Realm:
         Client
@@ -160,6 +235,16 @@ end
             The panel or owner object that controls the preview lifecycle.
         config (table)
             Preview configuration such as hidden entities, camera offsets, preview position, and context data.
+
+    Example Usage:
+        ```lua
+        local panel = vgui.Create("EditablePanel")
+        lia.view.begin(panel, {
+            hideEntities = {LocalPlayer()},
+            position = LocalPlayer():GetPos() + Vector(64, 0, 8),
+            angle = Angle(0, LocalPlayer():EyeAngles().y + 180, 0)
+        })
+        ```
 
     Realm:
         Client
@@ -281,6 +366,16 @@ end
         options (table)
             Appearance and context options such as skin, bodygroups, angle, position, and hidden entities.
 
+    Example Usage:
+        ```lua
+        local panel = vgui.Create("EditablePanel")
+        lia.view.setModel(panel, LocalPlayer():GetModel(), {
+            position = LocalPlayer():GetPos() + Vector(64, 0, 8),
+            bodygroups = {[1] = 0}
+        })
+        lia.view.rotate(panel, 30)
+        ```
+
     Realm:
         Client
 ]]
@@ -319,6 +414,16 @@ end
         owner (Panel)
             The panel or owner object that owns the preview session.
 
+    Example Usage:
+        ```lua
+        local panel = vgui.Create("EditablePanel")
+        local previewEntity = lia.view.getEntity(panel)
+        if IsValid(previewEntity) then
+            previewEntity:SetSkin(1)
+            previewEntity:SetCycle(0)
+        end
+        ```
+
     Returns:
         Entity|nil
             The active clientside preview model, or nil when no preview is active.
@@ -342,6 +447,13 @@ end
             The panel or owner object that owns the preview session.
         deltaYaw (number)
             The yaw delta to apply in degrees.
+
+    Example Usage:
+        ```lua
+        local panel = vgui.Create("EditablePanel")
+        lia.view.rotate(panel, 15)
+        lia.view.rotate(panel, 15)
+        ```
 
     Realm:
         Client

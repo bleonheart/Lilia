@@ -30,6 +30,7 @@ function MODULE:CreateMenuButtons(tabs)
     if #joinable >= 1 then
         tabs["classes"] = {
             name = "classes",
+            icon = "icon16/group.png",
             func = function(panel) panel:Add("liaClasses") end
         }
     end
@@ -41,6 +42,7 @@ function MODULE:CreateMenuButtons(tabs)
     if character:hasFlags("F") then
         tabs["factionRoster"] = {
             name = "factionRoster",
+            icon = "icon16/group_go.png",
             func = function(panel)
                 panel:Clear()
                 panel:DockPadding(6, 6, 6, 6)

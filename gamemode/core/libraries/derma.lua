@@ -25,6 +25,14 @@
         panel (Panel)
             The menu or tooltip panel that was opened.
 
+    Example Usage:
+        ```lua
+        hook.Add("InteractionMenuOpened", "liaExampleInteractionMenuOpened", function(panel)
+            if not IsValid(panel) then return end
+            panel:SetTooltip("InteractionMenuOpened handled by MyModule")
+        end)
+        ```
+
     Realm:
         Client
 ]]
@@ -37,6 +45,13 @@
 
     Category:
         Derma
+
+    Example Usage:
+        ```lua
+        hook.Add("InteractionMenuClosed", "liaExampleInteractionMenuClosed", function()
+            print("[MyModule] handled InteractionMenuClosed")
+        end)
+        ```
 
     Realm:
         Client
@@ -195,7 +210,7 @@ function lia.derma.optionsMenu(rawOptions, config)
 
     if #visible == 0 then return end
     local optionsList
-    if mode ~= "custom" and lia.playerinteract and lia.playerinteract.getCategorizedOptions then
+    if mode ~= "custom" then
         optionsList = lia.playerinteract.getCategorizedOptions(visible)
     else
         optionsList = visible
@@ -421,7 +436,7 @@ function lia.derma.interactionTooltip(rawOptions, config)
     if mode ~= "interaction" and mode ~= "action" then mode = "custom" end
     local client = LocalPlayer()
     if not IsValid(client) then return end
-    local ent = config.entity       
+    local ent = config.entity
     if ent == nil and (mode ~= "custom" or config.resolveEntity ~= false) then
         if isfunction(client.getTracedEntity) then
             ent = client:getTracedEntity()
@@ -497,7 +512,7 @@ function lia.derma.interactionTooltip(rawOptions, config)
 
     if #visible == 0 then return end
     local optionsList
-    if mode ~= "custom" and lia.playerinteract and lia.playerinteract.getCategorizedOptions then
+    if mode ~= "custom" then
         optionsList = lia.playerinteract.getCategorizedOptions(visible)
     else
         optionsList = visible

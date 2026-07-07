@@ -2138,11 +2138,13 @@ class FunctionComparisonReportGenerator:
                 # Extract function names from headers like ### lia.util.functionName
                 for match in re.finditer(r'^###+\s+([A-Za-z_][\w\.:]*)\s*$', content, re.MULTILINE):
                     func_name = match.group(1).strip()
-                    documented_functions.add(func_name)
+                    if '.' in func_name or md_file.stem == 'lia.core':
+                        documented_functions.add(func_name if '.' in func_name else f'lia.{func_name}')
                 # Extract function names from HTML summary tags like <summary><a id=...></a>lia.admin.addPermission(...)</summary>
                 for match in re.finditer(r'<summary><a[^>]*></a>([A-Za-z_][\w\.:]+)\([^)]*\)</summary>', content):
                     func_name = match.group(1).strip()
-                    documented_functions.add(func_name)
+                    if '.' in func_name or md_file.stem == 'lia.core':
+                        documented_functions.add(func_name if '.' in func_name else f'lia.{func_name}')
             except Exception:
                 continue
 
@@ -2250,7 +2252,47 @@ class FunctionComparisonReportGenerator:
             except Exception as e:
                 print(f"Warning: Could not read hooks from {md_file}: {e}")
                 continue
+
+        # Some hooks are intentionally documented within library pages rather than
+        # the dedicated hooks directory. Include bare hook-style entries from
+        # those pages so they are not reported as undocumented.
+        for library_dir in (
+            self.docs_path / "docs" / "developer" / "libraries",
+            self.docs_path / "docs" / "development" / "libraries",
+            self.docs_path / "docs" / "libraries",
+        ):
+            if not library_dir.exists():
+                continue
+
+            for md_file in library_dir.glob("*.md"):
+                try:
+                    documented_hooks.update(self._read_library_documented_hooks(md_file))
+                except Exception as e:
+                    print(f"Warning: Could not read library hooks from {md_file}: {e}")
+                    continue
         
+        return documented_hooks
+
+    def _read_library_documented_hooks(self, file_path: Path) -> Set[str]:
+        """Extract hook names documented inside library pages."""
+        documented_hooks: Set[str] = set()
+
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+
+        # Hook summaries in library pages use bare names like:
+        # <summary>...>WebImageDownloaded(name, path)</summary>
+        for match in re.finditer(r'<summary\b[^>]*>.*?([A-Z][A-Za-z0-9_]+)\([^)]*\)</summary>', content, re.DOTALL):
+            hook_name = match.group(1).strip()
+            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST:
+                documented_hooks.add(hook_name)
+
+        # Example usages often include hook.Add("HookName", ...) lines.
+        for match in re.finditer(r'hook\.Add\s*\(\s*["\']([^"\']+)["\']', content):
+            hook_name = match.group(1).strip()
+            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST:
+                documented_hooks.add(hook_name)
+
         return documented_hooks
 
     def _remove_lua_comments(self, content: str) -> str:

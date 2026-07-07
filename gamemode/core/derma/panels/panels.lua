@@ -1,4 +1,33 @@
-﻿local cacheKeys, cache, len = {}, {}, 0
+﻿--[[
+    Hooks:
+        SetupQuickMenu(Panel menu)
+
+    Purpose:
+        Allows modules to populate the quick settings menu before it is sized and shown.
+
+    Category:
+        UI
+
+    Parameters:
+        menu (Panel)
+            The quick menu panel instance that exposes helper methods like `addButton`, `addCheck`, and `addSpacer`.
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        hook.Add("SetupQuickMenu", "liaExampleSetupQuickMenu", function(menu)
+            menu:addButton("Example Action", function()
+                LocalPlayer():ChatPrint("Example clicked.")
+            end, "Runs an example quick action.")
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+local cacheKeys, cache, len = {}, {}, 0
 local function PaintPanel(_, w, h)
     local radius = 6
     local shadowIntensity = 8
@@ -14,7 +43,7 @@ local function PaintFrame(pnl, w, h)
             btn:SetPos(w - 26, 4)
             btn:SetSize(24, 24)
             btn:SetFont("Marlett")
-            btn:SetText("✕")
+            btn:SetText("âœ•")
             btn:SetTextColor(Color(255, 255, 255))
             btn:PerformLayout()
         end
@@ -399,7 +428,7 @@ function QuickPanel:populateOptions()
     end
 
     table.sort(sortedCategories, function(a, b)
-        local localize = lia.option and lia.option.localizeValue or L
+        local localize = lia.option.localizeValue or L
         local unsorted = localize("unsorted")
         local aName = localize(a)
         local bName = localize(b)
@@ -426,7 +455,7 @@ function QuickPanel:populateOptions()
                 local typeA = getTypeOrder(a.opt.type)
                 local typeB = getTypeOrder(b.opt.type)
                 if typeA ~= typeB then return typeA < typeB end
-                local getName = lia.option and lia.option.getDisplayName
+                local getName = lia.option.getDisplayName
                 local nameA = getName and getName(a.key) or a.opt.name or a.key
                 local nameB = getName and getName(b.key) or b.opt.name or b.key
                 return tostring(nameA):lower() < tostring(nameB):lower()
@@ -443,7 +472,7 @@ function QuickPanel:populateOptions()
                 end
             end
 
-            local localize = lia.option and lia.option.localizeValue or L
+            local localize = lia.option.localizeValue or L
             local categoryHeader = self:addCategoryHeader(localize(categoryName), categoryColor)
             if categoryHeader then self.optionsCache[#self.optionsCache + 1] = categoryHeader end
             for j, info in ipairs(categoryOptions) do
@@ -451,8 +480,8 @@ function QuickPanel:populateOptions()
                 local opt = info.opt
                 local data = opt.data or {}
                 local val = lia.option.get(key, opt.default)
-                local getName = lia.option and lia.option.getDisplayName
-                local getDesc = lia.option and lia.option.getDisplayDesc
+                local getName = lia.option.getDisplayName
+                local getDesc = lia.option.getDisplayDesc
                 local displayName = getName and getName(key) or opt.name or key
                 local description = getDesc and getDesc(key) or opt.description or opt.desc
                 local item
@@ -472,3 +501,72 @@ function QuickPanel:populateOptions()
 end
 
 vgui.Register("liaQuick", QuickPanel, "liaFrame")
+local function drawcirclepoly(w, h)
+    local poly = {}
+    local x, y = w / 2, h / 2
+    for angle = 1, 360 do
+        local rad = math.rad(angle)
+        local cos = math.cos(rad) * y
+        local sin = math.sin(rad) * y
+        poly[#poly + 1] = {
+            x = x + cos,
+            y = y + sin
+        }
+    end
+    return poly
+end
+
+local PANEL = {}
+function PANEL:Init()
+    self.base = vgui.Create("AvatarImage", self)
+    self.base:Dock(FILL)
+    self.base:SetPaintedManually(true)
+end
+
+function PANEL:GetBase()
+    return self.base
+end
+
+function PANEL:PushMask(mask)
+    render.ClearStencil()
+    render.SetStencilEnable(true)
+    render.SetStencilWriteMask(1)
+    render.SetStencilTestMask(1)
+    render.SetStencilFailOperation(STENCILOPERATION_REPLACE)
+    render.SetStencilPassOperation(STENCILOPERATION_ZERO)
+    render.SetStencilZFailOperation(STENCILOPERATION_ZERO)
+    render.SetStencilCompareFunction(STENCILCOMPARISONFUNCTION_NEVER)
+    render.SetStencilReferenceValue(1)
+    mask()
+    render.SetStencilFailOperation(STENCILOPERATION_ZERO)
+    render.SetStencilPassOperation(STENCILOPERATION_REPLACE)
+    render.SetStencilZFailOperation(STENCILOPERATION_ZERO)
+    render.SetStencilCompareFunction(STENCILCOMPARISONFUNCTION_EQUAL)
+    render.SetStencilReferenceValue(1)
+end
+
+function PANEL:PopMask()
+    render.SetStencilEnable(false)
+    render.ClearStencil()
+end
+
+function PANEL:OnSizeChanged(w, h)
+    self.poly = drawcirclepoly(w, h)
+end
+
+function PANEL:Paint(w, h)
+    self:PushMask(function()
+        draw.NoTexture()
+        surface.SetDrawColor(255, 255, 255)
+        surface.DrawPoly(self.poly)
+    end)
+
+    self.base:PaintManual()
+    self:PopMask()
+end
+
+function PANEL:SetPlayer(pl, size)
+    self.base:SetPlayer(pl, size)
+end
+
+vgui.Register("CircularAvatar", PANEL)

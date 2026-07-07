@@ -1,5 +1,38 @@
 ﻿--[[
     Hooks:
+        CreateLogsUI(panel, categories)
+
+    Purpose:
+        Builds or refreshes the clientside log viewer interface for the admin panel.
+
+    Category:
+        Administration - Logs
+
+    Parameters:
+        panel (Panel)
+            The parent panel that should contain the logs UI.
+
+        categories (table)
+            The ordered list of translated log categories to show as tabs.
+
+    Example Usage:
+        ```lua
+        hook.Add("CreateLogsUI", "liaExampleCreateLogsUI", function(panel, categories)
+            categories[#categories + 1] = {
+                category = "custom",
+                name = "Custom Logs"
+            }
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
         OnServerLog(Player client, string logType, string logString, string category)
 
     Purpose:
@@ -21,6 +54,14 @@
         category (string)
             The translated category name assigned to the log entry.
 
+    Example Usage:
+        ```lua
+        hook.Add("OnServerLog", "liaExampleOnServerLog", function(client, logType, logString, category)
+            if not IsValid(client) or logString == "" then return end
+            print(string.format("[MyModule] %s: %s", client:Name(), logString))
+        end)
+        ```
+
     Returns:
         nil
 
@@ -40,6 +81,13 @@
     Parameters:
         client (Player)
             The player whose log-viewing permission should be checked.
+
+    Example Usage:
+        ```lua
+        hook.Add("CanPlayerSeeLogs", "liaExampleCanPlayerSeeLogs", function(client)
+            return true
+        end)
+        ```
 
     Returns:
         boolean
@@ -65,12 +113,52 @@
         category (string)
             The translated log category name being evaluated.
 
+    Example Usage:
+        ```lua
+        hook.Add("CanPlayerSeeLogCategory", "liaExampleCanPlayerSeeLogCategory", function(client, category)
+            if IsValid(client) and client:IsAdmin() then
+                return true
+            end
+        end)
+        ```
+
     Returns:
         boolean|nil
             Return false to hide the category from the player.
 
     Realm:
-        Client / Server
+        Shared
+]]
+--[[
+    Hooks:
+        ReadLogEntries(category, page)
+
+    Purpose:
+        Loads a page of stored log rows for a translated log category.
+
+    Category:
+        Administration - Logs
+
+    Parameters:
+        category (string)
+            The translated log category to read from storage.
+
+        page (number)
+            The one-based page number to fetch.
+
+    Example Usage:
+        ```lua
+        hook.Add("ReadLogEntries", "liaExampleReadLogEntries", function(category, page)
+            print("[MyModule] handled ReadLogEntries")
+        end)
+        ```
+
+    Returns:
+        Deferred
+            Resolves with a table containing the page of log rows and pagination metadata.
+
+    Realm:
+        Server
 ]]
 MODULE.Name = "@logs"
 MODULE.author = "Samael"

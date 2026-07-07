@@ -28,6 +28,13 @@
         option (table)
             The stored option data table created for the key.
 
+    Example Usage:
+        ```lua
+        hook.Add("OptionAdded", "liaExampleOptionAdded", function(key, option)
+            print("[MyModule] handled OptionAdded")
+        end)
+        ```
+
     Realm:
         Shared
 ]]
@@ -50,6 +57,13 @@
 
         newValue (any)
             The value after the change.
+
+    Example Usage:
+        ```lua
+        hook.Add("OptionChanged", "liaExampleOptionChanged", function(key, oldValue, newValue)
+            print("[MyModule] handled OptionChanged")
+        end)
+        ```
 
     Realm:
         Shared
@@ -74,6 +88,14 @@
         value (any)
             The networked option value.
 
+    Example Usage:
+        ```lua
+        hook.Add("OptionReceived", "liaExampleOptionReceived", function(client, key, value)
+            if not IsValid(client) then return end
+            print(string.format("[MyModule] handled OptionReceived for %s", client:Name()))
+        end)
+        ```
+
     Realm:
         Server
 ]]
@@ -87,25 +109,15 @@
     Category:
         Options
 
+    Example Usage:
+        ```lua
+        hook.Add("InitializedOptions", "liaExampleInitializedOptions", function()
+            print("[MyModule] handled InitializedOptions")
+        end)
+        ```
+
     Realm:
         Shared
-]]
---[[
-    Hooks:
-        ThirdPersonToggled(boolean enabled)
-
-    Purpose:
-        Runs when the `thirdPersonEnabled` option changes.
-
-    Category:
-        Options
-
-    Parameters:
-        enabled (boolean)
-            True when third-person view was enabled, false when it was disabled.
-
-    Realm:
-        Client
 ]]
 lia.option = lia.option or {}
 lia.option.stored = lia.option.stored or {}
@@ -501,25 +513,21 @@ end
 function lia.option.load()
     local path = "lilia/options.json"
     local data = file.Read(path, "DATA")
-    if data then
-        local saved = util.JSONToTable(data)
-        if saved then
-            for k, v in pairs(saved) do
-                if lia.option.stored[k] then lia.option.stored[k].value = v end
-            end
+    local saved = data and util.JSONToTable(data) or nil
+    for _, option in pairs(lia.option.stored) do
+        option.value = option.default
+    end
+
+    if istable(saved) then
+        for k, v in pairs(saved) do
+            if lia.option.stored[k] then lia.option.stored[k].value = v end
         end
     else
-        for _, option in pairs(lia.option.stored) do
-            if option.default ~= nil then option.value = option.default end
-        end
+        lia.option.save()
+    end
 
-        local out = {}
-        for k, v in pairs(lia.option.stored) do
-            if v.value ~= nil then out[k] = v.value end
-        end
-
-        local json = util.TableToJSON(out, true)
-        if json then file.Write(path, json) end
+    for _, option in pairs(lia.option.stored) do
+        if option.callback then option.callback(option.value, option.value) end
     end
 
     hook.Run("InitializedOptions")
@@ -575,14 +583,34 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
         local description = lia.option.getDisplayDesc(key)
         SetStyledTooltip(p, description)
         local l = p:Add("DLabel")
-        l:Dock(LEFT)
-        l:DockMargin(15, 0, 0, 0)
-        l:SetWidth(250)
+        l:Dock(FILL)
+        l:DockMargin(15, 8, 15, 8)
         l:SetText(name)
         l:SetFont("LiliaFont.18")
         l:SetTextColor(lia.color.theme.text or color_white)
-        l:SetContentAlignment(4)
+        l:SetWrap(true)
+        l:SetAutoStretchVertical(true)
+        l:SetContentAlignment(7)
         SetStyledTooltip(l, description)
+        local control
+        local function updateRowHeight()
+            if not IsValid(p) or not IsValid(l) then return end
+            local minHeight = 45
+            local labelHeight = select(2, l:GetContentSize())
+            local controlHeight = IsValid(control) and control:GetTall() + 16 or minHeight
+            p:SetTall(math.max(minHeight, labelHeight + 16, controlHeight))
+        end
+
+        p.PerformLayout = function(_, w, h)
+            if IsValid(l) then
+                local controlWidth = IsValid(control) and control:GetWide() + 30 or 30
+                l:SetWide(math.max(120, w - controlWidth))
+                l:InvalidateLayout(true)
+            end
+
+            updateRowHeight()
+        end
+
         local optionType = option.type or "Generic"
         if optionType == "Boolean" then
             local checkbox = p:Add("liaCheckbox")
@@ -592,6 +620,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             checkbox:SetChecked(lia.option.get(key, option.value))
             SetStyledTooltip(checkbox, description)
             checkbox.OnChange = function(s, val) lia.option.set(key, val) end
+            control = checkbox
         elseif optionType == "Int" or optionType == "Float" or optionType == "Number" or optionType == "Generic" then
             local entry = p:Add("liaEntry")
             entry:Dock(RIGHT)
@@ -612,6 +641,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                     entry:SetValue(tostring(lia.option.get(key, option.value)))
                 end
             end
+            control = entry
         elseif optionType == "Color" then
             local button = p:Add("liaButton")
             button:Dock(RIGHT)
@@ -636,6 +666,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                 if not IsColor(c) and istable(c) then c = Color(c.r, c.g, c.b, c.a) end
                 lia.derma.requestColorPicker(function(color) lia.option.set(key, color) end, c)
             end
+            control = button
         elseif optionType == "Table" then
             local combo = p:Add("liaComboBox")
             combo:Dock(RIGHT)
@@ -651,7 +682,10 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             end
 
             combo.OnSelect = function(_, _, v) lia.option.set(key, v) end
+            control = combo
         end
+
+        timer.Simple(0, function() if IsValid(p) then p:InvalidateLayout(true) end end)
     end
 
     pages[#pages + 1] = {

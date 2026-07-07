@@ -28,6 +28,13 @@
         path (string)
             The local `data/` path for the cached sound file.
 
+    Example Usage:
+        ```lua
+        hook.Add("WebSoundDownloaded", "liaExampleWebSoundDownloaded", function(name, path)
+            print("[MyModule] handled WebSoundDownloaded")
+        end)
+        ```
+
     Realm:
         Client
 ]]

@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Hooks:
         CanPlayerSpawnStorage(client, entity, info)
 
@@ -6,7 +6,7 @@
         Determines whether a player may convert an entity into storage.
 
     Category:
-        Inventory - Storage
+        Inventory
 
     Parameters:
         client (Player)
@@ -17,6 +17,15 @@
 
         info (table)
             The requested storage configuration data.
+
+    Example Usage:
+        ```lua
+        hook.Add("CanPlayerSpawnStorage", "liaExampleCanPlayerSpawnStorage", function(client, entity, info)
+            if IsValid(client) and client:IsAdmin() then
+                return true
+            end
+        end)
+        ```
 
     Returns:
         boolean|nil
@@ -33,7 +42,7 @@
         Determines whether a storage entity's inventory data should be persisted.
 
     Category:
-        Inventory - Storage
+        Inventory
 
     Parameters:
         ent (Entity)
@@ -41,6 +50,13 @@
 
         inventory (table)
             The inventory attached to the storage entity.
+
+    Example Usage:
+        ```lua
+        hook.Add("CanSaveData", "liaExampleCanSaveData", function(ent, inventory)
+            return true
+        end)
+        ```
 
     Returns:
         boolean|nil
@@ -57,11 +73,18 @@
         Called when the storage system initializes a storage-capable entity.
 
     Category:
-        Inventory - Storage
+        Inventory
 
     Parameters:
         entity (Entity)
             The storage entity being initialized.
+
+    Example Usage:
+        ```lua
+        hook.Add("InitializeStorage", "liaExampleInitializeStorage", function(entity)
+            print("[MyModule] handled InitializeStorage")
+        end)
+        ```
 
     Returns:
         nil
@@ -77,7 +100,7 @@
         Called after the client creates the paired inventory panels for a storage UI.
 
     Category:
-        Inventory - Storage
+        Inventory
 
     Parameters:
         localInvPanel (Panel)
@@ -88,6 +111,13 @@
 
         storage (Entity)
             The storage entity being viewed.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnCreateStoragePanel", "liaExampleOnCreateStoragePanel", function(localInvPanel, storageInvPanel, storage)
+            print("[MyModule] handled OnCreateStoragePanel")
+        end)
+        ```
 
     Returns:
         nil
@@ -103,7 +133,7 @@
         Determines whether a player may transfer a specific item through a storage interaction.
 
     Category:
-        Inventory - Storage
+        Inventory
 
     Parameters:
         client (Player)
@@ -114,6 +144,15 @@
 
         item (table)
             The item being moved.
+
+    Example Usage:
+        ```lua
+        hook.Add("StorageCanTransferItem", "liaExampleStorageCanTransferItem", function(client, storage, item)
+            if IsValid(client) and client:IsAdmin() then
+                return true
+            end
+        end)
+        ```
 
     Returns:
         boolean|nil
@@ -130,7 +169,7 @@
         Called when a storage entity is removed and its attached inventory is being cleaned up.
 
     Category:
-        Inventory - Storage
+        Inventory
 
     Parameters:
         entity (Entity)
@@ -138,6 +177,13 @@
 
         inventory (table)
             The inventory attached to the entity.
+
+    Example Usage:
+        ```lua
+        hook.Add("StorageEntityRemoved", "liaExampleStorageEntityRemoved", function(entity, inventory)
+            print("[MyModule] handled StorageEntityRemoved")
+        end)
+        ```
 
     Returns:
         nil
@@ -153,7 +199,7 @@
         Called after a storage entity is assigned an inventory.
 
     Category:
-        Inventory - Storage
+        Inventory
 
     Parameters:
         entity (Entity)
@@ -164,6 +210,13 @@
 
         isCar (boolean)
             Whether the storage entity is a vehicle trunk.
+
+    Example Usage:
+        ```lua
+        hook.Add("StorageInventorySet", "liaExampleStorageInventorySet", function(entity, inventory, isCar)
+            print("[MyModule] handled StorageInventorySet")
+        end)
+        ```
 
     Returns:
         nil
@@ -179,7 +232,7 @@
         Called after persisted storage data is restored onto an entity.
 
     Category:
-        Inventory - Storage
+        Inventory
 
     Parameters:
         ent (Entity)
@@ -187,6 +240,13 @@
 
         inventory (table)
             The restored inventory.
+
+    Example Usage:
+        ```lua
+        hook.Add("StorageRestored", "liaExampleStorageRestored", function(ent, inventory)
+            print("[MyModule] handled StorageRestored")
+        end)
+        ```
 
     Returns:
         nil
@@ -202,11 +262,18 @@
         Called on the client when a storage unlock prompt should be shown.
 
     Category:
-        Inventory - Storage
+        Inventory
 
     Parameters:
         entity (Entity)
             The locked storage entity requesting unlock input.
+
+    Example Usage:
+        ```lua
+        hook.Add("StorageUnlockPrompt", "liaExampleStorageUnlockPrompt", function(entity)
+            print("[MyModule] handled StorageUnlockPrompt")
+        end)
+        ```
 
     Returns:
         nil

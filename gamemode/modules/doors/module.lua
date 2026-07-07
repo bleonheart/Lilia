@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Hooks:
         CanPlayerLock(client, door)
 
@@ -14,6 +14,15 @@
 
         door (Entity)
             The targeted door, vehicle, or simfphys vehicle.
+
+    Example Usage:
+        ```lua
+        hook.Add("CanPlayerLock", "liaExampleCanPlayerLock", function(client, door)
+            if IsValid(client) and client:IsAdmin() then
+                return true
+            end
+        end)
+        ```
 
     Returns:
         boolean|nil
@@ -39,6 +48,15 @@
         door (Entity)
             The targeted door, vehicle, or simfphys vehicle.
 
+    Example Usage:
+        ```lua
+        hook.Add("CanPlayerUnlock", "liaExampleCanPlayerUnlock", function(client, door)
+            if IsValid(client) and client:IsAdmin() then
+                return true
+            end
+        end)
+        ```
+
     Returns:
         boolean|nil
             Return false to block the unlocking action. Returning nil allows the default permission checks to continue.
@@ -63,6 +81,15 @@
         door (Entity)
             The door entity being used.
 
+    Example Usage:
+        ```lua
+        hook.Add("CanPlayerUseDoor", "liaExampleCanPlayerUseDoor", function(client, door)
+            if IsValid(client) and client:IsAdmin() then
+                return true
+            end
+        end)
+        ```
+
     Returns:
         boolean|nil
             Return false to deny the use attempt. Returning nil allows the default door-use flow to continue.
@@ -83,6 +110,16 @@
     Parameters:
         fields (table)
             Mutable table that should be populated with custom field definitions. Each key should map to field information such as `default` and, when database-backed, `type`.
+
+    Example Usage:
+        ```lua
+        hook.Add("CollectDoorDataFields", "liaExampleCollectDoorDataFields", function(fields)
+            fields[#fields + 1] = {
+                key = "exampleFlag",
+                name = "Example Flag"
+            }
+        end)
+        ```
 
     Returns:
         nil
@@ -110,86 +147,19 @@
         state (boolean)
             The new lock state. True means locked and false means unlocked.
 
+    Example Usage:
+        ```lua
+        hook.Add("DoorLockToggled", "liaExampleDoorLockToggled", function(client, door, state)
+            if not IsValid(client) then return end
+            print(string.format("[MyModule] handled DoorLockToggled for %s", client:Name()))
+        end)
+        ```
+
     Returns:
         nil
 
     Realm:
         Server
-]]
---[[
-    Hooks:
-        FilterDoorInfo(entity, doorData, doorInfo)
-
-    Purpose:
-        Lets clientside code adjust or filter the assembled door information list before it is rendered.
-
-    Category:
-        Doors
-
-    Parameters:
-        entity (Entity)
-            The door entity currently being inspected.
-
-        doorData (table)
-            The resolved cached door data for the entity.
-
-        doorInfo (table)
-            The mutable list of display entries that will be converted into the door info box text.
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        GetDoorInfo(entity, doorData, doorInfo)
-
-    Purpose:
-        Populates the clientside door information list that is shown when looking at a visible door.
-
-    Category:
-        Doors
-
-    Parameters:
-        entity (Entity)
-            The door entity currently being inspected.
-
-        doorData (table)
-            The resolved cached door data for the entity.
-
-        doorInfo (table)
-            The mutable list that should receive formatted door information entries.
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        GetDoorInfoForAdminStick(target, extraInfo)
-
-    Purpose:
-        Adds extra clientside admin-stick information lines for a targeted door.
-
-    Category:
-        Doors
-
-    Parameters:
-        target (Entity)
-            The door entity currently targeted by the admin stick.
-
-        extraInfo (table)
-            The mutable list of additional text lines to append to the admin stick HUD output.
-
-    Returns:
-        nil
-
-    Realm:
-        Client
 ]]
 --[[
     Hooks:
@@ -210,6 +180,14 @@
 
         time (number)
             The action duration, in seconds, used for the stared lock interaction.
+
+    Example Usage:
+        ```lua
+        hook.Add("KeyLock", "liaExampleKeyLock", function(client, door, time)
+            if not IsValid(client) then return end
+            print(string.format("[MyModule] handled KeyLock for %s", client:Name()))
+        end)
+        ```
 
     Returns:
         nil
@@ -237,6 +215,14 @@
         time (number)
             The action duration, in seconds, used for the stared unlock interaction.
 
+    Example Usage:
+        ```lua
+        hook.Add("KeyUnlock", "liaExampleKeyUnlock", function(client, door, time)
+            if not IsValid(client) then return end
+            print(string.format("[MyModule] handled KeyUnlock for %s", client:Name()))
+        end)
+        ```
+
     Returns:
         nil
 
@@ -259,6 +245,15 @@
 
         door (Entity)
             The door entity being used.
+
+    Example Usage:
+        ```lua
+        hook.Add("PlayerUseDoor", "liaExamplePlayerUseDoor", function(client, door)
+            if IsValid(client) and client:IsAdmin() then
+                return true
+            end
+        end)
+        ```
 
     Returns:
         boolean|nil
@@ -284,6 +279,15 @@
         doorData (table)
             The resolved door data table about to be cached.
 
+    Example Usage:
+        ```lua
+        hook.Add("PostDoorDataLoad", "liaExamplePostDoorDataLoad", function(ent, doorData)
+            return {
+                {name = "Example", value = 1}
+            }
+        end)
+        ```
+
     Returns:
         table|nil
             Return a replacement door data table to modify the loaded values, or nil to keep the original table.
@@ -307,6 +311,15 @@
 
         doorData (table)
             The current resolved door data table that will be serialized.
+
+    Example Usage:
+        ```lua
+        hook.Add("PreDoorDataSave", "liaExamplePreDoorDataSave", function(door, doorData)
+            return {
+                {name = "Example", value = 1}
+            }
+        end)
+        ```
 
     Returns:
         table|nil
