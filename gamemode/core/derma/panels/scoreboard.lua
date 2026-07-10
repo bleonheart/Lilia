@@ -10,7 +10,6 @@ local rowColors = {
 local borderColor = Color(77, 105, 114, 105)
 local dividerColor = Color(192, 211, 218, 24)
 local mutedTextColor = Color(160, 180, 188)
-local clockIconMaterial = Material("icon16/clock.png", "smooth")
 local sectionAccentColor = Color(171, 113, 61)
 local positiveColor = Color(92, 225, 180)
 local function wrap(text, maxWidth, font)
@@ -66,6 +65,25 @@ local function getValidMaterial(path)
     local material = Material(path, "smooth")
     if not material or material:IsError() then return nil end
     return material
+end
+
+local function getPlayerRankText(ply, char)
+    local rank = ""
+    if char and char.getData then
+        local storedRank = char:getData("rank")
+        if storedRank ~= nil and tostring(storedRank) ~= "" then rank = tostring(storedRank) end
+    end
+
+    if rank == "" and IsValid(ply) then
+        local userGroup = ply:GetUserGroup()
+        if isstring(userGroup) and userGroup ~= "" then
+            rank = userGroup:gsub("_", " ")
+            rank = rank:sub(1, 1):upper() .. rank:sub(2)
+        end
+    end
+
+    if rank == "" then rank = L("none") end
+    return rank
 end
 
 local function paintScoreboardHeader(header, w, h, accentColor)
@@ -168,22 +186,6 @@ function PANEL:Init()
     self.onlineLabel:SetTextColor(color_white)
     self.onlineLabel:SetContentAlignment(5)
     self.onlineLabel:SetMouseInputEnabled(false)
-    self.timeBadge = self.serverHeader:Add("DPanel")
-    self.timeBadge:SetMouseInputEnabled(false)
-    self.timeBadge.Paint = function(_, w, h)
-        draw.RoundedBox(1, 0, 0, w, h, panelColor)
-        surface.SetDrawColor(borderColor)
-        surface.DrawOutlinedRect(0, 0, w, h, 1)
-        surface.SetMaterial(clockIconMaterial)
-        surface.SetDrawColor(255, 255, 255, 220)
-        surface.DrawTexturedRect(10, math.floor((h - 16) * 0.5), 16, 16)
-    end
-
-    self.timeLabel = self.timeBadge:Add("DLabel")
-    self.timeLabel:SetFont("LiliaFont.17")
-    self.timeLabel:SetTextColor(color_white)
-    self.timeLabel:SetContentAlignment(5)
-    self.timeLabel:SetMouseInputEnabled(false)
     self.serverHeader.PerformLayout = function(_, w, h)
         local padding = 22
         local logoSize = IsValid(self.serverLogo) and math.min(h - 24, 48) or 0
@@ -197,14 +199,9 @@ function PANEL:Init()
         self.serverTitle:SizeToContents()
         self.serverTitle:SetPos(titleX, (h - self.serverTitle:GetTall()) * 0.5)
         local badgeW = math.Clamp(w * 0.12, 120, 150)
-        local timeBadgeW = math.Clamp(w * 0.16, 150, 190)
         local badgeH = math.Clamp(h * 0.54, 36, 42)
-        self.timeBadge:SetSize(timeBadgeW, badgeH)
-        self.timeBadge:SetPos(w - padding - timeBadgeW, (h - badgeH) * 0.5)
-        self.timeLabel:SetPos(28, 0)
-        self.timeLabel:SetSize(timeBadgeW - 34, badgeH)
         self.onlineBadge:SetSize(badgeW, badgeH)
-        self.onlineBadge:SetPos(w - padding - timeBadgeW - badgeW - 10, (h - badgeH) * 0.5)
+        self.onlineBadge:SetPos(w - padding - badgeW, (h - badgeH) * 0.5)
         self.onlineLabel:SetPos(24, 0)
         self.onlineLabel:SetSize(badgeW - 30, badgeH)
     end
@@ -413,8 +410,6 @@ function PANEL:Think()
         local online = player.GetCount()
         self.onlineLabel:SetText(online .. " Online")
     end
-
-    if IsValid(self.timeLabel) then self.timeLabel:SetText("Server Time: " .. os.date("%H:%M")) end
     if (self.nextUpdate or 0) > CurTime() then return end
     for _, ply in player.Iterator() do
         local factionData = lia.faction.indices[ply:Team()]
@@ -588,7 +583,7 @@ function PANEL:addPlayer(ply, parent)
     slot.desc:SetExpensiveShadow(1, Color(0, 0, 0, 100))
     slot.status = vgui.Create("DLabel", slot)
     slot.status:SetFont("LiliaFont.16")
-    slot.status:SetText("Online")
+    slot.status:SetText("")
     slot.status:SetTextColor(positiveColor)
     slot.status:SetContentAlignment(5)
     slot.ping = vgui.Create("DLabel", slot)
@@ -661,6 +656,12 @@ function PANEL:addPlayer(ply, parent)
         if self.lastDesc ~= finalDescription then
             self.desc:SetText(finalDescription)
             self.lastDesc = finalDescription
+        end
+
+        local rankText = getPlayerRankText(ply, char)
+        if self.lastRank ~= rankText then
+            self.status:SetText(rankText)
+            self.lastRank = rankText
         end
 
         local model = ply:GetModel()

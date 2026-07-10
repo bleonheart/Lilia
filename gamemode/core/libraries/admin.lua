@@ -2936,30 +2936,55 @@ else
             Client
     ]]
     local function getPermissionsTheme()
-        local theme = lia.color.theme or {}
-        local accent = theme.accent or theme.header or theme.theme or Color(154, 111, 60)
-        local textColor = theme.text or Color(225, 225, 225)
-        local mutedText = theme.text_secondary or Color(150, 160, 165)
-        local panel = theme.panel or Color(6, 24, 29, 248)
-        local panelAlt = theme.panel_alt or Color(10, 31, 36, 245)
-        local border = theme.border or Color(65, 65, 55, 210)
+        local accent = Color(201, 146, 81)
+        local textColor = Color(236, 240, 244)
+        local mutedText = Color(146, 154, 165)
+        local panel = Color(5, 11, 20, 242)
+        local panelAlt = Color(8, 15, 28, 245)
+        local border = Color(accent.r, accent.g, accent.b, 84)
         return accent, textColor, mutedText, panel, panelAlt, border
+    end
+
+    local function drawPermissionsPanel(x, y, w, h, radius, color, outline)
+        lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
+        if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
+    end
+
+    local function drawPermissionsIcon(material, x, y, size, color)
+        if not material or material:IsError() then return end
+        surface.SetMaterial(material)
+        surface.SetDrawColor(color or color_white)
+        surface.DrawTexturedRect(x, y, size, size)
+    end
+
+    local function drawPermissionBadge(text, font, x, y, paddingX, paddingY, foreground, background, outline, alignRight)
+        surface.SetFont(font)
+        local textWidth, textHeight = surface.GetTextSize(text)
+        local width = textWidth + paddingX * 2
+        local height = textHeight + paddingY * 2
+        local drawX = alignRight and x - width or x
+        drawPermissionsPanel(drawX, y, width, height, 4, background, outline)
+        draw.SimpleText(text, font, drawX + width * 0.5, y + height * 0.5, foreground, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        return drawX, width, height
     end
 
     local function getPrivilegeDisplayName(name)
         local displayName = lia.admin.privilegeNames and lia.admin.privilegeNames[name] or name
         displayName = lia.lang.resolveToken(displayName)
-        if not displayName or displayName == "" then return tostring(name) end
+        if not displayName or displayName == '' then return tostring(name) end
         return tostring(displayName)
     end
 
     local function getGroupDescription(groupName)
-        if groupName == "superadmin" then return "Super Administrator" end
-        if groupName == "admin" then return "Administrator" end
-        if groupName == "user" then return "Regular User" end
+        if groupName == 'superadmin' then return 'Super Administrator' end
+        if groupName == 'admin' then return 'Administrator' end
+        if groupName == 'user' then return 'Regular User' end
+        if groupName == 'noaccess' then return 'No Access' end
         local data = lia.admin.groups and lia.admin.groups[groupName] or nil
-        local inheritance = data and data._info and data._info.inheritance or "user"
-        return "Custom Group · " .. tostring(inheritance)
+        local info = data and data._info or {}
+        local description = string.Trim(tostring(info.description or info.desc or ''))
+        if description ~= '' then return description end
+        return 'Custom Group'
     end
 
     local function getPendingValue(state, groupName, privilege)
@@ -2982,105 +3007,98 @@ else
         container:Clear()
         lia.gui.usergroups.checks = lia.gui.usergroups.checks or {}
         lia.gui.usergroups.checks[state.selectedGroup] = {}
-        local accent, textColor, mutedText, panel, panelAlt, border = getPermissionsTheme()
-        local scrollPanel = container:Add("liaScrollPanel")
+        local accent, _, mutedText, _, panelAlt = getPermissionsTheme()
+        local scrollPanel = container:Add('liaScrollPanel')
         scrollPanel:Dock(FILL)
-        local list = scrollPanel:Add("DListLayout")
+        local list = scrollPanel:Add('DListLayout')
         list:Dock(TOP)
-        list:DockMargin(8, 6, 8, 8)
+        list:DockMargin(0, 4, 0, 6)
         local ordered = computeCategoryMap(lia.admin.groups or {})
-        local searchText = string.lower(string.Trim(state.search or ""))
+        local searchText = string.lower(string.Trim(state.search or ''))
         local pending = state.pending[state.selectedGroup] or {}
         local visibleCount = 0
-        if not state.editable then
-            local disclaimer = list:Add("DPanel")
-            disclaimer:Dock(TOP)
-            disclaimer:SetTall(34)
-            disclaimer:DockMargin(0, 0, 0, 8)
-            disclaimer.Paint = function(_, w, h)
-                draw.RoundedBox(4, 0, 0, w, h, panelAlt)
-                surface.SetDrawColor(accent.r, accent.g, accent.b, 180)
-                surface.DrawOutlinedRect(0, 0, w, h, 1)
-                draw.SimpleText(L("baseUsergroupCannotBeEditedDesc"), "LiliaFont.17", 10, h / 2, mutedText, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-            end
-        end
-
         local function shouldShowPrivilege(privilege)
             local displayName = getPrivilegeDisplayName(privilege)
-            if searchText ~= "" then
-                local haystack = string.lower(displayName .. " " .. tostring(privilege))
+            if searchText ~= '' then
+                local haystack = string.lower(displayName .. ' ' .. tostring(privilege))
                 if not string.find(haystack, searchText, 1, true) then return false end
             end
 
             local value = getPendingValue(state, state.selectedGroup, privilege)
-            if state.filter == "changed" and pending[privilege] == nil then return false end
-            if state.filter == "enabled" and not value then return false end
-            if state.filter == "disabled" and value then return false end
+            if state.filter == 'changed' and pending[privilege] == nil then return false end
+            if state.filter == 'enabled' and not value then return false end
+            if state.filter == 'disabled' and value then return false end
             return true
         end
 
-        local function addPrivilegeRow(privilege)
-            local row = list:Add("DPanel")
-            row:Dock(TOP)
-            row:SetTall(34)
-            row:DockMargin(0, 0, 0, 1)
-            row.Paint = function(_, w, h)
-                surface.SetDrawColor(panelAlt)
-                surface.DrawRect(0, 0, w, h)
-                surface.SetDrawColor(border.r, border.g, border.b, 110)
-                surface.DrawLine(0, h - 1, w, h - 1)
+        local function togglePrivilege(privilege, row, toggle)
+            if not state.editable then
+                LocalPlayer():notifyErrorLocalized('baseUsergroupCannotBeEdited')
+                return
             end
 
-            local label = row:Add("DLabel")
-            label:Dock(FILL)
-            label:DockMargin(12, 0, 8, 0)
-            label:SetFont("LiliaFont.17")
-            label:SetTextColor(textColor)
-            label:SetText(getPrivilegeDisplayName(privilege))
-            label:SetContentAlignment(4)
-            local toggle = row:Add("DButton")
+            local groupName = state.selectedGroup
+            local baseline = lia.admin.hasAccess(groupName, privilege)
+            local newValue = not getPendingValue(state, groupName, privilege)
+            state.pending[groupName] = state.pending[groupName] or {}
+            if newValue == baseline then
+                state.pending[groupName][privilege] = nil
+            else
+                state.pending[groupName][privilege] = newValue
+            end
+
+            local filter = tostring(state.filter or 'all')
+            if filter == 'changed' or filter == 'enabled' or filter == 'disabled' then
+                state.rebuildList()
+            else
+                row:InvalidateLayout(true)
+                toggle:InvalidateLayout(true)
+            end
+
+            state.updateFooter()
+        end
+
+        local function addPrivilegeRow(privilege)
+            local row = list:Add('DButton')
+            row:Dock(TOP)
+            row:SetTall(36)
+            row:DockMargin(0, 0, 0, 1)
+            row:SetText('')
+            row:SetCursor(state.editable and 'hand' or 'arrow')
+            row.Paint = function(button, w, h)
+                local background = button:IsHovered() and Color(255, 255, 255, 5) or panelAlt
+                surface.SetDrawColor(background.r, background.g, background.b, background.a)
+                surface.DrawRect(0, 0, w, h)
+                surface.SetDrawColor(accent.r, accent.g, accent.b, 18)
+                surface.DrawRect(0, h - 1, w, 1)
+                draw.SimpleText(getPrivilegeDisplayName(privilege), 'LiliaFont.17', 12, h * 0.5, Color(205, 214, 222), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            end
+
+            local toggle = row:Add('DButton')
             toggle:Dock(RIGHT)
-            toggle:SetWide(62)
-            toggle:DockMargin(8, 5, 10, 5)
-            toggle:SetText("")
-            toggle:SetCursor(state.editable and "hand" or "arrow")
+            toggle:SetWide(52)
+            toggle:DockMargin(0, 8, 12, 8)
+            toggle:SetText('')
+            toggle:SetCursor(state.editable and 'hand' or 'arrow')
             toggle.Paint = function(button, w, h)
                 local enabled = getPendingValue(state, state.selectedGroup, privilege)
-                local track = enabled and Color(accent.r, accent.g, accent.b, 220) or Color(70, 76, 78, 220)
-                draw.RoundedBox(h / 2, 8, 3, w - 16, h - 6, track)
-                local knobSize = h - 10
-                local knobX = enabled and w - 8 - knobSize - 3 or 11
-                draw.RoundedBox(knobSize / 2, knobX, 5, knobSize, knobSize, Color(238, 238, 232))
+                local track = enabled and Color(accent.r, accent.g, accent.b, 235) or Color(70, 75, 82, 225)
+                local knobColor = enabled and Color(248, 245, 238) or Color(230, 232, 235)
+                draw.RoundedBox(h * 0.5, 0, 0, w, h, track)
+                local knobSize = h - 6
+                local knobX = enabled and w - knobSize - 3 or 3
+                draw.RoundedBox(knobSize * 0.5, knobX, 3, knobSize, knobSize, knobColor)
                 if not state.editable then
                     surface.SetDrawColor(0, 0, 0, 80)
                     surface.DrawRect(0, 0, w, h)
                 elseif button:IsHovered() then
-                    surface.SetDrawColor(255, 255, 255, 18)
+                    surface.SetDrawColor(255, 255, 255, 12)
                     surface.DrawRect(0, 0, w, h)
                 end
             end
 
-            toggle.DoClick = function()
-                if not state.editable then
-                    LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeEdited")
-                    return
-                end
-
-                local groupName = state.selectedGroup
-                local baseline = lia.admin.hasAccess(groupName, privilege)
-                local newValue = not getPendingValue(state, groupName, privilege)
-                state.pending[groupName] = state.pending[groupName] or {}
-                if newValue == baseline then
-                    state.pending[groupName][privilege] = nil
-                else
-                    state.pending[groupName][privilege] = newValue
-                end
-
-                state.rebuildCategories()
-                state.rebuildList()
-                state.updateFooter()
-            end
-
+            toggle.DoClick = function() togglePrivilege(privilege, row, toggle) end
+            row.DoClick = function() togglePrivilege(privilege, row, toggle) end
             lia.gui.usergroups.checks[state.selectedGroup][privilege] = row
             visibleCount = visibleCount + 1
         end
@@ -3096,17 +3114,15 @@ else
                 end
 
                 if #visiblePrivileges > 0 then
-                    local categoryHeader = list:Add("DPanel")
+                    local categoryHeader = list:Add('DPanel')
                     categoryHeader:Dock(TOP)
                     categoryHeader:SetTall(34)
-                    categoryHeader:DockMargin(0, visibleCount > 0 and 8 or 0, 0, 2)
+                    categoryHeader:DockMargin(0, visibleCount > 0 and 8 or 0, 0, 4)
                     categoryHeader.Paint = function(_, w, h)
-                        surface.SetDrawColor(panel)
-                        surface.DrawRect(0, 0, w, h)
-                        surface.SetDrawColor(accent.r, accent.g, accent.b, 160)
-                        surface.DrawLine(0, h - 1, w, h - 1)
-                        draw.SimpleText(string.upper(tostring(category.label)), "LiliaFont.17", 10, h / 2, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                        draw.SimpleText(enabledCount .. " / " .. #category.items, "LiliaFont.17", w - 10, h / 2, mutedText, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+                        surface.SetDrawColor(accent.r, accent.g, accent.b, 28)
+                        surface.DrawRect(0, h - 1, w, 1)
+                        draw.SimpleText(string.upper(tostring(category.label)), 'LiliaFont.17', 8, h * 0.5, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        drawPermissionBadge(enabledCount .. '/' .. #category.items, 'LiliaFont.15', w - 8, 5, 10, 3, Color(220, 226, 232), Color(11, 20, 32, 240), Color(accent.r, accent.g, accent.b, 72), true)
                     end
 
                     for _, privilege in ipairs(visiblePrivileges) do
@@ -3117,23 +3133,41 @@ else
         end
 
         if visibleCount == 0 then
-            local empty = list:Add("DLabel")
+            local empty = list:Add('DLabel')
             empty:Dock(TOP)
-            empty:SetTall(70)
-            empty:SetFont("LiliaFont.17")
+            empty:SetTall(80)
+            empty:SetFont('LiliaFont.17')
             empty:SetTextColor(mutedText)
             empty:SetContentAlignment(5)
-            empty:SetText("No permissions match the current filters.")
+            empty:SetText('No permissions match the current filters.')
         end
 
         list:InvalidateLayout(true)
         scrollPanel:InvalidateLayout(true)
     end
 
+    local function queueUsergroupsRefresh(fullRefresh)
+        local panel = lia.gui.usergroups
+        if not IsValid(panel) then return end
+        if fullRefresh then panel._liaNeedsFullRefresh = true end
+        if timer.Exists("liaUsergroupsRefresh") then return end
+        timer.Create("liaUsergroupsRefresh", 0, 1, function()
+            if not IsValid(panel) then return end
+            local refresh = panel._liaNeedsFullRefresh and panel.refreshTabs or panel.refreshInterface or panel.refreshTabs
+            panel._liaNeedsFullRefresh = false
+            if refresh then refresh() end
+        end)
+    end
+
+    local function shouldRebuildPrivilegeListForToggle(state)
+        local filter = tostring(state.filter or "all")
+        return filter == "changed" or filter == "enabled" or filter == "disabled"
+    end
+
     lia.net.readBigTable("liaUpdateAdminGroups", function(tbl)
         lia.admin.groups = tbl
         lia.debug("[Permissions UI]", "Received admin groups sync", "groupCount=", tostring(table.Count(lia.admin.groups or {})))
-        if IsValid(lia.gui.usergroups) and lia.gui.usergroups.refreshTabs then lia.gui.usergroups.refreshTabs() end
+        queueUsergroupsRefresh(true)
     end)
 
     lia.net.readBigTable("liaUpdateAdminPrivileges", function(tbl)
@@ -3147,7 +3181,7 @@ else
         categoryMapCache = {}
         lia.debug("[Permissions UI]", "Received admin privileges sync", "privilegeCount=", tostring(table.Count(lia.admin.privileges or {})), "hasAlwaysSpawnAdminStick=", tostring(lia.admin.privileges and lia.admin.privileges.alwaysSpawnAdminStick or "nil"))
         hook.Run("AdminPrivilegesUpdated")
-        if IsValid(lia.gui.usergroups) and lia.gui.usergroups.refreshTabs then lia.gui.usergroups.refreshTabs() end
+        queueUsergroupsRefresh(true)
     end)
 
     --[[
@@ -3170,172 +3204,205 @@ else
             Client
     ]]
     local function SetupUserGroupInterface(parent)
-        local accent, textColor, mutedText, panel, panelAlt, border = getPermissionsTheme()
+        local accent, textColor, mutedText, panel, _, border = getPermissionsTheme()
+        local searchIcon = Material('icon16/magnifier.png', 'smooth')
         local state = {
             selectedGroup = nil,
             selectedCategory = nil,
-            search = "",
-            filter = "all",
+            search = '',
+            filter = 'all',
             pending = {},
             editable = false
         }
 
-        local root = parent:Add("DPanel")
+        local function applyToolbarButtonStyle(button, label)
+            button:SetText('')
+            button:SetCursor('hand')
+            button.Paint = function(btn, w, h)
+                local enabled = btn:IsEnabled()
+                local hovered = enabled and btn:IsHovered()
+                local background = hovered and Color(accent.r, accent.g, accent.b, 20) or Color(8, 15, 27, 230)
+                local outline = enabled and Color(accent.r, accent.g, accent.b, hovered and 120 or 72) or Color(255, 255, 255, 20)
+                local foreground = enabled and textColor or Color(100, 108, 118)
+                drawPermissionsPanel(0, 0, w, h, 5, background, outline)
+                draw.SimpleText(label, 'LiliaFont.16', w * 0.5, h * 0.5, foreground, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
+        end
+
+        local function applySaveButtonStyle(button)
+            button:SetText('')
+            button.Paint = function(btn, w, h)
+                local enabled = btn:IsEnabled()
+                local hovered = enabled and btn:IsHovered()
+                local background = enabled and hovered and Color(216, 162, 90) or enabled and Color(191, 138, 77) or Color(36, 41, 47, 220)
+                local outline = enabled and Color(232, 185, 109, 180) or Color(255, 255, 255, 20)
+                local foreground = enabled and Color(255, 248, 238) or Color(110, 116, 124)
+                drawPermissionsPanel(0, 0, w, h, 5, background, outline)
+                draw.SimpleText('Save Changes', 'LiliaFont.17', w * 0.5, h * 0.5, foreground, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
+        end
+
+        local function applyResetButtonStyle(button)
+            button:SetText('')
+            button.Paint = function(btn, w, h)
+                local enabled = btn:IsEnabled()
+                local hovered = enabled and btn:IsHovered()
+                local background = hovered and Color(accent.r, accent.g, accent.b, 18) or Color(8, 15, 27, 230)
+                local outline = enabled and Color(accent.r, accent.g, accent.b, 90) or Color(255, 255, 255, 20)
+                local foreground = enabled and textColor or Color(110, 116, 124)
+                drawPermissionsPanel(0, 0, w, h, 5, background, outline)
+                draw.SimpleText('Reset', 'LiliaFont.17', w * 0.5, h * 0.5, foreground, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
+        end
+
+        local function styleComboBox(combo)
+            combo:SetText('')
+            combo:SetFont('LiliaFont.16')
+            combo.Paint = function(self, w, h)
+                local hovered = self:IsHovered()
+                local background = hovered and Color(accent.r, accent.g, accent.b, 12) or Color(8, 15, 27, 235)
+                drawPermissionsPanel(0, 0, w, h, 5, background, Color(accent.r, accent.g, accent.b, 72))
+                draw.SimpleText(self:GetValue() ~= '' and self:GetValue() or 'Select', 'LiliaFont.16', 12, h * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText('▼', 'LiliaFont.16', w - 14, h * 0.5, mutedText, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
+
+            if IsValid(combo.DropButton) then
+                combo.DropButton:SetWide(0)
+                combo.DropButton:SetText('')
+                combo.DropButton.Paint = function() end
+            end
+        end
+
+        local root = parent:Add('DPanel')
         root:Dock(FILL)
         root:DockPadding(0, 0, 0, 0)
         root.Paint = function() end
-        local groupsPanel = root:Add("DPanel")
+        local groupsPanel = root:Add('DPanel')
         groupsPanel:Dock(TOP)
-        groupsPanel:SetTall(142)
-        groupsPanel:DockMargin(0, 0, 0, 10)
-        groupsPanel.Paint = function(_, w, h)
-            draw.RoundedBox(4, 0, 0, w, h, panel)
-            surface.SetDrawColor(border)
-            surface.DrawOutlinedRect(0, 0, w, h, 1)
-            draw.SimpleText("PERMISSION GROUPS", "LiliaFont.17", 14, 20, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        groupsPanel:SetTall(156)
+        groupsPanel:DockMargin(0, 0, 0, 12)
+        groupsPanel.Paint = function(_, w, h) drawPermissionsPanel(0, 0, w, h, 8, panel, border) end
+        local groupsHeader = groupsPanel:Add('DPanel')
+        groupsHeader:Dock(TOP)
+        groupsHeader:SetTall(40)
+        groupsHeader:DockMargin(14, 8, 14, 0)
+        groupsHeader.Paint = function(_, w, h) draw.SimpleText('PERMISSION GROUPS', 'LiliaFont.17', 0, h * 0.5, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
+        local createButton = groupsHeader:Add('DButton')
+        createButton:Dock(RIGHT)
+        createButton:SetWide(140)
+        applyToolbarButtonStyle(createButton, 'Create Group')
+        createButton.DoClick = promptCreateGroup
+        local groupActions = groupsPanel:Add('DPanel')
+        groupActions:Dock(BOTTOM)
+        groupActions:SetTall(34)
+        groupActions:DockMargin(14, 0, 14, 6)
+        groupActions.Paint = function() end
+        local deleteButton = groupActions:Add('DButton')
+        deleteButton:Dock(RIGHT)
+        deleteButton:SetWide(124)
+        applyToolbarButtonStyle(deleteButton, 'Delete Group')
+        local renameButton = groupActions:Add('DButton')
+        renameButton:Dock(RIGHT)
+        renameButton:SetWide(124)
+        renameButton:DockMargin(0, 0, 8, 0)
+        applyToolbarButtonStyle(renameButton, 'Rename Group')
+        local groupScroller = groupsPanel:Add('DHorizontalScroller')
+        groupScroller:Dock(FILL)
+        groupScroller:DockMargin(14, 4, 14, 4)
+        groupScroller:SetOverlap(6)
+        if IsValid(groupScroller.btnLeft) then
+            groupScroller.btnLeft:SetVisible(false)
+            groupScroller.btnLeft:SetWide(0)
         end
 
-        local actionBar = groupsPanel:Add("DPanel")
-        actionBar:Dock(TOP)
-        actionBar:SetTall(42)
-        actionBar:DockMargin(0, 0, 10, 0)
-        actionBar.Paint = function() end
-        local createButton = vgui.Create("liaButton", actionBar)
-        createButton:Dock(RIGHT)
-        createButton:SetWide(130)
-        createButton:DockMargin(8, 5, 0, 5)
-        createButton:SetTxt(L("create") .. " " .. L("group"))
-        createButton.DoClick = promptCreateGroup
-        local renameButton = vgui.Create("liaButton", actionBar)
-        renameButton:Dock(RIGHT)
-        renameButton:SetWide(130)
-        renameButton:DockMargin(8, 5, 0, 5)
-        renameButton:SetTxt(L("rename") .. " " .. L("group"))
-        local deleteButton = vgui.Create("liaButton", actionBar)
-        deleteButton:Dock(RIGHT)
-        deleteButton:SetWide(130)
-        deleteButton:DockMargin(8, 5, 0, 5)
-        deleteButton:SetTxt(L("delete") .. " " .. L("group"))
-        local groupScroller = groupsPanel:Add("DHorizontalScroller")
-        groupScroller:Dock(BOTTOM)
-        groupScroller:SetTall(76)
-        groupScroller:DockMargin(12, 0, 12, 10)
-        groupScroller:SetOverlap(-8)
-        local body = root:Add("DPanel")
+        if IsValid(groupScroller.btnRight) then
+            groupScroller.btnRight:SetVisible(false)
+            groupScroller.btnRight:SetWide(0)
+        end
+
+        local body = root:Add('DPanel')
         body:Dock(FILL)
         body.Paint = function() end
-        local categoriesPanel = body:Add("DPanel")
+        local categoriesPanel = body:Add('DPanel')
         categoriesPanel:Dock(LEFT)
-        categoriesPanel:SetWide(245)
-        categoriesPanel:DockMargin(0, 0, 10, 0)
+        categoriesPanel:SetWide(288)
+        categoriesPanel:DockMargin(0, 0, 12, 0)
         categoriesPanel.Paint = function(_, w, h)
-            draw.RoundedBox(4, 0, 0, w, h, panel)
-            surface.SetDrawColor(border)
-            surface.DrawOutlinedRect(0, 0, w, h, 1)
-            draw.SimpleText("CATEGORIES", "LiliaFont.17", 12, 24, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            drawPermissionsPanel(0, 0, w, h, 8, panel, border)
+            draw.SimpleText('CATEGORIES', 'LiliaFont.17', 14, 16, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         end
 
-        local categoryScroll = categoriesPanel:Add("liaScrollPanel")
+        local categoryScroll = categoriesPanel:Add('liaScrollPanel')
         categoryScroll:Dock(FILL)
-        categoryScroll:DockMargin(8, 44, 6, 8)
-        local rightPanel = body:Add("DPanel")
+        categoryScroll:DockMargin(8, 46, 8, 8)
+        local rightPanel = body:Add('DPanel')
         rightPanel:Dock(FILL)
-        rightPanel.Paint = function(_, w, h)
-            draw.RoundedBox(4, 0, 0, w, h, panel)
-            surface.SetDrawColor(border)
-            surface.DrawOutlinedRect(0, 0, w, h, 1)
-        end
-
-        local filters = rightPanel:Add("DPanel")
+        rightPanel.Paint = function(_, w, h) drawPermissionsPanel(0, 0, w, h, 8, panel, border) end
+        local filters = rightPanel:Add('DPanel')
         filters:Dock(TOP)
-        filters:SetTall(50)
-        filters:DockMargin(8, 8, 8, 0)
+        filters:SetTall(42)
+        filters:DockMargin(12, 12, 12, 0)
         filters.Paint = function() end
-        local searchEntry = filters:Add("DTextEntry")
-        searchEntry:Dock(LEFT)
-        searchEntry:SetWide(520)
-        searchEntry:DockMargin(0, 0, 8, 0)
-        searchEntry:SetFont("LiliaFont.17")
-        searchEntry:SetPlaceholderText("Search permissions...")
+        local visibilityCombo = filters:Add('DComboBox')
+        visibilityCombo:Dock(RIGHT)
+        visibilityCombo:SetWide(170)
+        styleComboBox(visibilityCombo)
+        visibilityCombo:AddChoice('All Permissions', 'all', true)
+        visibilityCombo:AddChoice('Changed Only', 'changed')
+        visibilityCombo:AddChoice('Enabled', 'enabled')
+        visibilityCombo:AddChoice('Disabled', 'disabled')
+        visibilityCombo:SetValue('All Permissions')
+        local categoryCombo = filters:Add('DComboBox')
+        categoryCombo:Dock(RIGHT)
+        categoryCombo:SetWide(200)
+        categoryCombo:DockMargin(10, 0, 10, 0)
+        styleComboBox(categoryCombo)
+        local searchWrap = filters:Add('DPanel')
+        searchWrap:Dock(FILL)
+        searchWrap:DockPadding(36, 0, 8, 0)
+        searchWrap.Paint = function(_, w, h)
+            drawPermissionsPanel(0, 0, w, h, 5, Color(8, 15, 27, 235), Color(accent.r, accent.g, accent.b, 72))
+            drawPermissionsIcon(searchIcon, 12, math.floor(h * 0.5) - 8, 16, mutedText)
+        end
+
+        local searchEntry = searchWrap:Add('DTextEntry')
+        searchEntry:Dock(FILL)
+        searchEntry:SetFont('LiliaFont.17')
+        searchEntry:SetPlaceholderText('Search permissions...')
         searchEntry:SetTextColor(textColor)
-        searchEntry:SetPlaceholderColor(mutedText)
-        searchEntry:SetDrawLanguageID(false)
-        searchEntry.Paint = function(entry, w, h)
-            draw.RoundedBox(3, 0, 0, w, h, panelAlt)
-            surface.SetDrawColor(border)
-            surface.DrawOutlinedRect(0, 0, w, h, 1)
-            entry:DrawTextEntryText(textColor, accent, textColor)
-        end
-
-        local filterBox = filters:Add("DComboBox")
-        filterBox:Dock(RIGHT)
-        filterBox:SetWide(210)
-        filterBox:SetFont("LiliaFont.17")
-        filterBox:SetValue("All Permissions")
-        filterBox:SetTextColor(textColor)
-        filterBox:AddChoice("All Permissions", "all", true)
-        filterBox:AddChoice("Changed Only", "changed")
-        filterBox:AddChoice("Enabled", "enabled")
-        filterBox:AddChoice("Disabled", "disabled")
-        filterBox.Paint = function(combo, w, h)
-            draw.RoundedBox(3, 0, 0, w, h, panelAlt)
-            surface.SetDrawColor(border)
-            surface.DrawOutlinedRect(0, 0, w, h, 1)
-        end
-
-        local privilegeContainer = rightPanel:Add("DPanel")
+        searchEntry:SetCursorColor(accent)
+        searchEntry:SetDrawBackground(false)
+        searchEntry:SetPaintBackground(false)
+        searchEntry:SetPaintBorderEnabled(false)
+        searchEntry.Paint = function(self, w, h) self:DrawTextEntryText(textColor, accent, textColor) end
+        local privilegeContainer = rightPanel:Add('DPanel')
         privilegeContainer:Dock(FILL)
-        privilegeContainer:DockMargin(8, 0, 8, 0)
+        privilegeContainer:DockMargin(12, 6, 12, 0)
         privilegeContainer.Paint = function() end
-        local footer = rightPanel:Add("DPanel")
+        local footer = rightPanel:Add('DPanel')
         footer:Dock(BOTTOM)
-        footer:SetTall(52)
-        footer:DockMargin(8, 0, 8, 8)
+        footer:SetTall(56)
+        footer:DockMargin(12, 0, 12, 10)
         footer.Paint = function(_, w, h)
-            surface.SetDrawColor(border.r, border.g, border.b, 120)
-            surface.DrawLine(0, 0, w, 0)
+            surface.SetDrawColor(accent.r, accent.g, accent.b, 28)
+            surface.DrawRect(0, 0, w, 1)
         end
 
-        local statusLabel = footer:Add("DLabel")
-        statusLabel:Dock(LEFT)
-        statusLabel:SetWide(520)
-        statusLabel:SetFont("LiliaFont.17")
+        local saveButton = footer:Add('DButton')
+        saveButton:Dock(RIGHT)
+        saveButton:SetWide(176)
+        saveButton:DockMargin(10, 9, 0, 9)
+        applySaveButtonStyle(saveButton)
+        local resetButton = footer:Add('DButton')
+        resetButton:Dock(RIGHT)
+        resetButton:SetWide(116)
+        resetButton:DockMargin(0, 9, 0, 9)
+        applyResetButtonStyle(resetButton)
+        local statusLabel = footer:Add('DLabel')
+        statusLabel:Dock(FILL)
+        statusLabel:SetFont('LiliaFont.17')
         statusLabel:SetTextColor(mutedText)
         statusLabel:SetContentAlignment(4)
-        local saveButton = footer:Add("DButton")
-        saveButton:Dock(RIGHT)
-        saveButton:SetWide(180)
-        saveButton:DockMargin(8, 8, 0, 6)
-        saveButton:SetText("Save Changes")
-        saveButton:SetFont("LiliaFont.17")
-        saveButton:SetTextColor(Color(245, 245, 240))
-        saveButton.Paint = function(button, w, h)
-            local pendingCount = countPendingChanges(state)
-            local alpha = pendingCount > 0 and 220 or 90
-            draw.RoundedBox(3, 0, 0, w, h, Color(accent.r, accent.g, accent.b, alpha))
-            if button:IsHovered() and pendingCount > 0 then
-                surface.SetDrawColor(255, 255, 255, 16)
-                surface.DrawRect(0, 0, w, h)
-            end
-        end
-
-        local resetButton = footer:Add("DButton")
-        resetButton:Dock(RIGHT)
-        resetButton:SetWide(120)
-        resetButton:DockMargin(8, 8, 0, 6)
-        resetButton:SetText("Reset")
-        resetButton:SetFont("LiliaFont.17")
-        resetButton:SetTextColor(textColor)
-        resetButton.Paint = function(button, w, h)
-            draw.RoundedBox(3, 0, 0, w, h, panelAlt)
-            surface.SetDrawColor(border)
-            surface.DrawOutlinedRect(0, 0, w, h, 1)
-            if button:IsHovered() then
-                surface.SetDrawColor(255, 255, 255, 12)
-                surface.DrawRect(0, 0, w, h)
-            end
-        end
-
         local function clearScroll(scroll)
             local canvas = scroll:GetCanvas()
             if not IsValid(canvas) then return end
@@ -3357,14 +3424,16 @@ else
 
         state.updateFooter = function()
             if not state.selectedGroup then
-                statusLabel:SetText("")
+                statusLabel:SetText('')
+                saveButton:SetEnabled(false)
+                resetButton:SetEnabled(false)
                 return
             end
 
             local total, enabled = getPrivilegeTotals(state.selectedGroup)
             local pendingCount = countPendingChanges(state)
-            local suffix = pendingCount > 0 and ("   ·   " .. pendingCount .. " unsaved change" .. (pendingCount == 1 and "" or "s")) or ""
-            statusLabel:SetText(total .. " permissions   ·   " .. enabled .. " enabled" .. suffix)
+            local suffix = pendingCount > 0 and ('    |    ' .. pendingCount .. ' unsaved change' .. (pendingCount == 1 and '' or 's')) or ''
+            statusLabel:SetText(total .. ' permissions    |    ' .. enabled .. ' enabled' .. suffix)
             saveButton:SetEnabled(pendingCount > 0)
             resetButton:SetEnabled(state.pending[state.selectedGroup] and next(state.pending[state.selectedGroup]) ~= nil or false)
         end
@@ -3380,9 +3449,23 @@ else
             state.updateFooter()
         end
 
+        state.rebuildCategoryFilter = function()
+            categoryCombo:Clear()
+            categoryCombo:AddChoice('All Categories', false, state.selectedCategory == nil)
+            for _, category in ipairs(computeCategoryMap(lia.admin.groups or {})) do
+                categoryCombo:AddChoice(tostring(category.label), category.label, state.selectedCategory == category.label)
+            end
+
+            categoryCombo:SetValue(state.selectedCategory or 'All Categories')
+        end
+
         state.rebuildCategories = function()
             clearScroll(categoryScroll)
-            if not state.selectedGroup then return end
+            if not state.selectedGroup then
+                state.rebuildCategoryFilter()
+                return
+            end
+
             local ordered = computeCategoryMap(lia.admin.groups or {})
             local total = 0
             for _, category in ipairs(ordered) do
@@ -3390,41 +3473,36 @@ else
             end
 
             local function addCategory(labelText, count, categoryKey)
-                local button = categoryScroll:Add("DButton")
+                local button = categoryScroll:Add('DButton')
                 button:Dock(TOP)
-                button:SetTall(32)
-                button:DockMargin(0, 0, 2, 2)
-                button:SetText("")
+                button:SetTall(40)
+                button:DockMargin(0, 0, 0, 4)
+                button:SetText('')
                 button.Paint = function(btn, w, h)
                     local selected = state.selectedCategory == categoryKey
-                    local bg = selected and panelAlt or Color(panel.r, panel.g, panel.b, 0)
-                    surface.SetDrawColor(bg)
-                    surface.DrawRect(0, 0, w, h)
-                    if selected then
-                        surface.SetDrawColor(accent)
-                        surface.DrawRect(0, 0, 3, h)
-                    end
-
-                    if btn:IsHovered() and not selected then
-                        surface.SetDrawColor(255, 255, 255, 8)
-                        surface.DrawRect(0, 0, w, h)
-                    end
-
-                    draw.SimpleText(labelText, "LiliaFont.17", 10, h / 2, selected and textColor or mutedText, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                    draw.SimpleText(tostring(count), "LiliaFont.17", w - 10, h / 2, mutedText, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+                    local hovered = btn:IsHovered()
+                    local background = selected and Color(accent.r, accent.g, accent.b, 18) or hovered and Color(255, 255, 255, 5) or Color(7, 14, 24, 200)
+                    local outline = selected and Color(accent.r, accent.g, accent.b, 120) or Color(accent.r, accent.g, accent.b, 32)
+                    local foreground = selected and Color(249, 247, 243) or Color(199, 208, 216)
+                    drawPermissionsPanel(0, 0, w, h, 5, background, outline)
+                    draw.SimpleText(labelText, 'LiliaFont.16', 12, h * 0.5, foreground, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    drawPermissionBadge(tostring(count), 'LiliaFont.15', w - 10, 8, 8, 2, foreground, Color(12, 21, 34, 240), selected and Color(accent.r, accent.g, accent.b, 110) or Color(255, 255, 255, 16), true)
                 end
 
                 button.DoClick = function()
                     state.selectedCategory = categoryKey
+                    categoryCombo:SetValue(categoryKey or 'All Categories')
                     state.rebuildCategories()
                     state.rebuildList()
                 end
             end
 
-            addCategory("All Permissions", total, nil)
+            addCategory('All Permissions', total, nil)
             for _, category in ipairs(ordered) do
                 addCategory(tostring(category.label), #category.items, category.label)
             end
+
+            state.rebuildCategoryFilter()
         end
 
         local groupButtons = {}
@@ -3455,32 +3533,22 @@ else
             end
 
             for _, groupName in ipairs(keys) do
-                local button = vgui.Create("DButton")
-                button:SetSize(205, 62)
-                button:SetText("")
-                local iconPath = lia.admin.getUsergroupIcon(groupName) or "icon16/group.png"
-                local iconMaterial = Material(iconPath, "smooth")
+                local button = vgui.Create('DButton')
+                button:SetSize(236, 56)
+                button:SetText('')
+                local iconPath = lia.admin.getUsergroupIcon(groupName) or 'icon16/group.png'
+                local iconMaterial = Material(iconPath, 'smooth')
                 button.Paint = function(btn, w, h)
                     local selected = state.selectedGroup == groupName
-                    draw.RoundedBox(3, 0, 0, w, h, selected and panelAlt or panel)
-                    surface.SetDrawColor(selected and accent or border)
-                    surface.DrawOutlinedRect(0, 0, w, h, 1)
-                    if selected then
-                        surface.SetDrawColor(accent)
-                        surface.DrawRect(0, 0, 3, h)
-                    elseif btn:IsHovered() then
-                        surface.SetDrawColor(255, 255, 255, 10)
-                        surface.DrawRect(0, 0, w, h)
-                    end
-
-                    if iconMaterial and not iconMaterial:IsError() then
-                        surface.SetMaterial(iconMaterial)
-                        surface.SetDrawColor(255, 255, 255, 255)
-                        surface.DrawTexturedRect(14, 15, 32, 32)
-                    end
-
-                    draw.SimpleText(groupName, "LiliaFont.18", 58, 22, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                    draw.SimpleText(getGroupDescription(groupName), "LiliaFont.17", 58, 43, mutedText, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    local hovered = btn:IsHovered()
+                    local background = selected and Color(accent.r, accent.g, accent.b, 18) or hovered and Color(255, 255, 255, 5) or Color(7, 14, 24, 210)
+                    local outline = selected and Color(accent.r, accent.g, accent.b, 132) or Color(accent.r, accent.g, accent.b, 38)
+                    local titleColor = selected and Color(248, 247, 244) or textColor
+                    local descriptionColor = selected and accent or mutedText
+                    drawPermissionsPanel(0, 0, w, h, 5, background, outline)
+                    drawPermissionsIcon(iconMaterial, 14, 16, 24, selected and Color(247, 244, 238) or Color(188, 197, 206))
+                    draw.SimpleText(groupName, 'LiliaFont.18', 48, 9, titleColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText(getGroupDescription(groupName), 'LiliaFont.15', 48, 31, descriptionColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                 end
 
                 button.DoClick = function()
@@ -3488,7 +3556,7 @@ else
                     state.selectedCategory = nil
                     state.editable = not (lia.admin.DefaultGroups and lia.admin.DefaultGroups[groupName] ~= nil)
                     for _, groupButton in ipairs(groupButtons) do
-                        groupButton:InvalidateLayout(true)
+                        if IsValid(groupButton) then groupButton:InvalidateLayout(true) end
                     end
 
                     renameButton:SetEnabled(state.editable)
@@ -3513,8 +3581,15 @@ else
             state.rebuildList()
         end
 
-        filterBox.OnSelect = function(_, _, _, data)
-            state.filter = data or "all"
+        visibilityCombo.OnSelect = function(_, _, _, data)
+            state.filter = data or 'all'
+            state.rebuildList()
+        end
+
+        categoryCombo.OnSelect = function(_, _, value, data)
+            state.selectedCategory = data == false and nil or data
+            categoryCombo:SetValue(value or 'All Categories')
+            state.rebuildCategories()
             state.rebuildList()
         end
 
@@ -3522,14 +3597,14 @@ else
             local groupName = state.selectedGroup
             if not groupName then return end
             if lia.admin.DefaultGroups[groupName] then
-                LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeRenamed")
+                LocalPlayer():notifyErrorLocalized('baseUsergroupCannotBeRenamed')
                 return
             end
 
-            LocalPlayer():requestString(L("rename") .. " " .. L("group"), L("renameGroupPrompt", groupName) .. ":", function(textValue)
-                textValue = string.Trim(textValue or "")
-                if textValue ~= "" and textValue ~= groupName then
-                    net.Start("liaGroupsRename")
+            LocalPlayer():requestString(L('rename') .. ' ' .. L('group'), L('renameGroupPrompt', groupName) .. ':', function(textValue)
+                textValue = string.Trim(textValue or '')
+                if textValue ~= '' and textValue ~= groupName then
+                    net.Start('liaGroupsRename')
                     net.WriteString(groupName)
                     net.WriteString(textValue)
                     net.SendToServer()
@@ -3541,14 +3616,14 @@ else
             local groupName = state.selectedGroup
             if not groupName then return end
             if lia.admin.DefaultGroups[groupName] then
-                LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeRemoved")
+                LocalPlayer():notifyErrorLocalized('baseUsergroupCannotBeRemoved')
                 return
             end
 
-            LocalPlayer():requestString("@confirm", L("deleteGroupPrompt", groupName), function(value)
-                local normalizedValue = isstring(value) and value:Trim():lower() or ""
-                if normalizedValue == string.lower(L("yes")) then
-                    net.Start("liaGroupsRemove")
+            LocalPlayer():requestString('@confirm', L('deleteGroupPrompt', groupName), function(value)
+                local normalizedValue = isstring(value) and value:Trim():lower() or ''
+                if normalizedValue == string.lower(L('yes')) then
+                    net.Start('liaGroupsRemove')
                     net.WriteString(groupName)
                     net.SendToServer()
                 end
@@ -3566,7 +3641,7 @@ else
             if countPendingChanges(state) == 0 then return end
             for groupName, changes in pairs(state.pending) do
                 for privilege, value in pairs(changes) do
-                    net.Start("liaGroupsSetPerm")
+                    net.Start('liaGroupsSetPerm')
                     net.WriteString(groupName)
                     net.WriteString(privilege)
                     net.WriteBool(value)
@@ -3580,7 +3655,16 @@ else
         end
 
         parent.refreshTabs = state.rebuildGroups
-        parent.refreshInterface = state.rebuildGroups
+        parent.refreshInterface = function()
+            if not state.selectedGroup then
+                state.rebuildGroups()
+                return
+            end
+
+            state.rebuildCategories()
+            state.rebuildList()
+        end
+
         state.rebuildGroups()
     end
 
@@ -3595,10 +3679,9 @@ else
                 lia.debug("[Permissions UI]", "Opening usergroups page", "localPlayer=", tostring(IsValid(LocalPlayer()) and LocalPlayer():Nick() or "unknown"), "localPlayerUserGroup=", tostring(IsValid(LocalPlayer()) and LocalPlayer():GetUserGroup() or "unknown"))
                 lia.gui.usergroups = parent
                 parent:Clear()
-                parent:DockPadding(10, 10, 10, 10)
+                parent:DockPadding(0, 0, 0, 0)
                 parent.Paint = function() end
                 SetupUserGroupInterface(parent)
-                timer.Simple(0.1, function() if IsValid(parent) and parent.refreshTabs then parent.refreshTabs() end end)
                 net.Start("liaGroupsRequest")
                 net.SendToServer()
             end

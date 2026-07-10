@@ -44,7 +44,7 @@ SCHEMA.icon = "materials/mymod/schema_logo.png"
 
 ### `changelog`
 
-Use `changelog` when you want the main menu to show update notes for the schema. It supports either a simple list of strings or a multiline string block.
+Use `changelog` when you want the main menu to show update notes for the schema. It supports a plain multiline string, a simple list of strings, and structured release entries.
 
 Simple list:
 
@@ -66,6 +66,43 @@ SCHEMA.changelog = [[
 ]]
 ```
 
+Structured releases:
+
+```lua
+SCHEMA.changelog = {
+    {
+        version = "1.2.0",
+        date = "2026-07-11",
+        changes = {
+            "Added a new outpost",
+            "Improved faction spawn flow"
+        }
+    },
+    {
+        title = "Hotfix",
+        changes = "[Fixed] Resolved a startup error for new characters"
+    }
+}
+```
+
+Keyed versions also work:
+
+```lua
+SCHEMA.changelog = {
+    ["1.2.0"] = {
+        date = "2026-07-11",
+        changes = {
+            "Added a new outpost",
+            "Improved faction spawn flow"
+        }
+    },
+    ["1.1.5"] = {
+        "Fixed inventory sync",
+        "Adjusted starter loadout"
+    }
+}
+```
+
 ## Lifecycle Callbacks
 
 Because schema loading runs through the module loader, schema functions are attached as hooks after loading finishes. That means schema files can define the same kind of callback-style functions that modules use.
@@ -85,9 +122,15 @@ SCHEMA.desc = "A roleplay gamemode."
 SCHEMA.icon = "materials/mymod/schema_logo.png"
 
 SCHEMA.changelog = {
-    "Added a new ranger checkpoint",
-    "Updated early-game jobs",
-    "Improved starter item balance"
+    {
+        version = "1.0.0",
+        date = "2026-07-11",
+        changes = {
+            "Added a new ranger checkpoint",
+            "Updated early-game jobs",
+            "Improved starter item balance"
+        }
+    }
 }
 
 function SCHEMA:InitializedSchema()

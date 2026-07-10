@@ -441,19 +441,22 @@ local function UpdateFactionRosterUI(panel, data)
     if faction and isstring(faction.logo) and faction.logo ~= "" then factionIcon = Material(faction.logo, "smooth") end
     local header = panel:Add("DPanel")
     header:Dock(TOP)
-    header:SetTall(76)
+    header:SetTall(isManagement and 56 or 76)
     header.Paint = function(_, panelW)
         local accent, textColor = getRosterThemeColors()
-        draw.SimpleText(isManagement and "Faction Management" or "Faction Roster", "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        draw.SimpleText(isManagement and "Browse and inspect faction members by faction." or "Browse and inspect faction members.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        if not isManagement then
+            draw.SimpleText("Faction Roster", "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            draw.SimpleText("Browse and inspect faction members.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        else
+            draw.SimpleText("Browse and inspect faction members by faction.", "LiliaFont.17", 8, 18, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        end
         if isManagement then
             local badgeW = math.Clamp(math.floor(panelW * 0.22), 210, 300)
             local badgeH = 42
             local badgeX = panelW - badgeW - 8
             local badgeY = 8
             drawRosterPanel(badgeX, badgeY, badgeW, badgeH, 5, Color(5, 18, 23, 210), Color(accent.r, accent.g, accent.b, 92))
-            draw.SimpleText("Viewing Faction:", "LiliaFont.15", badgeX + 12, badgeY + badgeH * 0.5, Color(175, 194, 194), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-            draw.SimpleText(factionName, "LiliaFont.17", badgeX + badgeW - 12, badgeY + badgeH * 0.5, accent, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+            draw.SimpleText(factionName, "LiliaFont.17", badgeX + badgeW * 0.5, badgeY + badgeH * 0.5, accent, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
     end
 

@@ -1355,15 +1355,11 @@ function PANEL:OnAdminPrivilegesUpdated()
     if not IsValid(self) or self.closing then return end
     local client = LocalPlayer()
     if not IsValid(client) or not client:getChar() then return end
-    local activeTabKey = self.activeTabKey
-    local activeAdminPageIndex = self.activeAdminPageIndex
-    self:Remove()
-    timer.Simple(0, function()
-        if not IsValid(client) or not client:getChar() then return end
-        local menu = vgui.Create("liaMenu")
-        if not IsValid(menu) then return end
-        if activeTabKey == "@admin" and activeAdminPageIndex then menu.pendingAdminPageIndex = activeAdminPageIndex end
-        if activeTabKey and menu.tabList and menu.tabList[activeTabKey] then menu:setActiveTab(activeTabKey) end
+    if timer.Exists("liaF1AdminPrivilegesRefresh") then timer.Remove("liaF1AdminPrivilegesRefresh") end
+    timer.Create("liaF1AdminPrivilegesRefresh", 0, 1, function()
+        if not IsValid(self) or self.closing then return end
+        self:RefreshUtilityButtons()
+        self:UpdateTabColors()
     end)
 end
 

