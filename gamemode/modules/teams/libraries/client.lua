@@ -24,6 +24,7 @@ function MODULE:DrawCharInfo(client, character, info)
 end
 
 local factionRosterPanel = nil
+local factionMembersRequestTargets = {}
 local factionRosterDetailCache = {}
 local factionRosterPendingDetails = {}
 local rosterSearchIcon = Material("icon16/magnifier.png", "smooth")
@@ -31,6 +32,7 @@ local rosterMemberIcon = Material("icon16/user.png", "smooth")
 local rosterCopyIcon = Material("icon16/page_copy.png", "smooth")
 local rosterProfileIcon = Material("icon16/world.png", "smooth")
 local rosterNoteIcon = Material("icon16/note_edit.png", "smooth")
+local rosterKickIcon = Material("icon16/user_delete.png", "smooth")
 local function getRosterThemeColors()
     local theme = lia.color.theme or {}
     local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
@@ -351,6 +353,7 @@ function MODULE:CreateMenuButtons(tabs)
                 local factionIndex = character:getFaction()
                 local faction = lia.faction.get(factionIndex)
                 if faction and faction.uniqueID then
+                    factionMembersRequestTargets[faction.uniqueID] = panel
                     net.Start("liaRequestFactionMembers")
                     net.WriteString(faction.uniqueID)
                     net.SendToServer()
@@ -362,26 +365,41 @@ function MODULE:CreateMenuButtons(tabs)
     end
 end
 
-local factionMembersData = {}
 local factionManagementPanel = nil
-local function CreateFactionManagementUI(panel)
-    panel:Clear()
-    factionMembersData = {}
-    panel:DockPadding(6, 6, 6, 6)
-    panel.Paint = nil
+local function getFactionManagementFactions()
     local factions = {}
     for uniqueID, faction in pairs(lia.faction.teams or {}) do
         if faction and faction.name then
-            table.insert(factions, {
-                uniqueID = uniqueID,
-                name = faction.name,
-                index = faction.index
-            })
+            factions[#factions + 1] = {
+                uniqueID = tostring(faction.uniqueID or uniqueID),
+                name = tostring(L(faction.name))
+            }
         end
     end
 
-    table.sort(factions, function(a, b) return (a.name or ""):lower() < (b.name or ""):lower() end)
-    if #factions == 0 then
+    table.sort(factions, function(a, b) return a.name:lower() < b.name:lower() end)
+    return factions
+end
+
+local function requestFactionManagementMembers(panel, factionUniqueID)
+    if not IsValid(panel) or not factionUniqueID or factionUniqueID == "" then return end
+    panel.managementRequestedFaction = factionUniqueID
+    panel.managementSelectedFaction = factionUniqueID
+    panel.selectedRosterCharID = nil
+    factionMembersRequestTargets[factionUniqueID] = panel
+    net.Start("liaRequestFactionMembers")
+    net.WriteString(factionUniqueID)
+    net.SendToServer()
+end
+
+local function CreateFactionManagementUI(panel)
+    panel:Clear()
+    panel:DockPadding(6, 6, 6, 6)
+    panel.Paint = nil
+    panel.factionManagementPanel = true
+    panel.managementFactions = getFactionManagementFactions()
+    factionManagementPanel = panel
+    if #panel.managementFactions == 0 then
         local noFactionsLabel = panel:Add("DLabel")
         noFactionsLabel:Dock(FILL)
         noFactionsLabel:SetText(L("noOptionsAvailable"))
@@ -391,71 +409,18 @@ local function CreateFactionManagementUI(panel)
         return
     end
 
-    local sheet = panel:Add("liaTabs")
-    sheet:Dock(FILL)
-    local function requestMembersForFaction(factionUniqueID)
-        if not factionUniqueID or not factionMembersData[factionUniqueID] then return end
-        local pagePanel = factionMembersData[factionUniqueID].panel
-        if not IsValid(pagePanel) then return end
-        if IsValid(pagePanel.loadingLabel) then
-            pagePanel.loadingLabel:Remove()
-            pagePanel.loadingLabel = nil
-        end
-
-        for _, child in ipairs(pagePanel:GetChildren()) do
-            child:Remove()
-        end
-
-        local loadingLabel = pagePanel:Add("DLabel")
-        loadingLabel:Dock(FILL)
-        loadingLabel:SetText(L("loading"))
-        loadingLabel:SetTextColor(Color(150, 150, 150))
-        loadingLabel:SetFont("LiliaFont.20")
-        loadingLabel:SetContentAlignment(5)
-        pagePanel.loadingLabel = loadingLabel
-        net.Start("liaRequestFactionMembers")
-        net.WriteString(factionUniqueID)
-        net.SendToServer()
-    end
-
-    for _, factionData in ipairs(factions) do
-        local pagePanel = vgui.Create("DPanel")
-        pagePanel:Dock(FILL)
-        pagePanel:DockPadding(10, 10, 10, 10)
-        pagePanel.Paint = nil
-        pagePanel.factionUniqueID = factionData.uniqueID
-        local loadingLabel = pagePanel:Add("DLabel")
-        loadingLabel:Dock(FILL)
-        loadingLabel:SetText(L("loading"))
-        loadingLabel:SetTextColor(Color(150, 150, 150))
-        loadingLabel:SetFont("LiliaFont.20")
-        loadingLabel:SetContentAlignment(5)
-        pagePanel.loadingLabel = loadingLabel
-        factionMembersData[factionData.uniqueID] = {
-            panel = pagePanel,
-            members = {}
-        }
-
-        sheet:AddTab(factionData.name, pagePanel, nil, function() requestMembersForFaction(factionData.uniqueID) end)
-    end
-
-    local oldSetActiveTab = sheet.SetActiveTab
-    sheet.SetActiveTab = function(self, tabIndex)
-        oldSetActiveTab(self, tabIndex)
-        local activeTab = self.tabs[tabIndex]
-        if activeTab and activeTab.pan then
-            local factionUniqueID = activeTab.pan.factionUniqueID
-            requestMembersForFaction(factionUniqueID)
-        end
-    end
-
-    if sheet.tabs and #sheet.tabs > 0 then sheet:SetActiveTab(1) end
-    panel.factionSheet = sheet
-    factionManagementPanel = panel
+    local loadingLabel = panel:Add("DLabel")
+    loadingLabel:Dock(FILL)
+    loadingLabel:SetText(L("loading"))
+    loadingLabel:SetTextColor(Color(150, 150, 150))
+    loadingLabel:SetFont("LiliaFont.20")
+    loadingLabel:SetContentAlignment(5)
+    panel.loadingLabel = loadingLabel
+    requestFactionManagementMembers(panel, panel.managementFactions[1].uniqueID)
 end
 
 local function UpdateFactionRosterUI(panel, data)
-    if not IsValid(panel) or not panel.factionRosterPanel then return end
+    if not IsValid(panel) or not panel.factionRosterPanel and not panel.factionManagementPanel then return end
     if IsValid(panel.loadingLabel) then
         panel.loadingLabel:Remove()
         panel.loadingLabel = nil
@@ -465,16 +430,31 @@ local function UpdateFactionRosterUI(panel, data)
     panel:DockPadding(0, 0, 0, 0)
     panel.Paint = function() end
     local members = data.members or {}
+    local isManagement = panel.factionManagementPanel == true
     panel.rosterMembers = members
     panel.rosterFilter = panel.rosterFilter or "all"
     panel.rosterFactionUniqueID = data.faction
+    if isManagement then panel.managementSelectedFaction = data.faction end
+    local faction = getRosterFactionData(data.faction)
+    local factionName = faction and faction.name and L(faction.name) or team.GetName(LocalPlayer():Team()) or L("unknown")
+    local factionIcon = rosterMemberIcon
+    if faction and isstring(faction.logo) and faction.logo ~= "" then factionIcon = Material(faction.logo, "smooth") end
     local header = panel:Add("DPanel")
     header:Dock(TOP)
     header:SetTall(76)
-    header.Paint = function()
-        local _, textColor = getRosterThemeColors()
-        draw.SimpleText("Faction Roster", "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        draw.SimpleText("Browse and inspect faction members.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+    header.Paint = function(_, panelW)
+        local accent, textColor = getRosterThemeColors()
+        draw.SimpleText(isManagement and "Faction Management" or "Faction Roster", "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText(isManagement and "Browse and inspect faction members by faction." or "Browse and inspect faction members.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        if isManagement then
+            local badgeW = math.Clamp(math.floor(panelW * 0.22), 210, 300)
+            local badgeH = 42
+            local badgeX = panelW - badgeW - 8
+            local badgeY = 8
+            drawRosterPanel(badgeX, badgeY, badgeW, badgeH, 5, Color(5, 18, 23, 210), Color(accent.r, accent.g, accent.b, 92))
+            draw.SimpleText("Viewing Faction:", "LiliaFont.15", badgeX + 12, badgeY + badgeH * 0.5, Color(175, 194, 194), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText(factionName, "LiliaFont.17", badgeX + badgeW - 12, badgeY + badgeH * 0.5, accent, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+        end
     end
 
     local content = panel:Add("DPanel")
@@ -501,9 +481,17 @@ local function UpdateFactionRosterUI(panel, data)
     filterCombo:SetFont("LiliaFont.17")
     filterCombo:SetTextColor(Color(205, 220, 220))
     filterCombo:SetContentAlignment(4)
-    filterCombo:AddChoice("All Members", "all", panel.rosterFilter == "all")
-    filterCombo:AddChoice("Online", "online", panel.rosterFilter == "online")
-    filterCombo:AddChoice("Offline", "offline", panel.rosterFilter == "offline")
+    if isManagement then
+        filterCombo:SetWide(160)
+        for _, factionData in ipairs(panel.managementFactions or {}) do
+            filterCombo:AddChoice(factionData.name, factionData.uniqueID, factionData.uniqueID == data.faction)
+        end
+    else
+        filterCombo:AddChoice("All Members", "all", panel.rosterFilter == "all")
+        filterCombo:AddChoice("Online", "online", panel.rosterFilter == "online")
+        filterCombo:AddChoice("Offline", "offline", panel.rosterFilter == "offline")
+    end
+
     filterCombo.Paint = function(_, panelW, panelH)
         local accent = getRosterThemeColors()
         drawRosterPanel(0, 0, panelW, panelH, 5, Color(5, 18, 23, 235), Color(accent.r, accent.g, accent.b, 92))
@@ -550,10 +538,6 @@ local function UpdateFactionRosterUI(panel, data)
     end
 
     content.PerformLayout = function(_, panelW) browser:SetWide(math.Clamp(math.floor(panelW * 0.31), 300, 390)) end
-    local faction = getRosterFactionData(data.faction)
-    local factionName = faction and faction.name and L(faction.name) or team.GetName(LocalPlayer():Team()) or L("unknown")
-    local factionIcon = rosterMemberIcon
-    if faction and isstring(faction.logo) and faction.logo ~= "" then factionIcon = Material(faction.logo, "smooth") end
     local function buildMemberDetails(member)
         details:Clear()
         if not member then
@@ -727,6 +711,14 @@ local function UpdateFactionRosterUI(panel, data)
             end)
         end)
 
+        if isManagement then
+            createActionButton(string.upper(tostring(L("kickToBaseFaction"))), rosterKickIcon, true, function()
+                net.Start("liaKickCharacterToBase")
+                net.WriteUInt(tonumber(member.charID) or 0, 32)
+                net.SendToServer()
+            end)
+        end
+
         actions:SetTall(56 + actionButtonCount * 46)
         if getCachedRosterMemberDetails(data.faction, member.charID) == nil then requestRosterMemberDetails(data.faction, member.charID) end
     end
@@ -744,7 +736,7 @@ local function UpdateFactionRosterUI(panel, data)
             local className = tostring(getRosterMemberClassName(member) or "")
             local isOnline = getRosterMemberPresence(member)
             local matchesSearch = search == "" or memberName:lower():find(search, 1, true) or charID:lower():find(search, 1, true) or steamID:lower():find(search, 1, true) or className:lower():find(search, 1, true)
-            local matchesFilter = panel.rosterFilter == "all" or panel.rosterFilter == "online" and isOnline or panel.rosterFilter == "offline" and not isOnline
+            local matchesFilter = isManagement or panel.rosterFilter == "all" or panel.rosterFilter == "online" and isOnline or panel.rosterFilter == "offline" and not isOnline
             if not matchesSearch or not matchesFilter then continue end
             visibleCount = visibleCount + 1
             local currentMember = member
@@ -799,6 +791,12 @@ local function UpdateFactionRosterUI(panel, data)
     end
 
     filterCombo.OnSelect = function(_, _, _, value)
+        if isManagement then
+            if not value or value == "" or value == panel.managementSelectedFaction then return end
+            requestFactionManagementMembers(panel, value)
+            return
+        end
+
         panel.rosterFilter = value or "all"
         rebuildRosterList()
     end
@@ -824,103 +822,6 @@ local function UpdateFactionRosterUI(panel, data)
     rebuildRosterList()
 end
 
-local function UpdateFactionMembersUI(panel, data)
-    local factionUniqueID = data and data.faction
-    if not factionUniqueID or not factionMembersData[factionUniqueID] then return end
-    local factionData = factionMembersData[factionUniqueID]
-    if not factionData then return end
-    local pagePanel = factionData.panel
-    if not IsValid(pagePanel) then return end
-    if IsValid(pagePanel.loadingLabel) then
-        pagePanel.loadingLabel:Remove()
-        pagePanel.loadingLabel = nil
-    end
-
-    for _, child in ipairs(pagePanel:GetChildren()) do
-        child:Remove()
-    end
-
-    factionData.members = data.members or {}
-    local list = pagePanel:Add("liaTable")
-    list:Dock(FILL)
-    list:DockMargin(0, 0, 0, 0)
-    list:AddColumn(L("name"))
-    list:AddColumn(L("characterID"))
-    list:AddColumn(L("steamID"))
-    list:AddColumn(L("lastOnline"))
-    list:AddColumn(L("class"))
-    list:AddColumn(L("playtime"))
-    list:AddColumn("Last Active")
-    for _, member in ipairs(factionData.members) do
-        local lastOnlineText = member.lastOnline or L("unknown")
-        local isOnline = false
-        if lastOnlineText == L("onlineNow") then
-            isOnline = true
-        elseif member.charID then
-            local charID = tonumber(member.charID)
-            local owner = charID and lia.char.getOwnerByID(charID) or nil
-            local ownerChar = IsValid(owner) and owner:getChar() or nil
-            if ownerChar and ownerChar:getID() == charID then
-                isOnline = true
-                lastOnlineText = L("onlineNow")
-            end
-        end
-
-        if not isOnline and isstring(lastOnlineText) and lastOnlineText ~= L("unknown") then
-            local timeParts = lia.time.toNumber(lastOnlineText)
-            if timeParts and timeParts.year then
-                local timestamp = os.time{
-                    year = timeParts.year,
-                    month = timeParts.month or 1,
-                    day = timeParts.day or 1,
-                    hour = timeParts.hour or 0,
-                    min = timeParts.min or 0,
-                    sec = timeParts.sec or 0
-                }
-
-                local lastDiff = os.time() - timestamp
-                if lastDiff > 0 then
-                    local timeSince = lia.time.timeSince(timestamp)
-                    if timeSince and timeSince ~= L("invalidDate") and timeSince ~= L("invalidInput") then
-                        local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                        lastOnlineText = L("agoFormat", timeStripped, lia.time.formatDHM(lastDiff))
-                    end
-                end
-            end
-        end
-
-        local line = list:AddLine(member.name or L("unknown"), member.charID or L("unknown"), member.steamID or L("unknown"), lastOnlineText, getRosterMemberClassName(member) or L("unknown"), formatRosterDuration(member.playtime), isOnline and L("onlineNow") or tostring(member.lastActive or member.lastOnline or L("unknown")))
-        if line then
-            line.charID = member.charID
-            line.steamID = member.steamID
-            line.name = member.name
-            line.factionUniqueID = factionUniqueID
-            line.memberData = member
-        end
-    end
-
-    list:AddMenuOption(L("kickToBaseFaction"), function(rowData)
-        if not rowData or not rowData.charID then return end
-        net.Start("liaKickCharacterToBase")
-        net.WriteUInt(rowData.charID, 32)
-        net.SendToServer()
-    end, "icon16/user_delete.png")
-
-    list:AddMenuOption("Edit Faction Note", function(rowData)
-        if not rowData or not rowData.memberData then return end
-        local detailedMember = mergeRosterMemberDetails(rowData.memberData, factionUniqueID)
-        if detailedMember.factionNote == nil and detailedMember.factionNoteMeta == nil then
-            requestRosterMemberDetails(factionUniqueID, detailedMember.charID)
-            return
-        end
-
-        openFactionNoteEditor(detailedMember, factionUniqueID)
-    end, "icon16/note_edit.png")
-
-    list:ForceCommit()
-    list:InvalidateLayout(true)
-end
-
 function MODULE:PopulateAdminTabs(pages)
     local client = LocalPlayer()
     if not IsValid(client) then return end
@@ -942,6 +843,32 @@ end
 
 lia.net.readBigTable("liaFactionMembers", function(data)
     if not data or not data.faction then return end
+    local requestTarget = factionMembersRequestTargets[data.faction]
+    if requestTarget ~= nil then
+        factionMembersRequestTargets[data.faction] = nil
+        if IsValid(requestTarget) then
+            if requestTarget.factionManagementPanel then
+                local expectedFaction = requestTarget.managementRequestedFaction or requestTarget.managementSelectedFaction
+                if expectedFaction == data.faction then
+                    requestTarget.managementRequestedFaction = nil
+                    UpdateFactionRosterUI(requestTarget, data)
+                end
+                return
+            end
+
+            if requestTarget.factionRosterPanel then
+                UpdateFactionRosterUI(requestTarget, data)
+                return
+            end
+        end
+    end
+
+    local managementPanel = factionManagementPanel
+    if IsValid(managementPanel) and managementPanel.factionManagementPanel and managementPanel.managementSelectedFaction == data.faction then
+        UpdateFactionRosterUI(managementPanel, data)
+        return
+    end
+
     local rosterPanel = factionRosterPanel
     if not IsValid(rosterPanel) and IsValid(lia.gui.menu) and IsValid(lia.gui.menu.panel) then
         for _, child in ipairs(lia.gui.menu.panel:GetChildren()) do
@@ -953,35 +880,26 @@ lia.net.readBigTable("liaFactionMembers", function(data)
         end
     end
 
-    if IsValid(rosterPanel) and rosterPanel.factionRosterPanel then
-        UpdateFactionRosterUI(rosterPanel, data)
-        return
-    end
-
-    local panel = factionManagementPanel
-    if not IsValid(panel) and IsValid(lia.gui.menu) and lia.gui.menu.tabList and lia.gui.menu.tabList["admin"] then
-        local adminTab = lia.gui.menu.tabList["admin"]
-        if IsValid(adminTab) and adminTab.panel then
-            for _, child in ipairs(adminTab.panel:GetChildren()) do
-                if IsValid(child) and child.factionSheet then
-                    panel = child
-                    factionManagementPanel = child
-                    break
-                end
-            end
-        end
-    end
-
-    if IsValid(panel) and panel.factionSheet then UpdateFactionMembersUI(panel, data) end
+    if IsValid(rosterPanel) and rosterPanel.factionRosterPanel then UpdateFactionRosterUI(rosterPanel, data) end
 end)
 
 lia.net.readBigTable("liaFactionMemberDetails", function(data)
     if not data or not data.faction or not data.charID then return end
-    factionRosterPendingDetails[data.faction .. ":" .. tonumber(data.charID)] = nil
+    local charID = tonumber(data.charID)
+    if not charID then return end
+    factionRosterPendingDetails[data.faction .. ":" .. charID] = nil
     if not istable(data.member) then return end
-    getRosterCacheBucket(data.faction)[tonumber(data.charID)] = data.member
+    getRosterCacheBucket(data.faction)[charID] = data.member
+    local managementPanel = factionManagementPanel
+    if IsValid(managementPanel) and managementPanel.factionManagementPanel and managementPanel.rosterFactionUniqueID == data.faction and managementPanel.selectedRosterCharID == charID then
+        UpdateFactionRosterUI(managementPanel, {
+            faction = data.faction,
+            members = managementPanel.rosterMembers or {}
+        })
+    end
+
     local rosterPanel = factionRosterPanel
-    if IsValid(rosterPanel) and rosterPanel.factionRosterPanel and rosterPanel.rosterFactionUniqueID == data.faction and rosterPanel.selectedRosterCharID == tonumber(data.charID) then
+    if IsValid(rosterPanel) and rosterPanel.factionRosterPanel and rosterPanel.rosterFactionUniqueID == data.faction and rosterPanel.selectedRosterCharID == charID then
         UpdateFactionRosterUI(rosterPanel, {
             faction = data.faction,
             members = rosterPanel.rosterMembers or {}
