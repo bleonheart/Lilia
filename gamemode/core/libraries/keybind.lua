@@ -889,6 +889,7 @@ if CLIENT then
                     local client = LocalPlayer()
                     if IsValid(client) then client:notifySuccess(L("keybindChanged", localizeKeybindLabel(action), getDisplayKeyName(newKey))) end
                 end
+
                 control = combo
             else
                 local lKey = p:Add("DLabel")

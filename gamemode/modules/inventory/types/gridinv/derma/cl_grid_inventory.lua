@@ -1,4 +1,4 @@
-local function headerHeight(frame)
+﻿local function headerHeight(frame)
     return IsValid(frame.btnClose) and frame.btnClose:GetTall() + 4 or 24
 end
 
@@ -46,7 +46,6 @@ local PRIMARY_TEXT = Color(232, 240, 240)
 local SECONDARY_TEXT = Color(165, 187, 188)
 local GRID_PANEL_PADDING = 12
 local GRID_HEADER_HEIGHT = 54
-
 local FRAME = {}
 function FRAME:Init()
     self.content = self:Add("liaGridInventoryPanel")
@@ -114,7 +113,6 @@ end
 vgui.Register("liaGridInventory", FRAME, "liaInventory")
 local MENU = {}
 local OUTER_PADDING = 28
-
 function MENU:Init()
     self:SetMouseInputEnabled(true)
     self:SetKeyboardInputEnabled(true)
@@ -236,7 +234,6 @@ function MENU:openBagInventory(item)
     if not item or not isfunction(item.getInv) then return false end
     local inventory = item:getInv()
     if not inventory then return false end
-
     if self.bagInventory and self.bagInventory ~= inventory then
         self.bagHistory = self.bagHistory or {}
         self.bagHistory[#self.bagHistory + 1] = {
@@ -322,10 +319,7 @@ local function buildActionInvoker(owner, actionKey, action, item, sub, optionKey
         item.player = LocalPlayer()
         local itemID = item.getID and item:getID() or "nil"
         local actionName = string.lower(tostring(actionKey))
-        if actionName == "open" and isfunction(item.getInv) and IsValid(owner) and isfunction(owner.openBagInventory) then
-            owner:openBagInventory(item)
-        end
-
+        if actionName == "open" and isfunction(item.getInv) and IsValid(owner) and isfunction(owner.openBagInventory) then owner:openBagInventory(item) end
         local send = true
         if action.onClick then send = action.onClick(item, sub and sub.data) end
         local sound = action.sound

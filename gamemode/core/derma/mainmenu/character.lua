@@ -795,9 +795,7 @@ function PANEL:createChangelogDisplay()
                 break
             end
 
-            if not isnumber(k) or not isstring(v) then
-                isSimpleList = false
-            end
+            if not isnumber(k) or not isstring(v) then isSimpleList = false end
         end
 
         if isKeyedFormat then

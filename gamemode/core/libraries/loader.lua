@@ -1191,7 +1191,6 @@ end
 
 function GM:OnReloaded()
     lia.loader.initializeGamemode(true)
-    
     if CLIENT then
         hook.Run("PreLiliaLoaded")
         lia.option.load()

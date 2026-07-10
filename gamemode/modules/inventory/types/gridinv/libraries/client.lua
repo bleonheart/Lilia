@@ -1,4 +1,4 @@
-local PREVIEW_WIDTH_RATIO = 0.32
+﻿local PREVIEW_WIDTH_RATIO = 0.32
 local PREVIEW_MIN_WIDTH = 320
 local PREVIEW_MAX_WIDTH = 440
 local PREVIEW_GAP = 12
@@ -217,7 +217,6 @@ lia.inventory = lia.inventory or {}
 local menuBagRedirectWrapper
 local function installMenuBagRedirect()
     if not lia.inventory or not isfunction(lia.inventory.showDual) then return end
-
     if lia.inventory.showDual == menuBagRedirectWrapper then return end
     local showDual = lia.inventory.showDual
     menuBagRedirectWrapper = function(inventory1, inventory2, parent)
@@ -227,7 +226,6 @@ local function installMenuBagRedirect()
             local opened = switchMenuToBag(menuPanel, bagItem)
             if opened then return {menuPanel, IsValid(menuPanel.bagContent) and menuPanel.bagContent or menuPanel} end
         end
-
         return showDual(inventory1, inventory2, parent)
     end
 

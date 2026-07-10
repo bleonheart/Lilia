@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local SLOT_GAP = 6
 local SLOT_RADIUS = 6
 local function getThemeColors()

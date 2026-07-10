@@ -95,7 +95,6 @@ ITEM.functions.Open = {
             local opened = tryOpenEmbeddedBag(item)
             if opened then return false end
             if IsValid(lia.gui and lia.gui.menu) then return false end
-
             local myInv = LocalPlayer():getChar():getInv()
             lia.inventory.showDual(myInv, inventory)
         end

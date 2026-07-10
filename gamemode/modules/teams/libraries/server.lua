@@ -260,6 +260,7 @@ lia.command.add("speed", {
         return ""
     end
 })
+
 local TRACKED_FACTION_KEYS = {
     factionJoinDates = true,
     factionPlaytime = true,
@@ -361,6 +362,7 @@ function MODULE:EnsureFactionTracking(character, actor, reason)
             bySteamID = IsValid(actor) and actor:SteamID() or nil,
             reason = reason or "created"
         })
+
         trimFactionHistory(history)
         character:setData("factionTransferHistory", history, true)
     end
@@ -392,6 +394,7 @@ function MODULE:TrackFactionTransfer(character, oldFactionValue, newFactionValue
         bySteamID = IsValid(actor) and actor:SteamID() or nil,
         reason = reason or "transferred"
     })
+
     trimFactionHistory(history)
     character:setData("factionTransferHistory", history, true)
     character.liaFactionSessionStart = now
@@ -414,6 +417,7 @@ function MODULE:TrackOfflineFactionTransfer(charID, oldFactionValue, newFactionV
         bySteamID = IsValid(actor) and actor:SteamID() or nil,
         reason = reason or "transferred"
     })
+
     trimFactionHistory(history)
     lia.char.setCharDatabase(charID, "factionTransferHistory", history)
 end
@@ -421,7 +425,12 @@ end
 function MODULE:BuildFactionMembersPayload(client, factionUniqueID, callback)
     local faction = lia.faction.get(factionUniqueID)
     if not faction then
-        if callback then callback({faction = factionUniqueID, members = {}}) end
+        if callback then
+            callback({
+                faction = factionUniqueID,
+                members = {}
+            })
+        end
         return
     end
 
@@ -486,16 +495,19 @@ function MODULE:BuildFactionMembersPayload(client, factionUniqueID, callback)
 end
 
 function MODULE:SendFactionMembers(client, factionUniqueID)
-    self:BuildFactionMembersPayload(client, factionUniqueID, function(payload)
-        lia.net.writeBigTable(client, "liaFactionMembers", payload)
-    end)
+    self:BuildFactionMembersPayload(client, factionUniqueID, function(payload) lia.net.writeBigTable(client, "liaFactionMembers", payload) end)
 end
 
 function MODULE:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID, callback)
     local faction = lia.faction.get(factionUniqueID)
     charID = tonumber(charID)
     if not faction or not charID then
-        if callback then callback({faction = factionUniqueID, charID = charID}) end
+        if callback then
+            callback({
+                faction = factionUniqueID,
+                charID = charID
+            })
+        end
         return
     end
 
@@ -509,7 +521,12 @@ function MODULE:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID
     lia.db.query(query, function(data)
         local row = data and data[1]
         if not row then
-            if callback then callback({faction = faction.uniqueID, charID = charID}) end
+            if callback then
+                callback({
+                    faction = faction.uniqueID,
+                    charID = charID
+                })
+            end
             return
         end
 
@@ -548,9 +565,7 @@ function MODULE:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID
             local lastOnlineText = row.lastJoinTime or L("unknown")
             if ownerChar and ownerChar:getID() == charID then
                 lastOnlineText = L("onlineNow")
-                if ownerChar:getFaction() == faction.index and tonumber(ownerChar.liaFactionSessionStart or 0) > 0 then
-                    playtimeInFaction = playtimeInFaction + math.max(0, now - tonumber(ownerChar.liaFactionSessionStart))
-                end
+                if ownerChar:getFaction() == faction.index and tonumber(ownerChar.liaFactionSessionStart or 0) > 0 then playtimeInFaction = playtimeInFaction + math.max(0, now - tonumber(ownerChar.liaFactionSessionStart)) end
             end
 
             local notesByFaction = istable(charData.factionNotes) and charData.factionNotes or {}
@@ -588,7 +603,5 @@ function MODULE:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID
 end
 
 function MODULE:SendFactionMemberDetails(client, factionUniqueID, charID)
-    self:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID, function(payload)
-        lia.net.writeBigTable(client, "liaFactionMemberDetails", payload)
-    end)
+    self:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID, function(payload) lia.net.writeBigTable(client, "liaFactionMemberDetails", payload) end)
 end

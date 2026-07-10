@@ -719,12 +719,14 @@ local function UpdateFactionRosterUI(panel, data)
                 requestRosterMemberDetails(data.faction, detailedMember.charID)
                 return
             end
+
             openFactionNoteEditor(detailedMember, data.faction, function(newNote)
                 local cacheBucket = getRosterCacheBucket(data.faction)
                 cacheBucket[detailedMember.charID] = cacheBucket[detailedMember.charID] or {}
                 cacheBucket[detailedMember.charID].factionNote = newNote
             end)
         end)
+
         actions:SetTall(56 + actionButtonCount * 46)
         if getCachedRosterMemberDetails(data.faction, member.charID) == nil then requestRosterMemberDetails(data.faction, member.charID) end
     end
@@ -911,6 +913,7 @@ local function UpdateFactionMembersUI(panel, data)
             requestRosterMemberDetails(factionUniqueID, detailedMember.charID)
             return
         end
+
         openFactionNoteEditor(detailedMember, factionUniqueID)
     end, "icon16/note_edit.png")
 

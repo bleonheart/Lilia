@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Hooks:
         StorageOpen(storage)
 
@@ -118,17 +118,9 @@ local PREVIEW_WIDTH = 260
 local PREVIEW_GAP = 12
 local PREVIEW_TOP_PADDING = 24
 local PREVIEW_BOTTOM_PADDING = 24
-
 local function setIdleSequence(entity)
     if not IsValid(entity) then return end
-    local sequences = {
-        "idle_all_01",
-        "idle_subtle",
-        "idle_unarmed",
-        "idle01",
-        "pose_standing_01"
-    }
-
+    local sequences = {"idle_all_01", "idle_subtle", "idle_unarmed", "idle01", "pose_standing_01"}
     for _, sequenceName in ipairs(sequences) do
         local sequence = entity:LookupSequence(sequenceName)
         if sequence and sequence > 0 then
@@ -217,7 +209,6 @@ local function createInventoryPreview(parentPanel, mainPanel)
     timer.Simple(0, function() if IsValid(modelPanel) then applyEntitySettings() end end)
     timer.Simple(0.05, function() if IsValid(modelPanel) then applyEntitySettings() end end)
     timer.Simple(0.15, function() if IsValid(modelPanel) then applyEntitySettings() end end)
-
     modelPanel.OnSizeChanged = function(panel, width, height)
         if panel._inventoryFitW == width and panel._inventoryFitH == height then return end
         panel._inventoryFitW = width

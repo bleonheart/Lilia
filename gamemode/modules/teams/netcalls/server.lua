@@ -1,4 +1,4 @@
-local MODULE = MODULE 
+﻿local MODULE = MODULE
 net.Receive("liaRequestFactionMembers", function(_, client)
     local factionUniqueID = net.ReadString()
     if not factionUniqueID or factionUniqueID == "" then return end
@@ -90,6 +90,7 @@ net.Receive("liaKickCharacterToBase", function(_, client)
             lia.db.updateTable({
                 faction = defaultFaction.uniqueID
             }, nil, "characters", "id = " .. characterID)
+
             client:notifySuccessLocalized("transferSuccess", L("character"), defaultFaction.name)
             lia.log.add(client, "kickToBaseFaction", L("character"), currentFactionData and currentFactionData.name or tostring(currentFaction), defaultFaction.name)
         end)

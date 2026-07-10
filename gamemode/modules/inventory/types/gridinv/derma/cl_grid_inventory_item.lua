@@ -1,6 +1,5 @@
-local PANEL = {}
+﻿local PANEL = {}
 local renderedIcons = {}
-
 local function getThemeColors()
     local theme = lia.color and lia.color.theme or {}
     local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
@@ -183,9 +182,7 @@ function PANEL:PaintOver(w, h)
     if self.BaseClass and self.BaseClass.PaintOver then self.BaseClass.PaintOver(self, w, h) end
     if self.isDragPreview or not self.itemTable then return end
     local quantity = self.itemTable.getQuantity and self.itemTable:getQuantity() or self.itemTable.quantity
-    if isnumber(quantity) and quantity > 1 then
-        draw.SimpleText(tostring(quantity), "LiliaFont.14b", w - 8, h - 8, Color(232, 240, 240), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
-    end
+    if isnumber(quantity) and quantity > 1 then draw.SimpleText(tostring(quantity), "LiliaFont.14b", w - 8, h - 8, Color(232, 240, 240), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM) end
 end
 
 vgui.Register("liaGridInvItem", PANEL, "liaItemIcon")

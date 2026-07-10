@@ -67,9 +67,7 @@ local PROHIBITED_ACTIONS = {
 
 function MODULE:CanPlayerInteractItem(_, action, itemObject)
     local inventory = lia.inventory.instances[itemObject.invID]
-    if inventory and inventory.isStorage and PROHIBITED_ACTIONS[string.lower(action)] then
-        return false, "forbiddenActionStorage"
-    end
+    if inventory and inventory.isStorage and PROHIBITED_ACTIONS[string.lower(action)] then return false, "forbiddenActionStorage" end
 end
 
 function MODULE:EntityRemoved(entity)

@@ -8231,9 +8231,7 @@ lia.command.add("viewwarns", {
         if IsValid(target) then
             steamID = target:SteamID()
             displayName = target:Nick()
-            warningsPromise = lia.db.select({"id", "timestamp", "message", "warner", "warnerSteamID", "severity"}, "warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(res)
-                return res.results or {}
-            end)
+            warningsPromise = lia.db.select({"id", "timestamp", "message", "warner", "warnerSteamID", "severity"}, "warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(res) return res.results or {} end)
         else
             warningsPromise = lia.db.select({"id", "timestamp", "message", "warner", "warnerSteamID", "severity", "warned"}, "warnings", "warnedSteamID = " .. lia.db.convertDataType(steamID)):next(function(res)
                 local rows = res.results or {}

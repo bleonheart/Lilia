@@ -641,6 +641,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                     entry:SetValue(tostring(lia.option.get(key, option.value)))
                 end
             end
+
             control = entry
         elseif optionType == "Color" then
             local button = p:Add("liaButton")
@@ -666,6 +667,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                 if not IsColor(c) and istable(c) then c = Color(c.r, c.g, c.b, c.a) end
                 lia.derma.requestColorPicker(function(color) lia.option.set(key, color) end, c)
             end
+
             control = button
         elseif optionType == "Table" then
             local combo = p:Add("liaComboBox")

@@ -950,7 +950,6 @@ function MODULE:OpenStaffCases(panel)
             if a.timestamp == b.timestamp then return staffCasesSeverityScore(a) > staffCasesSeverityScore(b) end
             return a.timestamp > b.timestamp
         end)
-
         return records
     end
 
@@ -1550,6 +1549,7 @@ function MODULE:PopulateAdminTabs(pages)
                     else
                         detailCanvas = detailScroll
                     end
+
                     detailPanel = detailCanvas
                     local function createSection(parent, label, height)
                         local section = parent:Add("DPanel")
@@ -1683,16 +1683,8 @@ function MODULE:PopulateAdminTabs(pages)
                         createInfoRow(stats, "Money", function() return getCharacterMoney(row) end)
                         createInfoRow(stats, "Banned", function() return isCharacterBanned(row) and L("yes") or L("no") end, function() return isCharacterBanned(row) and badColor or goodColor end)
                         createInfoRow(stats, "Description", function() return getCharacterDescription(row) ~= "" and getCharacterDescription(row) or L("none") end)
-                        createLinkRow(stats, "Warnings", function() return lia.command.hasAccess(LocalPlayer(), "viewwarns") and "View History" or "Unavailable" end, function()
-                            staffCasesCommand("viewwarns", account.steamID)
-                        end, function()
-                            return lia.command.hasAccess(LocalPlayer(), "viewwarns")
-                        end)
-                        createLinkRow(stats, "Tickets", function() return lia.command.hasAccess(LocalPlayer(), "viewtickets") and "View Requests" or "Unavailable" end, function()
-                            staffCasesCommand("viewtickets", account.steamID)
-                        end, function()
-                            return lia.command.hasAccess(LocalPlayer(), "viewtickets")
-                        end)
+                        createLinkRow(stats, "Warnings", function() return lia.command.hasAccess(LocalPlayer(), "viewwarns") and "View History" or "Unavailable" end, function() staffCasesCommand("viewwarns", account.steamID) end, function() return lia.command.hasAccess(LocalPlayer(), "viewwarns") end)
+                        createLinkRow(stats, "Tickets", function() return lia.command.hasAccess(LocalPlayer(), "viewtickets") and "View Requests" or "Unavailable" end, function() staffCasesCommand("viewtickets", account.steamID) end, function() return lia.command.hasAccess(LocalPlayer(), "viewtickets") end)
                         if LocalPlayer():hasPrivilege("manageFlags") then
                             local flagSection = createSection(detailPanel, string.upper(L("charFlagsTitle")), 112)
                             createInfoRow(flagSection, "Current Flags", function() return row.Flags ~= "" and row.Flags or L("none") end, function() return row.Flags ~= "" and accent or mutedTextColor end)
@@ -2017,7 +2009,6 @@ function MODULE:PopulateAdminTabs(pages)
             drawFunc = function(panel) self:OpenStaffCases(panel) end
         })
     end
-
 end
 
 spawnmenu.AddContentType("inventoryitem", function(container, data)

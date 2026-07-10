@@ -33,10 +33,7 @@ end
 
 function MODULE:LoadData()
     local storedWords = self:getData({})
-    if not istable(storedWords) or table.IsEmpty(storedWords) then
-        storedWords = lia.data.get("chatbox_filtered_words", {})
-    end
-
+    if not istable(storedWords) or table.IsEmpty(storedWords) then storedWords = lia.data.get("chatbox_filtered_words", {}) end
     self.FilteredWords = buildNormalizedWordList(storedWords)
     self:SaveData()
 end

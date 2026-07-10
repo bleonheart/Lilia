@@ -324,6 +324,7 @@ net.Receive("liaRequestStaffCases", function(_, client)
                 live = true
             }
         end
+
         pendingFetches = pendingFetches + 1
         lia.db.select({"timestamp", "requester", "requesterSteamID", "admin", "adminSteamID", "message"}, "ticketclaims"):next(function(res)
             local historicalCount = #(res.results or {})
@@ -360,9 +361,7 @@ net.Receive("liaRequestStaffCases", function(_, client)
         end)
     end
 
-    if pendingFetches == 0 then
-        lia.net.writeBigTable(client, "liaStaffCasesSnapshot", payload)
-    end
+    if pendingFetches == 0 then lia.net.writeBigTable(client, "liaStaffCasesSnapshot", payload) end
 end)
 
 local function buildFullCharListPage(client, requestID, offset, limit)
@@ -416,6 +415,7 @@ LIMIT %d OFFSET %d]], safeLimit, safeOffset)
                         if jsonDecoded then flags = jsonDecoded[1] or jsonDecoded.flags or "" end
                     end
                 end
+
                 if stored then
                     local loginTime = stored:getLoginTime() or os.time()
                     playTime = stored:getPlayTime() + os.time() - loginTime
@@ -760,6 +760,7 @@ net.Receive("liaRequestOnlineStaffData", function(_, client)
                 jails = 0,
                 strips = 0
             }
+
             steamIDLookup[steamID] = staffData[#staffData]
         end
     end
@@ -787,6 +788,7 @@ net.Receive("liaRequestOnlineStaffData", function(_, client)
         plyjail = "jails",
         plystrip = "strips"
     }
+
     local function finishQuery()
         completedQueries = completedQueries + 1
         if completedQueries >= totalQueries then d:resolve(staffData) end
@@ -801,21 +803,26 @@ net.Receive("liaRequestOnlineStaffData", function(_, client)
                 local entry = steamIDLookup[row.steamID]
                 if entry then entry.warnings = tonumber(row.count) or 0 end
             end
+
             finishQuery()
         end)
+
         lia.db.query("SELECT adminSteamID AS steamID, COUNT(*) AS count FROM lia_ticketclaims WHERE adminSteamID IN (" .. steamIDFilter .. ") GROUP BY adminSteamID", function(rows)
             for _, row in ipairs(rows or {}) do
                 local entry = steamIDLookup[row.steamID]
                 if entry then entry.tickets = tonumber(row.count) or 0 end
             end
+
             finishQuery()
         end)
+
         lia.db.query("SELECT staffSteamID AS steamID, action, COUNT(*) AS count FROM lia_staffactions WHERE staffSteamID IN (" .. steamIDFilter .. ") GROUP BY staffSteamID, action", function(rows)
             for _, row in ipairs(rows or {}) do
                 local entry = steamIDLookup[row.steamID]
                 local field = actionFieldMap[row.action]
                 if entry and field then entry[field] = tonumber(row.count) or 0 end
             end
+
             finishQuery()
         end)
     end
