@@ -79,9 +79,9 @@ end
 ## Example
 
 ```lua
-SCHEMA.name = "Mojave Reborn"
+SCHEMA.name = "A Lilia Schema"
 SCHEMA.author = "Lilia Team"
-SCHEMA.desc = "A wasteland roleplay schema focused on survival, factions, and exploration."
+SCHEMA.desc = "A roleplay gamemode."
 SCHEMA.icon = "materials/mymod/schema_logo.png"
 
 SCHEMA.changelog = {

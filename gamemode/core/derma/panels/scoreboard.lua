@@ -1,12 +1,18 @@
 ﻿local PANEL = {}
+local frameColor = Color(4, 14, 19, 248)
+local headerColor = Color(5, 18, 24, 252)
+local panelColor = Color(6, 21, 28, 246)
 local rowColors = {
-    [0] = Color(14, 22, 33, 238),
-    [1] = Color(17, 26, 38, 238)
+    [0] = Color(6, 19, 27, 246),
+    [1] = Color(8, 23, 31, 246)
 }
 
-local borderColor = Color(78, 130, 165, 110)
-local dividerColor = Color(255, 255, 255, 24)
-local mutedTextColor = Color(178, 194, 207)
+local borderColor = Color(77, 105, 114, 105)
+local dividerColor = Color(192, 211, 218, 24)
+local mutedTextColor = Color(160, 180, 188)
+local clockIconMaterial = Material("icon16/clock.png", "smooth")
+local sectionAccentColor = Color(171, 113, 61)
+local positiveColor = Color(92, 225, 180)
 local function wrap(text, maxWidth, font)
     surface.SetFont(font)
     local words, lines, current = {}, {}, ""
@@ -49,7 +55,7 @@ local function getColorLuminance(color)
     return color.r * 0.2126 + color.g * 0.7152 + color.b * 0.0722
 end
 
-function getPingColor(ping)
+local function getPingColor(ping)
     if ping <= 60 then return Color(92, 225, 180) end
     if ping <= 120 then return Color(239, 198, 98) end
     return Color(235, 104, 104)
@@ -63,20 +69,20 @@ local function getValidMaterial(path)
 end
 
 local function paintScoreboardHeader(header, w, h, accentColor)
-    lia.util.drawBlur(header, 4, 2, 255)
-    local background = tintColor(Color(11, 22, 31, 255), accentColor, 0.18, 255)
-    draw.RoundedBox(8, 0, 0, w, h, background)
-    draw.RoundedBoxEx(8, 0, 0, 6, h, accentColor, true, false, true, false)
-    surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 75)
+    lia.util.drawBlur(header, 3, 2, 220)
+    draw.RoundedBox(2, 0, 0, w, h, headerColor)
+    surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 220)
+    surface.DrawRect(0, 0, 3, h)
+    surface.SetDrawColor(borderColor)
     surface.DrawOutlinedRect(0, 0, w, h, 1)
-    surface.SetDrawColor(255, 255, 255, 12)
-    surface.DrawLine(10, h - 1, w - 10, h - 1)
+    surface.SetDrawColor(sectionAccentColor.r, sectionAccentColor.g, sectionAccentColor.b, 70)
+    surface.DrawLine(12, h - 1, w - 12, h - 1)
 end
 
 function PANEL:ApplyConfig()
     local screenW, screenH = ScrW(), ScrH()
-    local w = screenW * lia.config.get("sbWidth", 0.35)
-    local h = screenH * lia.config.get("sbHeight", 0.65)
+    local w = screenW * lia.config.get("sbWidth", 0.66)
+    local h = screenH * lia.config.get("sbHeight", 0.68)
     self:SetSize(w, h)
     local dock = string.lower(lia.config.get("sbDock", "center"))
     if dock == "left" then
@@ -89,44 +95,24 @@ function PANEL:ApplyConfig()
 end
 
 local function paintServerHeader(header, w, h, accentColor)
-    lia.util.drawBlur(header, 4, 2, 255)
-    local startColor = tintColor(Color(10, 24, 30, 255), accentColor, 0.16, 255)
-    local endColor = tintColor(Color(7, 17, 24, 255), accentColor, 0.08, 255)
-    local steps = 64
-    local stepWidth = math.ceil(w / steps)
-    for i = 0, steps - 1 do
-        local fraction = i / (steps - 1)
-        local color = Color(Lerp(fraction, startColor.r, endColor.r), Lerp(fraction, startColor.g, endColor.g), Lerp(fraction, startColor.b, endColor.b), 255)
-        surface.SetDrawColor(color)
-        surface.DrawRect(math.floor(i * w / steps), 0, stepWidth + 1, h)
-    end
-
-    draw.RoundedBoxEx(8, 0, 0, 5, h, accentColor, true, false, true, false)
-    surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 95)
+    lia.util.drawBlur(header, 3, 2, 230)
+    draw.RoundedBox(2, 0, 0, w, h, headerColor)
+    surface.SetDrawColor(borderColor)
     surface.DrawOutlinedRect(0, 0, w, h, 1)
-    surface.SetDrawColor(255, 255, 255, 14)
-    surface.DrawLine(12, h - 1, w - 12, h - 1)
+    surface.SetDrawColor(sectionAccentColor.r, sectionAccentColor.g, sectionAccentColor.b, 210)
+    surface.DrawRect(0, h - 2, w, 2)
+    surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 180)
+    surface.DrawRect(0, 0, 3, h - 2)
 end
 
 local function paintClassHeader(header, w, h, accentColor)
-    lia.util.drawBlur(header, 4, 2, 255)
-    local startColor = Color(accentColor.r, accentColor.g, accentColor.b, 255)
-    local endColor = tintColor(accentColor, Color(8, 18, 28), 0.55, 255)
-    local edgeColor = Color(78, 130, 165, 255)
-    local steps = 64
-    local stepWidth = math.ceil(w / steps)
-    for i = 0, steps - 1 do
-        local fraction = i / (steps - 1)
-        local eased = fraction * fraction
-        local color = Color(Lerp(eased, startColor.r, endColor.r), Lerp(eased, startColor.g, endColor.g), Lerp(eased, startColor.b, endColor.b), 255)
-        surface.SetDrawColor(color)
-        surface.DrawRect(math.floor(i * w / steps), 0, stepWidth + 1, h)
-    end
-
-    draw.RoundedBoxEx(8, 0, 0, 5, h, edgeColor, true, false, true, false)
-    surface.SetDrawColor(edgeColor.r, edgeColor.g, edgeColor.b, 140)
+    lia.util.drawBlur(header, 2, 2, 190)
+    draw.RoundedBox(1, 0, 0, w, h, panelColor)
+    surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 220)
+    surface.DrawRect(0, 0, 3, h)
+    surface.SetDrawColor(borderColor)
     surface.DrawOutlinedRect(0, 0, w, h, 1)
-    surface.SetDrawColor(255, 255, 255, 16)
+    surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 38)
     surface.DrawLine(10, h - 1, w - 10, h - 1)
 end
 
@@ -141,12 +127,19 @@ function PANEL:Init()
     self:SetCenterTitle("")
     self:SetDraggable(false)
     self:LiteMode()
+    self.Paint = function(panel, w, h)
+        lia.util.drawBlur(panel, 4, 2, 235)
+        draw.RoundedBox(2, 0, 0, w, h, frameColor)
+        surface.SetDrawColor(borderColor)
+        surface.DrawOutlinedRect(0, 0, w, h, 1)
+    end
+
     self.playerOptionFrames = {}
-    local accentColor = lia.color.theme and (lia.color.theme.accent or lia.color.theme.theme) or Color(48, 194, 132)
     self.serverHeader = self:Add("DPanel")
     self.serverHeader:Dock(TOP)
-    self.serverHeader:DockMargin(0, 0, 0, 8)
-    self.serverHeader:SetTall(math.Clamp(ScrH() * 0.082, 72, 90))
+    self.serverHeader:DockMargin(0, 0, 0, 6)
+    self.serverHeader:SetTall(math.Clamp(ScrH() * 0.07, 64, 78))
+    local accentColor = lia.color.theme and (lia.color.theme.accent or lia.color.theme.theme) or Color(48, 194, 132)
     self.serverHeader.Paint = function(header, w, h) paintServerHeader(header, w, h, accentColor) end
     local schemaLogoMaterial = SCHEMA and getValidMaterial(SCHEMA.icon) or nil
     if schemaLogoMaterial then
@@ -164,10 +157,10 @@ function PANEL:Init()
     self.onlineBadge = self.serverHeader:Add("DPanel")
     self.onlineBadge:SetMouseInputEnabled(false)
     self.onlineBadge.Paint = function(_, w, h)
-        draw.RoundedBox(6, 0, 0, w, h, Color(7, 24, 29, 230))
-        surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 110)
+        draw.RoundedBox(1, 0, 0, w, h, panelColor)
+        surface.SetDrawColor(borderColor)
         surface.DrawOutlinedRect(0, 0, w, h, 1)
-        draw.RoundedBox(h * 0.18, 14, h * 0.41, h * 0.18, h * 0.18, accentColor)
+        draw.RoundedBox(h * 0.16, 14, h * 0.42, h * 0.16, h * 0.16, sectionAccentColor)
     end
 
     self.onlineLabel = self.onlineBadge:Add("DLabel")
@@ -175,6 +168,22 @@ function PANEL:Init()
     self.onlineLabel:SetTextColor(color_white)
     self.onlineLabel:SetContentAlignment(5)
     self.onlineLabel:SetMouseInputEnabled(false)
+    self.timeBadge = self.serverHeader:Add("DPanel")
+    self.timeBadge:SetMouseInputEnabled(false)
+    self.timeBadge.Paint = function(_, w, h)
+        draw.RoundedBox(1, 0, 0, w, h, panelColor)
+        surface.SetDrawColor(borderColor)
+        surface.DrawOutlinedRect(0, 0, w, h, 1)
+        surface.SetMaterial(clockIconMaterial)
+        surface.SetDrawColor(255, 255, 255, 220)
+        surface.DrawTexturedRect(10, math.floor((h - 16) * 0.5), 16, 16)
+    end
+
+    self.timeLabel = self.timeBadge:Add("DLabel")
+    self.timeLabel:SetFont("LiliaFont.17")
+    self.timeLabel:SetTextColor(color_white)
+    self.timeLabel:SetContentAlignment(5)
+    self.timeLabel:SetMouseInputEnabled(false)
     self.serverHeader.PerformLayout = function(_, w, h)
         local padding = 22
         local logoSize = IsValid(self.serverLogo) and math.min(h - 24, 48) or 0
@@ -187,21 +196,22 @@ function PANEL:Init()
 
         self.serverTitle:SizeToContents()
         self.serverTitle:SetPos(titleX, (h - self.serverTitle:GetTall()) * 0.5)
-        local badgeW = math.Clamp(w * 0.145, 130, 165)
-        local badgeH = math.Clamp(h * 0.52, 38, 46)
+        local badgeW = math.Clamp(w * 0.12, 120, 150)
+        local timeBadgeW = math.Clamp(w * 0.16, 150, 190)
+        local badgeH = math.Clamp(h * 0.54, 36, 42)
+        self.timeBadge:SetSize(timeBadgeW, badgeH)
+        self.timeBadge:SetPos(w - padding - timeBadgeW, (h - badgeH) * 0.5)
+        self.timeLabel:SetPos(28, 0)
+        self.timeLabel:SetSize(timeBadgeW - 34, badgeH)
         self.onlineBadge:SetSize(badgeW, badgeH)
-        self.onlineBadge:SetPos(w - padding - badgeW, (h - badgeH) * 0.5)
+        self.onlineBadge:SetPos(w - padding - timeBadgeW - badgeW - 10, (h - badgeH) * 0.5)
         self.onlineLabel:SetPos(24, 0)
         self.onlineLabel:SetSize(badgeW - 30, badgeH)
     end
 
-    local viewer = LocalPlayer()
-    local viewerTeam = IsValid(viewer) and viewer:Team() or nil
-    local viewerFaction = viewerTeam and lia.faction and lia.faction.indices and lia.faction.indices[viewerTeam] or nil
-    local viewerCanSeeAllClasses = viewerFaction and viewerFaction.scoreboardSeeAllClasses or false
     local scroll = self:Add("liaScrollPanel")
     scroll:Dock(FILL)
-    scroll:DockMargin(1, 0, 1, 0)
+    scroll:DockMargin(10, 0, 10, 10)
     scroll.VBar:SetWide(0)
     local layout = scroll:Add("DListLayout")
     layout:Dock(TOP)
@@ -224,13 +234,13 @@ function PANEL:Init()
         local facCat = layout:Add("DCollapsibleCategory")
         facCat:SetLabel("")
         facCat:SetExpanded(true)
-        facCat:DockMargin(0, 0, 0, 8)
+        facCat:DockMargin(0, 0, 0, 6)
         local factionLogo
         local factionTitleLabel
         local factionSubtitleLabel
         local factionMemberLabel
         if IsValid(facCat.Header) then
-            facCat.Header:SetTall(math.Clamp(ScrH() * 0.08, 68, 90))
+            facCat.Header:SetTall(math.Clamp(ScrH() * 0.062, 56, 70))
             facCat.Header.Paint = function() end
             facCat.Header.PaintOver = function(_, w, h)
                 paintScoreboardHeader(facCat.Header, w, h, facColor)
@@ -244,12 +254,12 @@ function PANEL:Init()
 
                 if factionSubtitle ~= "" then
                     draw.SimpleText(factionTitle, "LiliaFont.25b", textX, h * 0.25, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                    draw.SimpleText(factionSubtitle, "LiliaFont.16", textX, h * 0.68, tintColor(Color(150, 180, 195), facColor, 0.55, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(factionSubtitle, "LiliaFont.16", textX, h * 0.68, mutedTextColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 else
                     draw.SimpleText(factionTitle, "LiliaFont.25b", textX, h * 0.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 end
 
-                if IsValid(factionMemberLabel) then draw.SimpleText(factionMemberLabel:GetText(), "LiliaFont.16", w - 20, h * 0.5, tintColor(Color(180, 205, 215), facColor, 0.55, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER) end
+                if IsValid(factionMemberLabel) then draw.SimpleText(factionMemberLabel:GetText(), "LiliaFont.16", w - 20, h * 0.5, mutedTextColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER) end
             end
 
             local factionLogoMaterial = getValidMaterial(facData.logo)
@@ -322,7 +332,7 @@ function PANEL:Init()
                 local cat = facCont:Add("DCollapsibleCategory")
                 cat:SetLabel("")
                 cat:SetExpanded(true)
-                cat:DockMargin(8, 4, 8, 0)
+                cat:DockMargin(8, 3, 8, 0)
                 local classColor = resolveHeaderColor(clsData.color, facColor)
                 if getColorLuminance(classColor) < 45 then classColor = Color(accentColor.r, accentColor.g, accentColor.b, accentColor.a or 255) end
                 local headerClassColor = Color(classColor.r, classColor.g, classColor.b, classColor.a or 255)
@@ -330,7 +340,7 @@ function PANEL:Init()
                 local classLogo
                 local classLabel
                 if IsValid(cat.Header) then
-                    cat.Header:SetTall(42)
+                    cat.Header:SetTall(36)
                     cat.Header.Paint = function(header, w, h) end
                     cat.Header.PaintOver = function(_, w, h)
                         paintClassHeader(cat.Header, w, h, headerClassColor)
@@ -353,9 +363,9 @@ function PANEL:Init()
                             textX = textX + 30
                         end
 
-                        draw.SimpleText(string.upper(L(clsData.name)), "LiliaFont.15b", textX, centerY, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(string.upper(L(clsData.name)), "LiliaFont.15b", textX, centerY, tintColor(mutedTextColor, headerClassColor, 0.45, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                         local count = IsValid(list) and list:ChildCount() or 0
-                        draw.SimpleText(count == 1 and "1 PLAYER" or count .. " PLAYERS", "LiliaFont.16", w - 14, centerY, tintColor(mutedTextColor, headerClassColor, 0.7, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(count == 1 and "1 PLAYER" or count .. " PLAYERS", "LiliaFont.16", w - 14, centerY, mutedTextColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
                     end
 
                     local classLogoMaterial = getValidMaterial(clsData.logo)
@@ -404,6 +414,7 @@ function PANEL:Think()
         self.onlineLabel:SetText(online .. " Online")
     end
 
+    if IsValid(self.timeLabel) then self.timeLabel:SetText("Server Time: " .. os.date("%H:%M")) end
     if (self.nextUpdate or 0) > CurTime() then return end
     for _, ply in player.Iterator() do
         local factionData = lia.faction.indices[ply:Team()]
@@ -452,8 +463,8 @@ end
 function PANEL:addPlayer(ply, parent)
     local slot = parent:Add("DPanel")
     slot:Dock(TOP)
-    slot:DockMargin(10, 4, 10, 0)
-    local height = math.Clamp(ScrH() * 0.075, 64, 84)
+    slot:DockMargin(10, 3, 10, 0)
+    local height = math.Clamp(ScrH() * 0.068, 60, 76)
     slot:SetTall(height)
     slot.player = ply
     slot.character = ply:getChar()
@@ -463,12 +474,13 @@ function PANEL:addPlayer(ply, parent)
     slot.Paint = function(s, w, h)
         local index = s.rowIndex or 0
         local base = rowColors[index % 2]
-        draw.RoundedBox(6, 0, 0, w, h, base)
+        draw.RoundedBox(1, 0, 0, w, h, base)
         surface.SetDrawColor(borderColor)
         surface.DrawOutlinedRect(0, 0, w, h, 1)
-        if s.pingX then
+        if s.statusX and s.pingX then
             surface.SetDrawColor(dividerColor)
-            surface.DrawLine(s.pingX - 12, 14, s.pingX - 12, h - 14)
+            surface.DrawLine(s.statusX - 10, 12, s.statusX - 10, h - 12)
+            surface.DrawLine(s.pingX - 10, 12, s.pingX - 10, h - 12)
         end
 
         if IsValid(ply) and s.pingX then
@@ -564,7 +576,7 @@ function PANEL:addPlayer(ply, parent)
     end)
 
     slot.name = vgui.Create("DLabel", slot)
-    slot.name:SetFont("LiliaFont.25b")
+    slot.name:SetFont("LiliaFont.17")
     slot.name:SetTextColor(color_white)
     slot.name:SetExpensiveShadow(1, Color(0, 0, 0, 190))
     slot.desc = vgui.Create("DLabel", slot)
@@ -574,21 +586,30 @@ function PANEL:addPlayer(ply, parent)
     slot.desc:SetFont("LiliaFont.16")
     slot.desc:SetTextColor(mutedTextColor)
     slot.desc:SetExpensiveShadow(1, Color(0, 0, 0, 100))
+    slot.status = vgui.Create("DLabel", slot)
+    slot.status:SetFont("LiliaFont.16")
+    slot.status:SetText("Online")
+    slot.status:SetTextColor(positiveColor)
+    slot.status:SetContentAlignment(5)
     slot.ping = vgui.Create("DLabel", slot)
     slot.ping:SetFont("LiliaFont.16")
     slot.ping:SetContentAlignment(5)
     function slot:layout()
         local totalW = self:GetWide()
-        local pingColumnW = math.Clamp(totalW * 0.12, 90, 125)
+        local pingColumnW = math.Clamp(totalW * 0.1, 82, 110)
+        local statusColumnW = math.Clamp(totalW * 0.1, 82, 105)
         local contentX = iconSize + margin * 2
+        self.statusX = totalW - pingColumnW - statusColumnW
         self.pingX = totalW - pingColumnW
-        local textWidth = math.max(80, self.pingX - contentX - 18)
+        local textWidth = math.max(80, self.statusX - contentX - 18)
         self.name:SetPos(contentX, height * 0.14)
-        self.name:SetSize(textWidth, height * 0.36)
-        self.desc:SetPos(contentX, height * 0.53)
+        self.name:SetSize(textWidth, height * 0.34)
+        self.desc:SetPos(contentX, height * 0.52)
         self.desc:SetSize(textWidth, height * 0.3)
-        self.ping:SetPos(self.pingX + 26, 0)
-        self.ping:SetSize(pingColumnW - 30, height)
+        self.status:SetPos(self.statusX, 0)
+        self.status:SetSize(statusColumnW - 10, height)
+        self.ping:SetPos(self.pingX + 24, 0)
+        self.ping:SetSize(pingColumnW - 26, height)
     end
 
     slot.ping.Think = function(label)

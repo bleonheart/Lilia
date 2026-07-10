@@ -1555,20 +1555,8 @@ end
 
 local lastRKeyState = false
 function GM:Think()
-    local itemIcon, itemTable
-    if IsValid(lia.item.held) and lia.item.held.itemTable then
-        itemIcon = lia.item.held
-        itemTable = lia.item.held.itemTable
-    else
-        for _, panel in ipairs(vgui.GetAll()) do
-            if panel:GetName() == "liaGridInventoryPanel" and IsValid(panel.hoveredItem) then
-                itemIcon = panel.hoveredItem
-                itemTable = panel.hoveredItem.itemTable
-                break
-            end
-        end
-    end
-
+    local itemIcon = IsValid(lia.item.held) and lia.item.held or nil
+    local itemTable = itemIcon and itemIcon.itemTable or nil
     if not itemTable then return end
     local rKeyPressed = input.IsKeyDown(KEY_R)
     if rKeyPressed and not lastRKeyState then

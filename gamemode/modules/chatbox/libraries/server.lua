@@ -32,12 +32,23 @@ function MODULE:GetFilteredWords()
 end
 
 function MODULE:LoadData()
-    self.FilteredWords = lia.data.get("chatbox_filtered_words", {})
+    local storedWords = self:getData({})
+    if not istable(storedWords) or table.IsEmpty(storedWords) then
+        storedWords = lia.data.get("chatbox_filtered_words", {})
+    end
+
+    self.FilteredWords = buildNormalizedWordList(storedWords)
     self:SaveData()
+end
+
+function MODULE:PlayerLoadedCharacter(client)
+    if not self:CanManageFilteredWords(client) then return end
+    self:SyncFilteredWords(client)
 end
 
 function MODULE:SaveData()
     self.FilteredWords = buildNormalizedWordList(self.FilteredWords or {})
+    self:setData(self.FilteredWords, true, true)
     lia.data.set("chatbox_filtered_words", self.FilteredWords)
 end
 

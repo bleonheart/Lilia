@@ -38,7 +38,6 @@
         client.invTransferTransaction = nil
         if err then
             lia.error(err)
-            debug.Trace()
         end
 
         if IsValid(client) then lia.log.add(client, "itemTransferFailed", item:getName(), oldInventory:getID(), newInventory and newInventory:getID() or 0) end

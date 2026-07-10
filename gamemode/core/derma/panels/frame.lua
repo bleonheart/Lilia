@@ -433,7 +433,6 @@ function PANEL:Init()
     self:Center()
     self:SetDraggable(true)
     self:SetTitle(L("inv"))
-    self:SetIcon("icon16/box.png")
 end
 
 function PANEL:setInventory(inventory)

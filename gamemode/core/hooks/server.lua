@@ -1784,6 +1784,10 @@ end
 
 function GM:CanPlayerInteractItem(client, action, item)
     action = string.lower(action)
+    local inventory = lia.inventory.instances[item.invID]
+    if action == "equip" then
+        print("[LILIA DEBUG][CanPlayerInteractItem]", "client=", IsValid(client) and client:Nick() or "nil", "item=", item and item.uniqueID or "nil", "invID=", item and item.invID or "nil", "inventoryType=", inventory and inventory.typeID or "nil", "isStorage=", inventory and tostring(inventory.isStorage) or "nil", "isExternalInventory=", inventory and tostring(inventory.isExternalInventory) or "nil", "isBag=", inventory and tostring(inventory.isBag) or "nil", "bagItemID=", inventory and tostring(inventory:getData("item")) or "nil", "char=", inventory and tostring(inventory:getData("char")) or "nil")
+    end
     local hasNoItemCooldown = client:hasPrivilege("noItemCooldown")
     lia.debug("[Permissions]", "Permission Check for hook GM:CanPlayerInteractItem", "action=", tostring(action), "hasPrivilege(noItemCooldown)=", tostring(hasNoItemCooldown), "finalResult=", tostring(hasNoItemCooldown))
     if hasNoItemCooldown then return true end
@@ -1854,13 +1858,19 @@ end
 
 function GM:CanPlayerEquipItem(client, item)
     local inventory = lia.inventory.instances[item.invID]
+    local bagItemID = inventory and inventory:getData("item")
+    local isBagInventory = inventory and (inventory.isBag or bagItemID ~= nil)
+    print("[LILIA DEBUG][CanPlayerEquipItem]", "client=", IsValid(client) and client:Nick() or "nil", "item=", item and item.uniqueID or "nil", "invID=", item and item.invID or "nil", "inventoryType=", inventory and inventory.typeID or "nil", "isStorage=", inventory and tostring(inventory.isStorage) or "nil", "isExternalInventory=", inventory and tostring(inventory.isExternalInventory) or "nil", "isBag=", inventory and tostring(inventory.isBag) or "nil", "bagItemID=", tostring(bagItemID), "derivedBagInventory=", tostring(isBagInventory), "char=", inventory and tostring(inventory:getData("char")) or "nil")
     if client.equipDelay ~= nil then
+        print("[LILIA DEBUG][CanPlayerEquipItem]", "blockedReason=", "equipDelay")
         client:notifyWarningLocalized("switchCooldown")
         return false
-    elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
+    elseif inventory and (isBagInventory or inventory.isExternalInventory or inventory.isStorage) then
+        print("[LILIA DEBUG][CanPlayerEquipItem]", "blockedReason=", "forbiddenActionStorage")
         client:notifyErrorLocalized("forbiddenActionStorage")
         return false
     end
+    print("[LILIA DEBUG][CanPlayerEquipItem]", "result=", "allowed")
 end
 
 function GM:CanPlayerTakeItem(client, item)
