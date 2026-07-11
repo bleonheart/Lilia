@@ -423,18 +423,6 @@ local function staffCasesSeverityScore(caseData)
     return 1
 end
 
-local function staffCasesBuildLabel(parent, text, font, color, dock, tall)
-    local label = parent:Add("DLabel")
-    if dock then label:Dock(dock) end
-    if tall then label:SetTall(tall) end
-    label:SetFont(font or "LiliaFont.17")
-    label:SetText(text or "")
-    label:SetTextColor(color or lia.color.theme.text)
-    label:SetWrap(true)
-    label:SetAutoStretchVertical(true)
-    return label
-end
-
 function MODULE:GetStaffCasesPermissions(client)
     client = client or LocalPlayer()
     local canSeeTickets = IsValid(client) and (client:hasPrivilege("alwaysSeeTickets") or client:isStaffOnDuty()) or false
@@ -1760,7 +1748,6 @@ function MODULE:PopulateAdminTabs(pages)
                         end
 
                         local firstVisibleRow
-                        local firstVisibleButton
                         for _, row in ipairs(selectedAccount.characters or {}) do
                             local name = getCharacterName(row)
                             local faction = getCharacterFaction(row)
@@ -1800,7 +1787,6 @@ function MODULE:PopulateAdminTabs(pages)
                                 characterButtons[#characterButtons + 1] = button
                                 if not firstVisibleRow then
                                     firstVisibleRow = row
-                                    firstVisibleButton = button
                                 end
                             end
                         end

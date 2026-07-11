@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE 
+﻿local MODULE = MODULE
 function MODULE:OnPlayerJoinClass(client, class, oldClass)
     local info = lia.class.list[class]
     local info2 = lia.class.list[oldClass]
@@ -127,10 +127,7 @@ local function getNormalizedNPCClass(entity)
     local class = entity:GetClass()
     if class == "npc_turret_floor" then
         if not entity.liaNPCRelationsInitialized then
-            timer.Simple(0, function()
-                if IsValid(entity) then hook.Run("OnEntityCreated", entity) end
-            end)
-
+            timer.Simple(0, function() if IsValid(entity) then hook.Run("OnEntityCreated", entity) end end)
             entity.liaNPCRelationsInitialized = true
             return nil
         elseif bit.band(entity:GetSpawnFlags(), 512) ~= 0 then
@@ -138,10 +135,7 @@ local function getNormalizedNPCClass(entity)
         end
     elseif class == "npc_rollermine" then
         if not entity.liaNPCRelationsInitialized then
-            timer.Simple(0, function()
-                if IsValid(entity) then hook.Run("OnEntityCreated", entity) end
-            end)
-
+            timer.Simple(0, function() if IsValid(entity) then hook.Run("OnEntityCreated", entity) end end)
             entity.liaNPCRelationsInitialized = true
             return nil
         elseif bit.band(entity:GetSpawnFlags(), 262144) ~= 0 then
@@ -150,10 +144,7 @@ local function getNormalizedNPCClass(entity)
     elseif class == "npc_citizen" then
         local keys = entity:GetKeyValues()
         if not entity.liaNPCRelationsInitialized then
-            timer.Simple(0, function()
-                if IsValid(entity) then hook.Run("OnEntityCreated", entity) end
-            end)
-
+            timer.Simple(0, function() if IsValid(entity) then hook.Run("OnEntityCreated", entity) end end)
             entity.liaNPCRelationsInitialized = true
             return nil
         elseif keys.squadname and keys.squadname == "overwatch" then
@@ -235,7 +226,6 @@ local function applyAttributes(client, attr)
     client:SetViewOffsetDucked(offsetDuck)
     client:SetModelScale(1)
     MODULE:UpdateNPCRelations(client)
-
     if attr.scale and attr.scale ~= 1 then
         client:SetViewOffset(offset * attr.scale)
         client:SetViewOffsetDucked(offsetDuck * attr.scale)

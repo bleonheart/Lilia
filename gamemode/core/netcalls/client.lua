@@ -2131,9 +2131,7 @@ net.Receive("liaGroupPermChanged", function()
     if IsValid(lia.gui.usergroups) then
         local checks = lia.gui.usergroups.checks
         local row = checks and checks[group] and checks[group][privilege] or nil
-        if IsValid(row) then
-            row:InvalidateLayout(true)
-        end
+        if IsValid(row) then row:InvalidateLayout(true) end
     end
 end)
 

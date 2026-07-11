@@ -450,6 +450,7 @@ local function UpdateFactionRosterUI(panel, data)
         else
             draw.SimpleText("Browse and inspect faction members by faction.", "LiliaFont.17", 8, 18, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         end
+
         if isManagement then
             local badgeW = math.Clamp(math.floor(panelW * 0.22), 210, 300)
             local badgeH = 42

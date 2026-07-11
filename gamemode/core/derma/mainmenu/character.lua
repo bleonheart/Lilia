@@ -838,9 +838,7 @@ function PANEL:createChangelogDisplay()
         local text = change.text or change.message or change.description or change.title or change.label or change.name or change.change or change[1]
         if not text then return "" end
         local category = change.type or change.category or change.tag or change.kind
-        if isstring(category) and category ~= "" then
-            text = "[" .. category .. "] " .. tostring(text)
-        end
+        if isstring(category) and category ~= "" then text = "[" .. category .. "] " .. tostring(text) end
         return tostring(text)
     end
 
@@ -878,10 +876,7 @@ function PANEL:createChangelogDisplay()
     end
 
     local changelogContent = SCHEMA.changelog or SCHEMA.Changelog
-    if istable(changelogContent) then
-        changelogContent = changelogContent.entries or changelogContent.releases or changelogContent.versions or changelogContent.items or changelogContent.list or changelogContent
-    end
-
+    if istable(changelogContent) then changelogContent = changelogContent.entries or changelogContent.releases or changelogContent.versions or changelogContent.items or changelogContent.list or changelogContent end
     if istable(changelogContent) then
         local isKeyedFormat = false
         local isSimpleList = true
@@ -901,7 +896,6 @@ function PANEL:createChangelogDisplay()
             end
 
             table.sort(sortedVersions, versionSorter)
-
             for _, version in ipairs(sortedVersions) do
                 local entry = changelogContent[version]
                 local versionText = L("versionNumber", version)

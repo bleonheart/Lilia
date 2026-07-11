@@ -410,6 +410,7 @@ function PANEL:Think()
         local online = player.GetCount()
         self.onlineLabel:SetText(online .. " Online")
     end
+
     if (self.nextUpdate or 0) > CurTime() then return end
     for _, ply in player.Iterator() do
         local factionData = lia.faction.indices[ply:Team()]
