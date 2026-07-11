@@ -588,12 +588,11 @@ function PANEL:CreateIdentityAction(parent, width, icon, title, value, doClick)
         local borderAlpha = hovered and 100 or 60
         local background = hovered and Color(16, 34, 40, 235) or Color(13, 30, 35, 225)
         drawPanel(0, 0, w, h, 6, background, Color(accent.r, accent.g, accent.b, borderAlpha))
-        drawIcon(icon, 16, math.floor(h * 0.5) - 10, 20, color_white)
         if title ~= "" then
-            draw.SimpleText(title, "LiliaFont.16", 48, 8, Color(165, 187, 188), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-            draw.SimpleText(value or "", "LiliaFont.18", 48, h - 8, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+            draw.SimpleText(title, "LiliaFont.16", 16, 8, Color(165, 187, 188), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            draw.SimpleText(value or "", "LiliaFont.18", 16, h - 8, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
         else
-            draw.SimpleText(value or "", "LiliaFont.18", 48, h * 0.5, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText(value or "", "LiliaFont.18", 16, h * 0.5, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end
     end
 
@@ -629,12 +628,10 @@ end
 function PANEL:CreateTextEntryWithBackgroundAndLabel(parent, name, labelText, marginBot, valueFunc, icon)
     local entry = parent:Add("DPanel")
     entry:Dock(FILL)
-    local hasIcon = icon and not icon:IsError()
-    local contentX = hasIcon and 84 or 18
+    local contentX = 18
     entry.Paint = function(_, w, h)
         local accent = getThemeColors()
         drawPanel(0, 0, w, h, 8, Color(10, 25, 30, 232), Color(accent.r, accent.g, accent.b, 45))
-        if hasIcon then drawIcon(icon, 22, math.floor(h * 0.5) - 22, 44, color_white) end
     end
 
     local lbl = entry:Add("DLabel")
@@ -691,12 +688,10 @@ end
 function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, minFunc, maxFunc, margin, valueFunc, icon)
     local entry = parent:Add("DPanel")
     entry:Dock(FILL)
-    local hasIcon = icon and not icon:IsError()
-    local contentX = hasIcon and 84 or 16
+    local contentX = 16
     entry.Paint = function(_, w, h)
         local accent = getThemeColors()
         drawPanel(0, 0, w, h, 8, Color(10, 25, 30, 232), Color(accent.r, accent.g, accent.b, 45))
-        if hasIcon then drawIcon(icon, 22, math.floor(h * 0.5) - 22, 44, color_white) end
         draw.SimpleText(labelText or "", "LiliaFont.17", contentX, 12, Color(165, 187, 188), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
 
@@ -768,8 +763,7 @@ function PANEL:GenerateSections()
             frame.Paint = function(_, w, h)
                 local accent = getThemeColors()
                 drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
-                drawIcon(Material("icon16/information.png", "smooth"), 17, 16, 16, color_white)
-                draw.SimpleText(string.upper(L(section.name)), "LiliaFont.18", 43, 14, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                draw.SimpleText(string.upper(L(section.name)), "LiliaFont.18", 17, 14, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             end
 
             local grid = frame:Add("DPanel")

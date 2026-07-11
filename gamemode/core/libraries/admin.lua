@@ -3215,17 +3215,23 @@ else
             editable = false
         }
 
-        local function applyToolbarButtonStyle(button, label)
+        local function applyToolbarButtonStyle(button, label, iconPath, variant)
+            local iconMaterial = Material(iconPath, 'smooth')
             button:SetText('')
             button:SetCursor('hand')
             button.Paint = function(btn, w, h)
                 local enabled = btn:IsEnabled()
                 local hovered = enabled and btn:IsHovered()
-                local background = hovered and Color(accent.r, accent.g, accent.b, 20) or Color(8, 15, 27, 230)
-                local outline = enabled and Color(accent.r, accent.g, accent.b, hovered and 120 or 72) or Color(255, 255, 255, 20)
-                local foreground = enabled and textColor or Color(100, 108, 118)
+                local isAccent = variant == 'accent'
+                local isDanger = variant == 'danger'
+                local baseColor = isDanger and Color(194, 65, 65) or accent
+                local foreground = isAccent and baseColor or isDanger and baseColor or textColor
+                local background = hovered and Color(baseColor.r, baseColor.g, baseColor.b, isDanger and 14 or 18) or Color(8, 15, 27, 230)
+                local outline = enabled and Color(baseColor.r, baseColor.g, baseColor.b, hovered and 130 or isDanger and 76 or 72) or Color(255, 255, 255, 20)
+                if not enabled then foreground = Color(100, 108, 118) end
                 drawPermissionsPanel(0, 0, w, h, 5, background, outline)
-                draw.SimpleText(label, 'LiliaFont.16', w * 0.5, h * 0.5, foreground, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                drawPermissionsIcon(iconMaterial, 14, math.floor(h * 0.5) - 8, 16, foreground)
+                draw.SimpleText(label, 'LiliaFont.16', w * 0.5 + 8, h * 0.5, foreground, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
         end
 
@@ -3261,9 +3267,19 @@ else
             combo.Paint = function(self, w, h)
                 local hovered = self:IsHovered()
                 local background = hovered and Color(accent.r, accent.g, accent.b, 12) or Color(8, 15, 27, 235)
+                local value = self:GetValue()
+                value = value ~= '' and value or 'Select'
                 drawPermissionsPanel(0, 0, w, h, 5, background, Color(accent.r, accent.g, accent.b, 72))
-                draw.SimpleText(self:GetValue() ~= '' and self:GetValue() or 'Select', 'LiliaFont.16', 12, h * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(value, 'LiliaFont.16', 12, h * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 draw.SimpleText('▼', 'LiliaFont.16', w - 14, h * 0.5, mutedText, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
+
+            if IsValid(combo.TextEntry) then
+                combo.TextEntry:SetVisible(false)
+                combo.TextEntry:SetPaintBackground(false)
+                combo.TextEntry:SetDrawBackground(false)
+                combo.TextEntry:SetTextColor(Color(0, 0, 0, 0))
+                combo.TextEntry.Paint = function() end
             end
 
             if IsValid(combo.DropButton) then
@@ -3279,37 +3295,39 @@ else
         root.Paint = function() end
         local groupsPanel = root:Add('DPanel')
         groupsPanel:Dock(TOP)
-        groupsPanel:SetTall(156)
+        groupsPanel:SetTall(188)
         groupsPanel:DockMargin(0, 0, 0, 12)
         groupsPanel.Paint = function(_, w, h) drawPermissionsPanel(0, 0, w, h, 8, panel, border) end
         local groupsHeader = groupsPanel:Add('DPanel')
         groupsHeader:Dock(TOP)
-        groupsHeader:SetTall(40)
-        groupsHeader:DockMargin(14, 8, 14, 0)
+        groupsHeader:SetTall(42)
+        groupsHeader:DockMargin(14, 12, 14, 0)
         groupsHeader.Paint = function(_, w, h) draw.SimpleText('PERMISSION GROUPS', 'LiliaFont.17', 0, h * 0.5, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
         local createButton = groupsHeader:Add('DButton')
         createButton:Dock(RIGHT)
-        createButton:SetWide(140)
-        applyToolbarButtonStyle(createButton, 'Create Group')
+        createButton:SetWide(152)
+        createButton:DockMargin(0, 2, 0, 2)
+        applyToolbarButtonStyle(createButton, 'Create Group', 'icon16/add.png', 'accent')
         createButton.DoClick = promptCreateGroup
         local groupActions = groupsPanel:Add('DPanel')
         groupActions:Dock(BOTTOM)
-        groupActions:SetTall(34)
-        groupActions:DockMargin(14, 0, 14, 6)
+        groupActions:SetTall(40)
+        groupActions:DockMargin(14, 0, 14, 10)
         groupActions.Paint = function() end
         local deleteButton = groupActions:Add('DButton')
         deleteButton:Dock(RIGHT)
-        deleteButton:SetWide(124)
-        applyToolbarButtonStyle(deleteButton, 'Delete Group')
+        deleteButton:SetWide(170)
+        deleteButton:DockMargin(0, 2, 0, 2)
+        applyToolbarButtonStyle(deleteButton, 'Delete Group', 'icon16/delete.png', 'danger')
         local renameButton = groupActions:Add('DButton')
         renameButton:Dock(RIGHT)
-        renameButton:SetWide(124)
-        renameButton:DockMargin(0, 0, 8, 0)
-        applyToolbarButtonStyle(renameButton, 'Rename Group')
+        renameButton:SetWide(184)
+        renameButton:DockMargin(0, 2, 10, 2)
+        applyToolbarButtonStyle(renameButton, 'Rename Group', 'icon16/pencil.png')
         local groupScroller = groupsPanel:Add('DHorizontalScroller')
         groupScroller:Dock(FILL)
         groupScroller:DockMargin(14, 4, 14, 4)
-        groupScroller:SetOverlap(6)
+        groupScroller:SetOverlap(-20)
         if IsValid(groupScroller.btnLeft) then
             groupScroller.btnLeft:SetVisible(false)
             groupScroller.btnLeft:SetWide(0)
@@ -3340,12 +3358,13 @@ else
         rightPanel.Paint = function(_, w, h) drawPermissionsPanel(0, 0, w, h, 8, panel, border) end
         local filters = rightPanel:Add('DPanel')
         filters:Dock(TOP)
-        filters:SetTall(42)
-        filters:DockMargin(12, 12, 12, 0)
+        filters:SetTall(48)
+        filters:DockMargin(12, 14, 12, 0)
         filters.Paint = function() end
         local visibilityCombo = filters:Add('DComboBox')
         visibilityCombo:Dock(RIGHT)
         visibilityCombo:SetWide(170)
+        visibilityCombo:DockMargin(0, 2, 0, 2)
         styleComboBox(visibilityCombo)
         visibilityCombo:AddChoice('All Permissions', 'all', true)
         visibilityCombo:AddChoice('Changed Only', 'changed')
@@ -3355,10 +3374,11 @@ else
         local categoryCombo = filters:Add('DComboBox')
         categoryCombo:Dock(RIGHT)
         categoryCombo:SetWide(200)
-        categoryCombo:DockMargin(10, 0, 10, 0)
+        categoryCombo:DockMargin(10, 2, 10, 2)
         styleComboBox(categoryCombo)
         local searchWrap = filters:Add('DPanel')
         searchWrap:Dock(FILL)
+        searchWrap:DockMargin(0, 2, 0, 2)
         searchWrap:DockPadding(36, 0, 8, 0)
         searchWrap.Paint = function(_, w, h)
             drawPermissionsPanel(0, 0, w, h, 5, Color(8, 15, 27, 235), Color(accent.r, accent.g, accent.b, 72))
@@ -3377,7 +3397,7 @@ else
         searchEntry.Paint = function(self, w, h) self:DrawTextEntryText(textColor, accent, textColor) end
         local privilegeContainer = rightPanel:Add('DPanel')
         privilegeContainer:Dock(FILL)
-        privilegeContainer:DockMargin(12, 6, 12, 0)
+        privilegeContainer:DockMargin(12, 8, 12, 0)
         privilegeContainer.Paint = function() end
         local footer = rightPanel:Add('DPanel')
         footer:Dock(BOTTOM)
@@ -3450,13 +3470,15 @@ else
         end
 
         state.rebuildCategoryFilter = function()
+            state.rebuildingCategoryFilter = true
             categoryCombo:Clear()
-            categoryCombo:AddChoice('All Categories', false, state.selectedCategory == nil)
+            categoryCombo:AddChoice('All Categories', false)
             for _, category in ipairs(computeCategoryMap(lia.admin.groups or {})) do
-                categoryCombo:AddChoice(tostring(category.label), category.label, state.selectedCategory == category.label)
+                categoryCombo:AddChoice(tostring(category.label), category.label)
             end
 
             categoryCombo:SetValue(state.selectedCategory or 'All Categories')
+            state.rebuildingCategoryFilter = false
         end
 
         state.rebuildCategories = function()
@@ -3534,7 +3556,7 @@ else
 
             for _, groupName in ipairs(keys) do
                 local button = vgui.Create('DButton')
-                button:SetSize(236, 56)
+                button:SetSize(288, 72)
                 button:SetText('')
                 local iconPath = lia.admin.getUsergroupIcon(groupName) or 'icon16/group.png'
                 local iconMaterial = Material(iconPath, 'smooth')
@@ -3544,11 +3566,16 @@ else
                     local background = selected and Color(accent.r, accent.g, accent.b, 18) or hovered and Color(255, 255, 255, 5) or Color(7, 14, 24, 210)
                     local outline = selected and Color(accent.r, accent.g, accent.b, 132) or Color(accent.r, accent.g, accent.b, 38)
                     local titleColor = selected and Color(248, 247, 244) or textColor
-                    local descriptionColor = selected and accent or mutedText
+                    local descriptionColor = mutedText
                     drawPermissionsPanel(0, 0, w, h, 5, background, outline)
-                    drawPermissionsIcon(iconMaterial, 14, 16, 24, selected and Color(247, 244, 238) or Color(188, 197, 206))
-                    draw.SimpleText(groupName, 'LiliaFont.18', 48, 9, titleColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                    draw.SimpleText(getGroupDescription(groupName), 'LiliaFont.15', 48, 31, descriptionColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    if selected then
+                        surface.SetDrawColor(accent.r, accent.g, accent.b, 230)
+                        surface.DrawRect(0, 0, 3, h)
+                    end
+
+                    drawPermissionsIcon(iconMaterial, 16, math.floor(h * 0.5) - 12, 24, selected and Color(247, 244, 238) or Color(188, 197, 206))
+                    draw.SimpleText(groupName, 'LiliaFont.18', 50, 13, titleColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText(getGroupDescription(groupName), 'LiliaFont.15', 50, 37, descriptionColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                 end
 
                 button.DoClick = function()
@@ -3587,6 +3614,7 @@ else
         end
 
         categoryCombo.OnSelect = function(_, _, value, data)
+            if state.rebuildingCategoryFilter then return end
             state.selectedCategory = data == false and nil or data
             categoryCombo:SetValue(value or 'All Categories')
             state.rebuildCategories()

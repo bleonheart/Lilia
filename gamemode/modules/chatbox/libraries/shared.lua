@@ -474,8 +474,10 @@ lia.chat.register("adminchat", {
 MODULE.FilteredWords = MODULE.FilteredWords or {}
 function MODULE:PlayerSay(client, text)
     local lowerText = tostring(text or ""):lower()
+    print(string.format("[Lilia Chat Filter] PlayerSay check | client=%s | text=%q | activeWords=%s", IsValid(client) and client:Name() or "nil", tostring(text), util.TableToJSON(self.FilteredWords or {}, false) or "[]"))
     for _, filteredWord in ipairs(self.FilteredWords or {}) do
         if lowerText:find(filteredWord, 1, true) then
+            print(string.format("[Lilia Chat Filter] Blocked message | client=%s | match=%q | text=%q", IsValid(client) and client:Name() or "nil", filteredWord, tostring(text)))
             client:notifyLocalized("usedFilteredWord")
             return ""
         end
