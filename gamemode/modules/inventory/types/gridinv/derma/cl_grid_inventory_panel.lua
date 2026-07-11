@@ -47,30 +47,6 @@ local function getItemSearchText(item)
     return table.concat(values, " ")
 end
 
-local function getItemName(item)
-    local name = item.getName and item:getName() or item.name or item.uniqueID or ""
-    return tostring(name):lower()
-end
-
-local function getItemCategory(item)
-    return tostring(item.category or item.uniqueID or ""):lower()
-end
-
-local function getItemRarity(item)
-    local rarity = item.getData and item:getData("rarity") or item.rarity
-    return rarity == nil and "" or rarity
-end
-
-local function compareRarity(a, b)
-    local rarityA = getItemRarity(a)
-    local rarityB = getItemRarity(b)
-    if isnumber(rarityA) and isnumber(rarityB) and rarityA ~= rarityB then return rarityA > rarityB end
-    rarityA = tostring(rarityA):lower()
-    rarityB = tostring(rarityB):lower()
-    if rarityA ~= rarityB then return rarityA < rarityB end
-    return getItemName(a) < getItemName(b)
-end
-
 local function getItemDimensions(item, rotatedOverride)
     local rotated = rotatedOverride
     if rotated == nil then rotated = item:getData("rotated", false) end

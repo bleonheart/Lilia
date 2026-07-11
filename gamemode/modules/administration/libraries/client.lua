@@ -423,26 +423,6 @@ local function staffCasesSeverityScore(caseData)
     return 1
 end
 
-local function staffCasesMatchesSeverity(caseData, filterValue)
-    if filterValue == "all" then return true end
-    return string.lower(caseData.severityLabel or "") == filterValue
-end
-
-local function staffCasesMatchesClaim(caseData, filterValue)
-    if filterValue == "all" then return true end
-    if caseData.caseType ~= "ticket" then return true end
-    if filterValue == "claimed" then return caseData.claimed end
-    if filterValue == "unclaimed" then return not caseData.claimed end
-    return true
-end
-
-local function staffCasesMatchesOnline(caseData, filterValue)
-    if filterValue == "all" then return true end
-    if filterValue == "online" then return caseData.online end
-    if filterValue == "offline" then return not caseData.online end
-    return true
-end
-
 local function staffCasesBuildLabel(parent, text, font, color, dock, tall)
     local label = parent:Add("DLabel")
     if dock then label:Dock(dock) end
@@ -453,17 +433,6 @@ local function staffCasesBuildLabel(parent, text, font, color, dock, tall)
     label:SetWrap(true)
     label:SetAutoStretchVertical(true)
     return label
-end
-
-local function staffCasesCreateSection(parent, title, marginBottom)
-    local section = parent:Add("DPanel")
-    section:Dock(TOP)
-    section:DockMargin(0, 0, 0, marginBottom or 10)
-    section.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(10):Color(Color(255, 255, 255, 4)):Shape(lia.derma.SHAPE_IOS):Draw() end
-    section:DockPadding(12, 10, 12, 10)
-    local header = staffCasesBuildLabel(section, title, "LiliaFont.18", Color(225, 230, 235), TOP, 24)
-    header:DockMargin(0, 0, 0, 6)
-    return section
 end
 
 function MODULE:GetStaffCasesPermissions(client)
@@ -1317,7 +1286,6 @@ function MODULE:PopulateAdminTabs(pages)
                     local selectedSteamID
                     local selectedAccount
                     local selectedCharacter
-                    local selectedCharacterButton
                     local accountButtons = {}
                     local characterButtons = {}
                     local accounts = {}
@@ -1586,9 +1554,9 @@ function MODULE:PopulateAdminTabs(pages)
                         row:Dock(TOP)
                         row:SetTall(34)
                         row:SetText("")
-                        row.Paint = function(self, w, h)
+                        row.Paint = function(button, w, h)
                             local enabled = not enabledFunc or enabledFunc()
-                            local valueColor = enabled and (self:IsHovered() and accent or infoColor) or mutedTextColor
+                            local valueColor = enabled and (button:IsHovered() and accent or infoColor) or mutedTextColor
                             surface.SetDrawColor(255, 255, 255, 8)
                             surface.DrawRect(0, h - 1, w, 1)
                             draw.SimpleText(label, "LiliaFont.15", 0, h * 0.5, mutedTextColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -1769,9 +1737,8 @@ function MODULE:PopulateAdminTabs(pages)
                         end
                     end
 
-                    local function selectCharacter(row, button)
+                    local function selectCharacter(row)
                         selectedCharacter = row
-                        selectedCharacterButton = button
                         refreshCharacterSelection()
                         buildDetail(row, selectedAccount)
                     end
@@ -1785,7 +1752,6 @@ function MODULE:PopulateAdminTabs(pages)
                     local function populateCharacters(filter)
                         characterList:Clear()
                         table.Empty(characterButtons)
-                        selectedCharacterButton = nil
                         filter = string.lower(tostring(filter or ""))
                         if not selectedAccount then
                             selectedCharacter = nil
@@ -1827,7 +1793,7 @@ function MODULE:PopulateAdminTabs(pages)
 
                                 button.DoClick = function()
                                     lia.websound.playButtonSound()
-                                    selectCharacter(row, button)
+                                    selectCharacter(row)
                                 end
 
                                 button.DoRightClick = function() openCharacterActions(row, selectedAccount) end
@@ -1844,7 +1810,6 @@ function MODULE:PopulateAdminTabs(pages)
                             for _, button in ipairs(characterButtons) do
                                 if button.row == selectedCharacter then
                                     stillVisible = true
-                                    selectedCharacterButton = button
                                     break
                                 end
                             end
@@ -1853,7 +1818,7 @@ function MODULE:PopulateAdminTabs(pages)
                         end
 
                         if not selectedCharacter and firstVisibleRow then
-                            selectCharacter(firstVisibleRow, firstVisibleButton)
+                            selectCharacter(firstVisibleRow)
                         elseif selectedCharacter then
                             refreshCharacterSelection()
                             buildDetail(selectedCharacter, selectedAccount)

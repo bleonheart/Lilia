@@ -298,7 +298,6 @@
     Realm:
         Client
 ]]
-local PANEL = {}
 local function localizeMenuLabel(value, ...)
     if not isstring(value) then return value end
     local resolved = lia.lang.resolveToken(value, ...)
@@ -459,7 +458,7 @@ function CIRCULAR_AVATAR:SetPlayer(pl, size)
 end
 
 vgui.Register("CircularAvatar", CIRCULAR_AVATAR, "Panel")
-PANEL = {}
+local PANEL = {}
 function PANEL:Init()
     if IsValid(lia.gui.info) then lia.gui.info:Remove() end
     lia.gui.info = self

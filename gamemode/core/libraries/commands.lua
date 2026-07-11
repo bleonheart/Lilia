@@ -8226,14 +8226,13 @@ lia.command.add("viewwarns", {
         end
 
         local target = lia.util.findPlayer(client, targetName)
-        local steamID, displayName = targetName, targetName
+        local lookupSteamID, displayName = targetName, targetName
         local warningsPromise
         if IsValid(target) then
-            steamID = target:SteamID()
             displayName = target:Nick()
             warningsPromise = lia.db.select({"id", "timestamp", "message", "warner", "warnerSteamID", "severity"}, "warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(res) return res.results or {} end)
         else
-            warningsPromise = lia.db.select({"id", "timestamp", "message", "warner", "warnerSteamID", "severity", "warned"}, "warnings", "warnedSteamID = " .. lia.db.convertDataType(steamID)):next(function(res)
+            warningsPromise = lia.db.select({"id", "timestamp", "message", "warner", "warnerSteamID", "severity", "warned"}, "warnings", "warnedSteamID = " .. lia.db.convertDataType(lookupSteamID)):next(function(res)
                 local rows = res.results or {}
                 if #rows > 0 then displayName = rows[1].warned or displayName end
                 return rows

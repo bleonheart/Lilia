@@ -3159,11 +3159,6 @@ else
         end)
     end
 
-    local function shouldRebuildPrivilegeListForToggle(state)
-        local filter = tostring(state.filter or "all")
-        return filter == "changed" or filter == "enabled" or filter == "disabled"
-    end
-
     lia.net.readBigTable("liaUpdateAdminGroups", function(tbl)
         lia.admin.groups = tbl
         lia.debug("[Permissions UI]", "Received admin groups sync", "groupCount=", tostring(table.Count(lia.admin.groups or {})))

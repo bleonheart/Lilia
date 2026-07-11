@@ -1,4 +1,5 @@
-﻿function MODULE:OnPlayerJoinClass(client, class, oldClass)
+﻿local MODULE = MODULE 
+function MODULE:OnPlayerJoinClass(client, class, oldClass)
     local info = lia.class.list[class]
     local info2 = lia.class.list[oldClass]
     if info then
@@ -12,6 +13,7 @@
     net.Start("liaClassUpdate")
     net.WriteEntity(client)
     net.Broadcast()
+    self:UpdateNPCRelations(client)
 end
 
 --[[
@@ -120,6 +122,111 @@ function MODULE:CharPreSave(character)
     self:FlushFactionPlaytime(character)
 end
 
+local function getNormalizedNPCClass(entity)
+    if not IsValid(entity) or not entity:IsNPC() then return nil end
+    local class = entity:GetClass()
+    if class == "npc_turret_floor" then
+        if not entity.liaNPCRelationsInitialized then
+            timer.Simple(0, function()
+                if IsValid(entity) then hook.Run("OnEntityCreated", entity) end
+            end)
+
+            entity.liaNPCRelationsInitialized = true
+            return nil
+        elseif bit.band(entity:GetSpawnFlags(), 512) ~= 0 then
+            class = "npc_turret_floor_resistance"
+        end
+    elseif class == "npc_rollermine" then
+        if not entity.liaNPCRelationsInitialized then
+            timer.Simple(0, function()
+                if IsValid(entity) then hook.Run("OnEntityCreated", entity) end
+            end)
+
+            entity.liaNPCRelationsInitialized = true
+            return nil
+        elseif bit.band(entity:GetSpawnFlags(), 262144) ~= 0 then
+            class = "npc_rollermine_hacked"
+        end
+    elseif class == "npc_citizen" then
+        local keys = entity:GetKeyValues()
+        if not entity.liaNPCRelationsInitialized then
+            timer.Simple(0, function()
+                if IsValid(entity) then hook.Run("OnEntityCreated", entity) end
+            end)
+
+            entity.liaNPCRelationsInitialized = true
+            return nil
+        elseif keys.squadname and keys.squadname == "overwatch" then
+            class = "npc_citizen_rebel_enemy"
+        end
+    end
+    return class
+end
+
+local function debugNPCRelations(message, ...)
+    lia.debug("[NPC Relations]", message, ...)
+end
+
+local function getClientNPCRelations(client)
+    local character = client:getChar()
+    if not character then
+        debugNPCRelations("Skipped relation lookup", "player=", tostring(IsValid(client) and client:Name() or "unknown"), "reason=", "no character")
+        return nil
+    end
+
+    local mergedRelations = {}
+    local hasRelations = false
+    local faction = lia.faction.indices[character:getFaction()]
+    if faction and faction.NPCRelations then
+        table.Merge(mergedRelations, faction.NPCRelations)
+        hasRelations = true
+    end
+
+    local class = lia.class.list[character:getClass()]
+    if class and class.faction == character:getFaction() and class.NPCRelations then
+        table.Merge(mergedRelations, class.NPCRelations)
+        hasRelations = true
+    end
+
+    local overriddenRelations = hook.Run("GetNPCRelations", client, hasRelations and mergedRelations or nil)
+    if overriddenRelations ~= nil then
+        debugNPCRelations("Resolved relations override", "player=", tostring(client:Name()), "faction=", tostring(faction and faction.uniqueID or "nil"), "class=", tostring(character:getClass()), "relationCount=", tostring(istable(overriddenRelations) and table.Count(overriddenRelations) or 0), "source=", "hook")
+        return overriddenRelations
+    end
+
+    debugNPCRelations("Resolved relations", "player=", tostring(client:Name()), "faction=", tostring(faction and faction.uniqueID or "nil"), "class=", tostring(character:getClass()), "relationCount=", tostring(hasRelations and table.Count(mergedRelations) or 0), "source=", hasRelations and "faction/class merge" or "default hostile")
+    return hasRelations and mergedRelations or nil
+end
+
+local function applyNPCRelation(entity, client)
+    if not IsValid(entity) or not entity:IsNPC() or not IsValid(client) then return end
+    local rawClass = entity:GetClass()
+    local npcClass = getNormalizedNPCClass(entity)
+    if not npcClass then
+        debugNPCRelations("Deferred NPC relation application", "entity=", tostring(entity), "rawClass=", tostring(rawClass), "player=", tostring(client:Name()))
+        return
+    end
+
+    local relations = getClientNPCRelations(client)
+    if istable(relations) and relations[npcClass] then
+        entity:AddEntityRelationship(client, relations[npcClass], 0)
+        debugNPCRelations("Applied specific relation", "entity=", tostring(entity), "rawClass=", tostring(rawClass), "normalizedClass=", tostring(npcClass), "player=", tostring(client:Name()), "disposition=", tostring(relations[npcClass]))
+    elseif relations == nil then
+        entity:AddEntityRelationship(client, D_HT, 0)
+        debugNPCRelations("Applied default hostile relation", "entity=", tostring(entity), "rawClass=", tostring(rawClass), "normalizedClass=", tostring(npcClass), "player=", tostring(client:Name()), "disposition=", tostring(D_HT))
+    else
+        debugNPCRelations("No matching relation entry", "entity=", tostring(entity), "rawClass=", tostring(rawClass), "normalizedClass=", tostring(npcClass), "player=", tostring(client:Name()))
+    end
+end
+
+function MODULE:UpdateNPCRelations(client)
+    if not IsValid(client) or not client:getChar() then return end
+    debugNPCRelations("Refreshing NPC relations", "player=", tostring(client:Name()))
+    for _, entity in ents.Iterator() do
+        applyNPCRelation(entity, client)
+    end
+end
+
 local function applyAttributes(client, attr)
     if not attr then return end
     local offset = Vector(0, 0, 64)
@@ -127,15 +234,7 @@ local function applyAttributes(client, attr)
     client:SetViewOffset(offset)
     client:SetViewOffsetDucked(offsetDuck)
     client:SetModelScale(1)
-    if attr.NPCRelations then
-        for _, entity in ents.Iterator() do
-            if entity:IsNPC() and attr.NPCRelations[entity:GetClass()] then entity:AddEntityRelationship(client, attr.NPCRelations[entity:GetClass()], 0) end
-        end
-    else
-        for _, entity in ents.Iterator() do
-            if entity:IsNPC() then entity:AddEntityRelationship(client, D_HT, 0) end
-        end
-    end
+    MODULE:UpdateNPCRelations(client)
 
     if attr.scale and attr.scale ~= 1 then
         client:SetViewOffset(offset * attr.scale)
@@ -186,16 +285,24 @@ function MODULE:CanCharBeTransfered(character, faction)
 end
 
 function MODULE:OnEntityCreated(entity)
+    if not IsValid(entity) or not entity:IsNPC() then return end
     for _, client in player.Iterator() do
-        local character = client:getChar()
-        if not character then return end
-        local faction = lia.faction.indices[character:getFaction()]
-        if faction and faction.NPCRelations then
-            local npcClass = entity:GetClass()
-            local relation = faction.NPCRelations[npcClass]
-            if relation then entity:AddEntityRelationship(client, relation, 0) end
-        end
+        applyNPCRelation(entity, client)
     end
+end
+
+function MODULE:PlayerSpawn(client)
+    self:UpdateNPCRelations(client)
+end
+
+function MODULE:OnCharVarChanged(character, key, oldValue, newValue)
+    if key ~= "faction" or oldValue == nil or oldValue == 0 then return end
+    local client = character:getPlayer()
+    if IsValid(client) then self:UpdateNPCRelations(client) end
+end
+
+function MODULE:OnPlayerSwitchClass(client)
+    self:UpdateNPCRelations(client)
 end
 
 function MODULE:PostPlayerLoadout(client)

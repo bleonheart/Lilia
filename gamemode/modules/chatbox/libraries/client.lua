@@ -199,10 +199,6 @@ local function openAddFilteredWordPrompt()
     end)
 end
 
-local function chatFilterShade(color, amount, alpha)
-    return Color(math.Clamp((color.r or 0) + amount, 0, 255), math.Clamp((color.g or 0) + amount, 0, 255), math.Clamp((color.b or 0) + amount, 0, 255), alpha or color.a or 255)
-end
-
 local function buildFilteredWordsAdminPanel(panel)
     MODULE.filteredWordAdminPanel = panel
     panel:Clear()

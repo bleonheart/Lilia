@@ -317,7 +317,6 @@ local function buildActionInvoker(owner, actionKey, action, item, sub, optionKey
     return function()
         if not item or not action then return end
         item.player = LocalPlayer()
-        local itemID = item.getID and item:getID() or "nil"
         local actionName = string.lower(tostring(actionKey))
         if actionName == "open" and isfunction(item.getInv) and IsValid(owner) and isfunction(owner.openBagInventory) then owner:openBagInventory(item) end
         local send = true

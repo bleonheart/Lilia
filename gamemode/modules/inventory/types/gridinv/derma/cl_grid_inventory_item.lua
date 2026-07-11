@@ -11,12 +11,6 @@ local function drawPanel(x, y, w, h, radius, color, outline)
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
 end
 
-local function getRarityColor(item)
-    local rarity = item:getData("rarity") or item.rarity
-    local colors = lia.item and lia.item.rarities
-    return colors and rarity and colors[rarity] or nil
-end
-
 local function renderNewIcon(panel, itemTable)
     if itemTable.iconCam and (not renderedIcons[string.lower(itemTable.model)] or itemTable.forceRender) then
         local iconCam = itemTable.iconCam

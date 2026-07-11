@@ -511,8 +511,6 @@ else
                 end
 
                 local records = {}
-                local cards = {}
-                local selectedRecord
                 local selectedCard
                 local selectedFilter = "all"
                 local function updateCount()
@@ -548,7 +546,6 @@ else
                 end
 
                 local function rebuildDetail(record)
-                    selectedRecord = record
                     detailPanel:Clear()
                     local accent, textColor = getWorkshopThemeColors()
                     local header = detailPanel:Add("DPanel")

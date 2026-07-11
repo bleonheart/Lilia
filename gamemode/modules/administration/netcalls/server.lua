@@ -327,7 +327,6 @@ net.Receive("liaRequestStaffCases", function(_, client)
 
         pendingFetches = pendingFetches + 1
         lia.db.select({"timestamp", "requester", "requesterSteamID", "admin", "adminSteamID", "message"}, "ticketclaims"):next(function(res)
-            local historicalCount = #(res.results or {})
             for _, row in ipairs(res.results or {}) do
                 payload.tickets[#payload.tickets + 1] = {
                     requester = row.requester,
