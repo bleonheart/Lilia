@@ -1578,10 +1578,31 @@ if SERVER then
         appendPermanentFlags(args[1], args[2])
     end)
 
-    concommand.Add("kickbots", function()
+    concommand.Add("kickbots", function(client)
+        lia.debug("[Permissions]", "Permission Check for concommand kickbots", "isValidPlayer=", tostring(IsValid(client)), "isSuperAdmin=", tostring(IsValid(client) and client:IsSuperAdmin() or true), "finalResult=", tostring(not IsValid(client) or client:IsSuperAdmin()))
+        if IsValid(client) and not client:IsSuperAdmin() then
+            client:notifyErrorLocalized("staffPermissionDenied")
+            return
+        end
+
         if timer.Exists("Bots_Add_Timer") then timer.Remove("Bots_Add_Timer") end
+        local kickedCount = 0
         for _, bot in player.Iterator() do
-            if bot:IsBot() then lia.admin.execCommand("kick", bot, nil, L("allBotsKicked")) end
+            if bot:IsBot() then
+                bot:Kick(L("allBotsKicked"))
+                kickedCount = kickedCount + 1
+            end
+        end
+
+        if IsValid(client) then
+            if kickedCount == 0 then
+                client:notifyErrorLocalized("noBotsToKick")
+            else
+                client:notifyInfoLocalized("botsKickedAll", kickedCount)
+            end
+        else
+            local message = kickedCount == 0 and L("noBotsToKick") or L("botsKickedAll", kickedCount)
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), message .. "\n")
         end
     end)
 
@@ -1599,8 +1620,8 @@ if SERVER then
     local function handleSetUserGroup(ply, _, args)
         local steamID = string.Trim(args[1] or "")
         local usergroup = string.Trim(args[2] or "")
-        local canUse = not IsValid(ply) or not game.IsDedicated() or ply:hasPrivilege("setUserGroup")
-        lia.debug("[Permissions]", "Permission Check for function handleSetUserGroup", "isValidPlayer=", tostring(IsValid(ply)), "isDedicatedServer=", tostring(game.IsDedicated()), "hasPrivilege(setUserGroup)=", tostring(IsValid(ply) and ply:hasPrivilege("setUserGroup") or false), "finalResult=", tostring(canUse))
+        local canUse = not IsValid(ply)
+        lia.debug("[Permissions]", "Permission Check for function handleSetUserGroup", "isValidPlayer=", tostring(IsValid(ply)), "finalResult=", tostring(canUse))
         if not canUse then
             ply:notifyErrorLocalized("noPerm")
             return
@@ -1667,6 +1688,7 @@ if SERVER then
     end)
 
     concommand.Add("bots", function()
+        if LocalPlayer():IsSuperAdmin() then return end
         timer.Create("Bots_Add_Timer", 2, 0, function()
             if player.GetCount() < game.MaxPlayers() then
                 game.ConsoleCommand("bot\n")
@@ -1880,13 +1902,13 @@ if SERVER then
         MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Angle: " .. tostring(ang) .. "\n")
     end)
 
-    concommand.Add("workshop_force_redownload", function()
-        table.Empty(queue)
-        buildQueue(true)
-        start()
-    end)
 
-    concommand.Add("lia_snapshot", function(_, _, args)
+    concommand.Add("lia_snapshot", function(client, _, args)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
         if not args[1] then
             MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotTableUsage") .. "\n")
             return
@@ -1901,7 +1923,12 @@ if SERVER then
         end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotFailed", tostring(err)) .. "\n") end)
     end)
 
-    concommand.Add("lia_snapshot_load", function(_, _, args)
+    concommand.Add("lia_snapshot_load", function(client, _, args)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
         if not args[1] then
             MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotUsage") .. "\n")
             MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("availableSnapshots") .. "\n")
@@ -1925,7 +1952,12 @@ if SERVER then
         end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotLoadFailed", tostring(err)) .. "\n") end)
     end)
 
-    concommand.Add("lia_wipetable", function(_, _, args)
+    concommand.Add("lia_wipetable", function(client, _, args)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
         if not args[1] then
             MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("wipeTableUsage") .. "\n")
             return
@@ -8200,6 +8232,249 @@ lia.command.add("previewchatmessages", {
         ClientAddTextShadowed(client, Color(123, 104, 238), "SIT", Color(255, 255, 255), " | " .. ts .. " | Teleport preview to sit room.")
         ClientAddText(client, Color(200, 200, 200), "[Preview] ", Color(255, 255, 255), "Non-shadowed chat line for comparison.")
         client:notifySuccessLocalized("previewMessagesSent")
+    end
+})
+
+if CLIENT then
+    local panelBrowserCatalog = {
+        {
+            name = "liaFrame",
+            note = "Shared frame panel using the updated F1-style paint.",
+            example = true
+        },
+        {
+            name = "liaButton",
+            note = "Shared button panel using the updated F1-style paint.",
+            example = true
+        },
+        {
+            name = "liaScrollPanel",
+            note = "Shared scroll panel using the updated F1-style paint.",
+            example = true
+        },
+        {
+            name = "liaHeaderPanel",
+            note = "Shared header line panel using the updated F1-style paint.",
+            example = true
+        }
+    }
+
+    local rawPreviewPanels = {
+        liaButton = true,
+        liaFrame = true,
+        liaHeaderPanel = true,
+        liaScrollPanel = true
+    }
+
+    table.sort(panelBrowserCatalog, function(a, b) return a.name < b.name end)
+    local function panelBrowserHost(title, width, height)
+        local frame = vgui.Create("liaFrame")
+        frame:SetSize(width or 720, height or 480)
+        frame:Center()
+        frame:SetTitle(title or "Lilia Panel Preview")
+        frame:MakePopup()
+        return frame
+    end
+
+    local function panelBrowserLabel(parent, text, font, dockMargin)
+        local label = parent:Add("DLabel")
+        label:Dock(TOP)
+        label:DockMargin(dockMargin or 0, 0, 0, 8)
+        label:SetFont(font or "LiliaFont.18")
+        label:SetTextColor(lia.color.theme.text or color_white)
+        label:SetText(text or "")
+        label:SetWrap(true)
+        label:SetAutoStretchVertical(true)
+        return label
+    end
+
+    local function panelBrowserNotify(text, isError)
+        if not IsValid(LocalPlayer()) then return end
+        if isError then
+            LocalPlayer():notifyError(text)
+        else
+            LocalPlayer():notifyInfo(text)
+        end
+    end
+
+    local function panelBrowserTryRaw(name)
+        if not rawPreviewPanels[name] then
+            panelBrowserNotify(name .. " does not have a safe standalone preview.", true)
+            return
+        end
+
+        local ok, result = pcall(function()
+            local host = panelBrowserHost(name .. " Raw Preview", 760, 520)
+            local child = host:Add(name)
+            if not IsValid(child) then error("Failed to add child panel to preview host.") end
+            child:Dock(FILL)
+            child:DockMargin(8, 8, 8, 8)
+            return host
+        end)
+
+        if not ok then
+            panelBrowserNotify("Raw preview failed for " .. name .. ": " .. tostring(result), true)
+            return
+        end
+
+        if not IsValid(result) then
+            panelBrowserNotify("Raw preview returned an invalid panel for " .. name .. ".", true)
+            return
+        end
+
+        panelBrowserNotify("Opened raw preview for " .. name .. ".")
+    end
+
+    local exampleBuilders = {}
+    function exampleBuilders.liaFrame()
+        local frame = panelBrowserHost("liaFrame Example", 500, 300)
+        frame:Notify("Updated liaFrame preview.", 3)
+    end
+
+    function exampleBuilders.liaButton()
+        local frame = panelBrowserHost("liaButton Example", 440, 220)
+        local button = frame:Add("liaButton")
+        button:Dock(TOP)
+        button:DockMargin(16, 16, 16, 0)
+        button:SetTall(48)
+        button:SetText("Example Button")
+        button.DoClick = function() frame:Notify("liaButton clicked.", 2) end
+    end
+
+    function exampleBuilders.liaScrollPanel()
+        local frame = panelBrowserHost("liaScrollPanel Example", 500, 420)
+        local scroll = frame:Add("liaScrollPanel")
+        scroll:Dock(FILL)
+        scroll:DockMargin(16, 16, 16, 16)
+        for i = 1, 12 do
+            local button = scroll:Add("liaButton")
+            button:Dock(TOP)
+            button:DockMargin(0, 0, 0, 8)
+            button:SetTall(36)
+            button:SetText("Scrollable Item " .. i)
+        end
+    end
+
+    function exampleBuilders.liaHeaderPanel()
+        local frame = panelBrowserHost("liaHeaderPanel Example", 520, 220)
+        local header = frame:Add("liaHeaderPanel")
+        header:Dock(TOP)
+        header:DockMargin(16, 16, 16, 0)
+        header:SetTall(38)
+        header:SetLineColor(lia.color.theme.accent or lia.color.theme.theme or Color(45, 190, 170))
+    end
+
+    local function openPanelBrowser()
+        if IsValid(lia.gui.panelBrowser) then lia.gui.panelBrowser:Remove() end
+        local frame = panelBrowserHost("Lilia Panel Preview", 980, 620)
+        lia.gui.panelBrowser = frame
+        local left = frame:Add("EditablePanel")
+        left:Dock(LEFT)
+        left:SetWide(300)
+        left:DockMargin(12, 12, 8, 12)
+        left.Paint = function(_, w, h) draw.RoundedBox(8, 0, 0, w, h, Color(20, 26, 31, 230)) end
+        local right = frame:Add("EditablePanel")
+        right:Dock(FILL)
+        right:DockMargin(8, 12, 12, 12)
+        right.Paint = function(_, w, h) draw.RoundedBox(8, 0, 0, w, h, Color(20, 26, 31, 230)) end
+        local search = left:Add("liaEntry")
+        search:Dock(TOP)
+        search:DockMargin(12, 12, 12, 10)
+        search:SetPlaceholderText("Search shared panels")
+        local list = left:Add("liaScrollPanel")
+        list:Dock(FILL)
+        list:DockMargin(12, 0, 12, 12)
+        local title = panelBrowserLabel(right, "Select a panel from the list.", "LiliaFont.24", 16)
+        title:DockMargin(16, 16, 16, 8)
+        local subtitle = panelBrowserLabel(right, "", "LiliaFont.17", 16)
+        subtitle:DockMargin(16, 0, 16, 8)
+        local note = panelBrowserLabel(right, "", "LiliaFont.18", 16)
+        note:DockMargin(16, 0, 16, 12)
+        local actions = right:Add("EditablePanel")
+        actions:Dock(TOP)
+        actions:DockMargin(16, 0, 16, 12)
+        actions:SetTall(42)
+        actions.Paint = nil
+        local exampleButton = actions:Add("liaButton")
+        exampleButton:Dock(LEFT)
+        exampleButton:SetWide(180)
+        exampleButton:SetText("Open Example")
+        local rawButton = actions:Add("liaButton")
+        rawButton:Dock(LEFT)
+        rawButton:DockMargin(8, 0, 0, 0)
+        rawButton:SetWide(180)
+        rawButton:SetText("Try Raw Preview")
+        local detailScroll = right:Add("liaScrollPanel")
+        detailScroll:Dock(FILL)
+        detailScroll:DockMargin(16, 0, 16, 16)
+        local detailInfo = detailScroll:Add("DLabel")
+        detailInfo:Dock(TOP)
+        detailInfo:SetTextColor(lia.color.theme.text or color_white)
+        detailInfo:SetFont("LiliaFont.17")
+        detailInfo:SetWrap(true)
+        detailInfo:SetAutoStretchVertical(true)
+        detailInfo:SetText("Choose a shared panel to preview.")
+        local selectedPanel
+        local function renderSelection(data)
+            selectedPanel = data
+            local control = vgui.GetControlTable(data.name)
+            local base = control and (control.Base or control.base or control.BaseClass and control.BaseClass.ClassName) or "unknown"
+            local hasExample = exampleBuilders[data.name] ~= nil
+            local hasRawPreview = rawPreviewPanels[data.name] == true
+            title:SetText(data.name)
+            subtitle:SetText("Base: " .. tostring(base) .. " | Example: " .. (hasExample and "yes" or "no") .. " | Raw preview: " .. (hasRawPreview and "yes" or "no"))
+            note:SetText(data.note or "No note provided.")
+            detailInfo:SetText("Open Example shows a curated preview, while Try Raw Preview embeds the real shared panel directly inside a host frame.")
+            exampleButton:SetDisabled(not hasExample)
+            rawButton:SetDisabled(not hasRawPreview)
+        end
+
+        exampleButton.DoClick = function()
+            if not selectedPanel then return end
+            local builder = exampleBuilders[selectedPanel.name]
+            if not builder then
+                panelBrowserNotify("No curated example is available for " .. selectedPanel.name .. ".", true)
+                return
+            end
+
+            builder()
+        end
+
+        rawButton.DoClick = function()
+            if not selectedPanel then return end
+            panelBrowserTryRaw(selectedPanel.name)
+        end
+
+        local function refreshList(filterText)
+            list:Clear()
+            local filter = string.Trim(string.lower(filterText or ""))
+            for _, data in ipairs(panelBrowserCatalog) do
+                if filter ~= "" and not string.find(string.lower(data.name), filter, 1, true) then continue end
+                local row = list:Add("liaButton")
+                row:Dock(TOP)
+                row:DockMargin(0, 0, 0, 8)
+                row:SetTall(40)
+                row:SetText(data.name)
+                row.DoClick = function() renderSelection(data) end
+            end
+        end
+
+        search.OnTextChanged = function(_, value) refreshList(value) end
+        refreshList("")
+        if panelBrowserCatalog[1] then renderSelection(panelBrowserCatalog[1]) end
+    end
+
+    net.Receive("liaOpenPanelBrowser", openPanelBrowser)
+end
+
+lia.command.add("panelbrowser", {
+    superAdminOnly = true,
+    alias = "preview",
+    desc = "Open a browser for previewing shared Lilia panels.",
+    onRun = function(client)
+        if not IsValid(client) then return end
+        net.Start("liaOpenPanelBrowser")
+        net.Send(client)
     end
 })
 
