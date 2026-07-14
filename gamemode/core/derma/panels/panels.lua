@@ -1,4 +1,33 @@
-﻿local cacheKeys, cache, len = {}, {}, 0
+﻿--[[
+    Hooks:
+        SetupQuickMenu(Panel menu)
+
+    Purpose:
+        Allows modules to populate the quick settings menu before it is sized and shown.
+
+    Category:
+        UI
+
+    Parameters:
+        menu (Panel)
+            The quick menu panel instance that exposes helper methods like `addButton`, `addCheck`, and `addSpacer`.
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        hook.Add("SetupQuickMenu", "liaExampleSetupQuickMenu", function(menu)
+            menu:addButton("Example Action", function()
+                LocalPlayer():ChatPrint("Example clicked.")
+            end, "Runs an example quick action.")
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+local cacheKeys, cache, len = {}, {}, 0
 local function PaintPanel(_, w, h)
     local radius = 6
     local shadowIntensity = 8
@@ -144,7 +173,6 @@ local quickPaletteDefaults = {
 }
 
 local quickPalette = table.Copy(quickPaletteDefaults)
-
 local function setQuickPaletteColor(name, value)
     local fallback = quickPaletteDefaults[name] or color_white
     quickPalette[name] = IsColor(value) and Color(value.r, value.g, value.b, value.a or 255) or Color(fallback.r, fallback.g, fallback.b, fallback.a or 255)
@@ -629,6 +657,7 @@ function QuickPanel:RefreshTheme()
         self.search:SetTextColor(quickPalette.text)
         self.search:SetCursorColor(quickPalette.accent)
     end
+
     self:RebuildContent()
     self:InvalidateLayout(true)
 end
