@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Folder: Developer - Libraries
     File: lia.command.md
 ]]
@@ -392,6 +392,7 @@ function lia.command.add(command, data)
     data.desc = isstring(data.desc) and lia.lang.resolveToken(data.desc) or data.desc or ""
     if istable(data.AdminStick) then
         data.AdminStick.Name = isstring(data.AdminStick.Name) and lia.lang.resolveToken(data.AdminStick.Name) or data.AdminStick.Name
+        data.AdminStick.ButtonText = isstring(data.AdminStick.ButtonText) and lia.lang.resolveToken(data.AdminStick.ButtonText) or data.AdminStick.ButtonText
         data.AdminStick.Category = isstring(data.AdminStick.Category) and lia.lang.resolveToken(data.AdminStick.Category) or data.AdminStick.Category
         data.AdminStick.SubCategory = isstring(data.AdminStick.SubCategory) and lia.lang.resolveToken(data.AdminStick.SubCategory) or data.AdminStick.SubCategory
     end
@@ -2327,9 +2328,8 @@ lia.command.add("plygetplaytime", {
     },
     AdminStick = {
         Name = "@adminStickGetPlayTimeName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/time.png"
+        ButtonText = "View Play Time",
+        Category = "Player Info",
     },
     desc = "@plygetplaytimeDesc",
     onRun = function(client, args)
@@ -2362,9 +2362,8 @@ lia.command.add("plycheckid", {
     },
     AdminStick = {
         Name = "@adminStickCheckCharIDName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/vcard.png"
+        ButtonText = "View Character ID",
+        Category = "Player Info",
     },
     desc = "@plycheckidDesc",
     onRun = function(client, args)
@@ -2447,9 +2446,8 @@ lia.command.add("sendtositroom", {
     },
     AdminStick = {
         Name = "@sendToSitRoom",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/arrow_down.png"
+        ButtonText = "Send To Sit Room",
+        Category = "Teleportation",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -2495,9 +2493,8 @@ lia.command.add("returnsitroom", {
     },
     AdminStick = {
         Name = "@returnFromSitroom",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/arrow_up.png"
+        ButtonText = "Return From Sit Room",
+        Category = "Teleportation",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1]) or client
@@ -2531,9 +2528,8 @@ lia.command.add("charkill", {
     },
     AdminStick = {
         Name = "@adminStickCharKillName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/user_delete.png"
+        ButtonText = "Kill Character",
+        Category = "Character Discipline",
     },
     onRun = function(client, args)
         if not args[1] then
@@ -2735,9 +2731,8 @@ lia.command.add("plyban", {
     },
     AdminStick = {
         Name = "@adminStickBanName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/lock.png"
+        ButtonText = "Ban Player",
+        Category = "Player Punishment",
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("ban", arguments[1], arguments[2], arguments[3], client) end
 })
@@ -2758,9 +2753,8 @@ lia.command.add("plykick", {
     },
     AdminStick = {
         Name = "@adminStickKickName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/user_delete.png"
+        ButtonText = "Kick Player",
+        Category = "Player Punishment",
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("kick", arguments[1], nil, arguments[2], client) end
 })
@@ -2776,9 +2770,8 @@ lia.command.add("plykill", {
     },
     AdminStick = {
         Name = "@adminStickKillPlayerName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/user_red.png"
+        ButtonText = "Kill Player",
+        Category = "Player State",
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("kill", arguments[1], nil, nil, client) end
 })
@@ -2854,9 +2847,8 @@ lia.command.add("plyrespawn", {
     },
     AdminStick = {
         Name = "@adminStickRespawnPlayerName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/arrow_refresh.png"
+        ButtonText = "Respawn Player",
+        Category = "Player State",
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("respawn", arguments[1], nil, nil, client) end
 })
@@ -2921,9 +2913,8 @@ lia.command.add("plyblindfade", {
     },
     AdminStick = {
         Name = "@adminStickBlindFadeName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/eye.png"
+        ButtonText = "Blindfade Player",
+        Category = "Player State",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -3116,9 +3107,8 @@ lia.command.add("plycloak", {
     },
     AdminStick = {
         Name = "@adminStickCloakName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/status_offline.png"
+        ButtonText = "Cloak Player",
+        Category = "Player State",
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("cloak", arguments[1], nil, nil, client) end
 })
@@ -3134,9 +3124,8 @@ lia.command.add("plyuncloak", {
     },
     AdminStick = {
         Name = "@adminStickUncloakName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/status_online.png"
+        ButtonText = "Uncloak Player",
+        Category = "Player State",
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("uncloak", arguments[1], nil, nil, client) end
 })
@@ -3152,9 +3141,8 @@ lia.command.add("plygod", {
     },
     AdminStick = {
         Name = "@adminStickGodModeName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/shield.png"
+        ButtonText = "Enable Godmode",
+        Category = "Player State",
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("god", arguments[1], nil, nil, client) end
 })
@@ -3170,9 +3158,8 @@ lia.command.add("plyungod", {
     },
     AdminStick = {
         Name = "@adminStickRemoveGodModeName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/shield_delete.png"
+        ButtonText = "Disable Godmode",
+        Category = "Player State",
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("ungod", arguments[1], nil, nil, client) end
 })
@@ -3217,9 +3204,8 @@ lia.command.add("plystrip", {
     },
     AdminStick = {
         Name = "@adminStickStripWeaponsName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/gun.png"
+        ButtonText = "Strip Weapons",
+        Category = "Player State",
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("strip", arguments[1], nil, nil, client) end
 })
@@ -3511,9 +3497,8 @@ lia.command.add("plyspectate", {
     },
     AdminStick = {
         Name = "@adminStickSpectateName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/zoom.png"
+        ButtonText = "Spectate Player",
+        Category = "Observation",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -3837,9 +3822,8 @@ lia.command.add("checkinventory", {
     },
     AdminStick = {
         Name = "@adminStickCheckInventoryName",
-        Category = "characterManagement",
-        SubCategory = "items",
-        Icon = "icon16/box.png"
+        ButtonText = "View Inventory",
+        Category = "Inventory",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -4015,9 +3999,8 @@ lia.command.add("charvoicetoggle", {
     },
     AdminStick = {
         Name = "@toggleVoice",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/sound_mute.png"
+        ButtonText = "Toggle Voice",
+        Category = "Communication",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -4211,9 +4194,8 @@ lia.command.add("clearinv", {
     },
     AdminStick = {
         Name = "@adminStickClearInventoryName",
-        Category = "characterManagement",
-        SubCategory = "items",
-        Icon = "icon16/bin.png"
+        ButtonText = "Clear Inventory",
+        Category = "Inventory",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -4238,9 +4220,8 @@ lia.command.add("charkick", {
     },
     AdminStick = {
         Name = "@adminStickKickCharacterName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/user_delete.png"
+        ButtonText = "Kick Character",
+        Category = "Character Discipline",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -4306,9 +4287,8 @@ lia.command.add("charban", {
     },
     AdminStick = {
         Name = "@banCharacter",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/user_red.png"
+        ButtonText = "Ban Character",
+        Category = "Character Discipline",
     },
     onRun = function(client, arguments)
         local queryArg = table.concat(arguments, " ")
@@ -4360,9 +4340,8 @@ lia.command.add("charwipe", {
     },
     AdminStick = {
         Name = "@wipeCharacter",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/user_delete.png"
+        ButtonText = "Wipe Character",
+        Category = "Character Discipline",
     },
     onRun = function(client, arguments)
         local queryArg = table.concat(arguments, " ")
@@ -4453,9 +4432,8 @@ lia.command.add("checkmoney", {
     },
     AdminStick = {
         Name = "@adminStickCheckMoneyName",
-        Category = "characterManagement",
-        SubCategory = "items",
-        Icon = "icon16/money.png"
+        ButtonText = "View Money",
+        Category = "Character Info",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -4533,9 +4511,8 @@ lia.command.add("charsetspeed", {
     },
     AdminStick = {
         Name = "@adminStickSetCharSpeedName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/lightning.png"
+        ButtonText = "Set Character Speed",
+        Category = "Character Editing",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -4622,9 +4599,8 @@ lia.command.add("chargiveitem", {
     },
     AdminStick = {
         Name = "@adminStickGiveItemName",
-        Category = "characterManagement",
-        SubCategory = "items",
-        Icon = "icon16/user_gray.png"
+        ButtonText = "Give Item",
+        Category = "Inventory",
     },
     onRun = function(client, arguments)
         local itemName = arguments[2]
@@ -4680,9 +4656,8 @@ lia.command.add("charsetdesc", {
     },
     AdminStick = {
         Name = "@adminStickSetCharDescName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/user_comment.png"
+        ButtonText = "Set Description",
+        Category = "Character Editing",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -4719,9 +4694,8 @@ lia.command.add("charsetname", {
     },
     AdminStick = {
         Name = "@adminStickSetCharNameName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/user_edit.png"
+        ButtonText = "Set Character Name",
+        Category = "Character Editing",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -4754,9 +4728,8 @@ lia.command.add("charsetscale", {
     },
     AdminStick = {
         Name = "@adminStickSetCharScaleName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/arrow_out.png"
+        ButtonText = "Set Character Scale",
+        Category = "Character Editing",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -4787,9 +4760,8 @@ lia.command.add("charsetjump", {
     },
     AdminStick = {
         Name = "@adminStickSetCharJumpName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/arrow_up.png"
+        ButtonText = "Set Jump Power",
+        Category = "Character Editing",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -4860,9 +4832,8 @@ lia.command.add("charsetskin", {
     },
     AdminStick = {
         Name = "@adminStickSetCharSkinName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/user_gray.png"
+        ButtonText = "Set Character Skin",
+        Category = "Character Editing",
     },
     onRun = function(client, arguments)
         local name = arguments[1]
@@ -5028,9 +4999,8 @@ lia.command.add("forcesay", {
     },
     AdminStick = {
         Name = "@adminStickForceSayName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/comments.png"
+        ButtonText = "Force Say",
+        Category = "Communication",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -5110,9 +5080,8 @@ lia.command.add("chargetmodel", {
     },
     AdminStick = {
         Name = "@adminStickGetCharModelName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/user_gray.png"
+        ButtonText = "View Model",
+        Category = "Character Info",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -5147,9 +5116,8 @@ lia.command.add("checkflags", {
     },
     AdminStick = {
         Name = "@adminStickGetCharFlagsName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/flag_yellow.png"
+        ButtonText = "View Flags",
+        Category = "Character Info",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -5178,9 +5146,8 @@ lia.command.add("chargetname", {
     },
     AdminStick = {
         Name = "@adminStickGetCharNameName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/user.png"
+        ButtonText = "View Character Name",
+        Category = "Character Info",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -5204,9 +5171,8 @@ lia.command.add("chargethealth", {
     },
     AdminStick = {
         Name = "@adminStickGetCharHealthName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/heart.png"
+        ButtonText = "View Health",
+        Category = "Character Info",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -5230,9 +5196,8 @@ lia.command.add("chargetmoney", {
     },
     AdminStick = {
         Name = "@adminStickGetCharMoneyName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/money.png"
+        ButtonText = "View Money",
+        Category = "Character Info",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -5257,9 +5222,8 @@ lia.command.add("chargetinventory", {
     },
     AdminStick = {
         Name = "@adminStickGetCharInventoryName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/box.png"
+        ButtonText = "View Inventory",
+        Category = "Character Info",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -5295,9 +5259,8 @@ lia.command.add("getallinfos", {
     },
     AdminStick = {
         Name = "@adminStickGetAllInfosName",
-        Category = "characterManagement",
-        SubCategory = "information",
-        Icon = "icon16/table.png"
+        ButtonText = "View All Info",
+        Category = "Character Info",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -5726,9 +5689,8 @@ lia.command.add("charsetattrib", {
     },
     AdminStick = {
         Name = "@setAttributes",
-        Category = "characterManagement",
-        SubCategory = "properties",
-        Icon = "icon16/wrench.png"
+        ButtonText = "Set Attributes",
+        Category = "Attributes",
     },
     onRun = function(client, arguments)
         if table.IsEmpty(lia.attribs.list) then
@@ -5770,9 +5732,8 @@ lia.command.add("checkattributes", {
     },
     AdminStick = {
         Name = "@checkAttributes",
-        Category = "characterManagement",
-        SubCategory = "properties",
-        Icon = "icon16/zoom.png"
+        ButtonText = "View Attributes",
+        Category = "Attributes",
     },
     onRun = function(client, arguments)
         if table.IsEmpty(lia.attribs.list) then
@@ -5921,11 +5882,6 @@ lia.command.add("trunk", {
 lia.command.add("restockvendor", {
     superAdminOnly = true,
     desc = "@restockVendorDesc",
-    AdminStick = {
-        Name = "@restockVendorStickName",
-        TargetClass = "lia_vendor",
-        Icon = "icon16/box.png"
-    },
     onRun = function(client)
         local target = client:getTracedEntity()
         if not target or not IsValid(target) then
@@ -6056,9 +6012,8 @@ lia.command.add("charaddattrib", {
     },
     AdminStick = {
         Name = "@addAttributes",
-        Category = "characterManagement",
-        SubCategory = "properties",
-        Icon = "icon16/add.png"
+        ButtonText = "Add Attributes",
+        Category = "Attributes",
     },
     onRun = function(client, arguments)
         if table.IsEmpty(lia.attribs.list) then
@@ -6099,9 +6054,8 @@ lia.command.add("banooc", {
     },
     AdminStick = {
         Name = "@banOOC",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/sound_mute.png"
+        ButtonText = "Ban From OOC",
+        Category = "Communication",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -6127,9 +6081,8 @@ lia.command.add("unbanooc", {
     },
     AdminStick = {
         Name = "@unbanOOCStickName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/sound.png"
+        ButtonText = "Unban From OOC",
+        Category = "Communication",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -6154,19 +6107,44 @@ lia.command.add("clearchat", {
     end
 })
 
+local function getDoorByMapID(doorID)
+    doorID = math.floor(tonumber(doorID) or 0)
+    if doorID <= 0 then return end
+    local door = ents.GetMapCreatedEntity(doorID)
+    if IsValid(door) and door:isDoor() then return door end
+end
+
+local function resolveDoorCommandTarget(client, arguments, minimumArgumentCount)
+    minimumArgumentCount = minimumArgumentCount or 0
+    arguments = istable(arguments) and arguments or {}
+    local door
+    local nextArgumentIndex = 1
+    if #arguments > minimumArgumentCount then
+        door = getDoorByMapID(arguments[1])
+        if door then nextArgumentIndex = 2 end
+    end
+
+    if not IsValid(door) then
+        local tracedDoor = client:getTracedEntity()
+        if IsValid(tracedDoor) and tracedDoor:isDoor() then door = tracedDoor end
+    end
+
+    if not (IsValid(door) and door:isDoor()) then return end
+    return door, nextArgumentIndex
+end
+
 lia.command.add("doorsell", {
     desc = "@doorsellDesc",
     adminOnly = false,
     AdminStick = {
         Name = "@adminStickDoorSellName",
-        Category = "doorManagement",
-        SubCategory = "actions",
+        ButtonText = "Sell This Door",
+        Category = "doorActions",
         TargetClass = "door",
-        Icon = "icon16/money.png"
     },
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if door then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
                 if client == door:GetDTEntity(0) then
@@ -6193,14 +6171,13 @@ lia.command.add("admindoorsell", {
     adminOnly = true,
     AdminStick = {
         Name = "@adminStickAdminDoorSellName",
-        Category = "doorManagement",
-        SubCategory = "actions",
+        ButtonText = "Force Sell This Door",
+        Category = "doorActions",
         TargetClass = "door",
-        Icon = "icon16/money_delete.png"
     },
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if door then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
                 local owner = door:GetDTEntity(0)
@@ -6229,14 +6206,13 @@ lia.command.add("doortogglelock", {
     adminOnly = true,
     AdminStick = {
         Name = "@adminStickToggleDoorLockName",
-        Category = "doorManagement",
-        SubCategory = "settings",
+        ButtonText = "Toggle Door Lock",
+        Category = "doorActions",
         TargetClass = "door",
-        Icon = "icon16/cog.png"
     },
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if door then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
                 local currentLockState = door:GetInternalVariable("m_bLocked")
@@ -6282,14 +6258,13 @@ lia.command.add("doorbuy", {
     adminOnly = false,
     AdminStick = {
         Name = "@buyDoor",
-        Category = "doorManagement",
-        SubCategory = "actions",
+        ButtonText = "Buy This Door",
+        Category = "doorActions",
         TargetClass = "door",
-        Icon = "icon16/money_add.png"
     },
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if door then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
                 local factions = doorData.factions
@@ -6328,14 +6303,13 @@ lia.command.add("doortoggleownable", {
     adminOnly = true,
     AdminStick = {
         Name = "@adminStickToggleDoorOwnableName",
-        Category = "doorManagement",
-        SubCategory = "settings",
+        ButtonText = "Toggle Door Ownable",
+        Category = "doorSettings",
         TargetClass = "door",
-        Icon = "icon16/pencil.png"
     },
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if door then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
                 local factions = doorData.factions or {}
@@ -6369,14 +6343,13 @@ lia.command.add("doorresetdata", {
     adminOnly = true,
     AdminStick = {
         Name = "@adminStickResetDoorDataName",
-        Category = "doorManagement",
-        SubCategory = "actions",
+        ButtonText = "Reset Door Data",
+        Category = "doorMaintenance",
         TargetClass = "door",
-        Icon = "icon16/arrow_refresh.png"
     },
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if door then
             lia.log.add(client, "doorResetData", door)
             local doorData = {
                 disabled = nil,
@@ -6403,14 +6376,13 @@ lia.command.add("doortoggleenabled", {
     adminOnly = true,
     AdminStick = {
         Name = "@adminStickToggleDoorEnabledName",
-        Category = "doorManagement",
-        SubCategory = "settings",
+        ButtonText = "Toggle Door Enabled",
+        Category = "doorSettings",
         TargetClass = "door",
-        Icon = "icon16/stop.png"
     },
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if door then
             local doorData = lia.doors.getData(door)
             local isDisabled = doorData.disabled or false
             local newState = not isDisabled
@@ -6431,21 +6403,20 @@ lia.command.add("doortogglehidden", {
     adminOnly = true,
     AdminStick = {
         Name = "@adminStickToggleDoorHiddenName",
-        Category = "doorManagement",
-        SubCategory = "settings",
+        ButtonText = "Toggle Door Hidden",
+        Category = "doorSettings",
         TargetClass = "door",
-        Icon = "icon16/eye.png"
     },
-    onRun = function(client)
-        local entity = client:GetEyeTrace().Entity
-        if IsValid(entity) and entity:isDoor() then
-            local doorData = lia.doors.getData(entity)
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if door then
+            local doorData = lia.doors.getData(door)
             local currentState = doorData.hidden or false
             local newState = not currentState
             doorData.hidden = newState
-            lia.doors.setData(entity, doorData)
-            lia.log.add(client, "doorSetHidden", entity, newState)
-            hook.Run("DoorHiddenToggled", client, entity, newState)
+            lia.doors.setData(door, doorData)
+            lia.log.add(client, "doorSetHidden", door, newState)
+            hook.Run("DoorHiddenToggled", client, door, newState)
             client:notifySuccessLocalized(newState and "doorSetHidden" or "doorSetNotHidden")
             lia.module.get("doors"):SaveData()
         else
@@ -6465,18 +6436,17 @@ lia.command.add("doorsetprice", {
     adminOnly = true,
     AdminStick = {
         Name = "@adminStickSetDoorPriceName",
-        Category = "doorManagement",
-        SubCategory = "settings",
+        ButtonText = "Set Door Price",
+        Category = "doorSettings",
         TargetClass = "door",
-        Icon = "icon16/money.png"
     },
     onRun = function(client, arguments)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+        local door, argumentIndex = resolveDoorCommandTarget(client, arguments, 1)
+        if door then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
-                if not arguments[1] or not tonumber(arguments[1]) then return client:notifyErrorLocalized("invalidClass") end
-                local price = math.Clamp(math.floor(tonumber(arguments[1])), 0, 1000000)
+                if not arguments[argumentIndex] or not tonumber(arguments[argumentIndex]) then return client:notifyErrorLocalized("invalidClass") end
+                local price = math.Clamp(math.floor(tonumber(arguments[argumentIndex])), 0, 1000000)
                 doorData.price = price
                 lia.doors.setData(door, doorData)
                 lia.log.add(client, "doorSetPrice", door, price)
@@ -6503,17 +6473,16 @@ lia.command.add("doorsettitle", {
     adminOnly = true,
     AdminStick = {
         Name = "@doorsettitle",
-        Category = "doorManagement",
-        SubCategory = "settings",
+        ButtonText = "Set Door Title",
+        Category = "doorSettings",
         TargetClass = "door",
-        Icon = "icon16/textfield.png"
     },
     onRun = function(client, arguments)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+        local door, argumentIndex = resolveDoorCommandTarget(client, arguments, 1)
+        if door then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
-                local name = table.concat(arguments, " ")
+                local name = table.concat(arguments, " ", argumentIndex)
                 if not name:find("%S") then return client:notifyErrorLocalized("invalidClass") end
                 if door:checkDoorAccess(client, DOOR_TENANT) or client:isStaff() then
                     doorData.name = name
@@ -6538,10 +6507,9 @@ lia.command.add("savedoors", {
     adminOnly = true,
     AdminStick = {
         Name = "@adminStickSaveDoorsName",
-        Category = "doorManagement",
-        SubCategory = "actions",
+        ButtonText = "Save Door Data",
+        Category = "doorMaintenance",
         TargetClass = "door",
-        Icon = "icon16/disk.png"
     },
     onRun = function(client)
         lia.module.get("doors"):SaveData()
@@ -6555,14 +6523,13 @@ lia.command.add("doorinfo", {
     adminOnly = true,
     AdminStick = {
         Name = "@adminStickDoorInfoName",
-        Category = "doorManagement",
-        SubCategory = "settings",
+        ButtonText = "View Door Info",
+        Category = "doorInformation",
         TargetClass = "door",
-        Icon = "icon16/information.png"
     },
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if door then
             local doorData = lia.doors.getData(door)
             local disabled = doorData.disabled or false
             local price = doorData.price or 0
@@ -6635,14 +6602,13 @@ lia.command.add("doorsampledata", {
     adminOnly = true,
     AdminStick = {
         Name = "@adminStickDoorSampleName",
-        Category = "doorManagement",
-        SubCategory = "settings",
+        ButtonText = "Copy Door Settings",
+        Category = "doorMaintenance",
         TargetClass = "door",
-        Icon = "icon16/add.png"
     },
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if door then
             local doorData = lia.doors.getData(door)
             local sampleData = {
                 name = L("sampleDoorName", door:MapCreationID() or L("unknown")),
@@ -6668,6 +6634,79 @@ lia.command.add("doorsampledata", {
     end
 })
 
+local randomDoorPrefixes = {"North", "South", "East", "West", "Upper", "Lower", "Grand", "Old", "Prime", "Quiet"}
+local randomDoorPlaces = {"Office", "Suite", "Storage", "Lobby", "Workshop", "Checkpoint", "Garage", "Apartment", "Archive", "Lab"}
+local function getRandomDoorRestrictionData()
+    local restrictionType = math.random(1, 4)
+    local data = {
+        factions = {},
+        classes = {},
+        noSell = false
+    }
+
+    if restrictionType == 1 then return data end
+    if restrictionType == 4 then
+        data.noSell = true
+        return data
+    end
+
+    if restrictionType == 2 then
+        local factions = {}
+        for _, faction in pairs(lia.faction.indices or {}) do
+            if faction and faction.uniqueID and faction.uniqueID ~= "staff" then factions[#factions + 1] = faction.uniqueID end
+        end
+
+        if #factions > 0 then
+            data.factions = {factions[math.random(#factions)]}
+            data.noSell = true
+            return data
+        end
+    end
+
+    local classes = {}
+    for _, classData in pairs(lia.class.list or {}) do
+        if classData and classData.uniqueID then classes[#classes + 1] = classData.uniqueID end
+    end
+
+    if #classes > 0 then
+        data.classes = {classes[math.random(#classes)]}
+        data.noSell = true
+    end
+    return data
+end
+
+lia.command.add("doorrandominfo", {
+    desc = "Apply randomized information to the door you are looking at.",
+    adminOnly = true,
+    AdminStick = {
+        Name = "Randomize Door Info",
+        ButtonText = "Randomize Door Info",
+        Category = "doorMaintenance",
+        TargetClass = "door",
+    },
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if not door then return end
+        local doorData = lia.doors.getData(door)
+        local restrictionData = getRandomDoorRestrictionData()
+        doorData.name = string.format("%s %s %d", randomDoorPrefixes[math.random(#randomDoorPrefixes)], randomDoorPlaces[math.random(#randomDoorPlaces)], math.random(1, 99))
+        doorData.price = math.random(0, 5000)
+        doorData.hidden = math.random() > 0.7
+        doorData.disabled = math.random() > 0.85
+        doorData.noSell = restrictionData.noSell
+        doorData.factions = restrictionData.factions
+        doorData.classes = restrictionData.classes
+        doorData.useCount = math.random(0, 250)
+        doorData.lastUsed = os.time() - math.random(0, 86400)
+        door.liaFactions = not table.IsEmpty(restrictionData.factions) and restrictionData.factions or nil
+        door.liaClasses = not table.IsEmpty(restrictionData.classes) and restrictionData.classes or nil
+        lia.doors.setData(door, doorData)
+        lia.module.get("doors"):SaveData()
+        lia.log.add(client, "doorSampleData", door, "randomized")
+        client:notifySuccess("Random door information applied.")
+    end
+})
+
 lia.command.add("dooraddfaction", {
     desc = "@dooraddfactionDesc",
     arguments = {
@@ -6678,11 +6717,11 @@ lia.command.add("dooraddfaction", {
     },
     adminOnly = true,
     onRun = function(client, arguments)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+        local door, argumentIndex = resolveDoorCommandTarget(client, arguments, 1)
+        if door then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
-                local input = arguments[1]
+                local input = arguments[argumentIndex]
                 local faction
                 if input then
                     local factionIndex = tonumber(input)
@@ -6711,7 +6750,7 @@ lia.command.add("dooraddfaction", {
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorSetFaction", door, faction.name)
                     client:notifySuccessLocalized("doorSetFaction", faction.name)
-                elseif arguments[1] then
+                elseif arguments[argumentIndex] then
                     client:notifyErrorLocalized("invalidFaction")
                 else
                     doorData.factions = {}
@@ -6741,11 +6780,11 @@ lia.command.add("doorremovefaction", {
     },
     adminOnly = true,
     onRun = function(client, arguments)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+        local door, argumentIndex = resolveDoorCommandTarget(client, arguments, 1)
+        if door then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
-                local input = arguments[1]
+                local input = arguments[argumentIndex]
                 local faction
                 if input then
                     local factionIndex = tonumber(input)
@@ -6773,7 +6812,7 @@ lia.command.add("doorremovefaction", {
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorRemoveFaction", door, faction.name)
                     client:notifySuccessLocalized("doorRemoveFactionSpecific", faction.name)
-                elseif arguments[1] then
+                elseif arguments[argumentIndex] then
                     client:notifyErrorLocalized("invalidFaction")
                 else
                     doorData.factions = {}
@@ -6803,11 +6842,11 @@ lia.command.add("doorsetclass", {
     },
     adminOnly = true,
     onRun = function(client, arguments)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+        local door, argumentIndex = resolveDoorCommandTarget(client, arguments, 1)
+        if door then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
-                local input = arguments[1]
+                local input = arguments[argumentIndex]
                 local class, classData
                 if input then
                     local classIndex = tonumber(input)
@@ -6843,7 +6882,7 @@ lia.command.add("doorsetclass", {
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorSetClass", door, classData.name)
                     client:notifySuccessLocalized("doorSetClass", classData.name)
-                elseif arguments[1] then
+                elseif arguments[argumentIndex] then
                     client:notifyErrorLocalized("invalidClass")
                 else
                     doorData.classes = {}
@@ -6873,19 +6912,12 @@ lia.command.add("doorremoveclass", {
         }
     },
     adminOnly = true,
-    AdminStick = {
-        Name = "@adminStickDoorRemoveClassName",
-        Category = "doorManagement",
-        SubCategory = "settings",
-        TargetClass = "door",
-        Icon = "icon16/delete.png"
-    },
     onRun = function(client, arguments)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+        local door, argumentIndex = resolveDoorCommandTarget(client, arguments, 1)
+        if door then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
-                local input = arguments[1]
+                local input = arguments[argumentIndex]
                 local class, classData
                 if input then
                     local classIndex = tonumber(input)
@@ -6924,7 +6956,7 @@ lia.command.add("doorremoveclass", {
                     else
                         client:notifyErrorLocalized("doorClassNotAssigned", classData.name)
                     end
-                elseif arguments[1] then
+                elseif arguments[argumentIndex] then
                     client:notifyErrorLocalized("invalidClass")
                 else
                     doorData.classes = {}
@@ -6954,13 +6986,9 @@ end
 
 lia.command.add("doorcopyfactions", {
     adminOnly = true,
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if not (IsValid(door) and door:isDoor()) then
-            client:notifyErrorLocalized("doorNotValid")
-            return
-        end
-
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if not door then return end
         local doorData = lia.doors.getData(door)
         if doorData.disabled then
             client:notifyErrorLocalized("doorNotValid")
@@ -6978,13 +7006,9 @@ lia.command.add("doorcopyfactions", {
 
 lia.command.add("doorpastefactions", {
     adminOnly = true,
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if not (IsValid(door) and door:isDoor()) then
-            client:notifyErrorLocalized("doorNotValid")
-            return
-        end
-
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if not door then return end
         local doorData = lia.doors.getData(door)
         if doorData.disabled then
             client:notifyErrorLocalized("doorNotValid")
@@ -7009,13 +7033,9 @@ lia.command.add("doorpastefactions", {
 
 lia.command.add("doorcopyclasses", {
     adminOnly = true,
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if not (IsValid(door) and door:isDoor()) then
-            client:notifyErrorLocalized("doorNotValid")
-            return
-        end
-
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if not door then return end
         local doorData = lia.doors.getData(door)
         if doorData.disabled then
             client:notifyErrorLocalized("doorNotValid")
@@ -7033,13 +7053,9 @@ lia.command.add("doorcopyclasses", {
 
 lia.command.add("doorpasteclasses", {
     adminOnly = true,
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if not (IsValid(door) and door:isDoor()) then
-            client:notifyErrorLocalized("doorNotValid")
-            return
-        end
-
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if not door then return end
         local doorData = lia.doors.getData(door)
         if doorData.disabled then
             client:notifyErrorLocalized("doorNotValid")
@@ -7097,9 +7113,9 @@ lia.command.add("togglealldoors", {
 lia.command.add("doorid", {
     desc = "@doorIDDesc",
     adminOnly = true,
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if door then
             local mapID = door:MapCreationID()
             if mapID and mapID > 0 then
                 local pos = door:GetPos()
@@ -7783,9 +7799,8 @@ lia.command.add("returnitems", {
     },
     AdminStick = {
         Name = "@returnItems",
-        Category = "characterManagement",
-        SubCategory = "items",
-        Icon = "icon16/arrow_refresh.png"
+        ButtonText = "Return Lost Items",
+        Category = "Inventory",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -7823,9 +7838,8 @@ lia.command.add("returnallitems", {
     desc = "@returnAllItemsDesc",
     AdminStick = {
         Name = "@returnAllItems",
-        Category = "characterManagement",
-        SubCategory = "items",
-        Icon = "icon16/arrow_refresh.png"
+        ButtonText = "Return All Lost Items",
+        Category = "Inventory",
     },
     onRun = function(client)
         if not lia.config.get("LoseItemsonDeathHuman", false) and not lia.config.get("LoseItemsonDeathNPC", false) then
@@ -7952,9 +7966,8 @@ lia.command.add("plyviewclaims", {
     },
     AdminStick = {
         Name = "@viewTicketClaims",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/page_white_text.png"
+        ButtonText = "View Ticket Claims",
+        Category = "Tickets",
     },
     onRun = function(client, arguments)
         local targetName = arguments[1]
@@ -8165,9 +8178,8 @@ lia.command.add("warn", {
     },
     AdminStick = {
         Name = "@warnPlayer",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/error.png"
+        ButtonText = "Warn Player",
+        Category = "Warnings",
     },
     onRun = function(client, arguments)
         local targetName = arguments[1]
@@ -8489,9 +8501,8 @@ lia.command.add("viewwarns", {
     },
     AdminStick = {
         Name = "@viewPlayerWarnings",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/eye.png"
+        ButtonText = "View Warnings",
+        Category = "Warnings",
     },
     onRun = function(client, arguments)
         local targetName = arguments[1]
@@ -8648,9 +8659,8 @@ lia.command.add("recogwhisper", {
     desc = "@recogWhisperDesc",
     AdminStick = {
         Name = "@adminStickForceRecognitionWhisperName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/user_comment.png"
+        ButtonText = "Force Recognize Whisper",
+        Category = "Recognition",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1]) or client
@@ -8670,9 +8680,8 @@ lia.command.add("recognormal", {
     desc = "@recogNormalDesc",
     AdminStick = {
         Name = "@adminStickForceRecognitionNormalName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/user_green.png"
+        ButtonText = "Force Recognize Nearby",
+        Category = "Recognition",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1]) or client
@@ -8692,9 +8701,8 @@ lia.command.add("recogyell", {
     desc = "@recogYellDesc",
     AdminStick = {
         Name = "@adminStickForceRecognitionYellName",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
-        Icon = "icon16/user_red.png"
+        ButtonText = "Force Recognize Yell",
+        Category = "Recognition",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1]) or client
@@ -8765,10 +8773,9 @@ lia.command.add("npcchangetype", {
     desc = "@npcchangetypeDesc",
     AdminStick = {
         Name = "@npcChangeTypeTitle",
-        Category = "@moderation",
-        SubCategory = "moderationTools",
+        ButtonText = "Change NPC Type",
+        Category = "NPCs",
         TargetClass = "lia_npc",
-        Icon = "icon16/user_edit.png"
     },
     onRun = function(client)
         local permission = client:hasPrivilege("Can Manage NPCs")
@@ -8913,9 +8920,8 @@ lia.command.add("resetvendorcooldowns", {
     },
     AdminStick = {
         Name = "@adminStickResetVendorCooldownsName",
-        Category = "characterManagement",
-        SubCategory = "properties",
-        Icon = "icon16/time_delete.png"
+        ButtonText = "Reset Vendor Cooldowns",
+        Category = "Vendors",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -9139,8 +9145,8 @@ lia.command.add("viewBodygroups", {
     desc = "@viewBodygroupsDesc",
     AdminStick = {
         Name = "@viewBodygroupsDesc",
-        Category = "@characterManagement",
-        SubCategory = "@bodygrouper"
+        ButtonText = "View Bodygroups",
+        Category = "Character Info",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1] or "")

@@ -127,7 +127,7 @@ function Derma_Install_Convar_Functions(panel)
     end
 end
 
-local quickPalette = {
+local quickPaletteDefaults = {
     background = Color(4, 16, 19, 246),
     panel = Color(6, 25, 29, 230),
     panelHover = Color(9, 34, 39, 242),
@@ -142,6 +142,37 @@ local quickPalette = {
     toggleOff = Color(63, 77, 80, 255),
     toggleKnob = Color(238, 244, 241, 255)
 }
+
+local quickPalette = table.Copy(quickPaletteDefaults)
+
+local function setQuickPaletteColor(name, value)
+    local fallback = quickPaletteDefaults[name] or color_white
+    quickPalette[name] = IsColor(value) and Color(value.r, value.g, value.b, value.a or 255) or Color(fallback.r, fallback.g, fallback.b, fallback.a or 255)
+end
+
+local function refreshQuickPalette()
+    local theme = lia.color and lia.color.theme or {}
+    local background = theme.background_alpha or theme.background or quickPaletteDefaults.background
+    local panel = theme.button or theme.category or quickPaletteDefaults.panel
+    local field = theme.focus_panel or theme.category or quickPaletteDefaults.field
+    local line = theme.gray or quickPaletteDefaults.line
+    local text = theme.text or theme.text_entry or quickPaletteDefaults.text
+    local accent = theme.accent or theme.theme or theme.maincolor or quickPaletteDefaults.accent
+    local toggleOff = theme.toggle or quickPaletteDefaults.toggleOff
+    setQuickPaletteColor("background", background)
+    setQuickPaletteColor("panel", panel)
+    setQuickPaletteColor("panelHover", lia.color and lia.color.adjust(panel, 10, 10, 10, 12) or quickPaletteDefaults.panelHover)
+    setQuickPaletteColor("panelStrong", lia.color and lia.color.darken(panel, 0.18) or quickPaletteDefaults.panelStrong)
+    setQuickPaletteColor("field", field)
+    setQuickPaletteColor("line", Color(line.r, line.g, line.b, 115))
+    setQuickPaletteColor("lineSoft", Color(line.r, line.g, line.b, 70))
+    setQuickPaletteColor("text", text)
+    setQuickPaletteColor("textMuted", theme.gray or theme.header_text or quickPaletteDefaults.textMuted)
+    setQuickPaletteColor("accent", accent)
+    setQuickPaletteColor("accentSoft", Color(accent.r, accent.g, accent.b, 46))
+    setQuickPaletteColor("toggleOff", toggleOff)
+    setQuickPaletteColor("toggleKnob", theme.text_entry or theme.text or quickPaletteDefaults.toggleKnob)
+end
 
 local quickSectionTitles = {
     camera = "CAMERA",
@@ -240,6 +271,7 @@ local QuickPanel = {}
 function QuickPanel:Init()
     if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end
     lia.gui.quick = self
+    refreshQuickPalette()
     self:SetSkin(lia.config.get("DermaSkin", L("liliaSkin")))
     self:SetTitle("")
     self:SetAlphaBackground(false)
@@ -592,6 +624,11 @@ end
 
 function QuickPanel:RefreshTheme()
     if not IsValid(self) then return end
+    refreshQuickPalette()
+    if IsValid(self.search) then
+        self.search:SetTextColor(quickPalette.text)
+        self.search:SetCursorColor(quickPalette.accent)
+    end
     self:RebuildContent()
     self:InvalidateLayout(true)
 end

@@ -1568,7 +1568,7 @@ lia.option.add("voiceRange", "@voiceRange", "@voiceRangeDesc", false, nil, {
     type = "Boolean"
 })
 
-lia.option.add("weaponSelectorPosition", "@weaponSelectorPosition", "@weaponSelectorPositionDesc", "left", nil, {
+lia.option.add("weaponSelectorPosition", "@weaponSelectorPosition", "@weaponSelectorPositionDesc", "right", nil, {
     category = "@core",
     type = "Table",
     options = {

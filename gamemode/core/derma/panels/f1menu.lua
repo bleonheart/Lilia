@@ -862,7 +862,7 @@ function PANEL:Init()
     self.topBar:Dock(TOP)
     self.topBar:SetTall(74)
     local schemaIconMat = SCHEMA and SCHEMA.icon and Material(SCHEMA.icon, "smooth") or Material("lilia.png", "smooth")
-    local schemaName = SCHEMA and SCHEMA.name or "Mojave Reborn"
+    local schemaName = SCHEMA and SCHEMA.name
     self.topBar.Paint = function(_, w, h)
         local accent = getThemeColors()
         surface.SetDrawColor(4, 13, 17, 250)

@@ -1426,6 +1426,11 @@ if SERVER then
             itemData.y = nil
         end
 
+        local defaultQuantity = tonumber(itemData.quantity)
+        if not defaultQuantity then
+            defaultQuantity = itemTable.isStackable and 1 or itemTable.maxQuantity or 1
+        end
+
         local function onItemCreated(_, itemID)
             local item = lia.item.new(uniqueID, itemID)
             if item then
@@ -1433,7 +1438,7 @@ if SERVER then
                 item.invID = index
                 item.data.x = x
                 item.data.y = y
-                item.quantity = itemTable.maxQuantity
+                item.quantity = defaultQuantity
                 if callback then callback(item) end
                 d:resolve(item)
                 item:onInstanced(index, x, y, item)
@@ -1447,7 +1452,7 @@ if SERVER then
             data = itemData,
             x = x,
             y = y,
-            quantity = itemTable.maxQuantity or 1
+            quantity = defaultQuantity
         }, onItemCreated, "items")
         return d
     end
