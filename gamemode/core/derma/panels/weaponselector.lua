@@ -20,25 +20,18 @@ local draw = draw
 local language = language
 local game = game
 local string = string
-local table = table
 local math = math
-local color_white = color_white
 local IN_ATTACK = IN_ATTACK
 local TEXT_ALIGN_LEFT = TEXT_ALIGN_LEFT
 local TEXT_ALIGN_CENTER = TEXT_ALIGN_CENTER
-local TEXT_ALIGN_RIGHT = TEXT_ALIGN_RIGHT
 local TEXT_ALIGN_TOP = TEXT_ALIGN_TOP
-local darkPanel = Color(4, 17, 21, 236)
-local darkPanelInner = Color(7, 24, 29, 242)
 local darkCard = Color(9, 28, 34, 232)
 local darkCardHover = Color(13, 38, 45, 238)
 local darkIcon = Color(14, 35, 41, 245)
 local textPrimary = Color(234, 239, 238)
 local textSecondary = Color(166, 179, 178)
-local textMuted = Color(110, 126, 126)
 local bronzeFallback = Color(180, 119, 51)
 local softLine = Color(65, 84, 84)
-local black = Color(0, 0, 0)
 local function getWeaponFromIndex(i, weapons)
     return weapons[i] or NULL
 end
@@ -59,10 +52,6 @@ end
 
 local function scaled(color, fraction, alphaOverride)
     return withAlpha(color, (alphaOverride or color.a or 255) * fraction)
-end
-
-local function drawAccentBar(x, y, w, h, accent, fraction)
-    draw.RoundedBox(0, x, y, w, h, Color(accent.r, accent.g, accent.b, 210 * fraction))
 end
 
 local function drawText(text, font, x, y, color, fraction, alignX, alignY)

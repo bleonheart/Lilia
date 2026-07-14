@@ -3436,7 +3436,7 @@ else
         groupBrowser:DockMargin(0, 0, 14, 0)
         groupBrowser:DockPadding(12, 12, 12, 12)
         groupBrowser.Paint = function(_, w, h)
-            local accent, _, _, panel, _, border = getPermissionsTheme()
+            local _, _, _, panel, _, border = getPermissionsTheme()
             drawPermissionsPanel(0, 0, w, h, 8, panel, border)
         end
 
@@ -3499,7 +3499,7 @@ else
         details:Dock(FILL)
         details:DockPadding(14, 14, 14, 14)
         details.Paint = function(_, w, h)
-            local accent, _, _, panel, _, border = getPermissionsTheme()
+            local _, _, _, panel, _, border = getPermissionsTheme()
             drawPermissionsPanel(0, 0, w, h, 8, panel, border)
         end
 

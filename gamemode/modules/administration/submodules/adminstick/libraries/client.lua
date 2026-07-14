@@ -252,45 +252,6 @@ local function hasAdminStickGeneratedLists(target)
     return false
 end
 
-local function beginAdminStickMenuBatch(menu)
-    if not IsValid(menu) then return end
-    local state = {
-        menus = {},
-        closed = false
-    }
-
-    local function attach(panel)
-        if state.closed then return end
-        if not IsValid(panel) or panel._liaAdminStickBatchState == state then return end
-        panel._liaAdminStickBatchState = state
-        panel._liaAdminStickOriginalUpdateSize = panel._liaAdminStickOriginalUpdateSize or panel.UpdateSize
-        panel.UpdateSize = function(self) if self._liaAdminStickOriginalUpdateSize then self._liaAdminStickBatchDirty = true end end
-        state.menus[#state.menus + 1] = panel
-    end
-
-    attach(menu)
-    state.attach = attach
-    return state
-end
-
-local function finishAdminStickMenuBatch(state)
-    if not state or not state.menus then return end
-    state.closed = true
-    for _, panel in ipairs(state.menus) do
-        if IsValid(panel) and panel._liaAdminStickOriginalUpdateSize then panel.UpdateSize = panel._liaAdminStickOriginalUpdateSize end
-    end
-
-    for i = #state.menus, 1, -1 do
-        local panel = state.menus[i]
-        if IsValid(panel) and panel._liaAdminStickOriginalUpdateSize and panel._liaAdminStickBatchDirty then
-            panel:_liaAdminStickOriginalUpdateSize()
-            panel._liaAdminStickBatchDirty = nil
-        end
-
-        if IsValid(panel) then panel._liaAdminStickBatchState = nil end
-    end
-end
-
 local function appendDeferredMenuBuild(menu, builder)
     if not IsValid(menu) or not isfunction(builder) then return end
     if menu.AppendDeferredBuild then
@@ -1343,13 +1304,6 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
     end
 end
 
-local function hasAdminStickTargetClass(class)
-    for _, c in pairs(lia.command.list) do
-        if istable(c.AdminStick) and c.AdminStick.TargetClass == class then return true end
-    end
-    return false
-end
-
 local function RegisterDefaultAdminStickListHooks()
     hook.Add("GetAdminStickLists", "liaDefaultAdminStickLists", function(target, lists)
         if not target or not IsValid(target) then return end
@@ -1513,16 +1467,6 @@ local function drawAdminStickPanel(x, y, w, h, radius, color, outline)
             surface.DrawOutlinedRect(x, y, w, h, 1)
         end
     end
-end
-
-local function getAdminStickMaterial(icon)
-    if not icon then return Material("icon16/page.png", "smooth") end
-    if type(icon) == "IMaterial" then return icon end
-    if isstring(icon) and icon ~= "" then return Material(icon, "smooth") end
-    return Material("icon16/page.png", "smooth")
-end
-
-local function drawAdminStickIcon()
 end
 
 local function adminStickCopyText(value, notifyKey)

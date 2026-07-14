@@ -1917,43 +1917,6 @@ else
         return box
     end
 
-    local function CreateSection(parent, title)
-        local section = parent:Add("DPanel")
-        section:Dock(TOP)
-        section:DockMargin(0, 0, 0, 12)
-        section:DockPadding(16, 42, 16, 16)
-        section.Paint = function(_, w, h)
-            local accent = GetWeaponConfigTheme()
-            DrawWeaponConfigPanel(0, 0, w, h, 7, Color(5, 18, 23, 212), Color(accent.r, accent.g, accent.b, 72))
-            draw.SimpleText(string.upper(title), "LiliaFont.18", 16, 14, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-            surface.SetDrawColor(accent.r, accent.g, accent.b, 90)
-            surface.DrawRect(16, 36, w - 32, 1)
-        end
-        return section
-    end
-
-    local function CreateField(parent, label, defaultValue, numeric, onChanged)
-        local row = parent:Add("DPanel")
-        row:Dock(TOP)
-        row:SetTall(38)
-        row:DockMargin(0, 0, 0, 8)
-        row.Paint = function() end
-        local labelPanel = row:Add("DLabel")
-        labelPanel:Dock(LEFT)
-        labelPanel:SetWide(136)
-        labelPanel:SetText(label)
-        labelPanel:SetFont("LiliaFont.18")
-        labelPanel:SetTextColor(Color(184, 203, 203))
-        labelPanel:SetContentAlignment(4)
-        local entry = row:Add("DTextEntry")
-        entry:Dock(FILL)
-        entry:SetUpdateOnType(true)
-        ApplyTextEntryStyle(entry, numeric)
-        if defaultValue ~= nil then entry:SetValue(tostring(defaultValue)) end
-        entry.OnValueChange = function(s, value) onChanged(value, s) end
-        return entry
-    end
-
     local function CommitWeaponOverride(className, key, value)
         net.Start("liaWeaponOverrideUpdate")
         net.WriteString(className)
@@ -2517,7 +2480,6 @@ else
                     weaponList:Clear()
                     state.listButtons = {}
                     local filter = NormalizeFilter(searchBar:GetValue())
-                    local totalVisible = 0
                     local filtered = {}
                     for _, item in ipairs(allWeapons) do
                         if state.category ~= "__all" and item.category ~= state.category then continue end
@@ -2526,7 +2488,7 @@ else
                         filtered[#filtered + 1] = item
                     end
 
-                    totalVisible = #filtered
+                    local totalVisible = #filtered
                     local summary = weaponList:Add("DPanel")
                     summary:Dock(TOP)
                     summary:SetTall(56)

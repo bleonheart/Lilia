@@ -551,7 +551,6 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
     }
 
     local preferredCategories = {"Core", "HUD", "ESP", "Third Person", "Camera", "Performance", "Interface", "Gameplay", "Misc"}
-    local categoryIcons = {}
     local function getAccent(alpha)
         local theme = lia.color and lia.color.theme or {}
         local color = theme.accent or theme.theme or lia.config and lia.config.get and lia.config.get("Color") or uiColors.accent
@@ -583,14 +582,6 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
 
         surface.SetDrawColor(color)
         surface.DrawOutlinedRect(x, y, w, h)
-    end
-
-    local function tableSize(t)
-        local count = 0
-        for _ in pairs(t or {}) do
-            count = count + 1
-        end
-        return count
     end
 
     local function normalizeValue(value)

@@ -1263,13 +1263,11 @@ function GM:DrawEntityInfo(e, a, pos)
         surface.SetFont(getHUDFont(17))
         local maxWidth = 0
         local totalHeight = 0
-        local lineHeights = {}
         for i = 1, #charInfo do
             local info = charInfo[i]
             local text = getPlayerInfoMeasureText(info):gsub("#", "\226\128\139#")
             local tw, th = surface.GetTextSize(text)
             maxWidth = math.max(maxWidth, tw)
-            lineHeights[i] = th
             if i == 1 then
                 totalHeight = th
             else
@@ -1285,13 +1283,11 @@ function GM:DrawEntityInfo(e, a, pos)
         if hook.Run("DrawPlayerInfoBackground", e, panelX, panelY, panelWidth, panelHeight, a) == false then return end
         local accent = lia.color.theme.accent or lia.color.theme.theme or color_white
         local boxWidth = math.Clamp(math.max(360, panelWidth + 40), math.min(320, ScrW() * width), math.min(520, ScrW() * 0.45))
-        local boxHeight = panelHeight + 44
         local boundMin, boundMax = e:GetRotatedAABB(e:OBBMins() * 0.5, e:OBBMaxs() * 0.5)
         local boundMinX = e:LocalToWorld(boundMin):ToScreen().x
         local boundMaxX = e:LocalToWorld(boundMax):ToScreen().x
         local tooltipAnchorX = math.max(boundMinX, boundMaxX) + 12
         local tooltipX = math.Clamp(tooltipAnchorX, ScrW() * 0.5 + 24, ScrW() - boxWidth)
-        local tooltipY = math.Clamp(ScrH() * 0.5 - boxHeight * 0.5, 0, ScrH() - boxHeight)
         local descriptionRows = {}
         for i = 1, #e.liaDescLines do
             local line = trimPlayerInfoText(e.liaDescLines[i])
@@ -1326,7 +1322,8 @@ function GM:DrawEntityInfo(e, a, pos)
         end
 
         local sections = buildPlayerInfoSections(descriptionRows, informationRows, "Information")
-        boxHeight = estimatePlayerInfoTooltipHeight(e.liaNameLines[1] or name, sections, "LiliaFont.17", "LiliaFont.15", 18, 12, 6)
+        local boxHeight = estimatePlayerInfoTooltipHeight(e.liaNameLines[1] or name, sections, "LiliaFont.17", "LiliaFont.15", 18, 12, 6)
+        local tooltipY = math.Clamp(ScrH() * 0.5 - boxHeight * 0.5, 0, ScrH() - boxHeight)
         lia.derma.drawBoxWithText(nil, tooltipX, tooltipY, {
             title = e.liaNameLines[1] or name,
             sections = sections,
