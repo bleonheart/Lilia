@@ -456,4 +456,18 @@ lia.admin.registerPrivilege({
     Category = "@compatibility"
 })
 
+hook.Add("PrePACEditorOpen", "identifier", function()
+     if not LocalPlayer():getChar():hasFlags("P") then
+        return false
+    end
+end
+end)
+hook.Add("pac_CanWearParts", "identifier", function()
+   if not LocalPlayer():getChar():hasFlags("P") then
+        return false
+    end
+end  
+end)
+
+
 lia.flag.add("P", "@flagPac3")

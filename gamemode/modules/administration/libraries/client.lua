@@ -1962,6 +1962,26 @@ function MODULE:PopulateAdminTabs(pages)
     end
 end
 
+local function getInventoryItemName(itemData, uniqueID)
+    local name = itemData and isfunction(itemData.getName) and itemData:getName() or nil
+    return name or itemData and itemData.name or uniqueID
+end
+
+local function getInventoryItemDesc(itemData)
+    local desc = itemData and isfunction(itemData.getDesc) and itemData:getDesc() or nil
+    return desc or itemData and itemData.desc or ""
+end
+
+local function getInventoryItemCategory(itemData)
+    local category = itemData and isfunction(itemData.getCategory) and itemData:getCategory() or nil
+    return category or itemData and itemData.category or lia.lang.resolveToken("@misc")
+end
+
+local function getInventoryItemRarity(itemData)
+    local rarity = itemData and isfunction(itemData.getData) and itemData:getData("rarity") or nil
+    return rarity or itemData and itemData.rarity
+end
+
 spawnmenu.AddContentType("inventoryitem", function(container, data)
     local client = LocalPlayer()
     local canUseItemSpawner = client:hasPrivilege("canUseItemSpawner")
@@ -1984,7 +2004,7 @@ spawnmenu.AddContentType("inventoryitem", function(container, data)
 
     icon:SetColor(Color(205, 92, 92, 255))
     icon.PaintOver = function(_, w, h)
-        local name = itemData:getName()
+        local name = getInventoryItemName(itemData, data.id)
         surface.SetFont("LiliaFont.18")
         local textW, textH = surface.GetTextSize(name)
         surface.SetDrawColor(0, 0, 0, 200)
@@ -1995,8 +2015,8 @@ spawnmenu.AddContentType("inventoryitem", function(container, data)
     end
 
     local lines = {}
-    lines[#lines + 1] = "<font=LiliaFont.16>" .. itemData:getName() .. "</font>"
-    local rarity = itemData:getData("rarity") or itemData.rarity
+    lines[#lines + 1] = "<font=LiliaFont.16>" .. getInventoryItemName(itemData, data.id) .. "</font>"
+    local rarity = getInventoryItemRarity(itemData)
     if rarity and rarity ~= "" then
         local rarityText = rarity
         local rarityColors = lia.item and lia.item.rarities
@@ -2005,7 +2025,7 @@ spawnmenu.AddContentType("inventoryitem", function(container, data)
         lines[#lines + 1] = "<font=LiliaFont.16>" .. rarityText .. "</font>"
     end
 
-    lines[#lines + 1] = "<font=LiliaFont.16>" .. itemData:getDesc() .. "</font>"
+    lines[#lines + 1] = "<font=LiliaFont.16>" .. getInventoryItemDesc(itemData) .. "</font>"
     icon:SetTooltip(table.concat(lines, "\n"))
     icon.lastSpawnTime = 0
     icon.DoClick = function(self)
@@ -2039,11 +2059,12 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
 
     tree:Clear()
     for uniqueID, itemData in pairs(allItems) do
-        local category = itemData:getCategory()
+        local category = getInventoryItemCategory(itemData)
+        local name = getInventoryItemName(itemData, uniqueID)
         categorized[category] = categorized[category] or {}
         table.insert(categorized[category], {
             id = uniqueID,
-            name = itemData:getName()
+            name = name
         })
     end
 
@@ -2089,9 +2110,9 @@ search.AddProvider(function(str)
     if not str or str == "" then return results end
     local query = string.lower(str)
     for uniqueID, itemData in pairs(lia.item.list or {}) do
-        local name = tostring(itemData:getName() or "")
-        local desc = tostring(itemData:getDesc() or "")
-        local category = tostring((itemData.getCategory and itemData:getCategory()) or "")
+        local name = tostring(getInventoryItemName(itemData, uniqueID) or "")
+        local desc = tostring(getInventoryItemDesc(itemData) or "")
+        local category = tostring(getInventoryItemCategory(itemData) or "")
         if string.find(string.lower(name), query, 1, true) or string.find(string.lower(desc), query, 1, true) or string.find(string.lower(category), query, 1, true) or string.find(string.lower(uniqueID), query, 1, true) then
             local icon = spawnmenu.CreateContentIcon("inventoryitem", g_SpawnMenu and g_SpawnMenu.SearchPropPanel or nil, {
                 name = name ~= "" and name or uniqueID,

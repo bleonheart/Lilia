@@ -1462,16 +1462,6 @@ lia.option.add("facialExpressions", "@optionFacialExpressions", "@optionFacialEx
     type = "Boolean"
 })
 
-lia.option.add("antiAliasing", "@optionAntiAliasing", "@optionAntiAliasingDesc", false, function(_, value) RunConsoleCommand("mat_antialias", value and "1" or "0") end, {
-    category = "@categoryPerformance",
-    type = "Boolean"
-})
-
-lia.option.add("hdrLighting", "@optionHDRLighting", "@optionHDRLightingDesc", false, function(_, value) RunConsoleCommand("mat_hdr_level", value and "1" or "0") end, {
-    category = "@categoryPerformance",
-    type = "Boolean"
-})
-
 lia.option.add("motionBlur", "@optionMotionBlur", "@optionMotionBlurDesc", false, function(_, value) RunConsoleCommand("mat_motion_blur_enabled", value and "1" or "0") end, {
     category = "@categoryPerformance",
     type = "Boolean"
@@ -1517,13 +1507,6 @@ lia.option.add("sprayLifetime", "@optionSprayLifetime", "@optionSprayLifetimeDes
 lia.option.add("modelDecals", "@optionModelDecals", "@optionModelDecalsDesc", true, function(_, value) RunConsoleCommand("r_drawmodeldecals", value and "1" or "0") end, {
     category = "@categoryPerformance",
     type = "Boolean"
-})
-
-lia.option.add("multiplayerDecals", "@optionMultiplayerDecals", "@optionMultiplayerDecalsDesc", 1, function(_, value) RunConsoleCommand("mp_decals", tostring(value)) end, {
-    min = 0,
-    max = 50,
-    category = "@categoryPerformance",
-    type = "Int"
 })
 
 lia.option.add("detailFadeDistance", "@optionDetailFadeDistance", "@optionDetailFadeDistanceDesc", 800, function(_, value) RunConsoleCommand("cl_detailfade", tostring(value)) end, {
