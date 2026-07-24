@@ -2671,26 +2671,6 @@ local function DisplayPositionToolHUD(client, hudInfos, weapon)
     })
 end
 
-local function DisplayAdminStickToolHUD(_, hudInfos, weapon)
-    local entityTitle, entityRows = weapon.GetAdminStickHUDInfo and weapon:GetAdminStickHUDInfo()
-    if entityTitle and entityRows then AddAdminStickToolHUD(hudInfos, entityTitle, entityRows) end
-    AddAdminStickToolHUD(hudInfos, L("administrativeMode"), {
-        {
-            label = L("adminStickHUDMode"),
-            value = L("administrativeMode")
-        },
-        {
-            label = L("adminStickHUDReload"),
-            value = L("adminStickInstructionSwitchMode"):gsub("^.-:%s*", "")
-        }
-    })
-end
-
-local function DisplayDebugStickHUD(_, hudInfos, weapon)
-    local title, rows = weapon.GetDebugHUDInfo and weapon:GetDebugHUDInfo()
-    if title and rows then AddAdminStickToolHUD(hudInfos, title, rows) end
-end
-
 local function DisplayDistanceToolHUD(client, hudInfos, weapon)
     local instructions = {L("distanceToolSetPoint"), L("distanceToolClearPoints"), L("distanceToolMeasureCurrent")}
     table.insert(hudInfos, {
