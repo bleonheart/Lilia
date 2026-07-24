@@ -19,12 +19,8 @@ SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = ""
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
--- Modes keep the tool extensible: modules can register a new section without
--- changing the weapon's input dispatch. Definitions may provide CanUse,
--- PrimaryAttack, SecondaryAttack, Reload, Think, OnEnter, and OnExit callbacks.
 SWEP.ModeDefinitions = SWEP.ModeDefinitions or {}
 SWEP.ModeOrder = SWEP.ModeOrder or {}
-
 function SWEP:RegisterMode(id, definition)
     assert(isstring(id) and id ~= "", "Admin stick mode requires an id")
     assert(istable(definition), "Admin stick mode requires a definition")
@@ -62,6 +58,7 @@ function SWEP:CycleMode()
     if definition and definition.OnEnter then definition.OnEnter(self) end
     return true
 end
+
 function SWEP:DrawWorldModel()
     local owner = self:GetOwner()
     if not IsValid(owner) then

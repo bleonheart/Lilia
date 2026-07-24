@@ -2795,15 +2795,17 @@ function MODULE:DisplayPlayerHUDInformation(client, hudInfos)
     if not IsValid(weapon) then return end
     if weapon:GetClass() == "lia_adminstick" then
         local mode = weapon:GetActiveMode()
-        if mode == "map_configurer" and weapon:CanUseTool() then
-            DisplayPositionToolHUD(client, hudInfos, weapon)
-        end
+        if mode == "map_configurer" and weapon:CanUseTool() then DisplayPositionToolHUD(client, hudInfos, weapon) end
     elseif weapon:GetClass() == "lia_distance" then
         DisplayDistanceToolHUD(client, hudInfos, weapon)
     end
 end
 
-local toolPermissionTierData = {tools = {}, tiers = {}}
+local toolPermissionTierData = {
+    tools = {},
+    tiers = {}
+}
+
 local toolPermissionTierRefresh
 local toolPermissionLegacyDisabled = {
     rope = true,
@@ -2814,6 +2816,7 @@ local toolPermissionLegacyDisabled = {
     faceposer = true,
     stacker = true
 }
+
 local toolPermissionDefinitions = {
     disabled = {
         title = "Disabled",
@@ -2831,8 +2834,8 @@ local toolPermissionDefinitions = {
         color = Color(65, 196, 116)
     }
 }
-local toolPermissionTierOrder = {"disabled", "staff", "basic"}
 
+local toolPermissionTierOrder = {"disabled", "staff", "basic"}
 local function getDefaultToolPermissionTier(toolName)
     if toolPermissionLegacyDisabled[toolName] then return "disabled" end
     return toolName == "remover" and "basic" or "staff"
@@ -2904,18 +2907,24 @@ local function paintToolPermissionPanel(w, h, background, border, radius)
 end
 
 net.Receive("liaToolPermissionTiers", function()
-    toolPermissionTierData = net.ReadTable() or {tools = {}, tiers = {}}
+    toolPermissionTierData = net.ReadTable() or {
+        tools = {},
+        tiers = {}
+    }
+
     if toolPermissionTierRefresh then toolPermissionTierRefresh() end
 end)
 
--- Staff-character privileges are intentionally configured separately from
--- usergroups: the list is an on-duty fallback, never a replacement for normal
--- privileges.
-local staffCharacterConfiguration = {permissions = {}, flags = {}, privileges = {}, flagDefinitions = {}}
+local staffCharacterConfiguration = {
+    permissions = {},
+    flags = {},
+    privileges = {},
+    flagDefinitions = {}
+}
+
 local staffCharacterConfigurationRefresh
 local staffCharacterConfigurationPending = 0
 local staffCharacterConfigurationOperations = {}
-
 net.Receive("liaStaffCharacterConfiguration", function()
     staffCharacterConfiguration = net.ReadTable() or staffCharacterConfiguration
     staffCharacterConfiguration.permissions = staffCharacterConfiguration.permissions or {}
@@ -2933,6 +2942,7 @@ net.Receive("liaStaffCharacterConfiguration", function()
             staffCharacterConfiguration.flags = {}
         end
     end
+
     staffCharacterConfigurationPending = #staffCharacterConfigurationOperations
     lia.staffCharacterPermissions = staffCharacterConfiguration.permissions or {}
     lia.staffCharacterFlags = staffCharacterConfiguration.flags or {}
@@ -2965,7 +2975,6 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
             panel:Clear()
             panel:DockPadding(12, 12, 12, 12)
             panel.Paint = nil
-
             local panelColor = Color(4, 18, 23, 242)
             local panelColorHovered = Color(11, 29, 34, 244)
             local textColor = Color(230, 238, 236)
@@ -2980,7 +2989,6 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
             local categoryFilter = "all"
             local categorySignature = ""
             local lastServerUpdate = 0
-
             local function getAccent()
                 return lia.color.theme.accent or Color(45, 190, 170)
             end
@@ -2993,6 +3001,7 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                     surface.SetDrawColor(255, 255, 255, 4)
                     surface.DrawRect(0, 0, w, h)
                 end
+
                 vbar.btnUp.Paint = function() end
                 vbar.btnDown.Paint = function() end
                 vbar.btnGrip.Paint = function(_, w, h)
@@ -3009,11 +3018,10 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                     local accent = getAccent()
                     paintToolPermissionPanel(w, h, panelColor, Color(accent.r, accent.g, accent.b, 82), 6)
                 end
+
                 if IsValid(combo.DropButton) then
                     combo.DropButton:SetWide(32)
-                    combo.DropButton.Paint = function(_, w, h)
-                        draw.SimpleText("▼", "LiliaFont.16", w * 0.5, h * 0.5, Color(175, 195, 195), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                    end
+                    combo.DropButton.Paint = function(_, w, h) draw.SimpleText("▼", "LiliaFont.16", w * 0.5, h * 0.5, Color(175, 195, 195), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
                 end
             end
 
@@ -3027,7 +3035,9 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
 
             local function countEntries(values)
                 local count = 0
-                for _ in pairs(values or {}) do count = count + 1 end
+                for _ in pairs(values or {}) do
+                    count = count + 1
+                end
                 return count
             end
 
@@ -3047,13 +3057,11 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
             end
 
             staffConfigurationPanel(panel, "Default Staff Character Access", "Privileges apply only while using a staff character. Normal user-group privileges remain active on every character.")
-
             local toolbar = panel:Add("DPanel")
             toolbar:Dock(TOP)
             toolbar:SetTall(48)
             toolbar:DockMargin(0, 0, 0, 12)
             toolbar.Paint = function() end
-
             categoryCombo = toolbar:Add("DComboBox")
             categoryCombo:Dock(RIGHT)
             categoryCombo:SetWide(220)
@@ -3061,7 +3069,6 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
             categoryCombo:SetValue("All Categories")
             categoryCombo:AddChoice("All Categories", "all")
             styleCombo(categoryCombo)
-
             typeCombo = toolbar:Add("DComboBox")
             typeCombo:Dock(RIGHT)
             typeCombo:SetWide(190)
@@ -3071,7 +3078,6 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
             typeCombo:AddChoice("Privileges", "permissions")
             typeCombo:AddChoice("Character Flags", "flags")
             styleCombo(typeCombo)
-
             local searchWrap = toolbar:Add("DPanel")
             searchWrap:Dock(FILL)
             searchWrap:DockPadding(42, 0, 10, 0)
@@ -3093,7 +3099,6 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
             searchEntry:SetPaintBackground(false)
             searchEntry:SetPaintBorderEnabled(false)
             searchEntry:SetUpdateOnType(true)
-
             footer = panel:Add("DPanel")
             footer:Dock(BOTTOM)
             footer:SetTall(58)
@@ -3125,21 +3130,22 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                 paintToolPermissionPanel(w, h, background, border, 6)
                 draw.SimpleText("Clear Configuration", "LiliaFont.17", w * 0.5, h * 0.5, enabled and Color(235, 105, 110) or Color(105, 85, 86), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
+
             clearButton.DoClick = function()
                 Derma_Query("Disable all staff-character fallback privileges and future automatic flag grants? Flags already granted to characters will not be removed.", "Clear Staff Character Configuration", "Clear Configuration", function()
                     staffCharacterConfiguration.permissions = {}
                     staffCharacterConfiguration.flags = {}
-                    markSaving({kind = "reset"})
+                    markSaving({
+                        kind = "reset"
+                    })
+
                     if staffCharacterConfigurationRefresh then staffCharacterConfigurationRefresh(false) end
                     net.Start("liaResetStaffCharacterConfiguration")
                     net.SendToServer()
                 end, "Cancel")
             end
 
-            footer.PerformLayout = function(_, w, h)
-                clearButton:SetPos(w - clearButton:GetWide() - 10, math.floor((h - clearButton:GetTall()) * 0.5))
-            end
-
+            footer.PerformLayout = function(_, w, h) clearButton:SetPos(w - clearButton:GetWide() - 10, math.floor((h - clearButton:GetTall()) * 0.5)) end
             contentScroll = panel:Add("liaScrollPanel")
             contentScroll:Dock(FILL)
             contentScroll.Paint = function() end
@@ -3158,19 +3164,16 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                 row:DockMargin(10, 0, 10, 7)
                 row:SetText("")
                 row:SetTooltip(data.name .. "\n" .. data.description)
-
                 local nameLabel = row:Add("DLabel")
                 nameLabel:SetFont("LiliaFont.17")
                 nameLabel:SetText(data.name)
                 nameLabel:SetTextColor(textColor)
                 nameLabel:SetContentAlignment(4)
-
                 local descriptionLabel = row:Add("DLabel")
                 descriptionLabel:SetFont("LiliaFont.15")
                 descriptionLabel:SetText(data.description)
                 descriptionLabel:SetTextColor(mutedTextColor)
                 descriptionLabel:SetContentAlignment(4)
-
                 row.Paint = function(button, w, h)
                     local accent = getAccent()
                     local hovered = button:IsHovered()
@@ -3236,9 +3239,12 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                         paintToolPermissionPanel(w, h, Color(7, 23, 28, 190), Color(accent.r, accent.g, accent.b, 35), 6)
                         draw.SimpleText("No settings match the current filters.", "LiliaFont.16", 16, h * 0.5, mutedTextColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                     end
+
                     sectionHeight = sectionHeight + 62
                 else
-                    for _, rowData in ipairs(rows) do sectionHeight = sectionHeight + addSettingRow(section, rowData) end
+                    for _, rowData in ipairs(rows) do
+                        sectionHeight = sectionHeight + addSettingRow(section, rowData)
+                    end
                 end
 
                 section:SetTall(sectionHeight)
@@ -3253,7 +3259,6 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
 
                 local category = lia.admin.privilegeCategories and lia.admin.privilegeCategories[permissionID]
                 if category and category ~= "" then return tostring(lia.lang.resolveToken(category)) end
-
                 for _, module in pairs(lia.module.list or {}) do
                     if istable(module.Privileges) and istable(module.Privileges[permissionID]) then
                         local privilege = module.Privileges[permissionID]
@@ -3265,7 +3270,6 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                     local privilege = CAMI.GetPrivilege(permissionID)
                     if privilege and privilege.Category then return tostring(lia.lang.resolveToken(privilege.Category)) end
                 end
-
                 return tostring(lia.lang.resolveToken("@unassigned"))
             end
 
@@ -3284,19 +3288,20 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                         if description ~= "" and description ~= permissionID then return description end
                     end
                 end
-
                 return "Allows access to " .. name .. "."
             end
 
             local function rebuildCategoryChoices(categories)
                 if not IsValid(categoryCombo) then return end
                 local names = {}
-                for category in pairs(categories) do names[#names + 1] = category end
+                for category in pairs(categories) do
+                    names[#names + 1] = category
+                end
+
                 table.sort(names, function(a, b) return a:lower() < b:lower() end)
                 local signature = table.concat(names, "\n")
                 if signature == categorySignature then return end
                 categorySignature = signature
-
                 local previous = categoryFilter
                 local foundPrevious = previous == "all"
                 categoryCombo:Clear()
@@ -3315,19 +3320,17 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                 if fromServer then lastServerUpdate = RealTime() end
                 local oldScroll = IsValid(contentScroll.VBar) and contentScroll.VBar:GetScroll() or 0
                 contentScroll:Clear()
-
                 local search = string.Trim(searchEntry:GetValue() or ""):lower()
                 local permissionRows = {}
                 local flagRows = {}
                 local privileges = {}
                 local flags = {}
                 local categories = {}
+                for id in pairs(staffCharacterConfiguration.privileges or {}) do
+                    privileges[#privileges + 1] = id
+                end
 
-                for id in pairs(staffCharacterConfiguration.privileges or {}) do privileges[#privileges + 1] = id end
-                table.sort(privileges, function(a, b)
-                    return tostring(lia.admin.privilegeNames[a] or a):lower() < tostring(lia.admin.privilegeNames[b] or b):lower()
-                end)
-
+                table.sort(privileges, function(a, b) return tostring(lia.admin.privilegeNames[a] or a):lower() < tostring(lia.admin.privilegeNames[b] or b):lower() end)
                 for _, id in ipairs(privileges) do
                     local permissionID = id
                     local name = tostring(lia.admin.privilegeNames[permissionID] or permissionID)
@@ -3348,7 +3351,12 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                                 local nextEnabled = not enabled
                                 staffCharacterConfiguration.permissions[permissionID] = nextEnabled and true or nil
                                 lia.staffCharacterPermissions = staffCharacterConfiguration.permissions
-                                markSaving({kind = "permission", id = permissionID, enabled = nextEnabled})
+                                markSaving({
+                                    kind = "permission",
+                                    id = permissionID,
+                                    enabled = nextEnabled
+                                })
+
                                 refresh(false)
                                 net.Start("liaSetStaffCharacterPermission")
                                 net.WriteString(permissionID)
@@ -3360,10 +3368,11 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                 end
 
                 rebuildCategoryChoices(categories)
+                for id in pairs(staffCharacterConfiguration.flagDefinitions or {}) do
+                    flags[#flags + 1] = id
+                end
 
-                for id in pairs(staffCharacterConfiguration.flagDefinitions or {}) do flags[#flags + 1] = id end
                 table.sort(flags)
-
                 for _, id in ipairs(flags) do
                     local flagID = id
                     local description = tostring(staffCharacterConfiguration.flagDefinitions[flagID] or flagID)
@@ -3380,7 +3389,12 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                                 local nextEnabled = not enabled
                                 staffCharacterConfiguration.flags[flagID] = nextEnabled and true or nil
                                 lia.staffCharacterFlags = staffCharacterConfiguration.flags
-                                markSaving({kind = "flag", id = flagID, enabled = nextEnabled})
+                                markSaving({
+                                    kind = "flag",
+                                    id = flagID,
+                                    enabled = nextEnabled
+                                })
+
                                 refresh(false)
                                 net.Start("liaSetStaffCharacterFlag")
                                 net.WriteString(flagID)
@@ -3427,9 +3441,11 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                     categoryFilter = "all"
                     categoryCombo:SetValue("All Categories")
                 end
+
                 categoryCombo:SetEnabled(typeFilter ~= "flags")
                 refresh(false)
             end
+
             categoryCombo.OnSelect = function(_, _, _, data)
                 categoryFilter = data or "all"
                 refresh(false)
@@ -3448,7 +3464,6 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
         end
     }
 end)
-
 
 hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
     local client = LocalPlayer()
@@ -3488,7 +3503,6 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
             local resetButton
             local selectAllButton
             local bulkButtons = {}
-
             local function styleScrollBar(scrollPanel)
                 if not IsValid(scrollPanel) or not IsValid(scrollPanel.VBar) then return end
                 local vbar = scrollPanel.VBar
@@ -3497,11 +3511,10 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                     surface.SetDrawColor(255, 255, 255, 4)
                     surface.DrawRect(0, 0, w, h)
                 end
+
                 vbar.btnUp.Paint = function() end
                 vbar.btnDown.Paint = function() end
-                vbar.btnGrip.Paint = function(_, w, h)
-                    lia.derma.rect(1, 0, w - 2, h):Rad(4):Color(Color(accent.r, accent.g, accent.b, 145)):Shape(lia.derma.SHAPE_IOS):Draw()
-                end
+                vbar.btnGrip.Paint = function(_, w, h) lia.derma.rect(1, 0, w - 2, h):Rad(4):Color(Color(accent.r, accent.g, accent.b, 145)):Shape(lia.derma.SHAPE_IOS):Draw() end
             end
 
             local function styleCombo(combo)
@@ -3511,14 +3524,18 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                 combo.Paint = function(_, w, h) paintToolPermissionPanel(w, h, panelColor, borderColor, 6) end
                 if IsValid(combo.DropButton) then
                     combo.DropButton:SetWide(32)
-                    combo.DropButton.Paint = function(_, w, h)
-                        draw.SimpleText("▼", "LiliaFont.16", w * 0.5, h * 0.5, Color(175, 195, 195), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                    end
+                    combo.DropButton.Paint = function(_, w, h) draw.SimpleText("▼", "LiliaFont.16", w * 0.5, h * 0.5, Color(175, 195, 195), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
                 end
             end
 
             local function getCounts()
-                local counts = {disabled = 0, staff = 0, basic = 0, total = #allTools}
+                local counts = {
+                    disabled = 0,
+                    staff = 0,
+                    basic = 0,
+                    total = #allTools
+                }
+
                 for _, toolData in ipairs(allTools) do
                     local tier = getToolPermissionTier(toolData.id)
                     counts[tier] = (counts[tier] or 0) + 1
@@ -3528,7 +3545,9 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
 
             local function getSelectedCount()
                 local count = 0
-                for _ in pairs(selectedTools) do count = count + 1 end
+                for _ in pairs(selectedTools) do
+                    count = count + 1
+                end
                 return count
             end
 
@@ -3547,6 +3566,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                 for _, button in pairs(bulkButtons) do
                     if IsValid(button) then button:SetEnabled(selectedCount > 0) end
                 end
+
                 if IsValid(resetButton) then resetButton:SetEnabled(next(toolPermissionTierData.tiers or {}) ~= nil and saveState ~= "saving") end
                 if IsValid(selectAllButton) then selectAllButton:InvalidateLayout(true) end
                 if IsValid(footer) then footer:InvalidateLayout(true) end
@@ -3556,6 +3576,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                 for _, row in pairs(rowPanels) do
                     if IsValid(row) then row:InvalidateLayout(true) end
                 end
+
                 if IsValid(summary) then summary:InvalidateLayout(true) end
                 updateFooter()
             end
@@ -3567,7 +3588,6 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
             end
 
             local refreshRows
-
             local function sendTier(toolName, tier)
                 if not toolPermissionDefinitions[tier] or getToolPermissionTier(toolName) == tier then return end
                 toolPermissionTierData.tiers = toolPermissionTierData.tiers or {}
@@ -3578,9 +3598,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                 net.WriteString(tier)
                 net.SendToServer()
                 if accessFilter ~= "all" or changedOnly then
-                    timer.Simple(0, function()
-                        if IsValid(panel) and refreshRows then refreshRows() end
-                    end)
+                    timer.Simple(0, function() if IsValid(panel) and refreshRows then refreshRows() end end)
                 else
                     updateVisualState()
                 end
@@ -3596,6 +3614,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                         toolPermissionTierData.tiers[toolName] = tier
                     end
                 end
+
                 if #changes == 0 then return end
                 markSaving("batch")
                 net.Start("liaSetToolPermissionTiersBatch")
@@ -3604,6 +3623,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                     net.WriteString(changes[index])
                     net.WriteString(tier)
                 end
+
                 net.SendToServer()
                 selectedTools = {}
                 refreshRows()
@@ -3632,11 +3652,28 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                 local statStart = math.max(math.floor(w * 0.45), 520)
                 local statWidth = math.max(math.floor((w - statStart) / 4), 110)
                 local stats = {
-                    {value = counts.disabled, label = "Disabled", color = toolPermissionDefinitions.disabled.color},
-                    {value = counts.staff, label = "Staff", color = toolPermissionDefinitions.staff.color},
-                    {value = counts.basic, label = "Basic", color = toolPermissionDefinitions.basic.color},
-                    {value = counts.total, label = "Total Tools", color = textColor}
+                    {
+                        value = counts.disabled,
+                        label = "Disabled",
+                        color = toolPermissionDefinitions.disabled.color
+                    },
+                    {
+                        value = counts.staff,
+                        label = "Staff",
+                        color = toolPermissionDefinitions.staff.color
+                    },
+                    {
+                        value = counts.basic,
+                        label = "Basic",
+                        color = toolPermissionDefinitions.basic.color
+                    },
+                    {
+                        value = counts.total,
+                        label = "Total Tools",
+                        color = textColor
+                    }
                 }
+
                 for index, data in ipairs(stats) do
                     local x = statStart + (index - 1) * statWidth
                     surface.SetDrawColor(255, 255, 255, 16)
@@ -3674,8 +3711,10 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                     title:SetWide(math.max(w - 28, 1))
                     description:SetSize(math.max(w - 28, 1), math.max(h - 42, 1))
                 end
+
                 accessGuide.cards[#accessGuide.cards + 1] = card
             end
+
             accessGuide.PerformLayout = function(_, w, h)
                 local gap = 10
                 local paddingX = 12
@@ -3693,7 +3732,6 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
             toolbar:SetTall(52)
             toolbar:DockMargin(0, 0, 0, 10)
             toolbar.Paint = function() end
-
             changedButton = toolbar:Add("DButton")
             changedButton:Dock(RIGHT)
             changedButton:SetWide(188)
@@ -3709,6 +3747,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                 draw.RoundedBox(10, switchX, switchY, switchW, switchH, changedOnly and Color(accent.r, accent.g, accent.b, 210) or Color(82, 101, 105, 220))
                 draw.RoundedBox(8, changedOnly and switchX + switchW - 18 or switchX + 2, switchY + 2, 16, 16, Color(235, 243, 243))
             end
+
             changedButton.DoClick = function()
                 changedOnly = not changedOnly
                 refreshRows()
@@ -3744,7 +3783,6 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
             searchWrap:Dock(FILL)
             searchWrap:DockPadding(14, 0, 10, 0)
             searchWrap.Paint = function(_, w, h) paintToolPermissionPanel(w, h, panelColor, borderColor, 6) end
-
             searchEntry = searchWrap:Add("DTextEntry")
             searchEntry:Dock(FILL)
             searchEntry:SetFont("LiliaFont.17")
@@ -3756,7 +3794,6 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
             searchEntry:SetPaintBorderEnabled(false)
             searchEntry:SetUpdateOnType(true)
             searchEntry.OnChange = function() refreshRows() end
-
             footer = panel:Add("DPanel")
             footer:Dock(BOTTOM)
             footer:SetTall(58)
@@ -3783,9 +3820,11 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                         end
                     end
                 end
+
                 paintToolPermissionPanel(w, h, allSelected and Color(accent.r, accent.g, accent.b, 180) or button:IsHovered() and Color(255, 255, 255, 12) or Color(2, 14, 18, 200), Color(accent.r, accent.g, accent.b, allSelected and 210 or 90), 4)
                 if allSelected then draw.SimpleText("✓", "LiliaFont.17", w * 0.5, h * 0.5, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
             end
+
             selectAllButton.DoClick = function()
                 local allSelected = #filteredTools > 0
                 if allSelected then
@@ -3796,7 +3835,11 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                         end
                     end
                 end
-                for _, toolData in ipairs(filteredTools) do selectedTools[toolData.id] = allSelected and nil or true end
+
+                for _, toolData in ipairs(filteredTools) do
+                    selectedTools[toolData.id] = allSelected and nil or true
+                end
+
                 updateVisualState()
             end
 
@@ -3812,6 +3855,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                     paintToolPermissionPanel(w, h, background, Color(definition.color.r, definition.color.g, definition.color.b, enabled and 150 or 40), 5)
                     draw.SimpleText(definition.title, "LiliaFont.16", w * 0.5, h * 0.5, enabled and definition.color or Color(90, 105, 106), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 end
+
                 button.DoClick = function() sendBatch(tier) end
                 bulkButtons[tier] = button
             end
@@ -3824,8 +3868,8 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                 paintToolPermissionPanel(w, h, enabled and button:IsHovered() and Color(255, 255, 255, 10) or Color(2, 14, 18, 180), Color(accent.r, accent.g, accent.b, enabled and 90 or 35), 5)
                 draw.SimpleText("Reset All", "LiliaFont.16", w * 0.5, h * 0.5, enabled and Color(210, 225, 225) or Color(90, 105, 106), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
-            resetButton.DoClick = resetAll
 
+            resetButton.DoClick = resetAll
             footer.PerformLayout = function(_, w, h)
                 selectAllButton:SetPos(18, math.floor((h - selectAllButton:GetTall()) * 0.5))
                 local x = 284
@@ -3833,13 +3877,13 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                     bulkButtons[tier]:SetPos(x, math.floor((h - bulkButtons[tier]:GetTall()) * 0.5))
                     x = x + 106
                 end
+
                 resetButton:SetPos(w - 330, math.floor((h - resetButton:GetTall()) * 0.5))
             end
 
             local tablePanel = panel:Add("DPanel")
             tablePanel:Dock(FILL)
             tablePanel.Paint = function(_, w, h) paintToolPermissionPanel(w, h, panelColor, borderColor, 6) end
-
             local tableHeader = tablePanel:Add("DPanel")
             tableHeader:Dock(TOP)
             tableHeader:SetTall(48)
@@ -3875,6 +3919,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                     paintToolPermissionPanel(w, h, background, Color(definition.color.r, definition.color.g, definition.color.b, borderAlpha), 5)
                     draw.SimpleText(definition.title, "LiliaFont.16", w * 0.5, h * 0.5, active and color_white or definition.color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 end
+
                 button.DoClick = function() sendTier(toolData.id, tier) end
                 return button
             end
@@ -3899,9 +3944,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                     local empty = rowsScroll:Add("DPanel")
                     empty:Dock(TOP)
                     empty:SetTall(96)
-                    empty.Paint = function(_, w, h)
-                        draw.SimpleText("No tools match the current filters.", "LiliaFont.18", w * 0.5, h * 0.5, mutedTextColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                    end
+                    empty.Paint = function(_, w, h) draw.SimpleText("No tools match the current filters.", "LiliaFont.18", w * 0.5, h * 0.5, mutedTextColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
                 end
 
                 for _, toolData in ipairs(filteredTools) do
@@ -3930,13 +3973,17 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                         paintToolPermissionPanel(w, h, background, Color(accent.r, accent.g, accent.b, checked and 210 or 90), 4)
                         if checked then draw.SimpleText("✓", "LiliaFont.17", w * 0.5, h * 0.5, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
                     end
+
                     checkbox.DoClick = function()
                         selectedTools[toolData.id] = selectedTools[toolData.id] and nil or true
                         updateVisualState()
                     end
 
                     local tierButtons = {}
-                    for _, tier in ipairs(toolPermissionTierOrder) do tierButtons[tier] = createTierButton(row, toolData, tier) end
+                    for _, tier in ipairs(toolPermissionTierOrder) do
+                        tierButtons[tier] = createTierButton(row, toolData, tier)
+                    end
+
                     row.PerformLayout = function(_, w, h)
                         local _, _, _, _, accessX, accessWidth = getColumnLayout(w)
                         checkbox:SetPos(17, math.floor((h - checkbox:GetTall()) * 0.5))
@@ -3950,6 +3997,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                             x = x + buttonWidth + gap
                         end
                     end
+
                     rowPanels[toolData.id] = row
                 end
 
@@ -3959,9 +4007,15 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
             local function rebuildCategoryChoices()
                 if not IsValid(categoryCombo) then return end
                 local categories = {}
-                for _, toolData in ipairs(allTools) do categories[toolData.category] = true end
+                for _, toolData in ipairs(allTools) do
+                    categories[toolData.category] = true
+                end
+
                 local names = {}
-                for name in pairs(categories) do names[#names + 1] = name end
+                for name in pairs(categories) do
+                    names[#names + 1] = name
+                end
+
                 table.sort(names, function(a, b) return a:lower() < b:lower() end)
                 local signature = table.concat(names, "\31")
                 if signature == categorySignature then return end
@@ -3974,6 +4028,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                     categoryCombo:AddChoice(name, name)
                     if name == previous then foundPrevious = true end
                 end
+
                 if not foundPrevious then categoryFilter = "all" end
                 categoryCombo:SetValue(categoryFilter == "all" and "All Categories" or categoryFilter)
             end
@@ -3983,7 +4038,10 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
                 local previousSignature = toolSignature
                 allTools = getToolPermissionMetadata()
                 local ids = {}
-                for _, toolData in ipairs(allTools) do ids[#ids + 1] = toolData.id end
+                for _, toolData in ipairs(allTools) do
+                    ids[#ids + 1] = toolData.id
+                end
+
                 toolSignature = table.concat(ids, "\31")
                 rebuildCategoryChoices()
                 saveState = "saved"
@@ -3999,7 +4057,10 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
             toolPermissionTierRefresh = refreshData
             allTools = getToolPermissionMetadata()
             local initialIds = {}
-            for _, toolData in ipairs(allTools) do initialIds[#initialIds + 1] = toolData.id end
+            for _, toolData in ipairs(allTools) do
+                initialIds[#initialIds + 1] = toolData.id
+            end
+
             toolSignature = table.concat(initialIds, "\31")
             rebuildCategoryChoices()
             refreshRows()

@@ -361,6 +361,7 @@ hook.Add("CanTool", "Lilia.CanTool", function(client, trace, tool)
         elseif tier == "basic" and not hasToolgunFlag then
             table.insert(reasons, "flag 't'")
         end
+
         lia.log.add(client, "toolDenied", tool)
         client:notifyErrorLocalized(tier == "disabled" and "toolNoPermission" or "toolNotAllowed", tool, table.concat(reasons, ", "))
         return false

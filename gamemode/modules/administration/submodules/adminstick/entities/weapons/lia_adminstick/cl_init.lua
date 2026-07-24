@@ -75,10 +75,10 @@ local mapState = lia.adminStickMapState or lia.mapConfigurerState or {
     lastRequest = 0,
     removalMenuOpen = false
 }
+
 lia.adminStickMapState = mapState
 lia.mapConfigurerState = mapState
 mapState.typeIndex = mapState.typeIndex or mapState.modeIndex or 1
-
 local function canUseMapConfigurer(client)
     return IsValid(client) and (client:hasPrivilege("usePositionTool") or client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty())
 end
@@ -94,27 +94,86 @@ end
 local function buildDebugHUDRows(client)
     local rows = {}
     if client:hasPrivilege("developmentHUD") then
-        rows[#rows + 1] = {label = "SteamID64", value = client:SteamID64()}
-        rows[#rows + 1] = {label = "SteamID", value = client:SteamID()}
-        rows[#rows + 1] = {label = "Date / Time", value = os.date("%m/%d/%Y | %X", os.time())}
+        rows[#rows + 1] = {
+            label = "SteamID64",
+            value = client:SteamID64()
+        }
+
+        rows[#rows + 1] = {
+            label = "SteamID",
+            value = client:SteamID()
+        }
+
+        rows[#rows + 1] = {
+            label = "Date / Time",
+            value = os.date("%m/%d/%Y | %X", os.time())
+        }
     end
 
     if client:hasPrivilege("staffHUD") then
         local trace = client:GetEyeTraceNoCursor()
-        rows[#rows + 1] = {section = "Position"}
-        rows[#rows + 1] = {label = "Pos", value = formatDebugVector(client:GetPos())}
-        rows[#rows + 1] = {label = "Ang", value = formatDebugVector(client:EyeAngles())}
-        rows[#rows + 1] = {label = "Trace Pos", value = formatDebugVector(trace.HitPos)}
-        rows[#rows + 1] = {label = "Trace Dist", value = string.format("%.2f", client:GetPos():Distance(trace.HitPos))}
-        rows[#rows + 1] = {section = "Performance"}
-        rows[#rows + 1] = {label = "Health", value = client:Health()}
-        rows[#rows + 1] = {label = "Ping", value = client:Ping()}
-        rows[#rows + 1] = {label = "FPS", value = math.Round(1 / FrameTime(), 0)}
-        rows[#rows + 1] = {label = "Frame Time", value = string.format("%.4f", FrameTime())}
+        rows[#rows + 1] = {
+            section = "Position"
+        }
+
+        rows[#rows + 1] = {
+            label = "Pos",
+            value = formatDebugVector(client:GetPos())
+        }
+
+        rows[#rows + 1] = {
+            label = "Ang",
+            value = formatDebugVector(client:EyeAngles())
+        }
+
+        rows[#rows + 1] = {
+            label = "Trace Pos",
+            value = formatDebugVector(trace.HitPos)
+        }
+
+        rows[#rows + 1] = {
+            label = "Trace Dist",
+            value = string.format("%.2f", client:GetPos():Distance(trace.HitPos))
+        }
+
+        rows[#rows + 1] = {
+            section = "Performance"
+        }
+
+        rows[#rows + 1] = {
+            label = "Health",
+            value = client:Health()
+        }
+
+        rows[#rows + 1] = {
+            label = "Ping",
+            value = client:Ping()
+        }
+
+        rows[#rows + 1] = {
+            label = "FPS",
+            value = math.Round(1 / FrameTime(), 0)
+        }
+
+        rows[#rows + 1] = {
+            label = "Frame Time",
+            value = string.format("%.4f", FrameTime())
+        }
+
         if IsValid(trace.Entity) then
-            rows[#rows + 1] = {section = "Trace Entity"}
-            rows[#rows + 1] = {label = "Class", value = trace.Entity:GetClass()}
-            rows[#rows + 1] = {label = "Model", value = trace.Entity.GetModel and trace.Entity:GetModel() or "N/A"}
+            rows[#rows + 1] = {
+                section = "Trace Entity"
+            }
+
+            rows[#rows + 1] = {
+                label = "Class",
+                value = trace.Entity:GetClass()
+            }
+
+            rows[#rows + 1] = {
+                label = "Model",
+                value = trace.Entity.GetModel and trace.Entity:GetModel() or "N/A"
+            }
         end
     end
     return rows
@@ -163,7 +222,10 @@ local function openRemovalMenu(weapon)
     frame:SetTitle(L("removeThing", typeInfo.name or L("points")))
     frame:Center()
     frame:MakePopup()
-    function frame:OnClose() mapState.removalMenuOpen = false end
+    function frame:OnClose()
+        mapState.removalMenuOpen = false
+    end
+
     local scroll = vgui.Create("DScrollPanel", frame)
     scroll:Dock(FILL)
     scroll:DockMargin(5, 5, 5, 5)
@@ -217,7 +279,12 @@ SWEP:RegisterMode("admin", {
         end
     end,
     Reload = function(_, client)
-        if isSelfSelectHeld(client) then openAdminStickTarget(client, client) else closeAdminStickMenu() client.AdminStickTarget = nil end
+        if isSelfSelectHeld(client) then
+            openAdminStickTarget(client, client)
+        else
+            closeAdminStickMenu()
+            client.AdminStickTarget = nil
+        end
     end,
     OnExit = function() closeAdminStickMenu() end
 })
@@ -235,7 +302,10 @@ SWEP:RegisterMode("map_configurer", {
     end,
     SecondaryAttack = function(weapon, client)
         local typeInfo = getPositionType()
-        if typeInfo then lia.util.setFeaturePosition(client:GetPos(), typeInfo.id) refreshPositions(weapon, typeInfo.id) end
+        if typeInfo then
+            lia.util.setFeaturePosition(client:GetPos(), typeInfo.id)
+            refreshPositions(weapon, typeInfo.id)
+        end
     end,
     Reload = function()
         local types = getPositionTypes()
@@ -250,12 +320,16 @@ SWEP:RegisterMode("map_configurer", {
             weapon._nextRemovalMenu = CurTime() + 1
             openRemovalMenu(weapon)
         end
+
         if typeInfo and (mapState.cacheType ~= typeInfo.id or (#mapState.cachedPositions == 0 and (weapon._lastEmptyRequest or 0) < CurTime() - 2)) then
             weapon._lastEmptyRequest = CurTime()
             requestPositions(typeInfo.id)
         end
     end,
-    OnEnter = function() local typeInfo = getPositionType() if typeInfo then requestPositions(typeInfo.id) end end,
+    OnEnter = function()
+        local typeInfo = getPositionType()
+        if typeInfo then requestPositions(typeInfo.id) end
+    end,
     OnExit = function() mapState.removalMenuOpen = false end
 })
 
@@ -285,9 +359,23 @@ local function drawTopRightModeHUD(title, rows)
         backgroundColor = Color(25, 28, 35, 235),
         borderRadius = 12,
         padding = 18,
-        blur = {enabled = true, amount = 4, passes = 1, alpha = 200},
-        shadow = {enabled = true, offsetX = 12, offsetY = 12, color = Color(0, 0, 0, 170)},
-        accentBorder = {enabled = true, height = 2, color = lia.color.theme.accent or lia.color.theme.header or lia.color.theme.theme}
+        blur = {
+            enabled = true,
+            amount = 4,
+            passes = 1,
+            alpha = 200
+        },
+        shadow = {
+            enabled = true,
+            offsetX = 12,
+            offsetY = 12,
+            color = Color(0, 0, 0, 170)
+        },
+        accentBorder = {
+            enabled = true,
+            height = 2,
+            color = lia.color.theme.accent or lia.color.theme.header or lia.color.theme.theme
+        }
     })
 end
 
@@ -302,8 +390,17 @@ function SWEP:DrawHUD()
     if mode ~= "admin" then return end
     local _, entityRows = self:GetAdminStickHUDInfo()
     local rows = entityRows or {}
-    if #rows > 0 then rows[#rows + 1] = {divider = true} end
-    rows[#rows + 1] = {label = L("adminStickHUDReload"), value = L("adminStickInstructionSwitchMode"):gsub("^.-:%s*", "")}
+    if #rows > 0 then
+        rows[#rows + 1] = {
+            divider = true
+        }
+    end
+
+    rows[#rows + 1] = {
+        label = L("adminStickHUDReload"),
+        value = L("adminStickInstructionSwitchMode"):gsub("^.-:%s*", "")
+    }
+
     drawTopRightModeHUD(L("administrativeMode"), rows)
 end
 
@@ -317,8 +414,14 @@ function SWEP:GetAdminStickHUDInfo()
     local rows = buildAdminStickHUDRows(client, target)
     if #rows == 0 then
         rows = {
-            {label = "Class", value = target:GetClass()},
-            {label = "Model", value = target.GetModel and target:GetModel() or "N/A"}
+            {
+                label = "Class",
+                value = target:GetClass()
+            },
+            {
+                label = "Model",
+                value = target.GetModel and target:GetModel() or "N/A"
+            }
         }
     end
     return getAdminStickHUDTitle(target), rows
@@ -373,9 +476,17 @@ function SWEP:GetPositionToolMode()
     if self:GetActiveMode() == "map_configurer" then return getPositionType() end
 end
 
-function SWEP:GetCachedPositions() return mapState.cachedPositions end
-function SWEP:GetCacheType() return mapState.cacheType end
-function SWEP:CanUseTool() return self:GetActiveMode() == "map_configurer" and canUseMapConfigurer(LocalPlayer()) end
+function SWEP:GetCachedPositions()
+    return mapState.cachedPositions
+end
+
+function SWEP:GetCacheType()
+    return mapState.cacheType
+end
+
+function SWEP:CanUseTool()
+    return self:GetActiveMode() == "map_configurer" and canUseMapConfigurer(LocalPlayer())
+end
 
 function SWEP:Holster()
     local client = LocalPlayer()

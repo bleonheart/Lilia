@@ -1375,7 +1375,6 @@ function GM:HUDPaint()
             end
         end
     end
-
 end
 
 function GM:TooltipInitialize(var, panel)

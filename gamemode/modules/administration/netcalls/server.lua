@@ -1,19 +1,35 @@
 ﻿local spawnCooldowns = {}
-local validToolTiers = {disabled = true, staff = true, basic = true}
+local validToolTiers = {
+    disabled = true,
+    staff = true,
+    basic = true
+}
 
 lia.staffCharacterPermissions = lia.data.get("staffCharacterPermissions", {})
 lia.staffCharacterFlags = lia.data.get("staffCharacterFlags", {})
-
 local function hasStaffCharacterConfigurationAccess(client)
     return IsValid(client) and lia.admin.hasAccess(client, "manageUsergroups")
 end
 
 local function getStaffCharacterConfiguration()
     local privileges, flags = {}, {}
-    for id in pairs(lia.admin.privilegeNames or {}) do privileges[id] = true end
-    for id in pairs(lia.admin.privileges or {}) do privileges[id] = true end
-    for id, data in pairs(lia.flag.list or {}) do flags[id] = data.desc or data.description or id end
-    return {permissions = lia.staffCharacterPermissions or {}, flags = lia.staffCharacterFlags or {}, privileges = privileges, flagDefinitions = flags}
+    for id in pairs(lia.admin.privilegeNames or {}) do
+        privileges[id] = true
+    end
+
+    for id in pairs(lia.admin.privileges or {}) do
+        privileges[id] = true
+    end
+
+    for id, data in pairs(lia.flag.list or {}) do
+        flags[id] = data.desc or data.description or id
+    end
+    return {
+        permissions = lia.staffCharacterPermissions or {},
+        flags = lia.staffCharacterFlags or {},
+        privileges = privileges,
+        flagDefinitions = flags
+    }
 end
 
 local function sendStaffCharacterConfiguration(client)
@@ -22,10 +38,7 @@ local function sendStaffCharacterConfiguration(client)
     net.Send(client)
 end
 
-net.Receive("liaRequestStaffCharacterConfiguration", function(_, client)
-    if hasStaffCharacterConfigurationAccess(client) then sendStaffCharacterConfiguration(client) end
-end)
-
+net.Receive("liaRequestStaffCharacterConfiguration", function(_, client) if hasStaffCharacterConfigurationAccess(client) then sendStaffCharacterConfiguration(client) end end)
 net.Receive("liaSetStaffCharacterPermission", function(_, client)
     if not hasStaffCharacterConfigurationAccess(client) then return end
     local permission, enabled = lia.admin.normalizePrivilege(string.Trim(net.ReadString() or "")), net.ReadBool()
@@ -68,13 +81,18 @@ local function getToolNames()
             end
         end
     end
+
     table.sort(names)
     return names
 end
 
 local function sendToolPermissionTiers(client)
     net.Start("liaToolPermissionTiers")
-    net.WriteTable({tools = getToolNames(), tiers = lia.data.get("toolPermissionTiers", {})})
+    net.WriteTable({
+        tools = getToolNames(),
+        tiers = lia.data.get("toolPermissionTiers", {})
+    })
+
     net.Send(client)
 end
 
@@ -99,7 +117,10 @@ net.Receive("liaSetToolPermissionTiersBatch", function(_, client)
     if not IsValid(client) or not client:hasPrivilege("manageUsergroups") then return end
     local count = math.min(net.ReadUInt(12), 4095)
     local validTools = {}
-    for _, toolName in ipairs(getToolNames()) do validTools[toolName] = true end
+    for _, toolName in ipairs(getToolNames()) do
+        validTools[toolName] = true
+    end
+
     local tiers = lia.data.get("toolPermissionTiers", {})
     local changed = 0
     for _ = 1, count do
@@ -115,6 +136,7 @@ net.Receive("liaSetToolPermissionTiersBatch", function(_, client)
         lia.data.set("toolPermissionTiers", tiers, true, true)
         lia.log.add(client, "permissionChanged", changed .. " tool permission tiers updated")
     end
+
     sendToolPermissionTiers(client)
 end)
 
@@ -329,8 +351,8 @@ net.Receive("liaFeaturePositionsRequest", function(_, client)
                 net.WriteVector(positions[j].pos)
                 net.WriteString(positions[j].label or "")
             end
-            writeFeaturePositionRadii(positions)
 
+            writeFeaturePositionRadii(positions)
             net.Send(client)
         end)
     else
@@ -365,8 +387,8 @@ net.Receive("liaSetFeaturePosition", function(_, client)
                         net.WriteVector(positions[j].pos)
                         net.WriteString(positions[j].label or "")
                     end
-                    writeFeaturePositionRadii(positions)
 
+                    writeFeaturePositionRadii(positions)
                     net.Send(client)
                 end)
             end
@@ -397,8 +419,8 @@ net.Receive("liaRemoveFeaturePosition", function(_, client)
                         net.WriteVector(positions[j].pos)
                         net.WriteString(positions[j].label or "")
                     end
-                    writeFeaturePositionRadii(positions)
 
+                    writeFeaturePositionRadii(positions)
                     net.Send(client)
                 end)
             end

@@ -32,9 +32,8 @@ lia.adminStickMapState = lia.adminStickMapState or lia.mapConfigurerState or {
     lastRequest = 0,
     removalMenuOpen = false
 }
--- Kept as an alias for modules that used the old map configurer state.
-lia.mapConfigurerState = lia.adminStickMapState
 
+lia.mapConfigurerState = lia.adminStickMapState
 net.Receive("liaFeaturePositions", function()
     local typeId = net.ReadString()
     local count = net.ReadUInt(16)

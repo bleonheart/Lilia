@@ -426,9 +426,6 @@ function playerMeta:hasStaffCharacterPermission(privilegeName)
     privilegeName = lia.admin.normalizePrivilege(privilegeName)
     local permissions = lia.staffCharacterPermissions or {}
     if SERVER then permissions = lia.data.get("staffCharacterPermissions", {}) end
-    -- Server-wide permission administration must remain a normal privilege.
-    -- Superadmin-only privileges are also intentionally not delegable through
-    -- the on-duty list, preserving hard access boundaries.
     local restricted = privilegeName == "manageUsergroups" or lia.admin.privileges[privilegeName] == "superadmin"
     local allowed = not restricted and permissions[privilegeName] == true
     lia.debug("[Permissions]", "Staff character permission check", "player=", tostring(self), "permission=", tostring(privilegeName), "isStaffOnDuty=", tostring(self:isStaffOnDuty()), "enabled=", tostring(allowed), "finalResult=", tostring(allowed))

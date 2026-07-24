@@ -33,17 +33,12 @@ local MAP_SPAWN_CLASSES = {"info_player_start", "info_player_deathmatch", "info_
 local SPAWN_HEIGHT_OFFSET = Vector(0, 0, 16)
 local SPAWN_PATH_HEIGHT = Vector(0, 0, 36)
 local SPAWN_TRACE_HEIGHT = Vector(0, 0, 72)
-
---- Finds a safe position near a spawn point without allowing the spawn to cross solid geometry.
--- The source position is retained when no valid position can be found within the configured radius.
 local function getSpawnPosition(client, basePos, radius)
     local fallback = basePos + SPAWN_HEIGHT_OFFSET
     radius = math.max(0, tonumber(radius) or 0)
     if radius <= 0 then return fallback end
-
     local hullMins, hullMaxs = client:GetHull()
     for _ = 1, 16 do
-        -- Square root keeps the random positions evenly distributed across the circle.
         local distance = math.sqrt(math.Rand(0, radius * radius))
         local direction = math.Rand(0, math.pi * 2)
         local candidate = basePos + Vector(math.cos(direction) * distance, math.sin(direction) * distance, 0)
@@ -53,7 +48,6 @@ local function getSpawnPosition(client, basePos, radius)
             mask = MASK_PLAYERSOLID_BRUSHONLY
         })
 
-        -- Do not place someone on the other side of an exterior or interior wall.
         if not pathTrace.Hit then
             local groundTrace = util.TraceLine({
                 start = candidate + SPAWN_TRACE_HEIGHT,
@@ -76,7 +70,6 @@ local function getSpawnPosition(client, basePos, radius)
             end
         end
     end
-
     return fallback
 end
 
@@ -443,6 +436,7 @@ function MODULE:PostPlayerLoadout(client)
             else
                 hook.Run("PlayerSpawnPointSelected", client, Vector(0, 0, 16), ang or angle_zero)
             end
+
             client.liaIsRespawning = nil
             client.liaSpawnHandled = true
             return
