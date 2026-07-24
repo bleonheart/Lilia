@@ -1181,19 +1181,6 @@ lia.option.add("drawEntityHoverInfo", "@drawEntityHoverInfo", "@drawEntityHoverI
     isQuick = true,
 })
 
-lia.option.add("drawDevelopmentHUD", "@drawDevelopmentHUD", "@drawDevelopmentHUDDesc", true, nil, {
-    category = "@categoryHUD",
-    isQuick = true,
-    visible = function()
-        local ply = LocalPlayer()
-        if not IsValid(ply) then return false end
-        local hasDevelopmentHUD = ply:hasPrivilege("developmentHUD")
-        local hasStaffHUD = ply:hasPrivilege("staffHUD")
-        local permission = hasDevelopmentHUD or hasStaffHUD
-        return permission
-    end
-})
-
 lia.option.add("invertWeaponScroll", "@invertWeaponScroll", "@invertWeaponScrollDesc", false, nil, {
     category = "@core",
     isQuick = true,

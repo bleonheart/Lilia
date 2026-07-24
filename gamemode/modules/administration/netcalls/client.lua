@@ -25,13 +25,15 @@
     Realm:
         Client
 ]]
-lia.mapConfigurerState = lia.mapConfigurerState or {
+lia.adminStickMapState = lia.adminStickMapState or lia.mapConfigurerState or {
     modeIndex = 1,
     cachedPositions = {},
     cacheType = nil,
     lastRequest = 0,
     removalMenuOpen = false
 }
+-- Kept as an alias for modules that used the old map configurer state.
+lia.mapConfigurerState = lia.adminStickMapState
 
 net.Receive("liaFeaturePositions", function()
     local typeId = net.ReadString()
@@ -46,8 +48,14 @@ net.Receive("liaFeaturePositions", function()
         }
     end
 
-    lia.mapConfigurerState.cacheType = typeId
-    lia.mapConfigurerState.cachedPositions = list
+    local radiusCount = net.ReadUInt(16)
+    for i = 1, radiusCount do
+        local radius = net.ReadFloat()
+        if list[i] then list[i].radius = radius end
+    end
+
+    lia.adminStickMapState.cacheType = typeId
+    lia.adminStickMapState.cachedPositions = list
 end)
 
 net.Receive("liaBlindTarget", function()
