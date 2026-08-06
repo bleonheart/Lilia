@@ -922,6 +922,31 @@ local function buildPlayerInfoSections(descriptionRows, infoRows, defaultInfoTit
     return sections
 end
 
+local function wrapPlayerDescription(text, maxWidth, font, maxLines)
+    local wrappedLines = lia.util.wrapText(text, maxWidth, font)
+    if #wrappedLines <= maxLines then return wrappedLines end
+    local visibleLines = {}
+    for i = 1, maxLines do
+        visibleLines[i] = wrappedLines[i] or ""
+    end
+
+    surface.SetFont(font)
+    local truncatedLine = string.Trim(visibleLines[maxLines] or "")
+    while truncatedLine ~= "" do
+        local candidate = truncatedLine .. "..."
+        local candidateWidth = surface.GetTextSize(candidate)
+        if candidateWidth <= maxWidth then
+            visibleLines[maxLines] = candidate
+            return visibleLines
+        end
+
+        truncatedLine = string.Trim(truncatedLine:sub(1, -2))
+    end
+
+    visibleLines[maxLines] = "..."
+    return visibleLines
+end
+
 local function canDrawAmmo(wpn)
     if not IsValid(wpn) or wpn.DrawAmmo == false then return false end
     local hookResult = hook.Run("ShouldDrawAmmo", wpn)
@@ -1182,7 +1207,7 @@ function GM:DrawEntityInfo(e, a, pos)
     if desc ~= e.liaDescCache then
         e.liaDescCache = desc
         if #desc > 250 then desc = desc:sub(1, 250) .. "..." end
-        e.liaDescLines = lia.util.wrapText(desc, ScrW() * width, getHUDFont(17))
+        e.liaDescLines = wrapPlayerDescription(desc, ScrW() * width, getHUDFont(17), 3)
     end
 
     local extraInfo = {}
