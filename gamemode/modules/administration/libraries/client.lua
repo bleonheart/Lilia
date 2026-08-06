@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Hooks:
         ShowPlayerOptions(Player target, table options)
 
@@ -2635,7 +2635,6 @@ function MODULE:OpenNetLogs(panel)
     local textColor = Color(230, 238, 236)
     local mutedTextColor = Color(150, 168, 166)
     local goodColor = Color(75, 205, 130)
-    local badColor = Color(220, 95, 95)
     local warningColor = Color(230, 164, 70)
     local blueColor = Color(85, 170, 225)
     local debounceTimer = "liaNetLogsSearch" .. util.CRC(tostring(panel))

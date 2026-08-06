@@ -1,4 +1,4 @@
-if SERVER then return end
+﻿if SERVER then return end
 local testerFrame
 local activePanels = {}
 local entries = {}
@@ -69,16 +69,14 @@ end
 
 local function findFirstAttribute()
     if not lia or not lia.attribs or not istable(lia.attribs.list) then return nil end
-    for key, attribute in pairs(lia.attribs.list) do
-        return key, attribute
-    end
+    local key = next(lia.attribs.list)
+    if key == nil then return nil end
+    return key, lia.attribs.list[key]
 end
 
 local function findFirstItemType()
     if not lia or not lia.item or not istable(lia.item.list) then return nil end
-    for uniqueID in pairs(lia.item.list) do
-        return uniqueID
-    end
+    return next(lia.item.list)
 end
 
 local function findLocalInventory()
@@ -111,7 +109,6 @@ setups.BodygrouperMenu = function(panel)
 end
 
 setups.liaButton = function(panel) panel:SetText("Test Button") end
-
 setups.liaChatBox = function(panel)
     panel:setActive(true)
     panel:addText(Color(95, 210, 135), "Panel Tester", color_white, ": Chatbox preview message")
@@ -241,6 +238,7 @@ setups.liaNoticePanel = function(panel)
     panel.start = CurTime()
     panel.endTime = CurTime() + 8
 end
+
 setups.liaRadialPanel = function(panel)
     panel:SetCenterText("Panel Tester", "Choose an option")
     panel:AddOption("Accept", function() end, "icon16/accept.png", "Accept the sample action")
