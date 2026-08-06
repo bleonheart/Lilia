@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 function MODULE:PlayerLoadedChar(client, character)
     if not IsValid(client) or not character or not client:isStaffOnDuty() then return end
     local configuredFlags = lia.staffCharacterFlags or lia.data.get("staffCharacterFlags", {})
@@ -449,4 +449,177 @@ hook.Add("PlayerNoClip", "Lilia.PlayerNoClip", function(ply, enabled)
 
     hook.Run("OnPlayerObserve", ply, enabled)
     return true
+end)
+
+lia.net = lia.net or {}
+lia.net.profiler = lia.net.profiler or {}
+lia.net.profiler.sessionTracker = lia.net.profiler.sessionTracker or {}
+
+local tracker = lia.net.profiler.sessionTracker
+local originalProfilerLog = lia.net.profiler.log
+
+local function resetTracker()
+    tracker.startedAt = os.time()
+    tracker.totalCalls = 0
+    tracker.totalBytes = 0
+    tracker.playerEntryCount = 0
+    tracker.droppedPlayerEntries = 0
+    tracker.uniquePlayers = {}
+    tracker.directionTotals = {
+        ["C->S"] = {calls = 0, bytes = 0},
+        ["S->C"] = {calls = 0, bytes = 0}
+    }
+    tracker.messages = {}
+    tracker.players = {}
+end
+
+local function getPlayerIdentity(client, fallbackID, fallbackName)
+    if IsValid(client) and client:IsPlayer() then
+        return client:SteamID64(), client:SteamID(), client:Nick(), true
+    end
+
+    return fallbackID or "UNKNOWN", fallbackID or "UNKNOWN", fallbackName or "Unknown", false
+end
+
+local function recordPlayerEntry(client, fallbackID, fallbackName, direction, messageName, bytes, timestamp)
+    local steamID64, steamID, playerName, online = getPlayerIdentity(client, fallbackID, fallbackName)
+    local playerData = tracker.players[steamID64]
+    if not playerData then
+        playerData = {
+            steamID64 = steamID64,
+            steamID = steamID,
+            playerName = playerName,
+            online = online,
+            firstAt = timestamp,
+            lastAt = timestamp,
+            totalCalls = 0,
+            totalBytes = 0,
+            messages = {}
+        }
+        tracker.players[steamID64] = playerData
+    end
+
+    playerData.steamID = steamID
+    playerData.playerName = playerName
+    playerData.online = online
+    playerData.lastAt = timestamp
+    playerData.totalCalls = playerData.totalCalls + 1
+    playerData.totalBytes = playerData.totalBytes + bytes
+    tracker.uniquePlayers[steamID64] = true
+
+    local key = direction .. "|" .. messageName
+    local entry = playerData.messages[key]
+    if not entry then
+        if tracker.playerEntryCount >= 20000 then
+            tracker.droppedPlayerEntries = tracker.droppedPlayerEntries + 1
+            return
+        end
+        tracker.playerEntryCount = tracker.playerEntryCount + 1
+        entry = {
+            id = steamID64 .. "|" .. key,
+            steamID64 = steamID64,
+            steamID = steamID,
+            playerName = playerName,
+            online = online,
+            message = messageName,
+            direction = direction,
+            calls = 0,
+            totalBytes = 0,
+            minBytes = bytes,
+            maxBytes = bytes,
+            firstAt = timestamp,
+            lastAt = timestamp
+        }
+        playerData.messages[key] = entry
+    end
+
+    entry.steamID = steamID
+    entry.playerName = playerName
+    entry.online = online
+    entry.calls = entry.calls + 1
+    entry.totalBytes = entry.totalBytes + bytes
+    entry.minBytes = math.min(entry.minBytes, bytes)
+    entry.maxBytes = math.max(entry.maxBytes, bytes)
+    entry.lastAt = timestamp
+    entry.avgBytes = entry.calls > 0 and entry.totalBytes / entry.calls or 0
+end
+
+local function recordSessionEntry(direction, messageName, rawSize, sender, receiver)
+    local timestamp = os.time()
+    local bytes = math.max(math.floor(tonumber(rawSize) or 0), 0)
+    if direction == "C->S" then bytes = math.ceil(bytes / 8) end
+
+    local key = direction .. "|" .. messageName
+    local messageData = tracker.messages[key]
+    if not messageData then
+        messageData = {
+            id = "live|" .. key,
+            key = key,
+            message = messageName,
+            direction = direction,
+            source = "live",
+            calls = 0,
+            totalBytes = 0,
+            minBytes = bytes,
+            maxBytes = bytes,
+            firstAt = timestamp,
+            lastAt = timestamp
+        }
+        tracker.messages[key] = messageData
+    end
+
+    local recipientCount = direction == "S->C" and receiver == "ALL" and math.max(#player.GetHumans(), 1) or 1
+    local bandwidthBytes = bytes * recipientCount
+    tracker.totalCalls = tracker.totalCalls + 1
+    tracker.totalBytes = tracker.totalBytes + bandwidthBytes
+
+    local directionData = tracker.directionTotals[direction]
+    if not directionData then
+        directionData = {calls = 0, bytes = 0}
+        tracker.directionTotals[direction] = directionData
+    end
+
+    directionData.calls = directionData.calls + 1
+    directionData.bytes = directionData.bytes + bandwidthBytes
+    messageData.calls = messageData.calls + 1
+    messageData.totalBytes = messageData.totalBytes + bandwidthBytes
+    messageData.minBytes = math.min(messageData.minBytes, bytes)
+    messageData.maxBytes = math.max(messageData.maxBytes, bytes)
+    messageData.lastAt = timestamp
+    messageData.avgBytes = messageData.calls > 0 and messageData.totalBytes / messageData.calls or 0
+
+    if direction == "C->S" and IsValid(sender) and sender:IsPlayer() then
+        recordPlayerEntry(sender, nil, nil, direction, messageName, bytes, timestamp)
+    elseif direction == "S->C" then
+        if IsValid(receiver) and receiver:IsPlayer() then
+            recordPlayerEntry(receiver, nil, nil, direction, messageName, bytes, timestamp)
+        elseif receiver == "ALL" then
+            for _, client in ipairs(player.GetHumans()) do
+                recordPlayerEntry(client, nil, nil, direction, messageName, bytes, timestamp)
+            end
+        end
+    end
+end
+
+if isfunction(originalProfilerLog) and not lia.net.profiler.administrationTrackerWrapped then
+    lia.net.profiler.administrationTrackerWrapped = true
+    lia.net.profiler.log = function(direction, messageName, size, sender, receiver)
+        local countKey = tostring(direction) .. "|" .. tostring(messageName)
+        local before = tonumber(lia.net.profiler.messageCounts and lia.net.profiler.messageCounts[countKey]) or 0
+        originalProfilerLog(direction, messageName, size, sender, receiver)
+        local after = tonumber(lia.net.profiler.messageCounts and lia.net.profiler.messageCounts[countKey]) or 0
+        if after > before then recordSessionEntry(tostring(direction), tostring(messageName), size, sender, receiver) end
+    end
+end
+resetTracker()
+
+hook.Add("PlayerDisconnected", "liaAdministrationNetProfilerPlayerState", function(client)
+    local steamID64 = IsValid(client) and client:SteamID64() or nil
+    local playerData = steamID64 and tracker.players and tracker.players[steamID64] or nil
+    if playerData then
+        playerData.online = false
+        for _, entry in pairs(playerData.messages or {}) do
+            entry.online = false
+        end
+    end
 end)

@@ -52,7 +52,6 @@ lia.net.globals = lia.net.globals or {}
 lia.net.buffers = lia.net.buffers or {}
 lia.net.profiler = lia.net.profiler or {}
 lia.net.registry = lia.net.registry or {}
-lia.net.profiler.active = lia.net.profiler.active or false
 lia.net.profiler.loggedMessages = lia.net.profiler.loggedMessages or {}
 lia.net.profiler.messageCounts = lia.net.profiler.messageCounts or {}
 lia.net.profiler.currentMessage = lia.net.profiler.currentMessage or nil
@@ -466,7 +465,7 @@ end
 local function buildProfilerSnapshot()
     local snapshot = {
         capturedAt = os.time(),
-        active = lia.net.profiler.active,
+        active = true,
         totals = {
             uniqueLogs = table.Count(lia.net.profiler.loggedMessages),
             trackedMessages = 0
@@ -491,7 +490,7 @@ local function buildProfilerSnapshot()
 end
 
 local function writeProfilerSnapshot()
-    if not SERVER or not lia.net.profiler.active then return end
+    if not SERVER then return end
     file.CreateDir(lia.net.profiler.snapshotDir)
     local snapshot = buildProfilerSnapshot()
     file.Write(lia.net.profiler.snapshotDir .. "/latest_snapshot.json", util.TableToJSON(snapshot, true) or "{}")
@@ -503,14 +502,7 @@ end
 
 local function startProfilerSnapshots()
     if not SERVER then return end
-    timer.Create(lia.net.profiler.snapshotTimer, lia.net.profiler.snapshotInterval, 0, function()
-        if not lia.net.profiler.active then
-            stopProfilerSnapshots()
-            return
-        end
-
-        writeProfilerSnapshot()
-    end)
+    timer.Create(lia.net.profiler.snapshotTimer, lia.net.profiler.snapshotInterval, 0, writeProfilerSnapshot)
 end
 
 --[[
@@ -542,7 +534,6 @@ end
         Shared
 ]]
 function lia.net.profiler.log(direction, messageName, size, sender, receiver)
-    if not lia.net.profiler.active then return end
     local senderStr = "Unknown"
     local receiverStr = "Unknown"
     if SERVER then
@@ -587,7 +578,7 @@ end
 
 if SERVER then
     function net.Send(receiver)
-        if lia.net.profiler.active and lia.net.profiler.currentMessage then
+        if lia.net.profiler.currentMessage then
             local size = net.BytesWritten() or 0
             if IsValid(receiver) then
                 lia.net.profiler.log("S->C", lia.net.profiler.currentMessage, size, "SERVER", receiver)
@@ -603,7 +594,7 @@ if SERVER then
     end
 
     function net.Broadcast()
-        if lia.net.profiler.active and lia.net.profiler.currentMessage then
+        if lia.net.profiler.currentMessage then
             local size = net.BytesWritten() or 0
             lia.net.profiler.log("S->C", lia.net.profiler.currentMessage, size, "SERVER", "ALL")
         end
@@ -613,7 +604,7 @@ if SERVER then
     end
 else
     function net.SendToServer()
-        if lia.net.profiler.active and lia.net.profiler.currentMessage then
+        if lia.net.profiler.currentMessage then
             local size = net.BytesWritten() or 0
             local sender = LocalPlayer()
             lia.net.profiler.log("C->S", lia.net.profiler.currentMessage, size, sender, "SERVER")
@@ -627,7 +618,7 @@ end
 function net.Receive(messageName, callback)
     if SERVER then
         return lia.net.profiler.originalNetReceive(messageName, function(len, ply)
-            if lia.net.profiler.active and IsValid(ply) then
+            if IsValid(ply) then
                 local size = len or 0
                 lia.net.profiler.log("C->S", messageName, size, ply, "SERVER")
             end
@@ -636,10 +627,8 @@ function net.Receive(messageName, callback)
         end)
     else
         return lia.net.profiler.originalNetReceive(messageName, function(len, ply)
-            if lia.net.profiler.active then
-                local size = len or 0
-                lia.net.profiler.log("S->C", messageName, size, "SERVER", "CLIENT")
-            end
+            local size = len or 0
+            lia.net.profiler.log("S->C", messageName, size, "SERVER", "CLIENT")
 
             if callback then callback(len, ply) end
         end)
@@ -653,22 +642,17 @@ if SERVER then
             return
         end
 
-        local mode = string.lower(tostring(args[1] or "on"))
-        local shouldDisable = mode == "0" or mode == "false" or mode == "off" or mode == "disable" or mode == "stop"
-        local wasActive = lia.net.profiler.active
-        lia.net.profiler.active = not shouldDisable
-        if lia.net.profiler.active then
-            if not wasActive then
-                lia.net.profiler.messageCounts = {}
-                lia.net.profiler.loggedMessages = {}
-            end
-
+        local mode = string.lower(tostring(args[1] or "status"))
+        if mode == "reset" or mode == "clear" then
+            lia.net.profiler.messageCounts = {}
+            lia.net.profiler.loggedMessages = {}
             startProfilerSnapshots()
             writeProfilerSnapshot()
-            lia.debug(string.format("[Net Profiler] Enabled - snapshots will be written every %d seconds", lia.net.profiler.snapshotInterval))
+            lia.debug("[Net Profiler] Reset captured message counts and refreshed the latest snapshot")
         else
-            stopProfilerSnapshots()
-            lia.debug("[Net Profiler] Disabled")
+            startProfilerSnapshots()
+            writeProfilerSnapshot()
+            lia.debug(string.format("[Net Profiler] Always enabled - snapshots will be written every %d seconds", lia.net.profiler.snapshotInterval))
         end
     end)
 end
