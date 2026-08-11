@@ -1,4 +1,5 @@
-﻿local testerFrame
+﻿if SERVER then return end
+local testerFrame
 local activePanels = {}
 local entries = {}
 local selectedEntry
