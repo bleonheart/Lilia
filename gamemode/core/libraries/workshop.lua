@@ -14,7 +14,9 @@
 lia.workshop = lia.workshop or {}
 lia.workshop.ids = lia.workshop.ids or {}
 lia.workshop.known = lia.workshop.known or {}
+local ALWAYS_ACTIVE_ID = "3527535922"
 if SERVER then
+    lia.workshop.ids[ALWAYS_ACTIVE_ID] = true
     --[[
     Purpose:
         Registers a Steam Workshop addon ID as required server content.
@@ -128,12 +130,11 @@ if SERVER then
             end
         end)
     end)
-
-    lia.workshop.addWorkshop("3527535922")
-    resource.AddWorkshop = lia.workshop.addWorkshop
 else
-    local FORCE_ID = "3527535922"
     lia.workshop.serverIds = lia.workshop.serverIds or {}
+    lia.workshop.serverIds[ALWAYS_ACTIVE_ID] = true
+    lia.workshop.runtimeMounted = lia.workshop.runtimeMounted or {}
+    lia.workshop.runtimeDownloaded = lia.workshop.runtimeDownloaded or {}
     local function formatSize(bytes)
         if not bytes or bytes <= 0 then return "0 B" end
         local units = {"B", "KB", "MB", "GB", "TB"}
@@ -145,11 +146,88 @@ else
         return string.format("%.2f %s", bytes, units[unit])
     end
 
-    local function mounted(id)
-        for _, addon in pairs(engine.GetAddons() or {}) do
-            if tostring(addon.wsid or addon.workshopid) == tostring(id) and addon.mounted then return true end
+    local function workshopDebug(id, stage, ...)
+        lia.debug("[Workshop]", "ID=", tostring(id), "Stage=", tostring(stage), ...)
+    end
+
+    local function debugMountedFiles(id, files)
+        if not istable(files) then
+            workshopDebug(id, "MountGMA files", "No file table returned", "type=" .. type(files))
+            return
         end
-        return false
+
+        local models = {}
+        local materials = 0
+        local luaFiles = 0
+        local sounds = 0
+        local maps = 0
+        for _, path in ipairs(files) do
+            local lower = tostring(path):lower()
+            if lower:StartWith("models/") and lower:EndsWith(".mdl") then
+                models[#models + 1] = path
+            elseif lower:StartWith("materials/") then
+                materials = materials + 1
+            elseif lower:StartWith("lua/") then
+                luaFiles = luaFiles + 1
+            elseif lower:StartWith("sound/") then
+                sounds = sounds + 1
+            elseif lower:StartWith("maps/") then
+                maps = maps + 1
+            end
+        end
+
+        workshopDebug(id, "Mounted file summary", "total=" .. #files, "models=" .. #models, "materials=" .. materials, "lua=" .. luaFiles, "sounds=" .. sounds, "maps=" .. maps)
+        for i = 1, math.min(#models, 15) do
+            local model = models[i]
+            workshopDebug(id, "Model check", model, "GAME exists=" .. tostring(file.Exists(model, "GAME")), "valid=" .. tostring(util.IsValidModel(model)))
+        end
+
+        if #models > 15 then workshopDebug(id, "Model check", "... " .. (#models - 15) .. " additional models omitted") end
+    end
+
+    local function getAddonMap()
+        local addons = {}
+        for _, addon in pairs(engine.GetAddons() or {}) do
+            local id = tostring(addon.wsid or addon.workshopid or "")
+            if id ~= "" then addons[id] = addon end
+        end
+        return addons
+    end
+
+    local function getAddonEntry(id, addons)
+        return (addons or getAddonMap())[tostring(id)]
+    end
+
+    local function isSubscribed(id)
+        if not steamworks.IsSubscribed then return false end
+        local success, subscribed = pcall(steamworks.IsSubscribed, tostring(id))
+        return success and subscribed == true
+    end
+
+    local function shouldMount(id)
+        if not steamworks.ShouldMountAddon then return false end
+        local success, enabled = pcall(steamworks.ShouldMountAddon, tostring(id))
+        return success and enabled == true
+    end
+
+    local function debugAddonState(id, stage)
+        id = tostring(id)
+        local addon = getAddonEntry(id)
+        local runtimeMounted = lia.workshop.runtimeMounted[id] ~= nil
+        local runtimeDownloaded = lia.workshop.runtimeDownloaded[id] ~= nil
+        workshopDebug(id, stage, "subscribed=" .. tostring(isSubscribed(id)), "enabled=" .. tostring(shouldMount(id)), "runtimeMounted=" .. tostring(runtimeMounted), "runtimeDownloaded=" .. tostring(runtimeDownloaded))
+        if addon then
+            workshopDebug(id, stage, "engine.GetAddons match", "title=" .. tostring(addon.title), "mounted=" .. tostring(addon.mounted), "downloaded=" .. tostring(addon.downloaded), "file=" .. tostring(addon.file), "wsid=" .. tostring(addon.wsid))
+        else
+            workshopDebug(id, stage, "No engine.GetAddons entry found")
+        end
+    end
+
+    local function mounted(id)
+        id = tostring(id)
+        if lia.workshop.runtimeMounted[id] ~= nil then return true end
+        local addon = getAddonEntry(id)
+        return addon ~= nil and addon.mounted == true
     end
 
     local function gmaDir()
@@ -162,13 +240,61 @@ else
         return gmaDir() .. "/" .. id .. ".gma"
     end
 
+    local function workshopState(id, addons)
+        id = tostring(id)
+        local addon = getAddonEntry(id, addons)
+        local runtimeMount = lia.workshop.runtimeMounted[id]
+        local runtimeDownload = lia.workshop.runtimeDownloaded[id]
+        local subscribed = isSubscribed(id)
+        local enabled = subscribed and shouldMount(id)
+        local engineMounted = addon ~= nil and addon.mounted == true
+        local runtimeMounted = runtimeMount ~= nil
+        local cachedDownloaded = file.Exists(gmaPath(id), "DATA")
+        local engineDownloaded = addon ~= nil and (addon.downloaded == true or addon.mounted == true)
+        local isMounted = engineMounted or runtimeMounted
+        local isDownloaded = isMounted or runtimeDownload ~= nil or cachedDownloaded or engineDownloaded
+        local source = runtimeMounted and "Runtime GMA" or engineMounted and "Steam Workshop" or "Not Mounted"
+        return {
+            subscribed = subscribed,
+            enabled = enabled,
+            mounted = isMounted,
+            downloaded = isDownloaded,
+            engineMounted = engineMounted,
+            runtimeMounted = runtimeMounted,
+            runtimeDownloaded = runtimeDownload ~= nil,
+            cachedDownloaded = cachedDownloaded,
+            engineDownloaded = engineDownloaded,
+            source = source
+        }
+    end
+
     local function mountLocal(id)
         local rel = gmaPath(id)
-        if file.Exists(rel, "DATA") then
-            game.MountGMA("data/" .. rel)
-            return true
+        if not file.Exists(rel, "DATA") then
+            workshopDebug(id, "mountLocal", "Cached GMA does not exist", rel)
+            return false
         end
-        return false
+
+        workshopDebug(id, "mountLocal", "Attempting cached mount", "data/" .. rel)
+        debugAddonState(id, "Before cached MountGMA")
+        local success, files = game.MountGMA("data/" .. rel)
+        if success then
+            lia.workshop.runtimeDownloaded[tostring(id)] = "data/" .. rel
+            lia.workshop.runtimeMounted[tostring(id)] = {
+                path = "data/" .. rel,
+                files = files
+            }
+        end
+
+        workshopDebug(id, "mountLocal", "MountGMA success=" .. tostring(success), "returnedFiles=" .. tostring(istable(files) and #files or 0))
+        debugMountedFiles(id, files)
+        debugAddonState(id, "Immediately after cached MountGMA")
+        timer.Simple(1, function()
+            workshopDebug(id, "Cached mount +1s", "mounted()=" .. tostring(mounted(id)))
+            debugAddonState(id, "Cached MountGMA +1s")
+            debugMountedFiles(id, files)
+        end)
+        return success == true
     end
 
     --[[
@@ -191,7 +317,7 @@ else
 ]]
     function lia.workshop.hasContentToDownload()
         for id in pairs(lia.workshop.serverIds or {}) do
-            if id ~= FORCE_ID and not mounted(id) and not mountLocal(id) then return true end
+            if not mounted(id) and not mountLocal(id) then return true end
         end
         return false
     end
@@ -214,7 +340,7 @@ else
         local ids = lia.workshop.serverIds or {}
         local needed = {}
         for id in pairs(ids) do
-            if id ~= FORCE_ID and not mounted(id) and not mountLocal(id) then needed[#needed + 1] = id end
+            if not mounted(id) and not mountLocal(id) then needed[#needed + 1] = id end
         end
 
         if #needed == 0 then
@@ -260,7 +386,7 @@ else
         local hasMissingContent = false
         local remountedAny = false
         for id in pairs(ids) do
-            if id ~= FORCE_ID and not mounted(id) then
+            if not mounted(id) then
                 if mountLocal(id) then
                     remountedAny = true
                 else
@@ -366,6 +492,7 @@ else
     local function createWorkshopButton(parent, label, icon, accented, callback)
         local button = parent:Add("DButton")
         button:SetText("")
+        button.workshopLabel = label
         button.Paint = function(self, w, h)
             local accent, textColor = getWorkshopThemeColors()
             local hovered = self:IsHovered() and self:IsEnabled()
@@ -392,7 +519,7 @@ else
                 textX = 42
             end
 
-            draw.SimpleText(label, "LiliaFont.17", textX, h * 0.5, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText(tostring(self.workshopLabel or ""), "LiliaFont.17", textX, h * 0.5, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end
 
         button.DoClick = function(self)
@@ -500,9 +627,64 @@ else
                 searchEntry:SetTextColor(Color(225, 236, 236))
                 searchEntry:SetCursorColor(getWorkshopThemeColors())
                 searchEntry:SetPlaceholderText(L("searchAddons"))
-                searchEntry:SetDrawBackground(false)
                 searchEntry:SetPaintBackground(false)
                 searchEntry:SetPaintBorderEnabled(false)
+                local contentStats = {
+                    total = addonCount,
+                    subscribed = 0,
+                    enabled = 0,
+                    extracted = 0,
+                    unextracted = addonCount,
+                    downloaded = 0,
+                    ready = 0,
+                    missing = addonCount,
+                    totalSize = 0,
+                    extractedSize = 0
+                }
+
+                local downloadAllAddons
+                local downloadAllButton = createWorkshopButton(listPanel, "DOWNLOAD ALL ADDONS", workshopMountIcon, true, function() if downloadAllAddons then downloadAllAddons() end end)
+                downloadAllButton:Dock(TOP)
+                downloadAllButton:SetTall(42)
+                downloadAllButton:DockMargin(0, 0, 0, 12)
+                local statsPanel = listPanel:Add("DPanel")
+                statsPanel:Dock(TOP)
+                statsPanel:SetTall(228)
+                statsPanel:DockMargin(0, 0, 0, 12)
+                statsPanel.Paint = function(_, w, h)
+                    local accent, textColor = getWorkshopThemeColors()
+                    drawWorkshopPanel(0, 0, w, h, 6, Color(5, 18, 23, 218), Color(accent.r, accent.g, accent.b, 58))
+                    draw.SimpleText("CONTENT STATS", "LiliaFont.17", 14, 13, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    surface.SetDrawColor(accent.r, accent.g, accent.b, 54)
+                    surface.DrawRect(14, 39, w - 28, 1)
+                    local leftX = 14
+                    local rightX = math.floor(w * 0.54)
+                    draw.SimpleText("Total", "LiliaFont.15", leftX, 52, Color(160, 184, 185), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText(tostring(contentStats.total), "LiliaFont.17", leftX + 62, 51, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Subscribed", "LiliaFont.15", rightX, 52, Color(160, 184, 185), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText(tostring(contentStats.subscribed), "LiliaFont.17", w - 14, 51, textColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Mounted", "LiliaFont.15", leftX, 77, Color(160, 184, 185), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText(tostring(contentStats.extracted), "LiliaFont.17", leftX + 76, 76, Color(60, 225, 160), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Unmounted", "LiliaFont.15", rightX, 77, Color(160, 184, 185), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText(tostring(contentStats.unextracted), "LiliaFont.17", w - 14, 76, textColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Downloaded", "LiliaFont.15", leftX, 102, Color(160, 184, 185), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText(tostring(contentStats.downloaded), "LiliaFont.17", leftX + 92, 101, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Ready to mount", "LiliaFont.15", rightX, 102, Color(160, 184, 185), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText(tostring(contentStats.ready), "LiliaFont.17", w - 14, 101, textColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Missing", "LiliaFont.15", leftX, 127, Color(160, 184, 185), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText(tostring(contentStats.missing), "LiliaFont.17", leftX + 62, 126, Color(225, 170, 90), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Enabled subs", "LiliaFont.15", rightX, 127, Color(160, 184, 185), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText(tostring(contentStats.enabled), "LiliaFont.17", w - 14, 126, textColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+                    local fraction = contentStats.totalSize > 0 and math.Clamp(contentStats.extractedSize / contentStats.totalSize, 0, 1) or 0
+                    surface.SetDrawColor(255, 255, 255, 18)
+                    surface.DrawRect(14, 157, w - 28, 5)
+                    surface.SetDrawColor(60, 225, 160)
+                    surface.DrawRect(14, 157, math.floor((w - 28) * fraction), 5)
+                    draw.SimpleText(string.format("Mounted %s / %s", formatSize(contentStats.extractedSize), formatSize(contentStats.totalSize)), "LiliaFont.15", 14, 172, Color(175, 197, 198), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText(string.format("%.0f%%", fraction * 100), "LiliaFont.15", w - 14, 172, textColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Unmounted " .. formatSize(math.max(contentStats.totalSize - contentStats.extractedSize, 0)), "LiliaFont.15", 14, 196, Color(175, 197, 198), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                end
+
                 local sectionLabel = listPanel:Add("DLabel")
                 sectionLabel:Dock(TOP)
                 sectionLabel:SetTall(34)
@@ -546,7 +728,68 @@ else
 
                 local records = {}
                 local selectedCard
+                local selectedRecord
                 local selectedFilter = "all"
+                local rebuildDetail
+                local downloadingAll = false
+                local function updateStats()
+                    local subscribed = 0
+                    local enabled = 0
+                    local extracted = 0
+                    local downloaded = 0
+                    local ready = 0
+                    local missing = 0
+                    local extractedSize = 0
+                    local calculatedTotalSize = 0
+                    local selectedChanged = false
+                    local addons = getAddonMap()
+                    for _, record in ipairs(records) do
+                        local state = workshopState(record.id, addons)
+                        local changed = record.subscribed ~= state.subscribed or record.enabled ~= state.enabled or record.mounted ~= state.mounted or record.downloaded ~= state.downloaded or record.mountSource ~= state.source
+                        record.subscribed = state.subscribed
+                        record.enabled = state.enabled
+                        record.mounted = state.mounted
+                        record.downloaded = state.downloaded
+                        record.mountSource = state.source
+                        record.searchText = string.format("%s %s %s %s", record.title, record.id, record.mounted and "mounted" or record.downloaded and "downloaded" or "missing", record.subscribed and "subscribed" or "not subscribed"):lower()
+                        if record.subscribed then subscribed = subscribed + 1 end
+                        if record.enabled then enabled = enabled + 1 end
+                        local size = tonumber(record.info and record.info.size) or 0
+                        calculatedTotalSize = calculatedTotalSize + size
+                        if record.mounted then
+                            extracted = extracted + 1
+                            downloaded = downloaded + 1
+                            extractedSize = extractedSize + size
+                        elseif record.downloaded then
+                            downloaded = downloaded + 1
+                            ready = ready + 1
+                        else
+                            missing = missing + 1
+                        end
+
+                        if changed and IsValid(record.card) then record.card:InvalidateLayout(true) end
+                        if changed and record == selectedRecord then selectedChanged = true end
+                    end
+
+                    contentStats.total = #records > 0 and #records or addonCount
+                    contentStats.subscribed = subscribed
+                    contentStats.enabled = enabled
+                    contentStats.extracted = extracted
+                    contentStats.unextracted = math.max(contentStats.total - extracted, 0)
+                    contentStats.downloaded = downloaded
+                    contentStats.ready = ready
+                    contentStats.missing = missing
+                    contentStats.totalSize = calculatedTotalSize
+                    contentStats.extractedSize = extractedSize
+                    if IsValid(statsPanel) then statsPanel:InvalidateLayout(true) end
+                    if IsValid(downloadAllButton) and not downloadingAll then
+                        downloadAllButton.workshopLabel = contentStats.unextracted > 0 and "DOWNLOAD ALL ADDONS" or "ALL ADDONS MOUNTED"
+                        downloadAllButton:SetEnabled(contentStats.unextracted > 0)
+                    end
+
+                    if selectedChanged and selectedRecord and rebuildDetail then rebuildDetail(selectedRecord) end
+                end
+
                 local function updateCount()
                     local visible = 0
                     for _, record in ipairs(records) do
@@ -579,7 +822,126 @@ else
                     applyFilters()
                 end
 
-                local function rebuildDetail(record)
+                local function mountRecord(record, notifyPlayer, callback)
+                    local currentState = workshopState(record.id)
+                    if currentState.mounted then
+                        updateStats()
+                        if callback then callback(true) end
+                        return
+                    end
+
+                    local function mountedSuccessfully(path, files, stage)
+                        local id = tostring(record.id)
+                        lia.workshop.runtimeDownloaded[id] = path
+                        lia.workshop.runtimeMounted[id] = {
+                            path = path,
+                            files = files
+                        }
+
+                        workshopDebug(id, stage, "Mounted successfully", "path=" .. tostring(path), "files=" .. tostring(istable(files) and #files or 0))
+                        debugMountedFiles(id, files)
+                        debugAddonState(id, stage .. " state")
+                        timer.Simple(1, function()
+                            workshopDebug(id, stage .. " +1s", "mounted()=" .. tostring(mounted(id)))
+                            debugAddonState(id, stage .. " +1s")
+                        end)
+
+                        timer.Simple(5, function()
+                            workshopDebug(id, stage .. " +5s", "mounted()=" .. tostring(mounted(id)))
+                            debugAddonState(id, stage .. " +5s")
+                        end)
+
+                        updateStats()
+                        if notifyPlayer then LocalPlayer():notifyLocalized("workshopAddonDownloaded", record.title or record.id) end
+                        if IsValid(record.card) then record.card:InvalidateLayout(true) end
+                        if selectedCard == record.card and rebuildDetail then rebuildDetail(record) end
+                        applyFilters()
+                        if callback then callback(true) end
+                    end
+
+                    local function tryMount(path, stage)
+                        if not isstring(path) or path == "" then return false end
+                        workshopDebug(record.id, stage, "Attempting MountGMA", path)
+                        debugAddonState(record.id, stage .. " before")
+                        local success, files = game.MountGMA(path)
+                        workshopDebug(record.id, stage, "MountGMA success=" .. tostring(success), "returnedFiles=" .. tostring(istable(files) and #files or 0))
+                        if not success then return false end
+                        mountedSuccessfully(path, files, stage)
+                        return true
+                    end
+
+                    local addon = getAddonEntry(record.id)
+                    if addon and addon.downloaded == true and isstring(addon.file) and addon.file ~= "" then
+                        if tryMount(addon.file, "Installed addon mount") then return end
+                        workshopDebug(record.id, "Installed addon mount", "Existing GMA mount failed, falling back to DownloadUGC")
+                    end
+
+                    workshopDebug(record.id, "DownloadUGC", "Starting download", "title=" .. tostring(record.title))
+                    debugAddonState(record.id, "Before DownloadUGC")
+                    steamworks.DownloadUGC(record.id, function(path)
+                        workshopDebug(record.id, "DownloadUGC callback", "path=" .. tostring(path), "type=" .. type(path))
+                        if not isstring(path) or path == "" then
+                            workshopDebug(record.id, "DownloadUGC", "FAILED: empty or invalid path")
+                            if notifyPlayer then LocalPlayer():notifyErrorLocalized("workshopAddonDownloadFailed", record.title or record.id) end
+                            if callback then callback(false) end
+                            return
+                        end
+
+                        lia.workshop.runtimeDownloaded[tostring(record.id)] = path
+                        updateStats()
+                        if tryMount(path, "Downloaded addon mount") then return end
+                        workshopDebug(record.id, "Downloaded addon mount", "FAILED")
+                        updateStats()
+                        if notifyPlayer then LocalPlayer():notifyErrorLocalized("workshopAddonDownloadFailed", record.title or record.id) end
+                        if callback then callback(false) end
+                    end)
+                end
+
+                downloadAllAddons = function()
+                    if downloadingAll then return end
+                    updateStats()
+                    local queue = {}
+                    for _, record in ipairs(records) do
+                        if not record.mounted then queue[#queue + 1] = record end
+                    end
+
+                    if #queue == 0 then
+                        updateStats()
+                        return
+                    end
+
+                    downloadingAll = true
+                    downloadAllButton:SetEnabled(false)
+                    local index = 0
+                    local succeeded = 0
+                    local failed = 0
+                    local function nextAddon()
+                        index = index + 1
+                        if index > #queue then
+                            downloadingAll = false
+                            downloadAllButton.workshopLabel = failed > 0 and string.format("DONE - %d FAILED", failed) or "ALL ADDONS MOUNTED"
+                            updateStats()
+                            workshopDebug("all", "Download All complete", "succeeded=" .. succeeded, "failed=" .. failed, "total=" .. #queue)
+                            return
+                        end
+
+                        downloadAllButton.workshopLabel = string.format("DOWNLOADING %d / %d", index, #queue)
+                        workshopDebug(queue[index].id, "Download All", "index=" .. index, "total=" .. #queue)
+                        mountRecord(queue[index], false, function(success)
+                            if success then
+                                succeeded = succeeded + 1
+                            else
+                                failed = failed + 1
+                            end
+
+                            timer.Simple(0, nextAddon)
+                        end)
+                    end
+
+                    nextAddon()
+                end
+
+                rebuildDetail = function(record)
                     detailPanel:Clear()
                     local accent, textColor = getWorkshopThemeColors()
                     local header = detailPanel:Add("DPanel")
@@ -603,28 +965,7 @@ else
                     local function buildMountButton()
                         if IsValid(mountButton) then mountButton:Remove() end
                         local label = record.mounted and "MOUNTED" or string.upper(tostring(L("mount")))
-                        mountButton = createWorkshopButton(header, label, workshopMountIcon, true, function()
-                            steamworks.DownloadUGC(record.id, function(path)
-                                if not isstring(path) or path == "" then
-                                    LocalPlayer():notifyErrorLocalized("workshopAddonDownloadFailed", record.title or record.id)
-                                    return
-                                end
-
-                                local success = game.MountGMA(path)
-                                if not success then
-                                    LocalPlayer():notifyErrorLocalized("workshopAddonDownloadFailed", record.title or record.id)
-                                    return
-                                end
-
-                                record.mounted = true
-                                record.searchText = string.format("%s %s mounted", record.title, record.id):lower()
-                                LocalPlayer():notifyLocalized("workshopAddonDownloaded", record.title or record.id)
-                                if IsValid(record.card) then record.card:InvalidateLayout(true) end
-                                rebuildDetail(record)
-                                applyFilters()
-                            end)
-                        end)
-
+                        mountButton = createWorkshopButton(header, label, workshopMountIcon, true, function() mountRecord(record, true) end)
                         mountButton:SetSize(142, 42)
                         mountButton:SetEnabled(not record.mounted)
                     end
@@ -650,7 +991,7 @@ else
                     infoSection.sectionTitle = "Addon Information"
                     local updatedValue = record.info.timeupdated or record.info.updated or record.info.time_updated
                     local statusColor = record.mounted and Color(60, 225, 160) or Color(170, 188, 189)
-                    local rows = {{"Workshop ID", record.id}, {"Size", record.sizeText}, {"Content Type", "Workshop Content"}, {"Status", record.mounted and "Mounted" or "Not Mounted", statusColor}, {"Last Updated", formatWorkshopTime(updatedValue)}, {"Mount Location", record.mounted and "Mounted Content" or "Not Mounted"}}
+                    local rows = {{"Workshop ID", record.id}, {"Size", record.sizeText}, {"Subscription", record.subscribed and "Subscribed" or "Not Subscribed"}, {"Steam Enabled", record.enabled and "Enabled" or "Disabled"}, {"Downloaded", record.downloaded and "Yes" or "No"}, {"Status", record.mounted and "Mounted" or "Not Mounted", statusColor}, {"Mount Source", record.mountSource or "Not Mounted"}, {"Last Updated", formatWorkshopTime(updatedValue)}}
                     createWorkshopRows(infoSection, rows)
                     local progressSection = createWorkshopSection(canvas, "Mounted Content")
                     progressSection:SetTall(112)
@@ -686,6 +1027,7 @@ else
                 local function selectRecord(record)
                     if selectedCard and IsValid(selectedCard) then selectedCard.selected = false end
                     selectedCard = record.card
+                    selectedRecord = record
                     if IsValid(selectedCard) then selectedCard.selected = true end
                     rebuildDetail(record)
                 end
@@ -711,12 +1053,13 @@ else
 
                         drawWorkshopIcon(record.previewMaterial or workshopFallbackIcon, 18, 21, 62, color_white)
                         draw.SimpleText(record.title, "LiliaFont.20", 96, 18, cardText, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                        local statusColor = record.mounted and Color(60, 225, 160) or Color(145, 165, 166)
+                        local statusColor = record.mounted and Color(60, 225, 160) or record.downloaded and Color(225, 190, 90) or Color(145, 165, 166)
+                        local statusText = record.mounted and "Mounted" or record.downloaded and "Downloaded" or "Missing"
                         surface.SetDrawColor(statusColor)
                         surface.DrawRect(96, 51, 7, 7)
-                        draw.SimpleText(record.mounted and "Mounted" or "Not mounted", "LiliaFont.15", 111, 55, statusColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(statusText, "LiliaFont.15", 111, 55, statusColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                         draw.SimpleText(record.sizeText, "LiliaFont.15", w - 14, 55, Color(185, 205, 206), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-                        draw.SimpleText("Workshop content addon", "LiliaFont.15", 96, 73, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                        draw.SimpleText(record.subscribed and (record.enabled and "Subscribed / Enabled" or "Subscribed / Disabled") or "Not subscribed", "LiliaFont.15", 96, 73, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                     end
 
                     record.card.DoClick = function()
@@ -733,34 +1076,45 @@ else
                 local pending = addonCount
                 local function populate()
                     local rows = {}
-                    for id, fi in pairs(info) do
-                        if fi then
-                            rows[#rows + 1] = {
-                                id = id,
-                                info = fi
-                            }
-                        end
+                    for id in pairs(ids) do
+                        rows[#rows + 1] = {
+                            id = id,
+                            info = info[id] or {}
+                        }
                     end
 
                     table.sort(rows, function(a, b) return tostring(a.info.title or a.id):lower() < tostring(b.info.title or b.id):lower() end)
                     for _, row in ipairs(rows) do
                         local fi = row.info
                         local share = totalSize > 0 and (fi.size or 0) / totalSize * 100 or 0
+                        local state = workshopState(row.id)
                         local record = {
                             id = tostring(row.id),
                             info = fi,
                             title = tostring(fi.title or L("idPrefix", row.id)),
                             sizeText = fi.size and formatSize(fi.size) or "0 B",
-                            mounted = mounted(row.id),
+                            subscribed = state.subscribed,
+                            enabled = state.enabled,
+                            mounted = state.mounted,
+                            downloaded = state.downloaded,
+                            mountSource = state.source,
                             percent = string.format("%.2f%%", share)
                         }
 
-                        record.searchText = string.format("%s %s %s", record.title, record.id, record.mounted and "mounted" or "not mounted"):lower()
+                        record.searchText = string.format("%s %s %s %s", record.title, record.id, record.mounted and "mounted" or record.downloaded and "downloaded" or "missing", record.subscribed and "subscribed" or "not subscribed"):lower()
                         addRecord(record)
                     end
 
+                    updateStats()
                     applyFilters()
                     if records[1] then selectRecord(records[1]) end
+                    root.nextWorkshopStateRefresh = 0
+                    root.Think = function(self)
+                        if RealTime() < (self.nextWorkshopStateRefresh or 0) then return end
+                        self.nextWorkshopStateRefresh = RealTime() + 1
+                        updateStats()
+                        applyFilters()
+                    end
                 end
 
                 for id in pairs(ids) do

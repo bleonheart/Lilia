@@ -1,14 +1,16 @@
-﻿local fontFiles = {"content/resource/fonts/montserrat-regular.ttf", "content/resource/fonts/montserrat-medium.ttf", "content/resource/fonts/montserrat-bold.ttf"}
+﻿local fonts = {"resource/fonts/specialelite.ttf", "resource/fonts/montserrat-bold.ttf", "resource/fonts/montserrat-medium.ttf", "resource/fonts/montserrat-regular.ttf"}
 local networkStrings = {"liaWeaponOverrideUpdate", "BodygrouperMenu", "BodygrouperMenuClose", "BodygrouperMenuCloseClientside", "SeeModelTable", "WardrobeChangeModel", "liaWeaponOverrideSync", "liaActBar", "liaJobNpcCloseDialog", "liaAdminModeSwapCharacter", "liaAnimationStatus", "liaArgumentsRequest", "liaArgumentsRequestCancel", "liaAssureClientSideAssets", "liaAttributeData", "liaBigTableAck", "liaBinaryQuestionRequest", "liaBinaryQuestionRequestCancel", "liaPopupQuestionRequest", "liaPopupQuestionRequestCancel", "liaBlindFade", "liaBlindTarget", "liaButtonRequest", "liaButtonRequestCancel", "liaCfgList", "liaCfgSet", "liaCharChoose", "liaCharCreate", "liaCharDelete", "liaCharDeleted", "liaCharInfo", "liaCharKick", "liaCharList", "liaCharRequest", "liaCharSet", "liaCharVar", "liaCharacterData", "liaCharacterInvList", "liaChatMsg", "liaCheckHack", "liaCheckSeed", "liaClassUpdate", "liaCmdArgPrompt", "liaCommandData", "liaDataSync", "liaDialogSync", "liaDisplayCharList", "liaDoorMenu", "liaDoorPerm", "liaDoorData", "liaDoorDataUpdate", "liaDoorDataBulk", "liaEmitUrlSound", "liaGlobalVar", "liaGroupPermChanged", "liaGroupsAdd", "liaGroupsRemove", "liaGroupsRename", "liaGroupsRequest", "liaGroupsSetPerm", "liaInsertKeyPressed", "liaInvAct", "liaInvData", "liaInvQuantity", "liaInventoryAdd", "liaInventoryData", "liaInventoryDelete", "liaInventoryInit", "liaInventoryRemove", "liaItemData", "liaItemDelete", "liaItemInstance", "liaItemRotate", "liaKeybindServer", "liaKickCharacter", "liaManagesitrooms", "liaMessageData", "liaModifyCharacterFlags", "liaModifyFlags", "liaNetDel", "liaNetLocal", "liaNetMessage", "liaNetStreamData", "liaNetVar", "liaNPCWeaponChange", "liaNpcCustomize", "liaNpcDialogServerCallback", "liaNpcDialogRequestResponse", "liaNpcDialogDeliverResponse", "liaNpcDialogNodeSelect", "liaNpcDialogNodeResult", "liaNotificationData", "liaNotifyLocal", "liaOpenInvMenu", "liaOpenNpcDialog", "liaOpenPanelBrowser", "liaOptionsRequest", "liaOptionsRequestCancel", "liaPacPartAdd", "liaPacPartRemove", "liaPacPartReset", "liaPacSync", "liaPlayerInteractCategories", "liaPlayerInteractSync", "liaPlayerRespawn", "liaProvideInteractOptions", "liaProvideServerPassword", "liaRegenChat", "liaRemoveFOne", "liaRequestDropdown", "liaRequestDropdownCancel", "liaRequestInteractOptions", "liaRequestNPCSelection", "liaRequestOnlineStaffData", "liaRequestPlayerWarnings", "liaReturnFromEntity", "liaRunInteraction", "liaSendTableUI", "liaSeqSet", "liaServerChatAddText", "liaServerChatAddTextShadowed", "liaSetMainCharacter", "liaSetWaypoint", "liaSetWaypointWithLogo", "liaStaffDiscordPrompt", "liaStaffDiscordResponse", "liaStorageOpen", "liaStorageSync", "liaStorageSyncRequest", "liaStringRequest", "liaStringRequestCancel", "liaWeaponRuntimeOverrideUpdate", "liaWeaponRuntimeOverrideSync", "liaWeaponRuntimeOverrideReset", "liaSyncGesture", "liaTeleportToEntity", "liaTransferItem", "liaUpdateAdminGroups", "liaUpdateAdminPrivileges", "liaVendorEdit", "liaVendorSyncPresets", "liaVendorPropertySync", "liaVerifyCheatsResponse", "liaWaypointReached", "liaWorkshopDownloaderInfo", "liaWorkshopDownloaderRequest", "liaWorkshopDownloaderStart", "liaRemoveFeaturePosition"}
 DeriveGamemode("sandbox")
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("core/libraries/loader.lua")
 include("shared.lua")
-for _, fontFile in ipairs(fontFiles) do
-    resource.AddSingleFile(fontFile)
+for _, fontFile in ipairs(fonts) do
+    resource.AddFile(fontFile)
 end
 
 for _, netString in ipairs(networkStrings) do
     util.AddNetworkString(netString)
 end
+
+resource.AddWorkshop("3527535922")
