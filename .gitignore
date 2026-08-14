@@ -45,3 +45,4 @@ luac.out
 /documentation/reports
 /__pycache__
 fieldaudit.md
+/gamemode/modules/species_creator_poc

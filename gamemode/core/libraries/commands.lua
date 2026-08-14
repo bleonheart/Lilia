@@ -8810,8 +8810,13 @@ lia.command.add("npcchangetype", {
                             if lia.dialog.isGeneratedDialogSelection and lia.dialog.isGeneratedDialogSelection(npcType) then npcType = lia.dialog.ensureGeneratedDialogType and select(1, lia.dialog.ensureGeneratedDialogType(npc, nil, npc.NPCName)) or nil end
                             if not IsValid(npc) or not npcType then return end
                             local existingCustomData = npc.customData
-                            npc.uniqueID = npcType
                             local npcData = lia.dialog.getNPCData(npcType)
+                            if not npcData or not lia.dialog.isDialogCompatibleWithEntity(npc, npcData) then
+                                client:notifyError("That dialog type is not compatible with this entity.")
+                                return
+                            end
+
+                            npc.uniqueID = npcType
                             if npcData then
                                 local currentPos = npc:GetPos()
                                 local currentAng = npc:GetAngles()

@@ -1456,10 +1456,36 @@ else
 
         local bodygroupControls = {}
         local bodygroupScroll = nil
+        local nameEntry
+        local modelEntry
+        local hasSkin = false
+        local skinSlider
+        local hasAnimations = false
+        local animationCombo
+        local selectedAnimation = "auto"
+
+        local function saveAppearance()
+            if not IsValid(npc) or not IsValid(nameEntry) or not IsValid(modelEntry) then return end
+            local customData = {
+                name = string.Trim(nameEntry:GetValue() or ""),
+                model = modelEntry:GetValue() or "",
+                skin = hasSkin and IsValid(skinSlider) and skinSlider:GetValue() or existingData.skin or 0,
+                bodygroups = {}
+            }
+
+            for i, slider in pairs(bodygroupControls) do
+                if IsValid(slider) then customData.bodygroups[i] = slider:GetValue() end
+            end
+
+            if hasAnimations and IsValid(animationCombo) then customData.animation = selectedAnimation end
+            lia.dialog.submitConfiguration(configID, npc, customData)
+        end
+
         local function onBodygroupValueChanged(bodygroupIndex, _, val)
             if IsValid(npc) then
                 npc:SetBodygroup(bodygroupIndex, math.Round(val))
                 existingData.bodygroups[bodygroupIndex] = math.Round(val)
+                saveAppearance()
             end
         end
 
@@ -1498,17 +1524,20 @@ else
         nameLabel:SetText(L("npcNameLabel"))
         nameLabel:SetTall(20)
         nameLabel:DockMargin(0, 5, 0, 5)
-        local nameEntry = vgui.Create("liaEntry", scroll)
+        nameEntry = vgui.Create("liaEntry", scroll)
         nameEntry:Dock(TOP)
         nameEntry:SetTall(25)
         nameEntry:SetValue(existingData.name or "NPC")
         nameEntry:DockMargin(0, 0, 0, 10)
+        nameEntry.action = function()
+            if IsValid(npc) then saveAppearance() end
+        end
         local modelLabel = vgui.Create("DLabel", scroll)
         modelLabel:Dock(TOP)
         modelLabel:SetText(L("modelPathLabel"))
         modelLabel:SetTall(20)
         modelLabel:DockMargin(0, 5, 0, 5)
-        local modelEntry = vgui.Create("liaEntry", scroll)
+        modelEntry = vgui.Create("liaEntry", scroll)
         modelEntry:Dock(TOP)
         modelEntry:SetTall(25)
         modelEntry:SetValue(existingData.model or "models/Barney.mdl")
@@ -1530,6 +1559,7 @@ else
                         skinSlider:SetValue(0)
                     end
 
+                    saveAppearance()
                     LocalPlayer():notifySuccessLocalized("npcModelUpdated", value)
                 end
             end
@@ -1551,8 +1581,6 @@ else
             updateBodygroupControls()
         end
 
-        local hasSkin = false
-        local skinSlider = nil
         if IsValid(npc) then hasSkin = npc:SkinCount() > 1 end
         if hasSkin then
             local skinLabel = vgui.Create("DLabel", scroll)
@@ -1572,13 +1600,12 @@ else
                 if IsValid(npc) then
                     npc:SetSkin(math.Round(val))
                     existingData.skin = math.Round(val)
+                    saveAppearance()
                 end
             end
         end
 
-        local hasAnimations = false
         local availableAnimations = {}
-        local selectedAnimation = "auto"
         if IsValid(npc) then
             availableAnimations = {}
             local sequences = npc:GetSequenceList()
@@ -1600,7 +1627,6 @@ else
             end
         end
 
-        local animationCombo = nil
         if hasAnimations then
             local animationLabel = vgui.Create("DLabel", scroll)
             animationLabel:Dock(TOP)
@@ -1626,6 +1652,8 @@ else
                 elseif IsValid(npc) then
                     npc:setAnim()
                 end
+
+                saveAppearance()
             end
 
             local refreshBtn = vgui.Create("liaButton", scroll)
@@ -1697,7 +1725,18 @@ else
             dialogTypeCombo:ChooseOptionData(selectedDialogType or "none")
             dialogTypeCombo:FinishAddingOptions()
             dialogTypeCombo:PostInit()
-            dialogTypeCombo.OnSelect = function(_, _, value) selectedDialogType = value end
+            dialogTypeCombo.OnSelect = function(_, _, value, data)
+                local selectedType = data or value
+                selectedDialogType = selectedType
+                local currentSelectionType = currentUsesGeneratedDialog and lia.dialog.generatedDialogSelectionID or currentType
+                if selectedType ~= currentSelectionType then
+                    lia.dialog.submitConfiguration("dialog_type", npc, {
+                        dialogType = selectedType
+                    })
+                    currentType = selectedType
+                    currentUsesGeneratedDialog = selectedType == lia.dialog.generatedDialogSelectionID
+                end
+            end
             local customDialogBtn = vgui.Create("liaButton", scroll)
             customDialogBtn:Dock(TOP)
             customDialogBtn:SetTall(35)
@@ -1720,42 +1759,6 @@ else
                 frame:Close()
                 lia.cardealer.openCategoryConfigUI(npc)
             end
-        end
-
-        local applyBtn = vgui.Create("liaButton", scroll)
-        applyBtn:Dock(TOP)
-        applyBtn:SetTall(35)
-        applyBtn:SetText(L("applyCustomizations"))
-        applyBtn:DockMargin(0, 5, 0, 10)
-        applyBtn.DoClick = function()
-            local nameValue = nameEntry:GetValue() or ""
-            local modelValue = modelEntry:GetValue() or ""
-            local customData = {
-                name = string.Trim(nameValue),
-                model = modelValue,
-                skin = hasSkin and skinSlider and skinSlider:GetValue() or existingData.skin or 0,
-                bodygroups = {}
-            }
-
-            if hasBodygroups then
-                for i, slider in pairs(bodygroupControls) do
-                    if IsValid(slider) then customData.bodygroups[i] = slider:GetValue() end
-                end
-            end
-
-            if hasAnimations and animationCombo then customData.animation = selectedAnimation end
-            lia.dialog.submitConfiguration(configID, npc, customData)
-            if canConfigureDialogType and IsValid(dialogTypeCombo) then
-                local resolvedSelectedDialogType = selectedDialogType or dialogTypeCombo:GetValue() or "none"
-                local currentSelectionType = currentUsesGeneratedDialog and lia.dialog.generatedDialogSelectionID or currentType
-                if resolvedSelectedDialogType ~= currentSelectionType then
-                    lia.dialog.submitConfiguration("dialog_type", npc, {
-                        dialogType = resolvedSelectedDialogType
-                    })
-                end
-            end
-
-            frame:Close()
         end
 
         if lia.dialog.pendingOtherConfigs and #lia.dialog.pendingOtherConfigs > 0 then
@@ -2631,6 +2634,12 @@ if SERVER then
         onApply = function(ply, npc, customData)
             if not IsValid(npc) then return end
             customData = istable(customData) and customData or {}
+            local mergedData = table.Copy(npc.customData or {})
+            for key, value in pairs(customData) do
+                mergedData[key] = value
+            end
+
+            customData = mergedData
             if customData.name then
                 local trimmedName = string.Trim(customData.name)
                 if trimmedName ~= "" then
@@ -2749,8 +2758,11 @@ else
         Order = 100,
         MenuIcon = "icon16/wrench.png",
         Filter = function(_, ent, ply)
-            if not IsValid(ent) or not lia.dialog.isDialogNPCEntity(ent) then return false end
-            return lia.admin.canUseDebugProperties(ply) and canAccessNPCConfigurations(ply)
+            if not CLIENT then return false end
+            if not IsValid(ply) or not IsValid(ent) or not lia.dialog.isDialogNPCEntity(ent) then return false end
+            local weapon = ply:GetActiveWeapon()
+            local canUseDebug = IsValid(weapon) and weapon:GetClass() == "lia_adminstick" and weapon.GetActiveMode and weapon:GetActiveMode() == "debug"
+            return canUseDebug and canAccessNPCConfigurations(ply)
         end,
         Action = function(_, ent) lia.dialog.openConfigurationPicker(ent) end
     })

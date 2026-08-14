@@ -250,28 +250,6 @@ function MODULE:populateEntityTabPanel(entPanel)
     end
 end
 
-function MODULE:PopulateAdminTabs(pages)
-    local client = LocalPlayer()
-    local canViewEntityTab = client:hasPrivilege("viewEntityTab")
-    local entityTabData = self.entityTabData or {
-        owners = {},
-        totalEntities = 0
-    }
-
-    lia.debug("[Entity Tab Debug]", "player=", tostring(IsValid(client) and client:Nick() or "unknown"), "usergroup=", tostring(IsValid(client) and client:GetUserGroup() or "unknown"), "hasPrivilege(viewEntityTab)=", tostring(canViewEntityTab), "cachedOwners=", tostring(istable(entityTabData.owners) and #entityTabData.owners or 0), "cachedEntities=", tostring(entityTabData.totalEntities or 0), "requestPending=", tostring(self.entityTabRequestPending or false), "shouldAddTab=", tostring(canViewEntityTab))
-    if canViewEntityTab then
-        self:requestEntityTabData()
-        pages[#pages + 1] = {
-            name = "@playerEntities",
-            icon = "icon16/bricks.png",
-            drawFunc = function(entPanel)
-                self.entityTabPanel = entPanel
-                self:populateEntityTabPanel(entPanel)
-            end
-        }
-    end
-end
-
 local getImageDimensions
 do
     local max_image_search = 1024

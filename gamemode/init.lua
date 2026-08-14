@@ -6,7 +6,7 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("core/libraries/loader.lua")
 include("shared.lua")
 for _, fontFile in ipairs(fonts) do
-    resource.AddFile(fontFile)
+    resource.AddSingleFile(fontFile)
 end
 
 for _, netString in ipairs(networkStrings) do

@@ -87,6 +87,28 @@ local function canUseDebugMode(client)
     return IsValid(client) and (client:hasPrivilege("developmentHUD") or client:hasPrivilege("staffHUD"))
 end
 
+local DEBUG_TRACE_HULL_MINS = Vector(-6, -6, -6)
+local DEBUG_TRACE_HULL_MAXS = Vector(6, 6, 6)
+
+local function getDebugTrace(client)
+    local trace = client:GetEyeTrace()
+    if IsValid(trace.Entity) then return trace end
+
+    local startPos = client:GetShootPos()
+    local endPos = startPos + client:GetAimVector() * 32768
+    local hullTrace = util.TraceHull({
+        start = startPos,
+        endpos = endPos,
+        mins = DEBUG_TRACE_HULL_MINS,
+        maxs = DEBUG_TRACE_HULL_MAXS,
+        filter = client,
+        mask = MASK_SHOT
+    })
+
+    if IsValid(hullTrace.Entity) then return hullTrace end
+    return trace
+end
+
 local function formatDebugVector(vector)
     return string.format("%.2f, %.2f, %.2f", vector.x, vector.y, vector.z)
 end
@@ -337,7 +359,7 @@ SWEP:RegisterMode("debug", {
     name = function() return L("debugMode") end,
     CanUse = canUseDebugMode,
     PrimaryAttack = function(_, client)
-        local trace = client:GetEyeTrace()
+        local trace = getDebugTrace(client)
         if IsValid(trace.Entity) then properties.OpenEntityMenu(trace.Entity, trace) end
     end
 })
