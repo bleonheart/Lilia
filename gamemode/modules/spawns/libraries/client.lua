@@ -5,7 +5,7 @@ local fastFade = false
 local deathTimeReceived = 0
 local lastDeathTimeValue = 0
 local function getHUDFont(size)
-    return "HUDFont." .. tostring(size)
+    return "LiliaHUDFont." .. tostring(size)
 end
 
 local function resolveText(key, fallback, ...)

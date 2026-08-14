@@ -5049,8 +5049,8 @@ end
 function MODULE:HUDPaint()
     local client = LocalPlayer()
     if not IsValid(client) then return end
-    local hudFontLarge = "HUDFont.24"
-    local hudFontSmall = "HUDFont.16"
+    local hudFontLarge = "LiliaHUDFont.24"
+    local hudFontSmall = "LiliaHUDFont.16"
     local wep = client:GetActiveWeapon()
     if IsValid(wep) and wep:GetClass() == "gmod_tool" then return end
     if IsValid(wep) and wep:GetClass() == "lia_adminstick" and wep.CanUseTool and wep:CanUseTool() then
@@ -5163,7 +5163,7 @@ local function AddAdminStickToolHUD(hudInfos, title, rows)
     table.insert(hudInfos, {
         title = title,
         rows = rows,
-        font = "HUDFont.18",
+        font = "LiliaHUDFont.18",
         color = lia.color.theme.text or Color(235, 240, 242),
         position = {
             x = ScrW() - 24,
@@ -5231,7 +5231,7 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
     local instructions = {L("distanceToolSetPoint"), L("distanceToolClearPoints"), L("distanceToolMeasureCurrent")}
     table.insert(hudInfos, {
         text = instructions,
-        font = "HUDFont.18",
+        font = "LiliaHUDFont.18",
         color = Color(180, 180, 180),
         position = {
             x = ScrW() - 20,
@@ -5268,7 +5268,7 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
         local distanceText = string.format("Distance: %.1f units", distance)
         table.insert(hudInfos, {
             text = distanceText,
-            font = "HUDFont.20",
+            font = "LiliaHUDFont.20",
             color = Color(255, 255, 255),
             position = {
                 x = ScrW() * 0.5,
@@ -5301,7 +5301,7 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
     else
         table.insert(hudInfos, {
             text = L("distanceMeasureClickToSetStart"),
-            font = "HUDFont.16",
+            font = "LiliaHUDFont.16",
             color = Color(180, 180, 180),
             position = {
                 x = ScrW() * 0.5,
@@ -5335,7 +5335,7 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
 
     table.insert(hudInfos, {
         text = distanceLines,
-        font = "HUDFont.20",
+        font = "LiliaHUDFont.20",
         position = {
             x = 20,
             y = IsValid(lia.gui and lia.gui.actionCircle) and (ScrH() - 140) or (ScrH() - 30)

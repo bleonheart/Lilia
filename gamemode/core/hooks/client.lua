@@ -768,7 +768,7 @@ local ForceDrawCrosshairWeapon = {
 }
 
 local function getHUDFont(size, suffix)
-    return "HUDFont." .. tostring(size) .. (suffix or "")
+    return "LiliaHUDFont." .. tostring(size) .. (suffix or "")
 end
 
 local function isToolgunHUDHidden(client)

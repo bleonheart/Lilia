@@ -2248,13 +2248,13 @@ lia.config.add("DeleteDroppedItemsOnLeave", "@deleteDroppedItemsOnLeave", false,
     type = "Boolean"
 })
 
-lia.config.add("HUDFont", "@hudFont", "Montserrat Medium", function() if not CLIENT then return end end, {
+lia.config.add("HUDFont", "@hudFont", "Montserrat", function() if not CLIENT then return end end, {
     desc = "@hudFontDesc",
     category = "fonts",
     type = "Table",
     options = function()
         if CLIENT and lia.font and isfunction(lia.font.getAvailableFonts) then return lia.font.getAvailableFonts() end
-        return {"Montserrat Medium"}
+        return {"Montserrat"}
     end
 })
 

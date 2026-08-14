@@ -374,7 +374,7 @@ local function drawTopRightModeHUD(title, rows)
     lia.derma.drawBoxWithText(nil, ScrW() - 24, 24, {
         title = title,
         rows = rows,
-        font = "HUDFont.18",
+        font = "LiliaHUDFont.18",
         textColor = lia.color.theme.text or Color(235, 240, 242),
         textAlignX = TEXT_ALIGN_RIGHT,
         textAlignY = TEXT_ALIGN_TOP,

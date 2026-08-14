@@ -353,20 +353,98 @@ properties.Add("entity_info", {
         end
 
         local allText = table.concat(allLines, "\n")
+        local function getEntityInfoTheme()
+            local theme = lia.color and lia.color.theme or {}
+            local accent = theme.accent or theme.header or theme.theme or lia.config and lia.config.get("Color") or Color(45, 190, 170)
+            local text = theme.text or Color(232, 240, 240)
+            local muted = Color(math.max(text.r - 55, 120), math.max(text.g - 50, 125), math.max(text.b - 50, 125))
+            return accent, text, muted
+        end
+
+        local function drawEntityInfoPanel(x, y, w, h, radius, color, outline)
+            if lia.derma and lia.derma.rect then
+                lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
+                if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
+            else
+                draw.RoundedBox(radius, x, y, w, h, color)
+                if outline then
+                    surface.SetDrawColor(outline)
+                    surface.DrawOutlinedRect(x, y, w, h, 1)
+                end
+            end
+        end
+
+        local function styleEntityInfoButton(button, label, variant)
+            button:SetText("")
+            button._label = label
+            button.Paint = function(s, w, h)
+                local accent, textColor = getEntityInfoTheme()
+                local hovered = s:IsHovered()
+                local baseColor = accent
+                if variant == "neutral" then baseColor = Color(110, 130, 135) end
+                drawEntityInfoPanel(0, 0, w, h, 4, hovered and Color(baseColor.r, baseColor.g, baseColor.b, 18) or Color(25, 28, 35, 110), Color(baseColor.r, baseColor.g, baseColor.b, hovered and 120 or 72))
+                draw.SimpleText(s._label, "LiliaFont.15", w * 0.5, h * 0.5, hovered and Color(245, 249, 249) or textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
+        end
+
         local frame = vgui.Create("DFrame")
-        frame:SetSize(math.min(ScrW() - 80, 1050), math.min(ScrH() - 80, 760))
+        frame:SetSize(math.min(ScrW() - 120, 840), math.min(ScrH() - 100, 700))
         frame:Center()
-        frame:SetTitle("Entity Information - " .. tostring(ent:GetClass()) .. " [" .. tostring(ent:EntIndex()) .. "]")
+        frame:SetTitle("")
         frame:SetSizable(true)
+        frame:ShowCloseButton(false)
+        frame:DockPadding(12, 10, 12, 12)
         frame:MakePopup()
+        frame.Paint = function(self, w, h)
+            local accent = select(1, getEntityInfoTheme())
+            if lia.util and lia.util.drawBlackBlur then lia.util.drawBlackBlur(self, 1, 4, 255, 155) end
+            drawEntityInfoPanel(0, 0, w, h, 12, Color(25, 28, 35, 235), nil)
+            surface.SetDrawColor(0, 0, 0, 170)
+            surface.DrawOutlinedRect(0, 0, w, h, 1)
+            surface.SetDrawColor(accent.r, accent.g, accent.b, 210)
+            surface.DrawRect(0, 0, w, 2)
+            surface.SetDrawColor(255, 255, 255, 8)
+            surface.DrawRect(0, 60, w, 2)
+        end
+
+        local titleBar = vgui.Create("DPanel", frame)
+        titleBar:Dock(TOP)
+        titleBar:SetTall(60)
+        titleBar:DockMargin(0, 0, 0, 8)
+        titleBar.Paint = function(_, w, h)
+            local accent, textColor, muted = getEntityInfoTheme()
+            draw.SimpleText("ENTITY INFORMATION", "LiliaHUDFont.24", 18, 14, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            draw.SimpleText(tostring(ent:GetClass()) .. "  |  #" .. tostring(ent:EntIndex()), "LiliaHUDFont.16", 18, 38, muted, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            surface.SetDrawColor(accent.r, accent.g, accent.b, 68)
+            surface.DrawRect(18, h - 1, w - 36, 1)
+        end
+
+        local closeButton = vgui.Create("DButton", titleBar)
+        closeButton:Dock(RIGHT)
+        closeButton:SetWide(50)
+        closeButton:SetText("")
+        closeButton.Paint = function(s, w, h)
+            draw.SimpleText("×", "LiliaHUDFont.24", w * 0.5, h * 0.5 - 1, s:IsHovered() and Color(255, 235, 235) or Color(190, 205, 205), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        end
+
+        closeButton.DoClick = function() frame:Close() end
         local controls = vgui.Create("DPanel", frame)
         controls:Dock(TOP)
-        controls:SetTall(38)
-        controls:DockPadding(6, 5, 6, 5)
+        controls:SetTall(66)
+        controls:DockMargin(0, 0, 0, 8)
+        controls:DockPadding(12, 10, 12, 10)
+        controls.Paint = function(_, w, h)
+            local accent = select(1, getEntityInfoTheme())
+            drawEntityInfoPanel(0, 0, w, h, 8, Color(25, 28, 35, 205), nil)
+            surface.SetDrawColor(accent.r, accent.g, accent.b, 54)
+            surface.DrawOutlinedRect(0, 0, w, h, 1)
+        end
+
         local copyAll = vgui.Create("DButton", controls)
         copyAll:Dock(RIGHT)
-        copyAll:SetWide(120)
-        copyAll:SetText("Copy All")
+        copyAll:SetWide(112)
+        copyAll:DockMargin(10, 6, 0, 6)
+        styleEntityInfoButton(copyAll, "COPY ALL")
         copyAll.DoClick = function()
             SetClipboardText(allText)
             MsgC(Color(80, 180, 255), prefix, Color(255, 255, 255), "Copied all entity information.\n")
@@ -374,34 +452,50 @@ properties.Add("entity_info", {
 
         local summary = vgui.Create("DLabel", controls)
         summary:Dock(FILL)
+        summary:SetFont("LiliaHUDFont.16")
+        summary:SetTextColor(select(3, getEntityInfoTheme()))
         summary:SetText(tostring(ent) .. " | " .. tostring(ent:GetClass()) .. " | " .. tostring(ent:EntIndex()))
         summary:SetContentAlignment(4)
         local scroll = vgui.Create("DScrollPanel", frame)
         scroll:Dock(FILL)
+        scroll:GetCanvas():DockPadding(0, 0, 0, 4)
         local lastSection
         for _, rowData in ipairs(rows) do
             if lastSection ~= rowData.section then
                 lastSection = rowData.section
-                local header = vgui.Create("DLabel")
+                local header = vgui.Create("DPanel")
                 header:Dock(TOP)
                 header:SetTall(28)
-                header:DockMargin(8, 8, 8, 2)
-                header:SetFont("DermaDefaultBold")
-                header:SetText(rowData.section)
-                header:SetContentAlignment(4)
+                header:DockMargin(0, 10, 0, 6)
+                header.Paint = function(_, w, h)
+                    local accent, textColor = getEntityInfoTheme()
+                    draw.SimpleText(rowData.section, "LiliaHUDFont.16", 12, h * 0.5, Color(accent.r, accent.g, accent.b), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    surface.SetDrawColor(accent.r, accent.g, accent.b, 60)
+                    surface.DrawRect(110, h * 0.5, math.max(w - 122, 0), 1)
+                end
+
+                local headerLabel = vgui.Create("DLabel", header)
+                headerLabel:Dock(FILL)
+                headerLabel:SetText("")
                 scroll:AddItem(header)
             end
 
             local panel = vgui.Create("DPanel")
             panel:Dock(TOP)
-            panel:SetTall(30)
-            panel:DockMargin(8, 1, 8, 1)
-            panel:DockPadding(4, 3, 4, 3)
+            panel:SetTall(34)
+            panel:DockMargin(0, 0, 0, 2)
+            panel:DockPadding(12, 0, 12, 0)
+            panel.Paint = function(s, w, h)
+                surface.SetDrawColor(255, 255, 255, 10)
+                surface.DrawRect(0, h - 1, w, 1)
+            end
+
             scroll:AddItem(panel)
             local copy = vgui.Create("DButton", panel)
             copy:Dock(RIGHT)
-            copy:SetWide(64)
-            copy:SetText("Copy")
+            copy:SetWide(74)
+            copy:DockMargin(10, 4, 0, 4)
+            styleEntityInfoButton(copy, "COPY", "neutral")
             copy.DoClick = function()
                 SetClipboardText(rowData.value)
                 MsgC(Color(80, 180, 255), prefix, Color(255, 255, 255), "Copied " .. rowData.label .. ": ", Color(180, 220, 255), rowData.value, "\n")
@@ -409,13 +503,30 @@ properties.Add("entity_info", {
 
             local label = vgui.Create("DLabel", panel)
             label:Dock(LEFT)
-            label:SetWide(190)
+            label:SetWide(156)
+            label:SetFont("LiliaHUDFont.16")
+            label:SetTextColor(select(3, getEntityInfoTheme()))
             label:SetText(rowData.label)
             label:SetContentAlignment(4)
-            local value = vgui.Create("DTextEntry", panel)
+
+            local valueWrap = vgui.Create("DPanel", panel)
+            valueWrap:Dock(FILL)
+            valueWrap:DockMargin(12, 4, 0, 4)
+            valueWrap.Paint = function() end
+
+            local value = vgui.Create("DTextEntry", valueWrap)
             value:Dock(FILL)
-            value:SetText(rowData.value)
+            value:SetFont("LiliaHUDFont.16")
+            value:SetTextColor(select(2, getEntityInfoTheme()))
+            value:SetCursorColor(select(1, getEntityInfoTheme()))
+            value:SetText(tostring(rowData.value or ""))
             value:SetEditable(false)
+            value:SetPaintBackground(false)
+            value:SetPaintBorderEnabled(false)
+            if value.SetHorizontalScrollbarEnabled then value:SetHorizontalScrollbarEnabled(false) end
+            value.OnMousePressed = function()
+                SetClipboardText(tostring(rowData.value or ""))
+            end
         end
 
         surface.PlaySound("buttons/button15.wav")
@@ -739,6 +850,22 @@ lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
             lia.module.get("spawns"):FetchSpawns():next(function(spawns)
                 local list = {}
                 local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
+                for factionID, factionInfo in pairs(lia.faction.teams or {}) do
+                    local mapSpawns = factionInfo and factionInfo.spawns and factionInfo.spawns[curMap]
+                    local label = factionInfo and (factionInfo.name and L(factionInfo.name) or factionID) or factionID
+                    for i = 1, #(mapSpawns or {}) do
+                        local data = mapSpawns[i]
+                        local pos = data.pos or data.position
+                        if isvector(pos) then
+                            list[#list + 1] = {
+                                pos = pos,
+                                label = label,
+                                radius = data.radius
+                            }
+                        end
+                    end
+                end
+
                 for factionID, factionSpawns in pairs(spawns or {}) do
                     local factionInfo = lia.faction.get(factionID)
                     local label = factionInfo and (factionInfo.name and L(factionInfo.name) or factionID) or factionID
@@ -851,6 +978,24 @@ lia.util.setPositionCallback(L("classSpawnAdderTitle"), {
             local classes = data.classes or {}
             local list = {}
             local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
+            for classID, classData in pairs(lia.class.list or {}) do
+                if isnumber(classID) and istable(classData) then
+                    local mapSpawns = classData.spawns and classData.spawns[curMap]
+                    local label = classData.name or tostring(classID)
+                    for i = 1, #(mapSpawns or {}) do
+                        local spawnData = mapSpawns[i]
+                        local pos = spawnData.pos or spawnData.position
+                        if isvector(pos) then
+                            list[#list + 1] = {
+                                pos = pos,
+                                label = label,
+                                radius = spawnData.radius
+                            }
+                        end
+                    end
+                end
+            end
+
             for classID, classSpawns in pairs(classes) do
                 local classData = lia.class.get(tonumber(classID))
                 local label = classData and (classData.name or tostring(classID)) or tostring(classID)

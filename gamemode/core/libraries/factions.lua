@@ -1041,6 +1041,45 @@ end
 
 --[[
     Purpose:
+        Resolves the effective radius for a faction/class combination, preferring class data when present.
+
+    Parameters:
+        faction (number|string|table)
+            Faction index, unique ID, or faction table.
+
+        class (number|string|table|nil)
+            Optional class identifier or class table.
+
+        fallback (number|nil)
+            Optional fallback radius returned when neither class nor faction defines one.
+
+    Returns:
+        number|nil
+            The resolved radius, using class data first and faction data second.
+
+    Example Usage:
+        ```lua
+        local radius = lia.faction.getCharacterCreationRadius(FACTION_CITIZEN, CLASS_RESIDENT, 0)
+        ```
+
+    Realm:
+        Shared
+]]
+function lia.faction.getCharacterCreationRadius(faction, class, fallback)
+    local factionData = istable(faction) and faction or lia.faction.get(faction)
+    local classData = lia.faction.getCharacterCreationClass(factionData, class)
+    local classRadius = lia.class.getRadius(classData)
+    if classRadius ~= nil then return classRadius end
+    if factionData then
+        if isnumber(factionData.radius) then return factionData.radius end
+        local numericRadius = tonumber(factionData.radius)
+        if numericRadius ~= nil then return numericRadius end
+    end
+    return fallback
+end
+
+--[[
+    Purpose:
         Finds the model source used during character creation from class data, faction data, or defaults.
 
     Parameters:

@@ -180,10 +180,28 @@ local function DoSpawnLogic(client, isRespawning)
 
     local classIndex = character:getClass()
     if classIndex and classIndex ~= -1 then
+        local classData = lia.class.get(classIndex)
+        local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
+        if classData and classData.spawns and classData.spawns[curMap] then
+            local mapSpawns = classData.spawns[curMap]
+            if istable(mapSpawns) and #mapSpawns > 0 then
+                local data = table.Random(mapSpawns)
+                if data then
+                    local pos = data.position or data.pos
+                    local ang = data.angle or data.ang
+                    if isvector(pos) then
+                        placeAtSpawn(client, pos, ang, data.radius)
+                    else
+                        hook.Run("PlayerSpawnPointSelected", client, Vector(0, 0, 16), ang or angle_zero)
+                    end
+                    return
+                end
+            end
+        end
+
         local spawnData = lia.data.get("spawns", {})
         local classSpawns = istable(spawnData) and istable(spawnData.classes) and spawnData.classes[classIndex]
         if classSpawns and #classSpawns > 0 then
-            local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
             local valid = {}
             for _, v in ipairs(classSpawns) do
                 local map = v.map and tostring(v.map):lower() or nil

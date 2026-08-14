@@ -77,6 +77,39 @@ end
 
 --[[
     Purpose:
+        Retrieves the numeric radius configured for a class.
+
+    Parameters:
+        class (table|number|string)
+            Class data table or class identifier used to look up registered class data.
+
+        fallback (number|nil)
+            Optional fallback radius returned when the class does not define one.
+
+    Returns:
+        number|nil
+            The class radius when defined, otherwise the provided fallback.
+
+    Example Usage:
+        ```lua
+        local radius = lia.class.getRadius(CLASS_RADIO_OPERATOR, 0)
+        ```
+
+    Realm:
+        Shared
+]]
+function lia.class.getRadius(class, fallback)
+    local classData = istable(class) and class or lia.class.get(class)
+    if not classData then return fallback end
+    local radius = classData.radius
+    if isnumber(radius) then return radius end
+    local numericRadius = tonumber(radius)
+    if numericRadius ~= nil then return numericRadius end
+    return fallback
+end
+
+--[[
+    Purpose:
         Builds the effective bodygroup table for a character by combining class defaults with character-specific overrides.
 
     Parameters:

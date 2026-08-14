@@ -2400,13 +2400,14 @@ function ADMIN_STICK_PANEL:BuildTargetHeader()
     if not showHeader then return end
     local accent = getAdminStickTheme()
     local avatarWrap = self.targetHeader:Add("DPanel")
-    avatarWrap:SetPos(16, 16)
-    avatarWrap:SetSize(100, 100)
-    avatarWrap.Paint = function(_, w, h) drawAdminStickPanel(0, 0, w, h, 50, Color(4, 16, 21, 230), Color(accent.r, accent.g, accent.b, 110)) end
+    avatarWrap:SetPos(16, 34)
+    avatarWrap:SetSize(88, 88)
+    avatarWrap.Paint = function(_, w, h) drawAdminStickPanel(0, 0, w, h, 8, Color(4, 16, 21, 230), Color(accent.r, accent.g, accent.b, 110)) end
     if target:IsPlayer() then
-        local avatar = avatarWrap:Add("AvatarImage")
+        avatarWrap.Paint = nil
+        local avatar = avatarWrap:Add("CircularAvatar")
         avatar:SetSize(88, 88)
-        avatar:SetPos(6, 6)
+        avatar:SetPos(0, 0)
         avatar:SetPlayer(target, 96)
     else
         avatarWrap.Paint = function(_, w, h) drawAdminStickPanel(0, 0, w, h, 8, Color(4, 16, 21, 230), Color(accent.r, accent.g, accent.b, 110)) end
@@ -2414,13 +2415,14 @@ function ADMIN_STICK_PANEL:BuildTargetHeader()
 
     local name = adminStickGetTargetName(target)
     local subtitle = adminStickGetTargetSubtitle(target)
-    self:CreateHeaderLabel(self.targetHeader, name, "LiliaFont.30", Color(242, 247, 247), 134, 18, 350, 34)
-    self:CreateHeaderLabel(self.targetHeader, subtitle, "LiliaFont.18", Color(accent.r, accent.g, accent.b, 235), 134, 54, 420, 24)
+    local textX = 116
+    self:CreateHeaderLabel(self.targetHeader, name, "LiliaFont.30", Color(242, 247, 247), textX, 36, 350, 34)
+    self:CreateHeaderLabel(self.targetHeader, subtitle, "LiliaFont.18", Color(accent.r, accent.g, accent.b, 235), textX, 72, 420, 24)
     if target:IsPlayer() then
         local steamName = target:IsBot() and "BOT" or target:SteamName() or ""
         local userGroup = target:GetUserGroup() or ""
-        self:CreateHeaderLabel(self.targetHeader, "Steam Name: " .. steamName, "LiliaFont.17", Color(190, 210, 210), 134, 84, 280, 22)
-        self:CreateHeaderLabel(self.targetHeader, "Usergroup: " .. userGroup, "LiliaFont.17", Color(190, 210, 210), 134, 108, 280, 22)
+        self:CreateHeaderLabel(self.targetHeader, "Steam Name: " .. steamName, "LiliaFont.17", Color(190, 210, 210), textX, 102, 280, 22)
+        self:CreateHeaderLabel(self.targetHeader, "Usergroup: " .. userGroup, "LiliaFont.17", Color(190, 210, 210), textX, 126, 280, 22)
     end
 
     local chipArea = self.targetHeader:Add("DPanel")
