@@ -54,10 +54,6 @@ function PANEL:makeFactionComboBox()
     combo:Dock(TOP)
     combo:PostInit()
     combo:DockMargin(0, 8, 0, 12)
-    combo.Paint = function(_, w, h)
-        surface.SetDrawColor(0, 0, 0, 100)
-        surface.DrawRect(0, 0, w, h)
-    end
 
     combo.OnSelect = function(_, _, data)
         local factionID = nil
@@ -94,20 +90,6 @@ function PANEL:makeFactionComboBox()
         combo:ChooseOptionData(firstFactionID)
         local fac = lia.faction.teams[firstFactionID]
         if fac then self:onFactionSelected(fac) end
-    end
-
-    combo.userSetHeight = true
-    local panelTable = vgui.GetControlTable("Panel")
-    if panelTable and panelTable.SetTall then
-        panelTable.SetTall(combo, 40)
-    else
-        combo:SetTall(40)
-    end
-
-    local oldAutoSize = combo.AutoSize
-    combo.AutoSize = function(pnl)
-        if pnl.userSetHeight then return end
-        oldAutoSize(pnl)
     end
     return combo
 end

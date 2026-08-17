@@ -294,6 +294,10 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
+        path = "lilia/gamemode/core/libraries/sit.lua",
+        realm = "shared"
+    },
+    {
         path = "lilia/gamemode/core/meta/entity.lua",
         realm = "shared"
     },
@@ -332,109 +336,127 @@ local ConditionalFiles = {
         path = "lilia/gamemode/core/libraries/compatibility/vcmod.lua",
         global = "VCMod",
         name = "VCMod",
-        realm = "shared"
+        realm = "shared",
+        callback = function() return "Routes VCMod affordability and vehicle money transactions through Lilia character money." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/vjbase.lua",
         global = "VJ",
         name = "VJ",
-        realm = "server"
+        realm = "server",
+        callback = function() return "Blocks unsafe VJ net calls and spawners, tunes NPC processing, and restricts VJ NPC properties to superadmins." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/advdupe.lua",
         global = "AdvDupe",
         name = "AdvDupe",
-        realm = "server"
+        realm = "server",
+        callback = function() return "Blocks NoDuplicate entities and oversized model scales from Advanced Duplicator pastes." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/advdupe2.lua",
         global = "AdvDupe2",
         name = "AdvDupe2",
-        realm = "server"
+        realm = "server",
+        callback = function() return "Secures dupe pastes against protected or oversized entities and bridges Lilia duplicator data into AdvDupe2 pasting." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/mediaplayer.lua",
         global = "MediaPlayer",
         name = "Media Player",
-        realm = "shared"
+        realm = "shared",
+        callback = function() return "Sanitizes media history SQL values and reports suspicious SQL-injection-style requests." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/pac.lua",
         global = "pac",
         name = "PAC3",
-        realm = "shared"
+        realm = "shared",
+        callback = function() return "Syncs PAC parts with Lilia items and ragdolls, adds PAC recovery controls, and restricts PAC usage by flag and privilege." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/prone.lua",
         global = "prone",
         name = "Prone",
-        realm = "server"
+        realm = "server",
+        callback = function() return "Forces players out of prone when they die or load a character." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/cami.lua",
         global = "CAMI",
         name = "CAMI",
-        realm = "shared"
+        realm = "shared",
+        callback = function() return "Synchronizes CAMI access checks, usergroups, privileges, and usergroup changes with Lilia administration." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/ulx.lua",
         global = "ulx",
         name = "ULX",
-        realm = "shared"
+        realm = "shared",
+        callback = function() return "Mirrors ULib group permissions into Lilia/CAMI and routes Lilia admin commands and usergroup changes through ULX." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/serverguard.lua",
         global = "serverguard",
         name = "ServerGuard",
-        realm = "shared"
+        realm = "shared",
+        callback = function() return "Synchronizes ServerGuard ranks and permissions with Lilia/CAMI and routes admin actions through ServerGuard." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/sam.lua",
         global = "sam",
         name = "SAM | Admin Mod",
-        realm = "shared"
+        realm = "shared",
+        callback = function() return "Synchronizes Lilia privileges and ranks with SAM, routes admin commands, enforces staff restrictions, and uses SAM playtime." end
+    },
+    {
+        path = "lilia/gamemode/core/libraries/compatibility/sadmin.lua",
+        condition = function() return sadmin ~= nil or concommand.GetTable().sa ~= nil end,
+        name = "sAdmin",
+        realm = "server",
+        callback = function() return "Routes Lilia admin commands and usergroup changes through sAdmin console commands." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/simfphys.lua",
         global = "simfphys",
         name = "Simfphys Vehicles",
-        realm = "shared"
+        realm = "shared",
+        callback = function() return "Adds Lilia vehicle entry, damage, trunk and property rules while applying Simfphys HUD and crash protections." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/sitanywhere.lua",
         global = "SitAnywhere",
         name = "Sit Anywhere",
-        realm = "shared"
+        realm = "shared",
+        callback = function() return "Disables Sit Anywhere hooks, commands, methods, seats, and state to prevent conflicts with Lilia seating." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/permaprops.lua",
         global = "PermaProps",
         name = "PermaProps",
-        realm = "server"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/lvs.lua",
-        global = "LVS",
-        name = "LVS",
-        realm = "server"
+        realm = "server",
+        callback = function() return "Protects Lilia, persistent, and map entities from PermaProps while tracking overlap warnings and saved props." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/arccw.lua",
         global = "ArcCWInstalled",
         name = "ArcCW",
-        realm = "shared"
+        realm = "shared",
+        callback = function() return "Disables conflicting ArcCW inventory and pickup behavior and registers ArcCW attachments as Lilia items." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/wiremod.lua",
         global = "WireLib",
         name = "Wiremod",
-        realm = "server"
+        realm = "server",
+        callback = function() return "Secures Expression 2 uploads with chip validation, permission checks, safe decoding, and friend-write protection." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/vmanip.lua",
         global = "VManip",
         name = "VManip",
-        realm = "shared"
+        realm = "shared",
+        callback = function() return "Plays the VManip pickup animation when Lilia items are taken unless the item disables it." end
     },
 }
 
@@ -1223,9 +1245,19 @@ for _, compatFile in ipairs(ConditionalFiles) do
 
     if shouldLoad then
         lia.loader.include(compatFile.path, compatFile.realm or "shared")
-        loadedCompatibility[#loadedCompatibility + 1] = compatFile.name
+        local message = compatFile.name
+        if isfunction(compatFile.callback) then
+            local ok, result = pcall(compatFile.callback)
+            if ok and isstring(result) and result ~= "" then
+                message = message .. ": " .. result
+            elseif not ok then
+                lia.error("Compatibility callback failed for " .. tostring(compatFile.name) .. ": " .. tostring(result))
+            end
+        end
+
+        loadedCompatibility[#loadedCompatibility + 1] = message
     end
 end
 
-if #loadedCompatibility > 0 then lia.bootstrap(L("compatibility"), L("compatibilityLoadedSingle", table.concat(loadedCompatibility, ", "))) end
+if #loadedCompatibility > 0 then lia.bootstrap(L("compatibility"), table.concat(loadedCompatibility, " | ")) end
 if game.IsDedicated() then concommand.Remove("gm_save") end
