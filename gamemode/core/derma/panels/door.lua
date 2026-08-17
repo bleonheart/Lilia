@@ -11,7 +11,7 @@ function PANEL:Init()
     self.access.OnAction = function(rowData)
         local ply = rowData._player
         if not IsValid(ply) then return end
-        local menu = lia.derma.dermaMenu()
+        local menu = DermaMenu()
         local accessData = self.accessData
         local door = self.door
         local function sendPerm(level)

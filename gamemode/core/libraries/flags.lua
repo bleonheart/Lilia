@@ -115,16 +115,6 @@ lia.flag.add("t", "@flagToolgun", function(client, isGiven)
 end)
 
 if CLIENT then
-    local function getFlagThemeColors()
-        local theme = lia.color and lia.color.theme or {}
-        local accent = theme.accent or theme.theme
-        if not IsColor(accent) and lia.config and lia.config.get then accent = lia.config.get("Color") end
-        if not IsColor(accent) then accent = Color(45, 190, 170) end
-        local textColor = theme.text
-        if not IsColor(textColor) then textColor = Color(225, 238, 238) end
-        return accent, textColor
-    end
-
     local function drawFlagPanel(x, y, w, h, radius, color, outline)
         draw.RoundedBox(radius, x, y, w, h, color)
         if outline then
@@ -137,7 +127,7 @@ if CLIENT then
         local button = parent:Add("DButton")
         button:SetText("")
         button.Paint = function(self, w, h)
-            local accent, textColor = getFlagThemeColors()
+            local accent, textColor = lia.color.theme.accent, lia.color.theme.text
             local hovered = self:IsHovered() and self:IsEnabled()
             local background
             local outline
@@ -198,7 +188,7 @@ if CLIENT then
                 listPanel:DockMargin(0, 0, 12, 0)
                 listPanel:DockPadding(12, 12, 12, 12)
                 listPanel.Paint = function(_, w, h)
-                    local accent = getFlagThemeColors()
+                    local accent = lia.color.theme.accent
                     drawFlagPanel(0, 0, w, h, 7, Color(5, 18, 23, 215), Color(accent.r, accent.g, accent.b, 58))
                 end
 
@@ -223,7 +213,7 @@ if CLIENT then
                 filterButton:DockMargin(8, 0, 0, 0)
                 filterButton:SetText("")
                 filterButton.Paint = function(self, w, h)
-                    local accent = getFlagThemeColors()
+                    local accent = lia.color.theme.accent
                     local hovered = self:IsHovered()
                     drawFlagPanel(0, 0, w, h, 5, hovered and Color(255, 255, 255, 8) or Color(6, 20, 26, 225), Color(accent.r, accent.g, accent.b, hovered and 95 or 60))
                     draw.SimpleText(filterLabels[filterMode], "LiliaFont.16", 12, h * 0.5, Color(215, 229, 229), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -234,7 +224,7 @@ if CLIENT then
                 searchPanel:Dock(FILL)
                 searchPanel:DockPadding(12, 0, 8, 0)
                 searchPanel.Paint = function(_, w, h)
-                    local accent = getFlagThemeColors()
+                    local accent = lia.color.theme.accent
                     drawFlagPanel(0, 0, w, h, 5, Color(6, 20, 26, 225), Color(accent.r, accent.g, accent.b, 60))
                 end
 
@@ -242,7 +232,7 @@ if CLIENT then
                 searchEntry:Dock(FILL)
                 searchEntry:SetFont("LiliaFont.16")
                 searchEntry:SetTextColor(Color(225, 236, 236))
-                searchEntry:SetCursorColor(getFlagThemeColors())
+                searchEntry:SetCursorColor(lia.color.theme.accent)
                 searchEntry:SetPlaceholderText(L("searchFlags"))
                 searchEntry:SetPaintBackground(false)
                 searchEntry:SetPaintBackground(false)
@@ -252,7 +242,7 @@ if CLIENT then
                 sectionLabel:SetTall(34)
                 sectionLabel:SetText("CHARACTER FLAGS")
                 sectionLabel:SetFont("LiliaFont.17")
-                sectionLabel:SetTextColor(getFlagThemeColors())
+                sectionLabel:SetTextColor(lia.color.theme.accent)
                 sectionLabel:SetContentAlignment(4)
                 local countLabel = listPanel:Add("DLabel")
                 countLabel:Dock(BOTTOM)
@@ -299,7 +289,7 @@ if CLIENT then
                 local function rebuildDetail(record)
                     selectedRecord = record
                     detailPanel:Clear()
-                    local accent, textColor = getFlagThemeColors()
+                    local accent, textColor = lia.color.theme.accent, lia.color.theme.text
                     local header = detailPanel:Add("DPanel")
                     header:Dock(TOP)
                     header:SetTall(140)
@@ -396,7 +386,7 @@ if CLIENT then
                         card:SetText("")
                         card.selected = false
                         card.Paint = function(self, w, h)
-                            local cardAccent = getFlagThemeColors()
+                            local cardAccent = lia.color.theme.accent
                             local active = self.selected
                             local hovered = self:IsHovered()
                             local background = active and Color(cardAccent.r, cardAccent.g, cardAccent.b, 18) or hovered and Color(255, 255, 255, 7) or Color(6, 20, 25, 205)
@@ -466,7 +456,7 @@ if CLIENT then
                     empty:SetTextColor(Color(150, 170, 170))
                     empty:SetFont("LiliaFont.18")
                     detailPanel.Paint = function(_, w, h)
-                        local accent = getFlagThemeColors()
+                        local accent = lia.color.theme.accent
                         drawFlagPanel(0, 0, w, h, 7, Color(5, 18, 23, 190), Color(accent.r, accent.g, accent.b, 45))
                         draw.SimpleText("No flags available.", "LiliaFont.20", w * 0.5, h * 0.5, Color(150, 170, 170), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                     end

@@ -43,7 +43,7 @@ function PANEL:Init()
     self.listView:Dock(FILL)
     self.listView:SetMultiSelect(false)
     self.listView.OnRowRightClick = function(_, _, line)
-        local m = lia.derma.dermaMenu()
+        local m = DermaMenu()
         for i, header in ipairs(self.columns) do
             m:AddOption(L("copy") .. " " .. header, function()
                 SetClipboardText(line:GetColumnText(i) or "")

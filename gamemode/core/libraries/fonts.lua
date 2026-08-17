@@ -248,7 +248,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Black", {
-        font = "Roboto-Black",
+        font = "Roboto Black",
         size = 16,
         extended = true,
         antialias = true,
@@ -256,7 +256,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Black Italic", {
-        font = "Roboto-BlackItalic",
+        font = "Roboto Black Italic",
         size = 16,
         extended = true,
         antialias = true,
@@ -265,7 +265,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Bold", {
-        font = "Roboto-Bold",
+        font = "Roboto Bold",
         size = 16,
         extended = true,
         antialias = true,
@@ -273,7 +273,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Bold Condensed", {
-        font = "Roboto-BoldCondensed",
+        font = "Roboto Bold Condensed",
         size = 16,
         extended = true,
         antialias = true,
@@ -281,7 +281,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Bold Condensed Italic", {
-        font = "Roboto-BoldCondensedItalic",
+        font = "Roboto Bold Condensed Italic",
         size = 16,
         extended = true,
         antialias = true,
@@ -290,7 +290,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Condensed", {
-        font = "Roboto-Condensed",
+        font = "Roboto Condensed",
         size = 16,
         extended = true,
         antialias = true,
@@ -298,7 +298,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Condensed Italic", {
-        font = "Roboto-CondensedItalic",
+        font = "Roboto Condensed Italic",
         size = 16,
         extended = true,
         antialias = true,
@@ -307,7 +307,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Italic", {
-        font = "Roboto-Italic",
+        font = "Roboto Italic",
         size = 16,
         extended = true,
         antialias = true,
@@ -316,7 +316,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Light", {
-        font = "Roboto-Light",
+        font = "Roboto Light",
         size = 16,
         extended = true,
         antialias = true,
@@ -324,7 +324,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Light Italic", {
-        font = "Roboto-LightItalic",
+        font = "Roboto Light Italic",
         size = 16,
         extended = true,
         antialias = true,
@@ -333,7 +333,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Medium", {
-        font = "Roboto-Medium",
+        font = "Roboto Medium",
         size = 16,
         extended = true,
         antialias = true,
@@ -341,7 +341,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Medium Italic", {
-        font = "Roboto-MediumItalic",
+        font = "Roboto Medium Italic",
         size = 16,
         extended = true,
         antialias = true,
@@ -350,7 +350,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Regular", {
-        font = "Roboto-Regular",
+        font = "Roboto",
         size = 16,
         extended = true,
         antialias = true,
@@ -358,7 +358,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Thin", {
-        font = "Roboto-Thin",
+        font = "Roboto Thin",
         size = 16,
         extended = true,
         antialias = true,
@@ -366,7 +366,7 @@ function lia.font.registerFonts(fontName)
     })
 
     lia.font.register("Roboto Thin Italic", {
-        font = "Roboto-ThinItalic",
+        font = "Roboto Thin Italic",
         size = 16,
         extended = true,
         antialias = true,

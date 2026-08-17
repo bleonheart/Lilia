@@ -301,7 +301,7 @@ function playerMeta:setAction(text, time, callback)
     else
         if IsValid(lia.gui.actionCircle) then lia.gui.actionCircle:Remove() end
         lia.gui = lia.gui or {}
-        local pnl = vgui.Create("liaLockCircle")
+        local pnl = vgui.Create("liaActionCircle")
         pnl:Start(text, time)
         lia.gui.actionCircle = pnl
         if callback then timer.Simple(time, function() if IsValid(self) then callback(self) end end) end

@@ -474,7 +474,7 @@ if SERVER then
 else
     --[[
     Purpose:
-        Opens the clientside player interaction or personal action options menu.
+        Opens the clientside player interaction or personal action radial menu.
 
     Parameters:
         options (table)
@@ -497,7 +497,7 @@ else
 
     Returns:
         Panel|nil
-            The created options menu panel, or nil if the local player is invalid.
+            The created radial panel, or nil if the local player is invalid.
 
     Example Usage:
         ```lua
@@ -511,14 +511,69 @@ else
         local client = LocalPlayer()
         if not IsValid(client) then return end
         local ent = isfunction(client.getTracedEntity) and client:getTracedEntity(100) or NULL
-        return lia.derma.optionsMenu(options, {
-            mode = isInteraction and "interaction" or "action",
-            title = titleText,
-            closeKey = closeKey,
-            netMsg = netMsg,
-            preFiltered = preFiltered,
-            entity = ent
-        })
+        lia.gui = lia.gui or {}
+        if IsValid(lia.gui.InteractionMenu) then lia.gui.InteractionMenu:Remove() end
+        if not istable(options) or table.IsEmpty(options) then return end
+
+        local entries = {}
+        if preFiltered then
+            for name, option in pairs(options) do
+                if istable(option) then
+                    entries[#entries + 1] = {
+                        id = name,
+                        label = L(name),
+                        opt = option
+                    }
+                end
+            end
+        else
+            for name, option in pairs(options) do
+                if istable(option) then
+                    entries[#entries + 1] = {
+                        id = name,
+                        label = L(option.displayName or option.label or option.name or name),
+                        opt = option
+                    }
+                end
+            end
+        end
+
+        if #entries == 0 then return end
+        local categorized = lia.playerinteract.getCategorizedOptions(entries)
+        local radial = lia.derma.radialMenu()
+        local categories = {}
+        radial:SetCenterText(titleText or (isInteraction and L("playerInteractions") or L("actionsMenu")), L("selectOption"))
+
+        for _, entry in ipairs(categorized) do
+            if entry.isCategory then
+                local submenu = radial:CreateSubMenu(entry.name, L("selectOption"))
+                categories[entry.name] = submenu
+                radial:AddSubMenuOption(entry.name, submenu)
+            else
+                local submenu = categories[entry.opt.category] or radial
+                submenu:AddOption(entry.label, function()
+                    if entry.opt.serverOnly and netMsg then
+                        net.Start(netMsg)
+                        net.WriteString(entry.id)
+                        net.WriteBool(isInteraction)
+                        net.WriteEntity(IsValid(ent) and ent or Entity(0))
+                        net.SendToServer()
+                    end
+                end, entry.opt.icon, entry.opt.description or entry.opt.desc)
+            end
+        end
+
+        radial:SetCloseKey(closeKey)
+        lia.gui.InteractionMenu = radial
+        hook.Run("InteractionMenuOpened", radial)
+        local oldOnRemove = radial.OnRemove
+        function radial:OnRemove()
+            if oldOnRemove then oldOnRemove(self) end
+            if lia.gui.InteractionMenu == self then lia.gui.InteractionMenu = nil end
+            hook.Run("InteractionMenuClosed")
+        end
+
+        return radial
     end
 
     lia.net.readBigTable("liaPlayerInteractSync", function(data)

@@ -14,11 +14,6 @@ local function resolveText(key, fallback, ...)
     return value
 end
 
-local function getThemeAccent()
-    local theme = lia.color and lia.color.theme or {}
-    return theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
-end
-
 local function alphaColor(color, alpha)
     return Color(color.r, color.g, color.b, math.floor((color.a or 255) * alpha))
 end
@@ -171,7 +166,7 @@ function MODULE:HUDPaint()
 
     if IsValid(lia.gui.char) and lia.gui.char:IsVisible() then return end
     if fade <= 0.01 then return end
-    local accent = getThemeAccent()
+    local accent = lia.color.theme.accent
     local titleColor = Color(240, 246, 246)
     local bodyColor = Color(175, 194, 194)
     local dimColor = Color(120, 142, 142)

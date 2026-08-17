@@ -1578,6 +1578,7 @@ LANGUAGE = {
     searchKeybinds = "Поиск привязки клавиш...",
     openInventory = "Открыть Инвентарь",
     openInventoryDesc = "Opens ваш инвентарь меню",
+    openMenuTabDesc = "Открывает вкладку «%s»",
     convertEntity = "Convert Сущность",
     convertEntityDesc = "Converts мир сущность в предмет",
     adminModeDesc = "Toggles администратор режим переключить между персонал и regular персонаж",

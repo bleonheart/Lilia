@@ -19,7 +19,7 @@ function PANEL:Start(text, duration, options)
         startTime = now,
         endTime = now + duration,
         holdTime = options.holdTime or 0,
-        color = options.color or getAccentColor(),
+        color = options.color or lia.color.theme.accent or lia.color.theme.maincolor,
         background = options.background or Color(25, 28, 35, 180),
         textColor = options.textColor or color_white,
         percentFont = options.percentFont or "LiliaFont.24b",
@@ -77,4 +77,4 @@ function PANEL:Paint()
     if data.text ~= "" then draw.SimpleText(data.text, data.labelFont, cx, cy + radius + thickness * 1.1 + 6, data.textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
 end
 
-vgui.Register("liaLockCircle", PANEL, "EditablePanel")
+vgui.Register("liaActionCircle", PANEL, "EditablePanel")

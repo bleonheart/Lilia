@@ -37,12 +37,6 @@ local function normalizeCategory(category)
     return tostring(category or ""):lower():gsub("[^%w]", "")
 end
 
-local function getThemeColors()
-    local theme = lia.color.theme or {}
-    local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
-    local text = theme.text or Color(225, 238, 238)
-    return accent, text
-end
 
 local function drawPanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -90,7 +84,7 @@ local function styleScrollBar(scrollPanel)
     vbar.btnUp.Paint = function() end
     vbar.btnDown.Paint = function() end
     vbar.btnGrip.Paint = function(_, w, h)
-        local accent = getThemeColors()
+        local accent = lia.color.theme.accent
         drawPanel(1, 0, w - 2, h, 4, Color(accent.r, accent.g, accent.b, 145))
     end
 end
@@ -147,7 +141,7 @@ local function createLogTable(parent, categoryData)
     tablePanel:Dock(FILL)
     tablePanel:DockMargin(0, 0, 0, 12)
     tablePanel.Paint = function(_, w, h)
-        local accent = getThemeColors()
+        local accent = lia.color.theme.accent
         drawPanel(0, 0, w, h, 7, Color(4, 17, 21, 242), Color(accent.r, accent.g, accent.b, 78))
     end
 
@@ -156,7 +150,7 @@ local function createLogTable(parent, categoryData)
     header:SetTall(42)
     header.cells = {}
     header.Paint = function(_, w, h)
-        local accent = getThemeColors()
+        local accent = lia.color.theme.accent
         surface.SetDrawColor(7, 26, 31, 255)
         surface.DrawRect(1, 1, w - 2, h - 1)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 75)
@@ -186,7 +180,7 @@ local function createLogTable(parent, categoryData)
         row:SetText("")
         row.cells = {}
         row.Paint = function(s, w, h)
-            local accent = getThemeColors()
+            local accent = lia.color.theme.accent
             if s:IsHovered() then
                 surface.SetDrawColor(accent.r, accent.g, accent.b, 18)
             elseif index % 2 == 0 then
@@ -231,7 +225,7 @@ local function renderLoading(panel, category)
     title:Dock(TOP)
     title:SetTall(34)
     title:SetFont("LiliaFont.25")
-    title:SetTextColor(select(2, getThemeColors()))
+    title:SetTextColor(lia.color.theme.text)
     title:SetText(getCategoryTitle(category))
     local subtitle = panel.logsContent:Add("DLabel")
     subtitle:Dock(TOP)
@@ -267,7 +261,7 @@ local function renderCategory(panel, category)
     title:Dock(TOP)
     title:SetTall(34)
     title:SetFont("LiliaFont.25")
-    title:SetTextColor(select(2, getThemeColors()))
+    title:SetTextColor(lia.color.theme.text)
     title:SetText(getCategoryTitle(category))
     local subtitle = panel.logsContent:Add("DLabel")
     subtitle:Dock(TOP)
@@ -281,7 +275,7 @@ local function renderCategory(panel, category)
     searchWrap:DockMargin(0, 0, 0, 12)
     searchWrap:DockPadding(42, 0, 10, 0)
     searchWrap.Paint = function(_, w, h)
-        local accent = getThemeColors()
+        local accent = lia.color.theme.accent
         drawPanel(0, 0, w, h, 5, Color(4, 17, 21, 245), Color(accent.r, accent.g, accent.b, 82))
         drawIcon(Material("icon16/magnifier.png", "smooth"), 14, math.floor(h * 0.5) - 8, 16, Color(150, 180, 181))
     end
@@ -290,7 +284,7 @@ local function renderCategory(panel, category)
     searchBox:Dock(FILL)
     searchBox:SetFont("LiliaFont.17")
     searchBox:SetTextColor(Color(225, 236, 236))
-    searchBox:SetCursorColor(getThemeColors())
+    searchBox:SetCursorColor(lia.color.theme.accent)
     searchBox:SetPlaceholderText(L("searchLogs"))
     searchBox:SetPaintBackground(false)
     searchBox:SetPaintBackground(false)
@@ -305,7 +299,7 @@ local function renderCategory(panel, category)
     previousButton:SetWide(108)
     previousButton:SetText("")
     previousButton.Paint = function(s, w, h)
-        local accent = getThemeColors()
+        local accent = lia.color.theme.accent
         local disabled = categoryData.currentPage <= 1
         local background = s:IsHovered() and not disabled and Color(accent.r, accent.g, accent.b, 16) or Color(4, 17, 21, 225)
         drawPanel(0, 6, w, h - 12, 5, background, Color(accent.r, accent.g, accent.b, disabled and 28 or 70))
@@ -323,7 +317,7 @@ local function renderCategory(panel, category)
     nextButton:SetWide(108)
     nextButton:SetText("")
     nextButton.Paint = function(s, w, h)
-        local accent = getThemeColors()
+        local accent = lia.color.theme.accent
         local disabled = categoryData.currentPage >= categoryData.totalPages
         local background = s:IsHovered() and not disabled and Color(accent.r, accent.g, accent.b, 16) or Color(4, 17, 21, 225)
         drawPanel(0, 6, w, h - 12, 5, background, Color(accent.r, accent.g, accent.b, disabled and 28 or 70))
@@ -394,7 +388,7 @@ function MODULE:CreateLogsUI(panel, categories)
     pageHeader:Dock(TOP)
     pageHeader:SetTall(74)
     pageHeader.Paint = function()
-        local _, textColor = getThemeColors()
+        local textColor = lia.color.theme.text
         draw.SimpleText("Server Logs", "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         draw.SimpleText("Browse and inspect recorded server activity.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
@@ -408,7 +402,7 @@ function MODULE:CreateLogsUI(panel, categories)
     categoryPanel:DockMargin(0, 0, 14, 0)
     categoryPanel:DockPadding(10, 10, 10, 10)
     categoryPanel.Paint = function(_, w, h)
-        local accent = getThemeColors()
+        local accent = lia.color.theme.accent
         drawPanel(0, 0, w, h, 8, Color(4, 17, 21, 235), Color(accent.r, accent.g, accent.b, 70))
     end
 
@@ -430,7 +424,7 @@ function MODULE:CreateLogsUI(panel, categories)
     contentPanel:Dock(FILL)
     contentPanel:DockPadding(14, 14, 14, 14)
     contentPanel.Paint = function(_, w, h)
-        local accent = getThemeColors()
+        local accent = lia.color.theme.accent
         drawPanel(0, 0, w, h, 8, Color(4, 17, 21, 235), Color(accent.r, accent.g, accent.b, 70))
     end
 
@@ -473,7 +467,7 @@ function MODULE:CreateLogsUI(panel, categories)
         button.category = category
         button.icon = getCategoryIcon(category)
         button.Paint = function(s, w, h)
-            local accent = getThemeColors()
+            local accent = lia.color.theme.accent
             local active = panel.activeLogsCategory == s.category
             local hovered = s:IsHovered()
             local background = active and Color(accent.r, accent.g, accent.b, 24) or hovered and Color(255, 255, 255, 6) or Color(0, 0, 0, 0)

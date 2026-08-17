@@ -364,6 +364,27 @@ SWEP:RegisterMode("debug", {
     end
 })
 
+SWEP:RegisterMode("quick", {
+    name = function() return L("adminStickQuickMode") end,
+    CanUse = function(client) return IsValid(client) and (client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty()) end,
+    PrimaryAttack = function(_, client)
+        local target = isSelfSelectHeld(client) and client or client:GetEyeTrace().Entity
+        if not IsValid(target) then
+            client:notifyInfoLocalized("noOptionsAvailable")
+            return
+        end
+
+        closeAdminStickMenu()
+        client.AdminStickTarget = target
+        hook.Run("OpenAdminStickQuickMenu", target)
+    end,
+    Reload = function(_, client)
+        closeAdminStickMenu()
+        client.AdminStickTarget = nil
+    end,
+    OnExit = function() closeAdminStickMenu() end
+})
+
 function SWEP:GetDebugHUDInfo()
     local client = LocalPlayer()
     if self:GetActiveMode() ~= "debug" or not canUseDebugMode(client) then return end
@@ -409,8 +430,10 @@ function SWEP:DrawHUD()
         return
     end
 
-    if mode ~= "admin" then return end
-    local _, entityRows = self:GetAdminStickHUDInfo()
+    if mode ~= "admin" and mode ~= "quick" then return end
+    local client = LocalPlayer()
+    local target = IsValid(client.AdminStickTarget) and client.AdminStickTarget or client:GetEyeTrace().Entity
+    local entityRows = IsValid(target) and buildAdminStickHUDRows(client, target) or nil
     local rows = entityRows or {}
     if #rows > 0 then
         rows[#rows + 1] = {
@@ -423,7 +446,14 @@ function SWEP:DrawHUD()
         value = L("adminStickInstructionSwitchMode"):gsub("^.-:%s*", "")
     }
 
-    drawTopRightModeHUD(L("administrativeMode"), rows)
+    if mode == "quick" then
+        rows[#rows + 1] = {
+            label = L("adminStickHUDLeftClick"),
+            value = L("adminStickQuickModeOpen")
+        }
+    end
+
+    drawTopRightModeHUD(mode == "quick" and L("adminStickQuickMode") or L("administrativeMode"), rows)
 end
 
 function SWEP:GetAdminStickHUDInfo()

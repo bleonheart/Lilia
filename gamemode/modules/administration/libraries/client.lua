@@ -1008,7 +1008,7 @@ function MODULE:OpenStaffCases(panel)
 
     function panel:OpenCaseMenu(caseData)
         if not caseData then return end
-        local menu = lia.derma.dermaMenu()
+        local menu = DermaMenu()
         menu:AddOption(L("copySteamID"), function() if caseData.steamID and caseData.steamID ~= "" then SetClipboardText(caseData.steamID) end end, "icon16/page_copy.png")
         for _, action in ipairs(self:GetCaseActions(caseData)) do
             if not action.disabled then menu:AddOption(action.label, action.callback, action.icon) end
@@ -4116,7 +4116,7 @@ function MODULE:PopulateAdminTabs(pages)
 
                     local function openCharacterActions(row, account)
                         if not row or not account then return end
-                        local menu = lia.derma.dermaMenu()
+                        local menu = DermaMenu()
                         menu:AddOption(L("copySteamID"), function() SetClipboardText(account.steamID) end, "icon16/page_copy.png")
                         menu:AddOption(L("copyRow"), function() copyCharacterSummary(row, account) end, "icon16/page_copy.png")
                         local owner = lia.util.getBySteamID(account.steamID)
@@ -4427,7 +4427,7 @@ function MODULE:PopulateAdminTabs(pages)
 
                     characterFilterButton.DoClick = function()
                         lia.websound.playButtonSound()
-                        local menu = lia.derma.dermaMenu()
+                        local menu = DermaMenu()
                         menu:AddOption("All Characters", function()
                             currentCharacterFilter = "all"
                             characterFilterButton.filterLabel = "All Characters"

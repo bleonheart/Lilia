@@ -78,7 +78,7 @@ const emitDermaMenuItems = (varName: string, rawItems: string): string[] => {
   return lines;
 };
 
-const emitLockCircleStart = (varName: string, el: UIElement): string => {
+const emitActionCircleStart = (varName: string, el: UIElement): string => {
   const options = el.props.liaOptions || {};
   const entries: string[] = [];
   const pushValue = (key: string, value: string | number | boolean | undefined, raw = false) => {
@@ -188,7 +188,7 @@ export const generateLuaCode = (state: EditorState): string => {
 
     const liaDefinition = getLiaDefinition(el.type);
     if (liaDefinition) {
-        if (el.type === ComponentType.liaLockCircle) lines.push(emitLockCircleStart(varName, el));
+        if (el.type === ComponentType.liaActionCircle) lines.push(emitActionCircleStart(varName, el));
         const finalizeMethods: string[] = [];
         for (const repeater of liaDefinition.repeaters || []) {
             const rawValue = el.props.liaOptions?.[repeater.key];

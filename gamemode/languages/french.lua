@@ -1587,6 +1587,7 @@ LANGUAGE = {
     searchKeybinds = "Rechercher raccourcis...",
     openInventory = "Ouvrir Inventaire",
     openInventoryDesc = "Opens votre inventaire menu",
+    openMenuTabDesc = "Ouvre l’onglet %s",
     convertEntity = "Convert Entité",
     convertEntityDesc = "Converts un monde entité into un objet",
     adminModeDesc = "Bascule le mode admin pour passer entre personnage staff et personnage normal",

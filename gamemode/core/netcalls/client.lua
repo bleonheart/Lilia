@@ -1195,7 +1195,7 @@ net.Receive("liaActBar", function()
     local displayText = text:sub(1, 1) == "@" and L(text:sub(2)) or text
     if IsValid(lia.gui.actionCircle) then lia.gui.actionCircle:Remove() end
     lia.gui = lia.gui or {}
-    local pnl = vgui.Create("liaLockCircle")
+    local pnl = vgui.Create("liaActionCircle")
     pnl:Start(displayText, time)
     lia.gui.actionCircle = pnl
 end)

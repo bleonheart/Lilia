@@ -1555,7 +1555,7 @@ function GM:ItemShowEntityMenu(entity)
     end
 
     if IsValid(liaItemDermaMenu) then liaItemDermaMenu:Remove() end
-    liaItemDermaMenu = vgui.Create("liaDermaMenu")
+    liaItemDermaMenu = DermaMenu()
     local tempItem = table.Copy(itemTable)
     tempItem.player = LocalPlayer()
     tempItem.entity = entity

@@ -418,12 +418,14 @@ function PANEL:Init()
         btn:SetWide(textW + padding * 2)
     end
 
-    self.prev = self.buttons:Add("liaMediumButton")
+    self.prev = self.buttons:Add("liaButton")
+    self.prev:SetFont("LiliaFont.25")
     sizeButton(self.prev, L("back"):upper())
     self.prev:Dock(LEFT)
     self.prev.DoClick = function() self:previousStep() end
     self.prev:SetAlpha(0)
-    self.next = self.buttons:Add("liaMediumButton")
+    self.next = self.buttons:Add("liaButton")
+    self.next:SetFont("LiliaFont.25")
     sizeButton(self.next, L("next"):upper())
     self.next:Dock(RIGHT)
     self.next.DoClick = function() self:nextStep() end

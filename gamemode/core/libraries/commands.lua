@@ -1069,16 +1069,6 @@ else
 end
 
 if CLIENT then
-    local function getCommandThemeColors()
-        local theme = lia.color and lia.color.theme or {}
-        local accent = theme.accent or theme.theme
-        if not IsColor(accent) and lia.config and lia.config.get then accent = lia.config.get("Color") end
-        if not IsColor(accent) then accent = Color(45, 190, 170) end
-        local textColor = theme.text
-        if not IsColor(textColor) then textColor = Color(225, 238, 238) end
-        return accent, textColor
-    end
-
     local function drawCommandPanel(x, y, w, h, radius, color, outline)
         draw.RoundedBox(radius, x, y, w, h, color)
         if outline then
@@ -1091,7 +1081,7 @@ if CLIENT then
         local button = parent:Add("DButton")
         button:SetText("")
         button.Paint = function(self, w, h)
-            local accent, textColor = getCommandThemeColors()
+            local accent, textColor = lia.color.theme.accent, lia.color.theme.text
             local hovered = self:IsHovered() and self:IsEnabled()
             local background
             local outline
@@ -1150,7 +1140,7 @@ if CLIENT then
                 listPanel:DockMargin(0, 0, 12, 0)
                 listPanel:DockPadding(12, 12, 12, 12)
                 listPanel.Paint = function(_, w, h)
-                    local accent = getCommandThemeColors()
+                    local accent = lia.color.theme.accent
                     drawCommandPanel(0, 0, w, h, 7, Color(5, 18, 23, 215), Color(accent.r, accent.g, accent.b, 58))
                 end
 
@@ -1173,7 +1163,7 @@ if CLIENT then
                 filter:SetFont("LiliaFont.16")
                 filter:SetTextColor(Color(0, 0, 0, 0))
                 filter.Paint = function(self, w, h)
-                    local accent = getCommandThemeColors()
+                    local accent = lia.color.theme.accent
                     drawCommandPanel(0, 0, w, h, 5, Color(6, 20, 26, 225), Color(accent.r, accent.g, accent.b, 60))
                     draw.SimpleText(self:GetValue(), "LiliaFont.16", 12, h * 0.5, Color(215, 229, 229), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                     draw.SimpleText("▼", "LiliaFont.15", w - 14, h * 0.5, Color(175, 197, 198), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -1183,7 +1173,7 @@ if CLIENT then
                 searchPanel:Dock(FILL)
                 searchPanel:DockPadding(12, 0, 8, 0)
                 searchPanel.Paint = function(_, w, h)
-                    local accent = getCommandThemeColors()
+                    local accent = lia.color.theme.accent
                     drawCommandPanel(0, 0, w, h, 5, Color(6, 20, 26, 225), Color(accent.r, accent.g, accent.b, 60))
                 end
 
@@ -1191,7 +1181,7 @@ if CLIENT then
                 searchEntry:Dock(FILL)
                 searchEntry:SetFont("LiliaFont.16")
                 searchEntry:SetTextColor(Color(225, 236, 236))
-                searchEntry:SetCursorColor(getCommandThemeColors())
+                    searchEntry:SetCursorColor(lia.color.theme.accent)
                 searchEntry:SetPlaceholderText(L("searchCommands"))
                 searchEntry:SetPaintBackground(false)
                 searchEntry:SetPaintBackground(false)
@@ -1201,7 +1191,7 @@ if CLIENT then
                 sectionLabel:SetTall(34)
                 sectionLabel:SetText("AVAILABLE COMMANDS")
                 sectionLabel:SetFont("LiliaFont.17")
-                sectionLabel:SetTextColor(getCommandThemeColors())
+                    sectionLabel:SetTextColor(lia.color.theme.text)
                 sectionLabel:SetContentAlignment(4)
                 local countLabel = listPanel:Add("DLabel")
                 countLabel:Dock(BOTTOM)
@@ -1271,7 +1261,7 @@ if CLIENT then
                 local function rebuildDetail(record)
                     selectedRecord = record
                     detailPanel:Clear()
-                    local accent, textColor = getCommandThemeColors()
+                    local accent, textColor = lia.color.theme.accent, lia.color.theme.text
                     local header = detailPanel:Add("DPanel")
                     header:Dock(TOP)
                     header:SetTall(140)
@@ -1395,7 +1385,7 @@ if CLIENT then
                             card:SetText("")
                             card.selected = false
                             card.Paint = function(self, w, h)
-                                local cardAccent = getCommandThemeColors()
+                                local cardAccent = lia.color.theme.accent
                                 local active = self.selected
                                 local hovered = self:IsHovered()
                                 local background = active and Color(cardAccent.r, cardAccent.g, cardAccent.b, 18) or hovered and Color(255, 255, 255, 7) or Color(6, 20, 25, 205)
@@ -1432,7 +1422,7 @@ if CLIENT then
                     empty:SetTextColor(Color(150, 170, 170))
                     empty:SetFont("LiliaFont.18")
                     detailPanel.Paint = function(_, w, h)
-                        local accent = getCommandThemeColors()
+                        local accent = lia.color.theme.accent
                         drawCommandPanel(0, 0, w, h, 7, Color(5, 18, 23, 190), Color(accent.r, accent.g, accent.b, 45))
                         draw.SimpleText("No commands available.", "LiliaFont.20", w * 0.5, h * 0.5, Color(150, 170, 170), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                     end

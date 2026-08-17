@@ -1,72 +1,73 @@
-﻿local PANEL = {}
-local function getButtonColors()
-    local theme = lia.color.theme or {}
-    local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
-    return {
-        accent = accent,
-        text = theme.text or Color(225, 238, 238),
-        muted = Color(191, 207, 207),
-        mutedIcon = Color(165, 186, 186)
-    }
-end
+local PANEL = {}
 
-local function getSharedButtonShell()
-    return {
-        base = Color(8, 18, 24, 228),
-        hover = Color(10, 22, 28, 236),
-        selected = Color(12, 26, 33, 240)
-    }
+local function drawPanel(x, y, w, h, radius, background, outline)
+    if lia and lia.derma and lia.derma.rect then
+        lia.derma.rect(x, y, w, h):Rad(radius):Color(background):Shape(lia.derma.SHAPE_IOS):Draw()
+        if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
+        return
+    end
+
+    draw.RoundedBox(radius, x, y, w, h, background)
+    if outline then
+        surface.SetDrawColor(outline)
+        surface.DrawOutlinedRect(x, y, w, h, 1)
+    end
 end
 
 function PANEL:Init()
-    self.hover_status = 0
+    self._text = L("button")
+    self._hover = 0
+    self._secondary = false
+    self._customColor = nil
+    self._customHoverColor = nil
+    self._customTextColor = nil
     self.bool_hover = true
     self.font = "LiliaFont.18"
-    self.radius = 12
-    self.icon = ""
+    self.radius = 6
+    self.icon = nil
     self.icon_size = 16
-    self.text = L("button")
-    self.col = Color(13, 30, 35, 225)
-    self.col_hov = (lia.color.theme and lia.color.theme.button_hovered) or Color(16, 34, 40, 235)
-    self._customColor = false
-    self._customHoverColor = false
-    self._customTextColor = false
-    self._defaultTextColor = (lia.color.theme and lia.color.theme.text) or Color(225, 238, 238)
-    self:SetTextColor(self._defaultTextColor)
+    self.Selected = false
+    self.ShowLine = false
+    self.bool_gradient = false
+    self.enable_ripple = false
     self.BaseClass.SetText(self, "")
 end
 
-function PANEL:SetHover(is_hover)
-    self.bool_hover = is_hover
+function PANEL:SetHover(enabled)
+    self.bool_hover = tobool(enabled)
 end
 
 function PANEL:SetFont(font)
-    self.font = font
+    self.font = tostring(font or "LiliaFont.18")
 end
 
-function PANEL:SetRadius(rad)
-    self.radius = rad
+function PANEL:SetRadius(radius)
+    self.radius = tonumber(radius) or 6
 end
 
-function PANEL:SetIcon(icon, icon_size)
+function PANEL:SetSecondary(secondary)
+    self._secondary = tobool(secondary)
+end
+
+function PANEL:GetSecondary()
+    return self._secondary or false
+end
+
+function PANEL:SetIcon(icon, iconSize)
     if not icon or icon == "" then
         self.icon = nil
     elseif type(icon) == "IMaterial" then
         self.icon = icon
     else
-        local mat = Material(icon)
-        if mat and mat:IsValid() then
-            self.icon = mat
-        else
-            self.icon = nil
-        end
+        local material = Material(icon)
+        self.icon = material and material:IsValid() and material or nil
     end
 
-    self.icon_size = icon_size or 16
+    self.icon_size = tonumber(iconSize) or 16
 end
 
 function PANEL:SetTxt(text)
-    self.text = text or ""
+    self._text = tostring(text or "")
 end
 
 function PANEL:SetText(text)
@@ -75,172 +76,132 @@ function PANEL:SetText(text)
 end
 
 function PANEL:GetText()
-    return self.text
+    return self._text or ""
 end
 
-function PANEL:SetColor(col)
-    self._customColor = col ~= nil
-    self.col = col or Color(13, 30, 35, 225)
+function PANEL:SetColor(color)
+    self._customColor = IsColor(color) and color or nil
 end
 
-function PANEL:SetColorHover(col)
-    self._customHoverColor = col ~= nil
-    self.col_hov = col or (lia.color.theme and lia.color.theme.button_hovered) or Color(16, 34, 40, 235)
+function PANEL:SetColorHover(color)
+    self._customHoverColor = IsColor(color) and color or nil
 end
 
-function PANEL:SetTextColor(col)
-    self._customTextColor = col ~= nil
-    self.BaseClass.SetTextColor(self, col or self._defaultTextColor or Color(225, 238, 238))
+function PANEL:SetTextColor(color)
+    self._customTextColor = IsColor(color) and color or nil
+end
+
+function PANEL:GetTextColor()
+    return self._customTextColor or lia.color.theme.text
 end
 
 function PANEL:PaintButton(baseColor, hoverColor)
-    if not baseColor then return end
     self:SetColor(baseColor)
-    if hoverColor then
+    if IsColor(hoverColor) then
         self:SetColorHover(hoverColor)
+    elseif IsColor(baseColor) then
+        self:SetColorHover(Color(math.min(baseColor.r + 30, 255), math.min(baseColor.g + 30, 255), math.min(baseColor.b + 30, 255), baseColor.a or 255))
     else
-        local r = math.min(baseColor.r + 30, 255)
-        local g = math.min(baseColor.g + 30, 255)
-        local b = math.min(baseColor.b + 30, 255)
-        local a = baseColor.a or 255
-        self:SetColorHover(Color(r, g, b, a))
+        self:SetColorHover(nil)
     end
 end
 
-function PANEL:SetGradient(is_grad)
-    self.bool_gradient = is_grad
+function PANEL:SetGradient(enabled)
+    self.bool_gradient = tobool(enabled)
 end
 
-function PANEL:SetRipple(enable)
-    self.enable_ripple = enable
+function PANEL:SetRipple(enabled)
+    self.enable_ripple = tobool(enabled)
 end
 
-function PANEL:OnMousePressed(mousecode)
-    self.BaseClass.OnMousePressed(self, mousecode)
-    if self.enable_ripple and mousecode == MOUSE_LEFT then
+function PANEL:SetSelected(state)
+    self.Selected = tobool(state)
+end
+
+function PANEL:IsSelected()
+    return self.Selected or false
+end
+
+function PANEL:SetShowLine(show)
+    self.ShowLine = tobool(show)
+end
+
+function PANEL:GetShowLine()
+    return self.ShowLine or false
+end
+
+function PANEL:OnMousePressed(mouseCode)
+    self.BaseClass.OnMousePressed(self, mouseCode)
+    if self.enable_ripple and mouseCode == MOUSE_LEFT then
         self.click_alpha = 1
         self.click_x, self.click_y = self:CursorPos()
     end
 end
 
 function PANEL:DoClick()
-    lia.websound.playButtonSound()
+    if lia and lia.websound and isfunction(lia.websound.playButtonSound) then lia.websound.playButtonSound() end
     self.BaseClass.DoClick(self)
 end
 
+function PANEL:Think()
+    local target = self.bool_hover and self:IsHovered() and self:IsEnabled() and 1 or 0
+    self._hover = Lerp(FrameTime() * 12, self._hover or 0, target)
+end
+
 function PANEL:Paint(w, h)
-    local colors = getButtonColors()
-    local hovered = self.bool_hover and self:IsHovered()
-    local down = self:IsDown()
-    local baseColor = self.col or (lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[1]) or Color(25, 28, 35, 250)
-    local hoverColor = self.col_hov or (lia.color.theme and lia.color.theme.button_hovered) or Color(70, 140, 140)
-    local background = (hovered or down) and hoverColor or baseColor
-    local outlineSource = (hovered or down) and hoverColor or self._customColor and baseColor or colors.accent
-    local outline = Color(outlineSource.r, outlineSource.g, outlineSource.b, (hovered or down) and 145 or 68)
-    lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(background):Shape(lia.derma.SHAPE_IOS):Draw()
-    lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw()
+    local hover = self._hover or 0
+    local accent = self._secondary and (lia.color.theme.negative or lia.color.theme.accent or lia.color.theme.maincolor) or lia.color.theme.accent or lia.color.theme.maincolor
+    local background
+    local outline
+
+    if self._customColor then
+        local hoverColor = self._customHoverColor or self._customColor
+        background = Color(
+            math.Round(Lerp(hover, self._customColor.r, hoverColor.r)),
+            math.Round(Lerp(hover, self._customColor.g, hoverColor.g)),
+            math.Round(Lerp(hover, self._customColor.b, hoverColor.b)),
+            math.Round(Lerp(hover, self._customColor.a or 255, hoverColor.a or 255))
+        )
+        outline = Color(accent.r, accent.g, accent.b, 75 + hover * 100)
+    else
+        background = Color(accent.r, accent.g, accent.b, self._secondary and 18 + hover * 16 or 25 + hover * 26)
+        outline = Color(accent.r, accent.g, accent.b, 75 + hover * 100)
+    end
+
+    if not self:IsEnabled() then
+        background = lia.color.theme.background
+        outline = lia.color.theme.text
+    end
+
+    drawPanel(0, 0, w, h, self.radius or 6, background, outline)
+
+    if self.Selected and self.ShowLine then
+        surface.SetDrawColor(accent.r, accent.g, accent.b, 240)
+        surface.DrawRect(0, 7, 3, math.max(h - 14, 1))
+    end
+
+    local textColor = self:IsEnabled() and (self._customTextColor or lia.color.theme.text) or lia.color.theme.text
     local iconSize = self.icon_size or 16
-    local textColor = (hovered or down) and colors.text or self._customTextColor and self:GetTextColor() or (lia.color.theme and lia.color.theme.text) or self._defaultTextColor or Color(225, 238, 238)
-    if self.text ~= "" then
-        draw.SimpleText(self.text, self.font, w * 0.5 + (self.icon and self.icon ~= "" and iconSize * 0.5 + 2 or 0), h * 0.5, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        if self.icon and self.icon ~= "" then
-            surface.SetFont(self.font)
-            local posX = (w - surface.GetTextSize(self.text) - iconSize) * 0.5 - 2
+    local text = self._text or ""
+
+    if text ~= "" then
+        draw.SimpleText(text, self.font or "LiliaFont.18", w * 0.5 + (self.icon and iconSize * 0.5 + 2 or 0), h * 0.5, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        if self.icon then
+            surface.SetFont(self.font or "LiliaFont.18")
+            local textWidth = surface.GetTextSize(text)
+            local posX = (w - textWidth - iconSize) * 0.5 - 2
             local posY = (h - iconSize) * 0.5
             surface.SetMaterial(self.icon)
-            surface.SetDrawColor((hovered or down) and colors.text or colors.mutedIcon)
+            surface.SetDrawColor(self:IsEnabled() and textColor or lia.color.theme.text)
             surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
         end
-    elseif self.icon and self.icon ~= "" then
+    elseif self.icon then
         local posX = (w - iconSize) * 0.5
         local posY = (h - iconSize) * 0.5
         surface.SetMaterial(self.icon)
-        surface.SetDrawColor((hovered or down) and colors.text or colors.mutedIcon)
+        surface.SetDrawColor(self:IsEnabled() and textColor or lia.color.theme.text)
         surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
     end
 end
 
 vgui.Register("liaButton", PANEL, "Button")
-local function RegisterButton(name, defaultFont, useBase)
-    local BUTTON_PANEL = {}
-    BUTTON_PANEL.DefaultFont = defaultFont or "LiliaFont.17"
-    BUTTON_PANEL.Base = useBase
-    function BUTTON_PANEL:Init()
-        self:SetFont(self.DefaultFont)
-        self.Selected = false
-        self.ShowLine = false
-        self._customTextColor = false
-        self._defaultTextColor = (lia.color.theme and lia.color.theme.text) or Color(225, 238, 238)
-        self:SetTextColor(self._defaultTextColor)
-    end
-
-    function BUTTON_PANEL:SetFont(font)
-        self.ButtonFont = font
-        self.BaseClass.SetFont(self, font)
-    end
-
-    function BUTTON_PANEL:GetFont()
-        return self.ButtonFont
-    end
-
-    function BUTTON_PANEL:SetTextColor(col)
-        self._customTextColor = col ~= nil
-        DButton.SetTextColor(self, col or self._defaultTextColor or Color(225, 238, 238))
-    end
-
-    function BUTTON_PANEL:SetSelected(state)
-        self.Selected = state
-    end
-
-    function BUTTON_PANEL:IsSelected()
-        return self.Selected
-    end
-
-    function BUTTON_PANEL:SetShowLine(show)
-        self.ShowLine = show
-    end
-
-    function BUTTON_PANEL:GetShowLine()
-        return self.ShowLine
-    end
-
-    function BUTTON_PANEL:Paint(w, h)
-        local colors = getButtonColors()
-        local shell = getSharedButtonShell()
-        local hovered = self:IsHovered()
-        local selected = self:IsSelected()
-        local accentAlpha = selected and 52 or hovered and 40 or 24
-        local shellColor = selected and shell.selected or hovered and shell.hover or shell.base
-        local background = Color(shellColor.r, shellColor.g, shellColor.b, shellColor.a)
-        local tint = Color(colors.accent.r, colors.accent.g, colors.accent.b, accentAlpha)
-        local outlineAlpha = selected and 220 or hovered and 190 or 156
-        local outline = Color(colors.accent.r, colors.accent.g, colors.accent.b, outlineAlpha)
-        if self.Base == false then background = Color(0, 0, 0, 0) end
-        lia.derma.rect(0, 0, w, h):Rad(12):Color(background):Shape(lia.derma.SHAPE_IOS):Draw()
-        if self.Base ~= false then lia.derma.rect(0, 0, w, h):Rad(12):Color(tint):Shape(lia.derma.SHAPE_IOS):Draw() end
-        if self.Base ~= false then lia.derma.rect(0, 0, w, h):Rad(12):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(2):Draw() end
-        if selected and self:GetShowLine() then
-            surface.SetDrawColor(colors.accent.r, colors.accent.g, colors.accent.b, 240)
-            surface.DrawRect(0, 7, 3, h - 14)
-        end
-
-        local textColor = hovered and Color(245, 250, 250) or self._customTextColor and self:GetTextColor() or colors.text
-        draw.SimpleText(self:GetText(), self:GetFont(), w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        return true
-    end
-
-    function BUTTON_PANEL:DoClick()
-        lia.websound.playButtonSound()
-        self.BaseClass.DoClick(self)
-    end
-
-    vgui.Register(name, BUTTON_PANEL, "DButton")
-end
-
-RegisterButton("liaHugeButton", "LiliaFont.72", true)
-RegisterButton("liaBigButton", "LiliaFont.36", true)
-RegisterButton("liaMediumButton", "LiliaFont.25", true)
-RegisterButton("liaSmallButton", "LiliaFont.17", true)
-RegisterButton("liaMiniButton", "LiliaFont.14", true)
-RegisterButton("liaNoBGButton", "LiliaFont.36", false)
-RegisterButton("liaCustomFontButton", "LiliaFont.17", true)

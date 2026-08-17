@@ -1537,7 +1537,7 @@ else
             pages[#pages + 1] = {
                 name = "configuration",
                 shouldShow = function() return hook.Run("CanPlayerModifyConfig", LocalPlayer()) ~= false end,
-                drawFunc = function(parent) drawConfigPage(parent, regularConfigs, "Configuration", "Manage core server settings, keybinds, options, and item configuration.", true) end
+                drawFunc = function(parent) drawConfigPage(parent, regularConfigs, "Configuration", "Manage core server settings, keybinds, options, and item configuration.", false) end
             }
         end
     end)

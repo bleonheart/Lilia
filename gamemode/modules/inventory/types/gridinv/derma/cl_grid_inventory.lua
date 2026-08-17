@@ -2,12 +2,6 @@
     return IsValid(frame.btnClose) and frame.btnClose:GetTall() + 4 or 24
 end
 
-local function getThemeColors()
-    local theme = lia.color and lia.color.theme or {}
-    local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
-    return accent, theme.text or Color(232, 240, 240)
-end
-
 local function drawPanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
@@ -28,7 +22,7 @@ local function styleButton(button, primary)
     button:SetTextColor(Color(232, 240, 240))
     button:SetFont("LiliaFont.18")
     button.Paint = function(self, w, h)
-        local accent, textColor = getThemeColors()
+        local accent, textColor = lia.color.theme.accent, lia.color.theme.text
         local hovered = self:IsHovered()
         if primary then
             local background = hovered and Color(accent.r, accent.g, accent.b, 235) or Color(accent.r, accent.g, accent.b, 205)
@@ -124,7 +118,7 @@ function MENU:Init()
     self.content:Dock(NODOCK)
     self.headerPanel = self:Add("EditablePanel")
     self.headerPanel.Paint = function()
-        local accent, textColor = getThemeColors()
+        local accent, textColor = lia.color.theme.accent, lia.color.theme.text
         draw.SimpleText("Inventory", "LiliaFont.30", 2, 0, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         draw.SimpleText(self:getSlotStatsText(), "LiliaFont.18", 2, 48, SECONDARY_TEXT, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 35)
@@ -134,7 +128,7 @@ function MENU:Init()
     self.searchEntry = self.headerPanel:Add("DTextEntry")
     self.searchEntry:SetFont("LiliaFont.18")
     self.searchEntry:SetTextColor(PRIMARY_TEXT)
-    self.searchEntry:SetCursorColor(select(1, getThemeColors()))
+    self.searchEntry:SetCursorColor(lia.color.theme.accent)
     self.searchEntry:SetMouseInputEnabled(true)
     self.searchEntry:SetKeyboardInputEnabled(true)
     self.searchEntry:SetUpdateOnType(true)
@@ -151,7 +145,7 @@ function MENU:Init()
     end
 
     self.searchEntry.Paint = function(entry, w, h)
-        local accent = select(1, getThemeColors())
+        local accent = lia.color.theme.accent
         local focused = entry:HasFocus()
         local hovered = entry:IsHovered()
         local background = focused and Color(accent.r, accent.g, accent.b, 16) or hovered and Color(255, 255, 255, 7) or Color(3, 16, 21, 185)
@@ -169,7 +163,7 @@ function MENU:Init()
     self.categoryButton.DoClick = function() self:openCategoryMenu() end
     self.gridViewport = self:Add("EditablePanel")
     self.gridViewport.Paint = function(_, w, h)
-        local accent = select(1, getThemeColors())
+        local accent = lia.color.theme.accent
         drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
     end
 
@@ -177,7 +171,7 @@ function MENU:Init()
     self.bagViewport = self:Add("EditablePanel")
     self.bagViewport:SetVisible(false)
     self.bagViewport.Paint = function(_, w, h)
-        local accent = select(1, getThemeColors())
+        local accent = lia.color.theme.accent
         drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
     end
 
@@ -185,7 +179,7 @@ function MENU:Init()
     self.bagContent:SetVisible(false)
     self.footerPanel = self:Add("EditablePanel")
     self.footerPanel.Paint = function(_, w, h)
-        local accent, textColor = getThemeColors()
+        local accent, textColor = lia.color.theme.accent, lia.color.theme.text
         drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
         local item = IsValid(self.selectedIcon) and self.selectedIcon.itemTable
         local name = item and item:getName() or "Select an item"
@@ -388,7 +382,7 @@ function MENU:openMultiActionMenu(actionKey, action, item)
         return
     end
 
-    local menu = lia.derma and lia.derma.dermaMenu and lia.derma.dermaMenu() or DermaMenu()
+    local menu = DermaMenu()
     for optionKey, option in pairs(options) do
         if isfunction(option) then
             local subOption = {
@@ -419,7 +413,7 @@ function MENU:openItemActionMenu(item)
     if not item then return end
     local actions = self:getAvailableItemActions(item)
     if #actions == 0 then return end
-    local menu = lia.derma and lia.derma.dermaMenu and lia.derma.dermaMenu() or DermaMenu()
+    local menu = DermaMenu()
     for _, actionInfo in ipairs(actions) do
         local actionKey = actionInfo.key
         local action = actionInfo.action
@@ -655,7 +649,7 @@ function MENU:OnRemove()
 end
 
 function MENU:Paint(w, h)
-    local accent = select(1, getThemeColors())
+    local accent = lia.color.theme.accent
     drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
 end
 

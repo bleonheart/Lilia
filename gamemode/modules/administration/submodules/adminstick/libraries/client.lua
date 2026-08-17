@@ -308,7 +308,8 @@ end
 local function BuildAdminStickCommandString(key, targetArg, argumentDefinitions, values)
     local command = "say /" .. key
     if targetArg ~= "" then command = command .. " " .. QuoteArgs(targetArg) end
-    for _, argument in ipairs(argumentDefinitions or {}) do
+    local definitions = argumentDefinitions or {}
+    for _, argument in ipairs(definitions) do
         local value = values and values[argument.name]
         if argument.type == "bool" then
             if value == true then
@@ -318,7 +319,11 @@ local function BuildAdminStickCommandString(key, targetArg, argumentDefinitions,
             end
         elseif value ~= nil then
             value = string.Trim(tostring(value))
-            if value ~= "" then command = command .. " " .. QuoteArgs(value) end
+            if value ~= "" then
+                command = command .. " " .. QuoteArgs(value)
+            elseif argument.optional and targetArg ~= "" then
+                command = command .. " " .. QuoteArgs("")
+            end
         end
     end
     return command
@@ -613,7 +618,7 @@ local function GetOrCreateSubCategoryMenu(parent, categoryKey, subcategoryKey, s
 end
 
 local function CreateOrganizedAdminStickMenu(tgt, stores, existingMenu)
-    local menu = existingMenu or lia.derma.dermaMenu()
+    local menu = existingMenu or DermaMenu()
     if not IsValid(menu) then return menu end
     local cl = LocalPlayer()
     local categories, categoryOrder = GenerateDynamicCategories()
@@ -1296,7 +1301,36 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
                 return
             end
 
-            submenu:AddOption(buttonText, function(values) RunAdminStickCommand(key, id, argumentDefinitions, values) end, {
+            submenu:AddOption(buttonText, function()
+                if #argumentDefinitions == 0 then
+                    RunAdminStickCommand(key, id, argumentDefinitions)
+                    return
+                end
+
+                local fields = {}
+                local defaults = {}
+                for _, argument in ipairs(argumentDefinitions) do
+                    local name = argument.name or "argument"
+                    fields[#fields + 1] = {name, argument.type or "string"}
+
+                    -- A targeted command with an optional numeric argument should
+                    -- retain the command's normal admin-stick default when the
+                    -- field is left untouched (for example, door clearance = 1).
+                    if argument.optional and id ~= "" and (argument.type == "number" or argument.type == "int" or argument.type == "float") then
+                        defaults[name] = 1
+                    end
+                end
+
+                lia.derma.requestArguments(buttonText, fields, function(success, values)
+                    if not success or not values then
+                        timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                        cl.AdminStickTarget = nil
+                        return
+                    end
+
+                    RunAdminStickCommand(key, id, argumentDefinitions, values)
+                end, defaults)
+            end, {
                 commandKey = key,
                 commandArguments = argumentDefinitions
             }):SetIcon(ic)
@@ -1736,7 +1770,7 @@ function ADMIN_STICK_PANEL:Init()
     self.titleBar:Dock(TOP)
     self.titleBar:SetTall(56)
     self.titleBar.Paint = function(_, w, h)
-        local accent = getAdminStickTheme()
+        local accent = lia.color.theme.accent
         surface.SetDrawColor(255, 255, 255, 12)
         surface.DrawRect(0, h - 1, w, 1)
         draw.SimpleText("ADMIN STICK", "LiliaFont.25", 20, h * 0.5, Color(242, 247, 247), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -1752,11 +1786,11 @@ function ADMIN_STICK_PANEL:Init()
     self.closeButton.DoClick = function() self:Remove() end
     self.targetHeader = self:Add("DPanel")
     self.targetHeader:Dock(TOP)
-    self.targetHeader:SetTall(158)
+    self.targetHeader:SetTall(142)
     self.targetHeader:DockMargin(12, 12, 12, 12)
     self.targetHeader:DockPadding(16, 16, 16, 16)
     self.targetHeader.Paint = function(_, w, h)
-        local accent = getAdminStickTheme()
+        local accent = lia.color.theme.accent
         drawAdminStickPanel(0, 0, w, h, 8, Color(5, 18, 23, 222), Color(accent.r, accent.g, accent.b, 80))
     end
 
@@ -1770,7 +1804,7 @@ function ADMIN_STICK_PANEL:Init()
     self.categoryPanel:DockMargin(0, 0, 12, 0)
     self.categoryPanel:DockPadding(12, 46, 12, 12)
     self.categoryPanel.Paint = function(_, w, h)
-        local accent = getAdminStickTheme()
+        local accent = lia.color.theme.accent
         drawAdminStickPanel(0, 0, w, h, 8, Color(5, 18, 23, 222), Color(accent.r, accent.g, accent.b, 80))
         draw.SimpleText("CATEGORIES", "LiliaFont.18", 16, 15, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
@@ -1784,7 +1818,7 @@ function ADMIN_STICK_PANEL:Init()
     self.actionPanel:DockMargin(0, 0, 12, 0)
     self.actionPanel:DockPadding(12, 12, 12, 12)
     self.actionPanel.Paint = function(_, w, h)
-        local accent = getAdminStickTheme()
+        local accent = lia.color.theme.accent
         drawAdminStickPanel(0, 0, w, h, 8, Color(5, 18, 23, 222), Color(accent.r, accent.g, accent.b, 80))
         draw.SimpleText("ACTIONS", "LiliaFont.18", 16, 15, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
@@ -1795,7 +1829,7 @@ function ADMIN_STICK_PANEL:Init()
     self.searchWrap:DockMargin(92, 0, 0, 10)
     self.searchWrap:DockPadding(12, 0, 12, 0)
     self.searchWrap.Paint = function(_, w, h)
-        local accent = getAdminStickTheme()
+        local accent = lia.color.theme.accent
         drawAdminStickPanel(0, 0, w, h, 6, Color(5, 18, 23, 235), Color(accent.r, accent.g, accent.b, 70))
     end
 
@@ -1803,7 +1837,7 @@ function ADMIN_STICK_PANEL:Init()
     self.searchEntry:Dock(FILL)
     self.searchEntry:SetFont("LiliaFont.17")
     self.searchEntry:SetTextColor(Color(225, 236, 236))
-    self.searchEntry:SetCursorColor(getAdminStickTheme())
+    self.searchEntry:SetCursorColor(lia.color.theme.accent)
     self.searchEntry:SetPlaceholderText("Search actions...")
     self.searchEntry:SetPaintBackground(false)
     self.searchEntry:SetPaintBackground(false)
@@ -1816,7 +1850,7 @@ function ADMIN_STICK_PANEL:Init()
     self.detailPanel:Dock(FILL)
     self.detailPanel:DockPadding(14, 46, 14, 14)
     self.detailPanel.Paint = function(_, w, h)
-        local accent = getAdminStickTheme()
+        local accent = lia.color.theme.accent
         drawAdminStickPanel(0, 0, w, h, 8, Color(5, 18, 23, 222), Color(accent.r, accent.g, accent.b, 80))
         draw.SimpleText("ACTION DETAILS", "LiliaFont.18", 16, 15, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
@@ -1829,7 +1863,7 @@ function ADMIN_STICK_PANEL:Init()
     self.accessPanel:SetVisible(false)
     self.accessPanel:DockPadding(18, 18, 18, 18)
     self.accessPanel.Paint = function(_, w, h)
-        local accent = getAdminStickTheme()
+        local accent = lia.color.theme.accent
         drawAdminStickPanel(0, 0, w, h, 8, Color(5, 18, 23, 222), Color(accent.r, accent.g, accent.b, 80))
     end
 
@@ -1923,7 +1957,7 @@ function ADMIN_STICK_PANEL:BuildPlayerWhitelistPanel()
     header:SetTall(98)
     header:DockMargin(0, 0, 0, 14)
     header.Paint = function(_, w, h)
-        local accent = getAdminStickTheme()
+        local accent = lia.color.theme.accent
         drawAdminStickPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
         draw.SimpleText("WHITELISTS", "LiliaFont.30", 16, 12, Color(242, 247, 247), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         draw.SimpleText("Toggle faction whitelist access for this player.", "LiliaFont.17", 16, 52, Color(165, 187, 188), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
@@ -1952,7 +1986,7 @@ function ADMIN_STICK_PANEL:BuildPlayerWhitelistPanel()
         factionRow:SetTall(82)
         factionRow.hoverAlpha = 0
         factionRow.Paint = function(panel, w, h)
-            local accent = getAdminStickTheme()
+            local accent = lia.color.theme.accent
             local hovered = panel:IsHovered()
             panel.hoverAlpha = math.Approach(panel.hoverAlpha, hovered and 1 or 0, FrameTime() * 5)
             drawAdminStickPanel(0, 0, w, h, 8, hovered and Color(12, 28, 34, 235) or Color(9, 24, 29, 228), Color(accent.r, accent.g, accent.b, 68 + panel.hoverAlpha * 24))
@@ -1971,7 +2005,7 @@ function ADMIN_STICK_PANEL:BuildPlayerWhitelistPanel()
         action:SetText("")
         action.Paint = function(button, w, h)
             local hovered = button:IsHovered()
-            local color = enabled and Color(210, 85, 85) or getAdminStickTheme()
+            local color = enabled and Color(210, 85, 85) or lia.color.theme.accent
             drawAdminStickPanel(0, 0, w, h, 6, hovered and Color(color.r, color.g, color.b, 35) or Color(8, 28, 33, 230), Color(color.r, color.g, color.b, hovered and 170 or 110))
             draw.SimpleText(enabled and "REMOVE" or "WHITELIST", "LiliaFont.17", w * 0.5, h * 0.5, hovered and Color(245, 249, 249) or Color(color.r, color.g, color.b), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
@@ -2060,7 +2094,7 @@ function ADMIN_STICK_PANEL:BuildPlayerFactionTransferPanel()
         action:SetEnabled(not isCurrent)
         action.Paint = function(button, w, h)
             local hovered = button:IsHovered()
-            local color = isCurrent and Color(95, 115, 120) or getAdminStickTheme()
+            local color = isCurrent and Color(95, 115, 120) or lia.color.theme.accent
             drawAdminStickPanel(0, 0, w, h, 6, hovered and Color(color.r, color.g, color.b, 35) or Color(8, 28, 33, 230), Color(color.r, color.g, color.b, hovered and 170 or 110))
             draw.SimpleText(isCurrent and "CURRENT" or "TRANSFER", "LiliaFont.17", w * 0.5, h * 0.5, hovered and Color(245, 249, 249) or Color(color.r, color.g, color.b), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
@@ -2141,7 +2175,7 @@ function ADMIN_STICK_PANEL:BuildDoorAccessPanel()
         factionAction.Paint = function(button, w, h)
             local hovered = button:IsHovered()
             local allowed = button._liaDoorAccessState == true
-            local color = allowed and Color(210, 85, 85) or getAdminStickTheme()
+            local color = allowed and Color(210, 85, 85) or lia.color.theme.accent
             drawAdminStickPanel(0, 0, w, h, 6, hovered and Color(color.r, color.g, color.b, 35) or Color(8, 28, 33, 230), Color(color.r, color.g, color.b, hovered and 170 or 110))
             draw.SimpleText(allowed and "REMOVE" or "ALLOW", "LiliaFont.17", w * 0.5, h * 0.5, hovered and Color(245, 249, 249) or Color(color.r, color.g, color.b), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
@@ -2213,7 +2247,7 @@ function ADMIN_STICK_PANEL:BuildDoorAccessPanel()
             classAction.Paint = function(button, w, h)
                 local hovered = button:IsHovered()
                 local allowed = button._liaDoorAccessState == true
-                local color = allowed and Color(210, 85, 85) or getAdminStickTheme()
+            local color = allowed and Color(210, 85, 85) or lia.color.theme.accent
                 drawAdminStickPanel(0, 0, w, h, 6, hovered and Color(color.r, color.g, color.b, 35) or Color(8, 28, 33, 230), Color(color.r, color.g, color.b, hovered and 170 or 110))
                 draw.SimpleText(allowed and "REMOVE" or "ALLOW", "LiliaFont.15", w * 0.5, h * 0.5, hovered and Color(245, 249, 249) or Color(color.r, color.g, color.b), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
@@ -2395,18 +2429,18 @@ function ADMIN_STICK_PANEL:BuildTargetHeader()
     if not IsValid(target) then return end
     local showHeader = adminStickShouldShowTargetHeader(target)
     self.targetHeader:SetVisible(showHeader)
-    self.targetHeader:SetTall(showHeader and 158 or 0)
+    self.targetHeader:SetTall(showHeader and 142 or 0)
     self.targetHeader:DockMargin(12, showHeader and 12 or 0, 12, showHeader and 12 or 0)
     if not showHeader then return end
     local accent = getAdminStickTheme()
+    local avatarSize = 84
     local avatarWrap = self.targetHeader:Add("DPanel")
-    avatarWrap:SetPos(16, 34)
-    avatarWrap:SetSize(88, 88)
+    avatarWrap:SetSize(avatarSize, avatarSize)
     avatarWrap.Paint = function(_, w, h) drawAdminStickPanel(0, 0, w, h, 8, Color(4, 16, 21, 230), Color(accent.r, accent.g, accent.b, 110)) end
     if target:IsPlayer() then
         avatarWrap.Paint = nil
         local avatar = avatarWrap:Add("CircularAvatar")
-        avatar:SetSize(88, 88)
+        avatar:SetSize(avatarSize, avatarSize)
         avatar:SetPos(0, 0)
         avatar:SetPlayer(target, 96)
     else
@@ -2415,34 +2449,68 @@ function ADMIN_STICK_PANEL:BuildTargetHeader()
 
     local name = adminStickGetTargetName(target)
     local subtitle = adminStickGetTargetSubtitle(target)
-    local textX = 116
-    self:CreateHeaderLabel(self.targetHeader, name, "LiliaFont.30", Color(242, 247, 247), textX, 36, 350, 34)
-    self:CreateHeaderLabel(self.targetHeader, subtitle, "LiliaFont.18", Color(accent.r, accent.g, accent.b, 235), textX, 72, 420, 24)
+    local textX = 16 + avatarSize + 14
+    local nameLabel = self:CreateHeaderLabel(self.targetHeader, name, "LiliaFont.30", Color(242, 247, 247), textX, 24, 300, 30)
+    local subtitleLabel = self:CreateHeaderLabel(self.targetHeader, subtitle, "LiliaFont.18", Color(accent.r, accent.g, accent.b, 235), textX, 53, 300, 22)
+    local steamLabel
+    local userGroupLabel
     if target:IsPlayer() then
         local steamName = target:IsBot() and "BOT" or target:SteamName() or ""
         local userGroup = target:GetUserGroup() or ""
-        self:CreateHeaderLabel(self.targetHeader, "Steam Name: " .. steamName, "LiliaFont.17", Color(190, 210, 210), textX, 102, 280, 22)
-        self:CreateHeaderLabel(self.targetHeader, "Usergroup: " .. userGroup, "LiliaFont.17", Color(190, 210, 210), textX, 126, 280, 22)
+        steamLabel = self:CreateHeaderLabel(self.targetHeader, "Steam Name: " .. steamName, "LiliaFont.17", Color(190, 210, 210), textX, 82, 300, 20)
+        userGroupLabel = self:CreateHeaderLabel(self.targetHeader, "Usergroup: " .. userGroup, "LiliaFont.17", Color(190, 210, 210), textX, 104, 300, 20)
     end
 
     local chipArea = self.targetHeader:Add("DPanel")
-    chipArea:SetPos(520, 16)
-    chipArea:SetSize(math.max(self.targetHeader:GetWide() - 540, 1), 126)
     chipArea.Paint = function() end
-    chipArea.PerformLayout = function(panel, w)
-        local chipW = math.floor((w - 12) / 2)
-        local chipH = 36
-        for index, chip in ipairs(panel:GetChildren()) do
+    chipArea.PerformLayout = function(panel, w, h)
+        local children = panel:GetChildren()
+        local columns = 2
+        local gapX = 12
+        local gapY = 7
+        local chipH = 32
+        local chipW = math.floor((w - gapX) / columns)
+        local rows = math.ceil(#children / columns)
+        local contentH = rows > 0 and rows * chipH + (rows - 1) * gapY or 0
+        local startY = math.max(math.floor((h - contentH) * 0.5), 0)
+        for index, chip in ipairs(children) do
             local i = index - 1
-            chip:SetPos((i % 2) * (chipW + 12), math.floor(i / 2) * (chipH + 7))
+            local column = i % columns
+            local row = math.floor(i / columns)
+            chip:SetPos(column * (chipW + gapX), startY + row * (chipH + gapY))
             chip:SetSize(chipW, chipH)
         end
     end
 
-    self.targetHeader.PerformLayout = function(_, w) chipArea:SetSize(math.max(w - 540, 1), 126) end
+    self.targetHeader.PerformLayout = function(_, w, h)
+        local avatarY = math.floor((h - avatarSize) * 0.5)
+        local chipX = math.floor(w * 0.46)
+        local chipWidth = math.max(w - chipX - 16, 1)
+        local infoWidth = math.max(chipX - textX - 24, 120)
+        avatarWrap:SetPos(16, avatarY)
+        nameLabel:SetPos(textX, 24)
+        nameLabel:SetSize(infoWidth, 30)
+        subtitleLabel:SetPos(textX, 53)
+        subtitleLabel:SetSize(infoWidth, 22)
+        if IsValid(steamLabel) then
+            steamLabel:SetPos(textX, 82)
+            steamLabel:SetSize(infoWidth, 20)
+        end
+
+        if IsValid(userGroupLabel) then
+            userGroupLabel:SetPos(textX, 104)
+            userGroupLabel:SetSize(infoWidth, 20)
+        end
+
+        chipArea:SetPos(chipX, 16)
+        chipArea:SetSize(chipWidth, math.max(h - 32, 1))
+    end
+
     for _, data in ipairs(self.quickActions or {}) do
         self:CreateChip(chipArea, data.label, data.icon, data.callback)
     end
+
+    self.targetHeader:InvalidateLayout(true)
 end
 
 function ADMIN_STICK_PANEL:BuildCategories()
@@ -2667,9 +2735,12 @@ function ADMIN_STICK_PANEL:BuildActionArgumentFields(parent, action)
         entry:SetText(state[argument.name] or "")
         entry:SetUpdateOnType(true)
         entry:SetPlaceholderText(string.format("%s (%s)", tostring(argument.name or "argument"), tostring(argument.type or "string")))
-        entry:SetCursorColor(getAdminStickTheme())
+        entry:SetCursorColor(lia.color.theme.accent)
         if argument.type == "number" or argument.type == "int" or argument.type == "float" then entry:SetNumeric(true) end
         entry.OnValueChange = function(_, value) state[argument.name] = value end
+        entry.OnTextChanged = function(field)
+            state[argument.name] = field:GetValue()
+        end
         row.PerformLayout = function(panel, w)
             local availableWidth = math.max(w, 1)
             local wrappedLines = lia.util.wrapText(titleText, availableWidth, "LiliaFont.16")
@@ -2899,6 +2970,59 @@ function MODULE:OpenAdminStickUI(tgt)
     AdminStickMenu = panel
     local actions = BuildAdminStickActions(tgt, commands)
     panel:SetTargetAndActions(tgt, actions)
+end
+
+function MODULE:OpenAdminStickQuickMenu(tgt)
+    local cl = LocalPlayer()
+    if not IsValid(tgt) or not (tgt:IsPlayer() or tgt.isDoor and tgt:isDoor()) then return end
+    if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then return end
+
+    RegisterDefaultAdminStickListHooks()
+    MODULE.adminStickCategories = {}
+    MODULE.adminStickCategoryOrder = {}
+    local menu = DermaMenu()
+    if not IsValid(menu) then return end
+
+    local stores = {}
+    CreateOrganizedAdminStickMenu(tgt, stores, menu)
+    if tgt:IsPlayer() then
+        IncludeAdminMenu(tgt, menu, stores)
+        IncludeCharacterManagement(tgt, menu, stores)
+        IncludeFlagManagement(tgt, menu, stores)
+        IncludeTeleportation(tgt, menu, stores)
+    end
+
+    for key, data in pairs(lia.command.list) do
+        if data.AdminStick and istable(data.AdminStick) and not data.realCommand then
+            local targetClass = data.AdminStick.TargetClass
+            if (targetClass == "door" and tgt.isDoor and tgt:isDoor()) or targetClass == tgt:GetClass() or (not targetClass and tgt:IsPlayer()) then
+                AddCommandToMenu(menu, data, key, tgt, data.AdminStick.Name or key, stores)
+            end
+        end
+    end
+
+    hook.Run("PopulateAdminStick", menu, tgt, stores)
+    if menu.UpdateSize then menu:UpdateSize() end
+    local mouseX, mouseY = gui.MousePos()
+    if mouseX <= 0 and mouseY <= 0 then
+        mouseX = (ScrW() - menu:GetWide()) * 0.5
+        mouseY = (ScrH() - menu:GetTall()) * 0.5
+    end
+
+    menu:Open(mouseX, mouseY)
+    AdminStickIsOpen = true
+    AdminStickMenu = menu
+    local oldOnRemove = menu.OnRemove
+    menu.OnRemove = function(self)
+        if oldOnRemove then oldOnRemove(self) end
+        if AdminStickMenu == menu then
+            AdminStickMenu = nil
+            AdminStickIsOpen = false
+            local client = LocalPlayer()
+            if IsValid(client) and client.AdminStickTarget == tgt then client.AdminStickTarget = nil end
+            hook.Run("OnAdminStickMenuClosed")
+        end
+    end
 end
 
 function MODULE:AddToAdminStickHUD(client, target, information)

@@ -120,7 +120,7 @@ setups.liaCheckbox = function(panel)
     panel:SetChecked(true)
 end
 
-setups.liaLockCircle = function(panel)
+setups.liaActionCircle = function(panel)
     panel:Start("Testing", 8, {
         holdTime = 1
     })
@@ -133,6 +133,52 @@ setups.liaComboBox = function(panel)
     panel:AddSpacer("Section")
     panel:AddChoice("Third option", 3, "Third tooltip")
     panel:ChooseOptionID(1)
+end
+
+setups.liaFrameNew = function(panel)
+    panel:SetDisplayTitle("Species Creator Frame")
+    panel:SetDisplaySubtitle("Standalone themed frame preview")
+    panel:SetAccentTop(true)
+    panel:SetAccentBottom(false)
+    panel:SetSurfaceVisible(true)
+    local content = panel:Add("DPanel")
+    content:Dock(FILL)
+    content:DockMargin(18, 78, 18, 18)
+    content.Paint = nil
+    local title = content:Add("liaSpeciesText")
+    title:Dock(TOP)
+    title:SetTall(30)
+    title:SetFont("LiliaFont.20")
+    title:SetText("Reusable species creator content")
+    local muted = content:Add("liaSpeciesText")
+    muted:Dock(TOP)
+    muted:DockMargin(0, 8, 0, 0)
+    muted:SetTall(24)
+    muted:SetText("Frame, dropdown, theme button, and text can be instantiated independently.")
+    muted:SetThemeTone("muted")
+end
+
+setups.liaSpeciesDropdown = function(panel)
+    panel:SetLabelText("Species Dropdown")
+    panel:AddChoice("Human", "human")
+    panel:AddChoice("Vortigaunt", "vortigaunt")
+    panel:AddChoice("Transhuman", "transhuman")
+    panel:SetValue("Human")
+    panel:ChooseOptionID(1)
+end
+
+setups.liaSpeciesThemeButton = function(panel)
+    panel:SetThemeID("teal")
+    panel:SetCompact(false)
+    panel:SetThemeSelected(true)
+end
+
+setups.liaSpeciesText = function(panel)
+    panel:SetFont("LiliaFont.24")
+    panel:SetText("Standalone themed species text")
+    panel:SetThemeTone("accent")
+    panel:SetContentAlignment(5)
+    panel:SetWrap(true)
 end
 
 setups.liaDermaMenu = function(panel)
@@ -242,8 +288,18 @@ setups.liaRadialPanel = function(panel)
     panel:SetCenterText("Panel Tester", "Choose an option")
     panel:AddOption("Accept", function() end, "icon16/accept.png", "Accept the sample action")
     panel:AddOption("Information", function() end, "icon16/information.png", "Show information")
+    panel:AddOption("Inventory", function() end, "icon16/box.png", "Open inventory")
+    panel:AddOption("Trade", function() end, "icon16/money.png", "Open trade options")
     panel:AddOption("Settings", function() end, "icon16/cog.png", "Open settings")
-    panel:AddOption("Close", function() end, "icon16/cancel.png", "Close the radial menu")
+    panel:AddOption("Radio", function() end, "icon16/sound.png", "Open radio options")
+    panel:AddOption("Help", function() end, "icon16/help.png", "Show help")
+
+    local moreOptions = panel:CreateSubMenu("More Options", "Choose an additional sample action")
+    moreOptions:AddOption("Map", function() end, "icon16/map.png", "Open the map")
+    moreOptions:AddOption("Friends", function() end, "icon16/group.png", "Open the friends list")
+    moreOptions:AddOption("Messages", function() end, "icon16/email.png", "Open messages")
+    moreOptions:AddOption("Achievements", function() end, "icon16/medal_gold_1.png", "View achievements")
+    panel:AddSubMenuOption("More Options", moreOptions, "icon16/application_view_tile.png", "Open more sample options")
 end
 
 setups.liaScrollPanel = function(panel)
@@ -763,8 +819,12 @@ registerEntry("BodygrouperMenu", "bodygrouper.lua", "Menus", "window", "Live bod
 registerEntry("liaButton", "buttons.lua", "Controls", "embedded", "Primary themed Lilia button.", 280, 48)
 registerEntry("liaChatBox", "chatbox.lua", "Menus", "window", "Live custom chatbox preview with sample messages.", 760, 520, "Opening this temporarily replaces lia.gui.chat.")
 registerEntry("liaCheckbox", "checkbox.lua", "Controls", "embedded", "Themed toggle switch.", 180, 42)
-registerEntry("liaLockCircle", "circle.lua", "Overlays", "overlay", "Timed circular action indicator.", 0, 0)
+registerEntry("liaActionCircle", "circle.lua", "Overlays", "overlay", "Timed circular action indicator.", 0, 0)
 registerEntry("liaComboBox", "combobox.lua", "Controls", "embedded", "Custom combobox with choices, tooltips, and separators.", 360, 42)
+registerEntry("liaSpeciesDropdown", "species_dropdown.lua", "Species Creator", "embedded", "Standalone themed species creator dropdown with a custom scrollable option popup.", 420, 86)
+registerEntry("liaSpeciesThemeButton", "species_theme_button.lua", "Species Creator", "embedded", "Standalone species creator theme selection button.", 360, 58)
+registerEntry("liaSpeciesText", "species_text.lua", "Species Creator", "embedded", "Standalone themed species creator text label with configurable color tones.", 520, 90)
+registerEntry("liaFrameNew", "frame_new.lua", "Species Creator", "window", "Standalone themed species creator frame with title, subtitle, surface, outline, and accent controls.", 760, 500)
 registerEntry("liaDermaMenu", "derma_menu.lua", "Menus", "overlay", "Custom context menu with a submenu.", 0, 0)
 registerEntry("liaDialogMenu", "dialog.lua", "Menus", "window", "Local NPC-style dialog preview with conversation history.", 720, 540, "Opening this temporarily replaces lia.dialog.vgui.")
 registerEntry("liaDListView", "dlistview.lua", "Menus", "window", "Searchable and sortable list window.", 960, 720)
@@ -1030,12 +1090,7 @@ local function rebuildList()
 end
 
 local function buildTester()
-    if IsValid(testerFrame) then
-        testerFrame:MakePopup()
-        testerFrame:MoveToFront()
-        return
-    end
-
+    if IsValid(testerFrame) then testerFrame:Remove() end
     testerFrame = vgui.Create("DFrame")
     testerFrame:SetSize(math.min(1400, ScrW() - 60), math.min(900, ScrH() - 60))
     testerFrame:Center()

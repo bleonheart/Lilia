@@ -1587,6 +1587,7 @@ LANGUAGE = {
     searchKeybinds = "Tastenbelegungen suchen...",
     openInventory = "Inventar öffnen",
     openInventoryDesc = "Opens dein Inventar Menü",
+    openMenuTabDesc = "Öffnet den Tab %s",
     convertEntity = "Entität konvertieren",
     convertEntityDesc = "Converts ein world entity in ein Gegenstand",
     adminModeDesc = "Toggles Admin Modus zu switch between Team und regular Charakter",

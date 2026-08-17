@@ -93,7 +93,7 @@ const LIA_COMPONENT_CATEGORIES: Partial<Record<ComponentType, ComponentCategory>
   [ComponentType.liaNotice]: 'Overlays',
   [ComponentType.liaNoticePanel]: 'Controls',
   [ComponentType.liaVoicePanel]: 'Overlays',
-  [ComponentType.liaLockCircle]: 'Overlays',
+  [ComponentType.liaActionCircle]: 'Overlays',
   [ComponentType.liaDermaMenu]: 'Menus',
 };
 

@@ -39,13 +39,8 @@ local rosterCopyIcon = Material("icon16/page_copy.png", "smooth")
 local rosterProfileIcon = Material("icon16/world.png", "smooth")
 local rosterNoteIcon = Material("icon16/note_edit.png", "smooth")
 local rosterKickIcon = Material("icon16/user_delete.png", "smooth")
-local function getRosterThemeColors()
-    local theme = lia.color.theme or {}
-    local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
-    local text = theme.text or Color(225, 238, 238)
-    return accent, text
-end
 
+-- roster colors are read directly from lia.color.theme
 local function drawRosterPanel(x, y, w, h, radius, color, outline)
     if lia.derma and lia.derma.rect then
         lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -302,7 +297,7 @@ local function addRosterDetailSection(parent, title, rows)
     section:DockMargin(0, 0, 0, 12)
     section:DockPadding(14, 42, 14, 8)
     section.Paint = function(_, panelW, panelH)
-        local accent = getRosterThemeColors()
+        local accent = lia.color.theme.accent
         drawRosterPanel(0, 0, panelW, panelH, 6, Color(3, 16, 21, 185), Color(accent.r, accent.g, accent.b, 68))
         draw.SimpleText(title, "LiliaFont.17", 14, 12, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 35)
@@ -449,7 +444,7 @@ local function UpdateFactionRosterUI(panel, data)
     header:Dock(TOP)
     header:SetTall(isManagement and 56 or 76)
     header.Paint = function(_, panelW)
-        local accent, textColor = getRosterThemeColors()
+        local accent, textColor = lia.color.theme.accent, lia.color.theme.text
         if not isManagement then
             draw.SimpleText("Faction Roster", "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             draw.SimpleText("Browse and inspect faction members.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
@@ -475,7 +470,7 @@ local function UpdateFactionRosterUI(panel, data)
     browser:DockMargin(0, 0, 14, 0)
     browser:DockPadding(12, 12, 12, 12)
     browser.Paint = function(_, panelW, panelH)
-        local accent = getRosterThemeColors()
+        local accent = lia.color.theme.accent
         drawRosterPanel(0, 0, panelW, panelH, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
     end
 
@@ -503,7 +498,7 @@ local function UpdateFactionRosterUI(panel, data)
     end
 
     filterCombo.Paint = function(_, panelW, panelH)
-        local accent = getRosterThemeColors()
+        local accent = lia.color.theme.accent
         drawRosterPanel(0, 0, panelW, panelH, 5, Color(5, 18, 23, 235), Color(accent.r, accent.g, accent.b, 92))
     end
 
@@ -516,7 +511,7 @@ local function UpdateFactionRosterUI(panel, data)
     searchWrap:Dock(FILL)
     searchWrap:DockPadding(40, 0, 8, 0)
     searchWrap.Paint = function(_, panelW, panelH)
-        local accent = getRosterThemeColors()
+        local accent = lia.color.theme.accent
         drawRosterPanel(0, 0, panelW, panelH, 5, Color(5, 18, 23, 235), Color(accent.r, accent.g, accent.b, 92))
         drawRosterIcon(rosterSearchIcon, 14, math.floor(panelH * 0.5) - 8, 16, Color(155, 181, 182))
     end
@@ -525,7 +520,7 @@ local function UpdateFactionRosterUI(panel, data)
     searchEntry:Dock(FILL)
     searchEntry:SetFont("LiliaFont.17")
     searchEntry:SetTextColor(Color(225, 236, 236))
-    searchEntry:SetCursorColor(getRosterThemeColors())
+    searchEntry:SetCursorColor(lia.color.theme.accent)
     searchEntry:SetPlaceholderText("Search members...")
     searchEntry:SetPaintBackground(false)
     searchEntry:SetPaintBackground(false)
@@ -543,7 +538,7 @@ local function UpdateFactionRosterUI(panel, data)
     details:Dock(FILL)
     details:DockPadding(14, 14, 14, 14)
     details.Paint = function(_, panelW, panelH)
-        local accent = getRosterThemeColors()
+        local accent = lia.color.theme.accent
         drawRosterPanel(0, 0, panelW, panelH, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
     end
 
@@ -564,7 +559,7 @@ local function UpdateFactionRosterUI(panel, data)
         panel.selectedRosterCharID = member.charID
         local isOnline, lastOnlineText = getRosterMemberPresence(member)
         local statusText = isOnline and "ONLINE" or "OFFLINE"
-        local accent, textColor = getRosterThemeColors()
+        local accent, textColor = lia.color.theme.accent, lia.color.theme.text
         local className = getRosterMemberClassName(member)
         local memberHeader = details:Add("DPanel")
         memberHeader:Dock(TOP)
@@ -661,7 +656,7 @@ local function UpdateFactionRosterUI(panel, data)
         actions:SetTall(116)
         actions:DockMargin(0, 0, 0, 12)
         actions.Paint = function(_, panelW, panelH)
-            local currentAccent = getRosterThemeColors()
+            local currentAccent = lia.color.theme.accent
             drawRosterPanel(0, 0, panelW, panelH, 6, Color(3, 16, 21, 185), Color(currentAccent.r, currentAccent.g, currentAccent.b, 68))
             draw.SimpleText("MEMBER ACTIONS", "LiliaFont.17", 14, 12, currentAccent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             surface.SetDrawColor(currentAccent.r, currentAccent.g, currentAccent.b, 35)
@@ -682,7 +677,7 @@ local function UpdateFactionRosterUI(panel, data)
             button:SetEnabled(isEnabled)
             actionButtonCount = actionButtonCount + 1
             button.Paint = function(s, panelW, panelH)
-                local currentAccent = getRosterThemeColors()
+                local currentAccent = lia.color.theme.accent
                 local hovered = s:IsHovered() and s:IsEnabled()
                 drawRosterPanel(0, 0, panelW, panelH, 5, hovered and Color(currentAccent.r, currentAccent.g, currentAccent.b, 28) or Color(5, 18, 23, 235), Color(currentAccent.r, currentAccent.g, currentAccent.b, hovered and 120 or 72))
                 drawRosterIcon(icon, 14, math.floor(panelH * 0.5) - 8, 16, s:IsEnabled() and Color(185, 205, 205) or Color(100, 115, 115))
@@ -756,7 +751,7 @@ local function UpdateFactionRosterUI(panel, data)
             button:DockMargin(0, 0, 0, 8)
             button:SetText("")
             button.Paint = function(s, panelW, panelH)
-                local currentAccent = getRosterThemeColors()
+                local currentAccent = lia.color.theme.accent
                 local active = panel.selectedRosterCharID == currentMember.charID
                 local hovered = s:IsHovered()
                 local online = getRosterMemberPresence(currentMember)

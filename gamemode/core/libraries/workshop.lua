@@ -409,16 +409,6 @@ else
     local workshopFallbackIcon = Material("icon16/package.png", "smooth")
     local workshopPreviewCache = {}
     local workshopPreviewCallbacks = {}
-    local function getWorkshopThemeColors()
-        local theme = lia.color and lia.color.theme or {}
-        local accent = theme.accent or theme.theme
-        if not IsColor(accent) and lia.config and lia.config.get then accent = lia.config.get("Color") end
-        if not IsColor(accent) then accent = Color(45, 190, 170) end
-        local text = theme.text
-        if not IsColor(text) then text = Color(225, 238, 238) end
-        return accent, text
-    end
-
     local function drawWorkshopPanel(x, y, w, h, radius, color, outline)
         draw.RoundedBox(radius, x, y, w, h, color)
         if not outline then return end
@@ -494,7 +484,7 @@ else
         button:SetText("")
         button.workshopLabel = label
         button.Paint = function(self, w, h)
-            local accent, textColor = getWorkshopThemeColors()
+            local accent, textColor = lia.color.theme.accent, lia.color.theme.text
             local hovered = self:IsHovered() and self:IsEnabled()
             local background
             local outline
@@ -535,7 +525,7 @@ else
         section:Dock(TOP)
         section:DockMargin(0, 0, 0, 12)
         section.Paint = function(_, w, h)
-            local accent = getWorkshopThemeColors()
+            local accent = lia.color.theme.accent
             drawWorkshopPanel(0, 0, w, h, 6, Color(5, 18, 23, 218), Color(accent.r, accent.g, accent.b, 58))
             draw.SimpleText(string.upper(title), "LiliaFont.17", 16, 15, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             surface.SetDrawColor(accent.r, accent.g, accent.b, 54)
@@ -548,7 +538,7 @@ else
         local rowHeight = 46
         section:SetTall(58 + #rows * rowHeight)
         section.Paint = function(_, w, h)
-            local accent = getWorkshopThemeColors()
+            local accent = lia.color.theme.accent
             drawWorkshopPanel(0, 0, w, h, 6, Color(5, 18, 23, 218), Color(accent.r, accent.g, accent.b, 58))
             draw.SimpleText(string.upper(section.sectionTitle or ""), "LiliaFont.17", 16, 15, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             surface.SetDrawColor(accent.r, accent.g, accent.b, 54)
@@ -583,7 +573,7 @@ else
                 listPanel:DockMargin(0, 0, 12, 0)
                 listPanel:DockPadding(12, 12, 12, 12)
                 listPanel.Paint = function(_, w, h)
-                    local accent = getWorkshopThemeColors()
+                    local accent = lia.color.theme.accent
                     drawWorkshopPanel(0, 0, w, h, 7, Color(5, 18, 23, 215), Color(accent.r, accent.g, accent.b, 58))
                 end
 
@@ -606,7 +596,7 @@ else
                 filter:SetFont("LiliaFont.16")
                 filter:SetTextColor(Color(215, 229, 229))
                 filter.btn.Paint = function(_, w, h)
-                    local accent = getWorkshopThemeColors()
+                    local accent = lia.color.theme.accent
                     drawWorkshopPanel(0, 0, w, h, 5, Color(6, 20, 26, 225), Color(accent.r, accent.g, accent.b, 60))
                     draw.SimpleText(filter:GetValue(), "LiliaFont.16", 12, h * 0.5, Color(215, 229, 229), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                     draw.SimpleText("▼", "LiliaFont.15", w - 14, h * 0.5, Color(175, 197, 198), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -616,7 +606,7 @@ else
                 searchPanel:Dock(FILL)
                 searchPanel:DockPadding(42, 0, 8, 0)
                 searchPanel.Paint = function(_, w, h)
-                    local accent = getWorkshopThemeColors()
+                    local accent = lia.color.theme.accent
                     drawWorkshopPanel(0, 0, w, h, 5, Color(6, 20, 26, 225), Color(accent.r, accent.g, accent.b, 60))
                     drawWorkshopIcon(workshopSearchIcon, 14, math.floor((h - 16) * 0.5), 16, Color(165, 190, 192))
                 end
@@ -625,7 +615,7 @@ else
                 searchEntry:Dock(FILL)
                 searchEntry:SetFont("LiliaFont.16")
                 searchEntry:SetTextColor(Color(225, 236, 236))
-                searchEntry:SetCursorColor(getWorkshopThemeColors())
+                searchEntry:SetCursorColor(lia.color.theme.accent)
                 searchEntry:SetPlaceholderText(L("searchAddons"))
                 searchEntry:SetPaintBackground(false)
                 searchEntry:SetPaintBorderEnabled(false)
@@ -652,7 +642,7 @@ else
                 statsPanel:SetTall(228)
                 statsPanel:DockMargin(0, 0, 0, 12)
                 statsPanel.Paint = function(_, w, h)
-                    local accent, textColor = getWorkshopThemeColors()
+                    local accent, textColor = lia.color.theme.accent, lia.color.theme.text
                     drawWorkshopPanel(0, 0, w, h, 6, Color(5, 18, 23, 218), Color(accent.r, accent.g, accent.b, 58))
                     draw.SimpleText("CONTENT STATS", "LiliaFont.17", 14, 13, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                     surface.SetDrawColor(accent.r, accent.g, accent.b, 54)
@@ -690,7 +680,7 @@ else
                 sectionLabel:SetTall(34)
                 sectionLabel:SetText("INSTALLED ADDONS")
                 sectionLabel:SetFont("LiliaFont.17")
-                sectionLabel:SetTextColor(getWorkshopThemeColors())
+                sectionLabel:SetTextColor(lia.color.theme.text)
                 sectionLabel:SetContentAlignment(4)
                 local countLabel = listPanel:Add("DLabel")
                 countLabel:Dock(BOTTOM)
@@ -719,7 +709,7 @@ else
                     empty:SetTextColor(Color(150, 170, 170))
                     empty:SetFont("LiliaFont.18")
                     detailPanel.Paint = function(_, w, h)
-                        local accent = getWorkshopThemeColors()
+                        local accent = lia.color.theme.accent
                         drawWorkshopPanel(0, 0, w, h, 7, Color(5, 18, 23, 190), Color(accent.r, accent.g, accent.b, 45))
                         draw.SimpleText(L("noWorkshopAddonsFound"), "LiliaFont.20", w * 0.5, h * 0.5, Color(150, 170, 170), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                     end
@@ -943,7 +933,7 @@ else
 
                 rebuildDetail = function(record)
                     detailPanel:Clear()
-                    local accent, textColor = getWorkshopThemeColors()
+                    local accent, textColor = lia.color.theme.accent, lia.color.theme.text
                     local header = detailPanel:Add("DPanel")
                     header:Dock(TOP)
                     header:SetTall(140)
@@ -1041,7 +1031,7 @@ else
                     record.card:SetText("")
                     record.card.selected = false
                     record.card.Paint = function(s, w, h)
-                        local cardAccent, cardText = getWorkshopThemeColors()
+                        local cardAccent, cardText = lia.color.theme.accent, lia.color.theme.text
                         local active = s.selected
                         local hovered = s:IsHovered()
                         local background = active and Color(cardAccent.r, cardAccent.g, cardAccent.b, 20) or hovered and Color(255, 255, 255, 6) or Color(5, 19, 24, 215)

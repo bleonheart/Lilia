@@ -1321,7 +1321,8 @@ function PANEL:createStartButton()
     self.buttons = {}
     for i, data in ipairs(buttonsData) do
         local x, y = ScrW() / 2 - w / 2, ScrH() * 0.3 + (i - 1) * (h + s)
-        local btn = self:Add("liaMediumButton")
+        local btn = self:Add("liaButton")
+        btn:SetFont("LiliaFont.25")
         btn:SetSize(w, h)
         btn:SetPos(x, y)
         btn:SetText(string.upper(data.text))
@@ -1356,7 +1357,8 @@ function PANEL:createStartButton()
 end
 
 function PANEL:addTab(name, callback, justClick, height)
-    local btn = self.tabs:Add("liaMediumButton")
+    local btn = self.tabs:Add("liaButton")
+    btn:SetFont("LiliaFont.25")
     surface.SetFont(btn:GetFont())
     local textW, textH = surface.GetTextSize(L(name):upper())
     btn:SetWide(textW + 40)
@@ -1717,7 +1719,8 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local cx = fx + (fw - bw) * 0.5
     local selectText = L("select") .. " " .. L("character")
     if character:isBanned() then selectText = L("permaKilledCharacter") end
-    self.selectBtn = self:Add("liaSmallButton")
+    self.selectBtn = self:Add("liaButton")
+    self.selectBtn:SetFont("LiliaFont.17")
     self.selectBtn:SetSize(bw, bh)
     self.selectBtn:SetPos(cx, fy + fh + pad)
     self.selectBtn:SetShowLine(true)
@@ -1740,7 +1743,8 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         lia.module.get("mainmenu"):ChooseCharacter(character:getID()):next(function() if IsValid(self) then self:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
     end
 
-    self.deleteBtn = self:Add("liaSmallButton")
+    self.deleteBtn = self:Add("liaButton")
+    self.deleteBtn:SetFont("LiliaFont.17")
     self.deleteBtn:SetSize(bw, bh)
     self.deleteBtn:SetPos(cx, fy + fh + pad + bh + pad)
     self.deleteBtn:SetShowLine(true)
@@ -1766,7 +1770,8 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local localClient = LocalPlayer()
     local mainCharID = IsValid(localClient) and localClient:getMainCharacter() or nil
     if character:getID() ~= mainCharID then
-        self.setMainBtn = self:Add("liaSmallButton")
+        self.setMainBtn = self:Add("liaButton")
+        self.setMainBtn:SetFont("LiliaFont.17")
         self.setMainBtn:SetSize(bw, bh)
         self.setMainBtn:SetPos(cx, fy + fh + pad + bh + pad + bh + pad)
         self.setMainBtn:SetShowLine(true)
@@ -1858,7 +1863,7 @@ end
 function PANEL:createArrows()
     local size, space = 100, 240
     local function newArrow(sign, xOffset)
-        local btn = self:Add("liaBigButton")
+        local btn = self:Add("liaButton")
         btn:SetSize(size, size)
         btn:SetPos(ScrW() * 0.5 + xOffset, ScrH() * 0.5 - size * 0.5)
         btn:SetFont("LiliaFont.72")

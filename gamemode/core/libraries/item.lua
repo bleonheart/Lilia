@@ -1965,11 +1965,26 @@ else
                 end
 
                 local function MarkItemDirty(key)
-                    state.dirtyItem[key] = true
+                    if not state.selectedClass then return end
+                    local field = state.itemFields[key]
+                    if not field or not isfunction(field.getValue) then return end
+                    local value = field.getValue()
+                    if field.numeric then value = tonumber(value) end
+                    CommitWeaponOverride(state.selectedClass, key, value)
+                    state.dirtyItem[key] = nil
+                    if key == "name" or key == "category" then
+                        BuildWeaponCache()
+                        RebuildCategoryFilter()
+                        PopulateWeaponList()
+                    end
                 end
 
                 local function MarkRuntimeDirty(key)
-                    state.dirtyRuntime[key] = true
+                    if not state.selectedClass then return end
+                    local field = state.runtimeFields[key]
+                    if not field or not isfunction(field.getValue) then return end
+                    CommitRuntimeOverride(state.selectedClass, key, tostring(field.getValue() or ""))
+                    state.dirtyRuntime[key] = nil
                 end
 
                 local function RegisterItemField(key, getter, numeric)
@@ -2010,24 +2025,23 @@ else
                 dirtyBadge:SetWide(150)
                 dirtyBadge.Paint = function(_, w, h)
                     local accent, textColor = GetWeaponConfigTheme()
-                    local dirtyCount = GetDirtyCount()
-                    DrawWeaponConfigPanel(0, 0, w, h, 5, Color(9, 24, 29, 235), Color(accent.r, accent.g, accent.b, dirtyCount > 0 and 95 or 55))
-                    local dotColor = dirtyCount > 0 and accent or Color(120, 136, 140)
-                    draw.RoundedBox(4, 12, math.floor(h * 0.5) - 4, 8, 8, Color(dotColor.r, dotColor.g, dotColor.b, 255))
-                    draw.SimpleText(dirtyCount > 0 and dirtyCount .. " Modified" or "No Changes", "LiliaFont.18", w * 0.5 + 8, h * 0.5, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    DrawWeaponConfigPanel(0, 0, w, h, 5, Color(9, 24, 29, 235), Color(accent.r, accent.g, accent.b, 95))
+                    draw.RoundedBox(4, 12, math.floor(h * 0.5) - 4, 8, 8, Color(accent.r, accent.g, accent.b, 255))
+                    draw.SimpleText("Instant Save", "LiliaFont.18", w * 0.5 + 8, h * 0.5, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 end
 
                 local categoryFilter = toolbar:Add("DComboBox")
                 categoryFilter:Dock(RIGHT)
                 categoryFilter:SetWide(164)
                 categoryFilter:DockMargin(10, 0, 10, 0)
-                categoryFilter:SetValue("All Categories")
+                categoryFilter._displayText = "All Categories"
+                categoryFilter:SetText("")
                 categoryFilter:SetFont("LiliaFont.18")
                 categoryFilter:SetTextColor(Color(230, 239, 239))
                 categoryFilter.Paint = function(s, w, h)
                     local accent = GetWeaponConfigTheme()
                     DrawWeaponConfigPanel(0, 0, w, h, 5, Color(9, 24, 29, 235), Color(accent.r, accent.g, accent.b, s:IsHovered() and 86 or 50))
-                    draw.SimpleText(s:GetValue(), "LiliaFont.18", 14, h * 0.5, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(s._displayText or "All Categories", "LiliaFont.18", 14, h * 0.5, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                     draw.SimpleText("▾", "LiliaFont.18", w - 18, h * 0.5, accent, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 end
 
@@ -2092,17 +2106,9 @@ else
                     local accent = GetWeaponConfigTheme()
                     surface.SetDrawColor(accent.r, accent.g, accent.b, 40)
                     surface.DrawRect(0, 0, w, 1)
-                    local dirtyCount = GetDirtyCount()
-                    local statusText = dirtyCount > 0 and dirtyCount .. " modified" or "No changes"
-                    draw.SimpleText(statusText .. "  |  Changes save when you press Save Changes.", "LiliaFont.17", 0, h * 0.5, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText("Changes save automatically as you edit.", "LiliaFont.17", 0, h * 0.5, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 end
 
-                local saveButton = footer:Add("DButton")
-                saveButton:Dock(RIGHT)
-                saveButton:SetWide(170)
-                saveButton:DockMargin(10, 10, 0, 10)
-                saveButton._label = "Save Changes"
-                ApplyButtonStyle(saveButton, false, true)
                 local cancelButton = footer:Add("DButton")
                 cancelButton:Dock(RIGHT)
                 cancelButton:SetWide(118)
@@ -2186,10 +2192,14 @@ else
                     local entry = parentPanel:Add("DTextEntry")
                     entry:SetWide(width or 280)
                     entry:SetTall(30)
-                    entry:SetUpdateOnType(true)
                     ApplyTextEntryStyle(entry, numeric)
                     if value ~= nil then entry:SetValue(tostring(value)) end
-                    entry.OnValueChange = function(s, val) onChanged(val, s) end
+                    local function submit()
+                        if not IsValid(entry) then return end
+                        onChanged(entry:GetValue(), entry)
+                    end
+                    entry.OnEnter = submit
+                    entry.OnLoseFocus = submit
                     return entry
                 end
 
@@ -2199,11 +2209,12 @@ else
                     combo:SetTall(30)
                     combo:SetFont("LiliaFont.18")
                     combo:SetTextColor(Color(230, 239, 239))
-                    combo:SetValue(tostring(value or ""))
+                    combo._displayText = tostring(value or "")
+                    combo:SetText("")
                     combo.Paint = function(s, w, h)
                         local accent = GetWeaponConfigTheme()
                         DrawWeaponConfigPanel(0, 0, w, h, 5, Color(9, 24, 29, 235), Color(accent.r, accent.g, accent.b, s:IsHovered() and 86 or 50))
-                        draw.SimpleText(s:GetValue(), "LiliaFont.18", 12, h * 0.5, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(s._displayText or "", "LiliaFont.18", 12, h * 0.5, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                         draw.SimpleText("▾", "LiliaFont.18", w - 16, h * 0.5, accent, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                     end
 
@@ -2217,7 +2228,7 @@ else
 
                     if isstring(value) and value ~= "" and not seen[value] then combo:AddChoice(value, value, true) end
                     combo.OnSelect = function(_, _, selected, data)
-                        combo:SetValue(selected)
+                        combo._displayText = tostring(selected or data or "")
                         onChanged(data or selected)
                     end
                     return combo
@@ -2285,29 +2296,8 @@ else
                         categoryFilter:AddChoice(category, category, selectedValue == category)
                     end
 
-                    categoryFilter:SetValue(selectedValue == "__all" and "All Categories" or selectedValue)
-                end
-
-                local function SaveCurrent()
-                    if not state.selectedClass then return end
-                    for key, data in pairs(state.itemFields) do
-                        if state.dirtyItem[key] and isfunction(data.getValue) then
-                            local value = data.getValue()
-                            if data.numeric then value = tonumber(value) end
-                            CommitWeaponOverride(state.selectedClass, key, value)
-                        end
-                    end
-
-                    for dotPath, data in pairs(state.runtimeFields) do
-                        if state.dirtyRuntime[dotPath] and isfunction(data.getValue) then CommitRuntimeOverride(state.selectedClass, dotPath, tostring(data.getValue() or "")) end
-                    end
-
-                    state.dirtyItem = {}
-                    state.dirtyRuntime = {}
-                    BuildWeaponCache()
-                    RebuildCategoryFilter()
-                    BuildEditor()
-                    PopulateWeaponList()
+                    categoryFilter._displayText = selectedValue == "__all" and "All Categories" or selectedValue
+                    categoryFilter:SetText("")
                 end
 
                 BuildEditor = function()
@@ -2533,7 +2523,6 @@ else
                     end
                 end
 
-                saveButton.DoClick = SaveCurrent
                 cancelButton.DoClick = function() BuildEditor() end
                 resetButton.DoClick = function()
                     if not state.selectedClass then return end
@@ -2547,6 +2536,7 @@ else
                 searchBar.OnValueChange = function() PopulateWeaponList() end
                 categoryFilter.OnSelect = function(_, _, _, data)
                     state.category = data or "__all"
+                    categoryFilter._displayText = state.category == "__all" and "All Categories" or tostring(state.category)
                     PopulateWeaponList()
                 end
 

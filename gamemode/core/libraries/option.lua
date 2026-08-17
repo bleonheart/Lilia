@@ -1040,7 +1040,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
         resetButton:DockMargin(8, 9, 0, 8)
         refreshFooter = function()
             if not IsValid(footerStatus) then return end
-            footerStatus:SetText(totalOptions .. " options    |    " .. getModifiedCount() .. " modified    |    Saved to data/lilia/options.json")
+            footerStatus:SetText(totalOptions .. " options    |    " .. getModifiedCount() .. " modified    |    Changes save automatically to data/lilia/options.json")
             if IsValid(status) then status:InvalidateLayout(true) end
             if IsValid(resetButton) then resetButton:InvalidateLayout(true) end
         end

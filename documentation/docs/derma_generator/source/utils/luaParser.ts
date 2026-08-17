@@ -221,7 +221,7 @@ export const parseLuaToState = (luaCode: string): EditorState | null => {
             appendLiaOptionLine(el, menuRepeater.key, '#spacer');
           }
 
-          if (el.type === ComponentType.liaLockCircle && methodMatch[1] === 'Start') {
+          if (el.type === ComponentType.liaActionCircle && methodMatch[1] === 'Start') {
             const args = splitLuaArgs(methodMatch[2]);
             const text = parseLuaValue(args[0] || '');
             const duration = parseLuaValue(args[1] || '');

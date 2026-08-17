@@ -1,355 +1,419 @@
 ﻿local surface = surface
+local draw = draw
 local Color = Color
+local Lerp = Lerp
+local FrameTime = FrameTime
+local math = math
+local language = language
+local table = table
+local IsColor = IsColor
 local SKIN = {}
+
+local function drawPanel(x, y, w, h, radius, background, outline)
+    w = math.max(w, 1)
+    h = math.max(h, 1)
+    if lia and lia.derma and isfunction(lia.derma.rect) and lia.derma.SHAPE_IOS then
+        lia.derma.rect(x, y, w, h):Rad(radius):Color(background):Shape(lia.derma.SHAPE_IOS):Draw()
+        if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
+        return
+    end
+    if outline then
+        draw.RoundedBox(radius, x, y, w, h, outline)
+        draw.RoundedBox(math.max(radius - 1, 0), x + 1, y + 1, math.max(w - 2, 1), math.max(h - 2, 1), background)
+        return
+    end
+    draw.RoundedBox(radius, x, y, w, h, background)
+end
+
+local function isDisabled(panel)
+    if panel.GetDisabled and panel:GetDisabled() then return true end
+    return panel.IsEnabled and not panel:IsEnabled() or false
+end
+
+local function getHover(panel, speed)
+    local target = panel:IsHovered() and not isDisabled(panel) and 1 or 0
+    panel._liliaSkinHover = Lerp(FrameTime() * (speed or 12), panel._liliaSkinHover or 0, target)
+    return panel._liliaSkinHover
+end
+
+local function setTextColor(panel, color)
+    if panel.SetTextColor then panel:SetTextColor(color) end
+end
+
+local function paintAccentButton(panel, w, h, radius)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    local hover = getHover(panel)
+    local disabled = isDisabled(panel)
+    local depressed = panel.Depressed
+    local background
+    local outline
+    if disabled then
+        background = lia.color.theme.background
+        outline = lia.color.theme.text
+    elseif depressed then
+        background = Color(accent.r, accent.g, accent.b, 68)
+        outline = Color(accent.r, accent.g, accent.b, 215)
+    else
+        background = Color(accent.r, accent.g, accent.b, 25 + hover * 26)
+        outline = Color(accent.r, accent.g, accent.b, 75 + hover * 100)
+    end
+    drawPanel(0, 0, w, h, radius or 6, background, outline)
+    setTextColor(panel, disabled and lia.color.theme.text or lia.color.theme.text)
+end
+
+local function paintNavigationButton(panel, w, h)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    local hover = getHover(panel)
+    local disabled = isDisabled(panel)
+    drawPanel(
+        0,
+        0,
+        w,
+        h,
+        4,
+        disabled and lia.color.theme.background or Color(accent.r, accent.g, accent.b, 15 + hover * 22),
+        disabled and lia.color.theme.text or Color(accent.r, accent.g, accent.b, 45 + hover * 75)
+    )
+    setTextColor(panel, disabled and lia.color.theme.text or lia.color.theme.text)
+end
+
 SKIN.fontFrame = "BudgetLabel"
 SKIN.fontTab = "LiliaFont.17"
 SKIN.fontButton = "LiliaFont.17"
 SKIN.Colours = table.Copy(derma.SkinList.Default.Colours)
-SKIN.Colours.Window.TitleActive = Color(255, 255, 255)
-SKIN.Colours.Window.TitleInactive = Color(255, 255, 255)
-SKIN.Colours.Label.Dark = lia.color.theme and lia.color.theme.text or Color(200, 200, 200)
-SKIN.Colours.Button.Normal = lia.color.theme and lia.color.theme.text or Color(200, 200, 200)
-SKIN.Colours.Button.Hover = Color(255, 255, 255)
-SKIN.Colours.Button.Down = Color(180, 180, 180)
-SKIN.Colours.Button.Disabled = Color(0, 0, 0, 100)
+SKIN.Colours.Window.TitleActive = lia.color.theme.text
+SKIN.Colours.Window.TitleInactive = lia.color.theme.text
+SKIN.Colours.Label.Dark = lia.color.theme.text
+SKIN.Colours.Button.Normal = lia.color.theme.text
+SKIN.Colours.Button.Hover = lia.color.theme.text
+SKIN.Colours.Button.Down = lia.color.theme.accent or lia.color.theme.maincolor
+SKIN.Colours.Button.Disabled = lia.color.theme.text
 SKIN.Colours.Tree = table.Copy(derma.SkinList.Default.Colours.Tree)
-SKIN.Colours.Tree.Text = Color(255, 255, 255)
-SKIN.Colours.Tree.SelectedText = Color(255, 255, 255)
+SKIN.Colours.Tree.Text = lia.color.theme.text
+SKIN.Colours.Tree.SelectedText = lia.color.theme.text
+SKIN.Colours.Tree.Lines = lia.color.theme.text
+
 function SKIN:PaintFrame(panel, w, h)
-    if not panel.LaidOut then
-        if panel.btnClose and panel.btnClose:IsValid() then
-            panel.btnClose:SetPos(panel:GetWide() - 16, 4)
-            panel.btnClose:setScaledSize(24, 24)
-            panel.btnClose:SetFont("Marlett")
-            panel.btnClose:SetText("✕")
-            panel.btnClose:SetTextColor(Color(255, 255, 255))
-            panel.btnClose:PerformLayout()
-        end
-
-        panel.LaidOut = true
-    end
-
-    surface.SetDrawColor(0, 0, 0, 255)
-    surface.DrawOutlinedRect(0, 0, w, h, 2)
-    surface.SetDrawColor(0, 0, 0, 150)
-    surface.DrawRect(1, 1, w - 2, h - 2)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    drawPanel(0, 0, w, h, 10, lia.color.theme.background, Color(accent.r, accent.g, accent.b, 92))
+    surface.SetDrawColor(accent.r, accent.g, accent.b, 190)
+    surface.DrawRect(0, 0, w, 2)
+    surface.DrawRect(0, h - 2, w, 2)
+    surface.SetDrawColor(accent.r, accent.g, accent.b, 38)
+    surface.DrawRect(10, 31, math.max(w - 20, 1), 1)
 end
 
 function SKIN:PaintTooltip(_, w, h)
-    surface.SetDrawColor(45, 45, 45, 240)
-    surface.DrawRect(0, 0, w, h)
-    surface.SetDrawColor(0, 0, 0, 180)
-    surface.DrawOutlinedRect(0, 0, w, h)
-    surface.SetDrawColor(100, 100, 100, 25)
-    surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
+    drawPanel(0, 0, w, h, 6, lia.color.theme.background, lia.color.theme.accent)
 end
 
 function SKIN:DrawGenericBackground(x, y, w, h)
-    surface.SetDrawColor(45, 45, 45, 240)
-    surface.DrawRect(x, y, w, h)
-    surface.SetDrawColor(0, 0, 0, 180)
-    surface.DrawOutlinedRect(x, y, w, h)
-    surface.SetDrawColor(100, 100, 100, 25)
-    surface.DrawOutlinedRect(x + 1, y + 1, w - 2, h - 2)
+    drawPanel(x, y, w, h, 7, lia.color.theme.background, lia.color.theme.accent)
 end
 
 function SKIN:PaintPanel(panel)
     if not panel.m_bBackground or panel.GetPaintBackground and not panel:GetPaintBackground() then return end
     local w, h = panel:GetWide(), panel:GetTall()
-    surface.SetDrawColor(0, 0, 0, 255)
-    surface.DrawOutlinedRect(0, 0, w, h, 2)
-    surface.SetDrawColor(0, 0, 0, 150)
-    surface.DrawRect(1, 1, w - 2, h - 2)
+    drawPanel(0, 0, w, h, 7, lia.color.theme.background, lia.color.theme.accent)
 end
 
-local function DrawButton(panel, w, h)
+function SKIN:PaintButton(panel, w, h)
     if not panel.m_bBackground or panel.GetPaintBackground and not panel:GetPaintBackground() then return end
-    local alpha = 50
-    if panel:GetDisabled() then
-        alpha = 10
-    elseif panel.Depressed then
-        alpha = 180
-    elseif panel.Hovered then
-        alpha = 75
-    end
-
-    surface.SetDrawColor(20, 20, 20, alpha)
-    surface.DrawRect(0, 0, w, h)
-    surface.SetDrawColor(100, 100, 100, alpha)
-    surface.DrawRect(2, 2, w - 4, h - 4)
-end
-
-function SKIN:PaintButton(panel)
-    local w, h = panel:GetWide(), panel:GetTall()
-    DrawButton(panel, w, h)
+    paintAccentButton(panel, w or panel:GetWide(), h or panel:GetTall(), 6)
 end
 
 function SKIN:PaintWindowCloseButton(panel, w, h)
-    local base = derma.GetDefaultSkin()
-    base.PaintWindowCloseButton(base, panel, w, h)
+    if not panel._liliaSkinWindowButton then
+        panel:SetText("")
+        panel._liliaSkinWindowButton = true
+    end
+    local hover = getHover(panel)
+    local negative = lia.color.theme.negative or lia.color.theme.accent or lia.color.theme.maincolor
+    local background = hover > 0.01 and Color(negative.r, negative.g, negative.b, 18 + hover * 20) or lia.color.theme.background
+    drawPanel(0, 0, w, h, 5, background, Color(negative.r, negative.g, negative.b, 70 + hover * 80))
+    draw.SimpleText("×", "LiliaFont.22", w * 0.5, h * 0.5 - 1, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
 function SKIN:PaintWindowMinimizeButton(panel, w, h)
-    local base = derma.GetDefaultSkin()
-    base.PaintWindowMinimizeButton(base, panel, w, h)
+    if not panel._liliaSkinWindowButton then
+        panel:SetText("")
+        panel._liliaSkinWindowButton = true
+    end
+    paintNavigationButton(panel, w, h)
+    local color = lia.color.theme.text
+    surface.SetDrawColor(color)
+    surface.DrawRect(math.floor(w * 0.28), math.floor(h * 0.62), math.max(math.floor(w * 0.44), 1), 1)
 end
 
 function SKIN:PaintWindowMaximizeButton(panel, w, h)
-    local base = derma.GetDefaultSkin()
-    base.PaintWindowMaximizeButton(base, panel, w, h)
-end
-
-function SKIN:PaintWindowCloseButton()
-end
-
-function SKIN:PaintWindowMinimizeButton()
-end
-
-function SKIN:PaintWindowMaximizeButton()
+    if not panel._liliaSkinWindowButton then
+        panel:SetText("")
+        panel._liliaSkinWindowButton = true
+    end
+    paintNavigationButton(panel, w, h)
+    local color = lia.color.theme.text
+    surface.SetDrawColor(color)
+    surface.DrawOutlinedRect(math.floor(w * 0.3), math.floor(h * 0.3), math.max(math.floor(w * 0.4), 1), math.max(math.floor(h * 0.4), 1), 1)
 end
 
 function SKIN:PaintComboBox(panel, w, h)
     if panel:GetFont() == "Default" or panel:GetFont() == "" then panel:SetFont("LiliaFont.18") end
-    DrawButton(panel, w, h)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    local hover = getHover(panel)
+    local disabled = isDisabled(panel)
+    drawPanel(
+        0,
+        0,
+        w,
+        h,
+        5,
+        disabled and lia.color.theme.background or lia.color.theme.background,
+        disabled and lia.color.theme.text or Color(accent.r, accent.g, accent.b, 48 + hover * 62)
+    )
+    setTextColor(panel, lia.color.theme.text)
 end
 
 function SKIN:PaintTextEntry(panel, w, h)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    local hover = getHover(panel)
+    local focused = panel:HasFocus()
+    local disabled = isDisabled(panel)
     if panel.m_bBackground then
-        local alpha = 50
-        if panel:GetDisabled() then
-            alpha = 10
-        elseif panel.Depressed then
-            alpha = 180
-        elseif panel.Hovered then
-            alpha = 75
-        end
-
-        surface.SetDrawColor(20, 20, 20, alpha)
-        surface.DrawRect(0, 0, w, h)
-        surface.SetDrawColor(100, 100, 100, alpha)
-        surface.DrawRect(2, 2, w - 4, h - 4)
+        local outlineAlpha = disabled and 35 or focused and 160 or 48 + hover * 62
+        drawPanel(
+            0,
+            0,
+            w,
+            h,
+            6,
+            disabled and lia.color.theme.background or lia.color.theme.background,
+            disabled and lia.color.theme.text or Color(accent.r, accent.g, accent.b, outlineAlpha)
+        )
     end
-
-    if panel.GetPlaceholderText and panel.GetPlaceholderColor and panel:GetPlaceholderText() and panel:GetPlaceholderText():Trim() ~= "" and panel:GetPlaceholderColor() and (not panel:GetText() or panel:GetText() == "") then
+    if panel.SetCursorColor then panel:SetCursorColor(lia.color.theme.accent) end
+    if panel.SetHighlightColor then panel:SetHighlightColor(lia.color.theme.accent) end
+    if panel.GetPlaceholderText and panel.GetPlaceholderColor and panel:GetPlaceholderText() and panel:GetPlaceholderText():Trim() ~= "" and (not panel:GetText() or panel:GetText() == "") then
         local oldText = panel:GetText()
-        local str = panel:GetPlaceholderText()
-        if str:StartWith("#") then str = str:sub(2) end
-        str = language.GetPhrase(str)
-        panel:SetText(str)
-        panel:DrawTextEntryText(panel:GetPlaceholderColor(), panel:GetHighlightColor(), panel:GetCursorColor())
+        local text = panel:GetPlaceholderText()
+        if text:StartWith("#") then text = text:sub(2) end
+        text = language.GetPhrase(text)
+        panel:SetText(text)
+        panel:DrawTextEntryText(lia.color.theme.text, panel:GetHighlightColor(), panel:GetCursorColor())
         panel:SetText(oldText)
         return
     end
-
-    panel:DrawTextEntryText(Color(255, 255, 255), panel:GetHighlightColor(), panel:GetCursorColor())
+    panel:DrawTextEntryText(lia.color.theme.text, panel:GetHighlightColor(), panel:GetCursorColor())
 end
 
 function SKIN:PaintListView(_, w, h)
-    surface.SetDrawColor(20, 20, 20, 100)
-    surface.DrawRect(0, 0, w, h)
+    drawPanel(0, 0, w, h, 7, lia.color.theme.background, lia.color.theme.accent)
 end
 
 function SKIN:PaintListViewLine(panel, w, h)
-    surface.SetDrawColor((panel:IsHovered() or panel:IsLineSelected()) and lia.config.get("Color", Color(255, 255, 255)) or Color(0, 0, 0, 0))
-    surface.DrawRect(0, 0, w, h)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    local hovered = panel:IsHovered()
+    local selected = panel:IsLineSelected()
+    if selected or hovered then
+        drawPanel(
+            1,
+            1,
+            math.max(w - 2, 1),
+            math.max(h - 2, 1),
+            4,
+            Color(accent.r, accent.g, accent.b, selected and 30 or 16),
+            Color(accent.r, accent.g, accent.b, selected and 135 or 70)
+        )
+    end
+    if selected then
+        surface.SetDrawColor(accent.r, accent.g, accent.b, 220)
+        surface.DrawRect(1, 4, 3, math.max(h - 8, 1))
+    end
+    if panel.Columns then
+        for _, column in ipairs(panel.Columns) do
+            if IsValid(column) and column.SetTextColor then column:SetTextColor(selected and lia.color.theme.accent or lia.color.theme.text) end
+        end
+    end
 end
 
-function SKIN:PaintScrollBarGrip(_, w, h)
-    surface.SetDrawColor(lia.config.get("Color", Color(255, 255, 255)))
-    surface.DrawRect(0, 0, w, h)
+function SKIN:PaintScrollBarGrip(panel, w, h)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    local hover = getHover(panel)
+    draw.RoundedBox(3, 2, 2, math.max(w - 4, 1), math.max(h - 4, 1), Color(accent.r, accent.g, accent.b, 150 + hover * 55))
 end
 
 function SKIN:PaintVScrollBar(_, w, h)
-    surface.SetDrawColor(20, 20, 20, 200)
-    surface.DrawRect(0, 0, w, h)
+    draw.RoundedBox(3, 1, 0, math.max(w - 2, 1), h, lia.color.theme.background)
+end
+
+function SKIN:PaintButtonUp(panel, w, h)
+    paintNavigationButton(panel, w, h)
+end
+
+function SKIN:PaintButtonDown(panel, w, h)
+    paintNavigationButton(panel, w, h)
 end
 
 function SKIN:PaintMenu(_, w, h)
-    local odd = true
-    for i = 0, h, 22 do
-        if odd then
-            surface.SetDrawColor(40, 40, 40, 255)
-            surface.DrawRect(0, i, w, 22)
-        else
-            surface.SetDrawColor(50, 50, 50, 255)
-            surface.DrawRect(0, i, w, 22)
-        end
-
-        odd = not odd
-    end
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    drawPanel(0, 0, w, h, 5, lia.color.theme.background, Color(accent.r, accent.g, accent.b, 48))
 end
 
-function SKIN:PaintPopupMenu(panel, w, h)
-    local bg = panel:IsHovered() and Color(70, 70, 70, 240) or Color(45, 45, 45, 240)
-    surface.SetDrawColor(bg)
-    surface.DrawRect(0, 0, w, h)
-    surface.SetDrawColor(0, 0, 0, 180)
-    surface.DrawOutlinedRect(0, 0, w, h)
+function SKIN:PaintPopupMenu(_, w, h)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    drawPanel(0, 0, w, h, 5, lia.color.theme.background, Color(accent.r, accent.g, accent.b, 48))
 end
 
 function SKIN:PaintMenuOption(panel, w, h)
-    if not panel.LaidOut then
-        panel.LaidOut = true
-        panel:SetTextColor(lia.color.theme.text or Color(200, 200, 200, 255))
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    local hovered = panel.Hovered or panel.Highlight
+    local checked = panel:GetChecked()
+    local background = checked and Color(accent.r, accent.g, accent.b, 30) or hovered and Color(accent.r, accent.g, accent.b, 18) or lia.color.theme.background
+    drawPanel(1, 0, math.max(w - 2, 1), h, 4, background, Color(accent.r, accent.g, accent.b, checked and 135 or hovered and 82 or 32))
+    if checked then
+        surface.SetDrawColor(accent.r, accent.g, accent.b, 220)
+        surface.DrawRect(1, 4, 3, math.max(h - 8, 1))
     end
-
-    if panel.m_bBackground and (panel.Hovered or panel.Highlight) then
-        surface.SetDrawColor(70, 70, 70, 255)
-        surface.DrawRect(0, 0, w, h)
-    end
-
-    local skin = derma.GetDefaultSkin()
-    skin.MenuOptionOdd = not skin.MenuOptionOdd
-    if panel:GetChecked() then skin.tex.Menu_Check(5, h / 2 - 7, 15, 15) end
+    setTextColor(panel, checked and lia.color.theme.accent or lia.color.theme.text)
 end
 
-local function DrawSpawnBG(w, h)
-    surface.SetDrawColor(0, 0, 0, 255)
-    surface.DrawOutlinedRect(0, 0, w, h, 2)
-    surface.SetDrawColor(0, 0, 0, 150)
-    surface.DrawRect(1, 1, w - 2, h - 2)
+local function drawCategoryBackground(w, h, alpha)
+    drawPanel(0, 0, w, h, 7, lia.color.theme.background, lia.color.theme.accent)
 end
 
-function SKIN:PaintCollapsibleCategory(p, w, h)
-    DrawSpawnBG(w, h)
-    if not p.HeaderPainted then
-        p.Header.Paint = function(_, hw, hh)
-            surface.SetDrawColor(20, 20, 20, p:GetExpanded() and 180 or 120)
-            surface.DrawRect(0, 0, hw, hh)
-            surface.SetDrawColor(0, 0, 0, 255)
-            surface.DrawOutlinedRect(0, 0, hw, hh, 2)
-        end
-
-        p.HeaderPainted = true
+function SKIN:PaintCollapsibleCategory(panel, w, h)
+    drawCategoryBackground(w, h)
+    if panel.HeaderPainted then return end
+    panel.Header.Paint = function(header, headerW, headerH)
+        local accent = lia.color.theme.accent or lia.color.theme.maincolor
+        local hover = getHover(header)
+        local expanded = panel:GetExpanded()
+        drawPanel(
+            0,
+            0,
+            headerW,
+            headerH,
+            6,
+            expanded and Color(accent.r, accent.g, accent.b, 28) or lia.color.theme.background,
+            Color(accent.r, accent.g, accent.b, expanded and 130 or 45 + hover * 60)
+        )
     end
+    panel.HeaderPainted = true
 end
 
 function SKIN:PaintCategoryList(_, w, h)
-    DrawSpawnBG(w, h)
+    drawCategoryBackground(w, h)
 end
 
-function SKIN:PaintCategoryButton(p, w, h)
-    local a = p:GetDisabled() and 10 or p.Depressed and 180 or p.Hovered and 75 or 50
-    surface.SetDrawColor(20, 20, 20, a)
-    surface.DrawRect(0, 0, w, h)
-    surface.SetDrawColor(100, 100, 100, a)
-    surface.DrawRect(2, 2, w - 4, h - 4)
+function SKIN:PaintCategoryButton(panel, w, h)
+    paintAccentButton(panel, w, h, 5)
 end
 
 function SKIN:PaintContentPanel(_, w, h)
-    DrawSpawnBG(w, h)
+    drawCategoryBackground(w, h, 218)
 end
 
-function SKIN:PaintContentIcon(p, w, h)
-    if p:IsHovered() then
-        surface.SetDrawColor(255, 255, 255, 5)
-        surface.DrawRect(0, 0, w, h)
+function SKIN:PaintContentIcon(panel, w, h)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    local hover = getHover(panel, 10)
+    drawPanel(0, 0, w, h, 6, lia.color.theme.background, Color(accent.r, accent.g, accent.b, 40 + hover * 70))
+    if hover > 0.01 then
+        surface.SetDrawColor(accent.r, accent.g, accent.b, hover * 16)
+        surface.DrawRect(4, 4, math.max(w - 8, 1), math.max(h - 8, 1))
     end
-
-    DrawSpawnBG(w, h)
 end
 
-function SKIN:PaintSpawnIcon(p, w, h)
-    if p:IsHovered() then
-        surface.SetDrawColor(255, 255, 255, 5)
-        surface.DrawRect(0, 0, w, h)
-    end
-
-    DrawSpawnBG(w, h)
-end
-
-local function DrawTreeBG(w, h)
-    surface.SetDrawColor(0, 0, 0, 255)
-    surface.DrawOutlinedRect(0, 0, w, h, 2)
-    surface.SetDrawColor(0, 0, 0, 150)
-    surface.DrawRect(1, 1, w - 2, h - 2)
+function SKIN:PaintSpawnIcon(panel, w, h)
+    self:PaintContentIcon(panel, w, h)
 end
 
 function SKIN:PaintTree(_, w, h)
-    DrawTreeBG(w, h)
+    drawPanel(0, 0, w, h, 7, lia.color.theme.background, lia.color.theme.accent)
 end
 
-function SKIN:PaintTreeNode(p, _, h)
-    if not p.m_bDrawLines then return end
-    surface.SetDrawColor(self.Colours.Tree and self.Colours.Tree.Lines or Color(100, 100, 100))
-    if p.m_bLastChild then
+function SKIN:PaintTreeNode(panel, _, h)
+    if not panel.m_bDrawLines then return end
+    local lines = lia.color.theme.text
+    surface.SetDrawColor(lines)
+    if panel.m_bLastChild then
         surface.DrawRect(9, 0, 1, 7)
         surface.DrawRect(9, 7, 9, 1)
+        return
+    end
+    surface.DrawRect(9, 0, 1, h)
+    surface.DrawRect(9, 7, 9, 1)
+end
+
+function SKIN:PaintTreeNodeButton(panel, w, h)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    if panel.m_bSelected then
+        drawPanel(34, 0, math.max(w - 34, 1), h, 4, Color(accent.r, accent.g, accent.b, 30), Color(accent.r, accent.g, accent.b, 135))
+        surface.SetDrawColor(accent.r, accent.g, accent.b, 220)
+        surface.DrawRect(34, 3, 3, math.max(h - 6, 1))
+        panel:SetTextColor(lia.color.theme.accent)
+    elseif panel.Hovered then
+        drawPanel(34, 0, math.max(w - 34, 1), h, 4, Color(accent.r, accent.g, accent.b, 16), Color(accent.r, accent.g, accent.b, 65))
+        panel:SetTextColor(lia.color.theme.text)
     else
-        surface.DrawRect(9, 0, 1, h)
-        surface.DrawRect(9, 7, 9, 1)
+        panel:SetTextColor(lia.color.theme.text)
     end
-end
-
-function SKIN:PaintTreeNodeButton(p, w, h)
-    w = w + 6
-    if p.m_bSelected then
-        surface.SetDrawColor(lia.config.get("Color", Color(255, 255, 255)))
-        surface.DrawRect(38, 0, w + 6, h)
-        surface.SetDrawColor(0, 0, 0, 200)
-        surface.DrawOutlinedRect(38, 0, w + 6, h)
-    elseif p.Hovered then
-        local theme = lia.color.theme.theme or color_white
-        surface.SetDrawColor(theme.r, theme.g, theme.b, 20)
-        surface.DrawRect(38, 0, w + 6, h)
-    end
-
-    p:SetTextColor(self.Colours.Tree.Text)
-end
-
-local function basePaint(w, h)
-    surface.SetDrawColor(0, 0, 0, 255)
-    surface.DrawOutlinedRect(0, 0, w, h, 2)
-    surface.SetDrawColor(0, 0, 0, 150)
-    surface.DrawRect(1, 1, w - 2, h - 2)
 end
 
 function SKIN:PaintShadow(_, w, h)
-    basePaint(w, h)
+    draw.RoundedBox(10, 2, 3, math.max(w - 4, 1), math.max(h - 5, 1), Color(0, 0, 0, 55))
 end
 
 function SKIN:PaintMenuSpacer(_, w, h)
-    basePaint(w, h)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    surface.SetDrawColor(accent.r, accent.g, accent.b, 38)
+    surface.DrawRect(8, math.floor(h * 0.5), math.max(w - 16, 1), 1)
 end
 
 function SKIN:PaintPropertySheet(_, w, h)
-    basePaint(w, h)
+    drawPanel(0, 0, w, h, 7, lia.color.theme.background, lia.color.theme.accent)
 end
 
-function SKIN:PaintTab(_, w, h)
-    basePaint(w, h)
+function SKIN:PaintTab(panel, w, h)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    local hover = getHover(panel)
+    drawPanel(0, 0, w, h, 6, lia.color.theme.background, Color(accent.r, accent.g, accent.b, 45 + hover * 75))
+    setTextColor(panel, lia.color.theme.text)
 end
 
-function SKIN:PaintActiveTab(_, w, h)
-    basePaint(w, h)
+function SKIN:PaintActiveTab(panel, w, h)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    drawPanel(0, 0, w, h, 6, Color(accent.r, accent.g, accent.b, 30), Color(accent.r, accent.g, accent.b, 190))
+    surface.SetDrawColor(accent.r, accent.g, accent.b, 225)
+    surface.DrawRect(5, h - 3, math.max(w - 10, 1), 3)
+    setTextColor(panel, lia.color.theme.text)
 end
 
-function SKIN:PaintButtonLeft(_, w, h)
-    basePaint(w, h)
+function SKIN:PaintButtonLeft(panel, w, h)
+    paintNavigationButton(panel, w, h)
 end
 
-function SKIN:PaintButtonRight(_, w, h)
-    basePaint(w, h)
+function SKIN:PaintButtonRight(panel, w, h)
+    paintNavigationButton(panel, w, h)
 end
 
 function SKIN:PaintListBox(_, w, h)
-    basePaint(w, h)
+    drawPanel(0, 0, w, h, 6, lia.color.theme.background, lia.color.theme.accent)
 end
 
-function SKIN:PaintNumberUp(_, w, h)
-    basePaint(w, h)
+function SKIN:PaintNumberUp(panel, w, h)
+    paintNavigationButton(panel, w, h)
 end
 
-function SKIN:PaintNumberDown(_, w, h)
-    basePaint(w, h)
+function SKIN:PaintNumberDown(panel, w, h)
+    paintNavigationButton(panel, w, h)
 end
 
 function SKIN:PaintSelection(_, w, h)
-    basePaint(w, h)
+    local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    drawPanel(0, 0, w, h, 4, Color(accent.r, accent.g, accent.b, 38), Color(accent.r, accent.g, accent.b, 105))
 end
 
 function SKIN:PaintMenuBar(_, w, h)
-    basePaint(w, h)
+    drawPanel(0, 0, w, h, 5, lia.color.theme.background, lia.color.theme.accent)
 end
 
 derma.DefineSkin(L("liliaSkin"), L("liliaSkinDesc"), SKIN)

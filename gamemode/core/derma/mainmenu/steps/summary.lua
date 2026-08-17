@@ -104,7 +104,8 @@ function PANEL:Init()
         lia.derma.rect(0, 0, w, 5):Radii(12, 12, 0, 0):Color(lia.config.get("Color") or Color(255, 255, 255)):Draw()
     end
 
-    self.create = self.frame:Add("liaMediumButton")
+    self.create = self.frame:Add("liaButton")
+    self.create:SetFont("LiliaFont.25")
     self.create:Dock(BOTTOM)
     self.create:DockMargin(0, 12, 0, 0)
     self.create:SetTall(44)
