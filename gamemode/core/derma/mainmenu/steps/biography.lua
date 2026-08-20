@@ -1,93 +1,98 @@
-﻿local PANEL = {}
+local PANEL = {}
+
+local function themeColor(key, fallback)
+    local theme = lia.color and lia.color.theme or {}
+    local value = theme[key]
+    if IsColor(value) then return value end
+    if istable(value) and IsColor(value[1]) then return value[1] end
+    return fallback
+end
+
+local function alphaColor(color, alpha)
+    return Color(color.r, color.g, color.b, alpha)
+end
+
 function PANEL:Init()
     self:Dock(FILL)
-    local function makeLabel(key)
-        local header = self:Add("liaHeaderPanel")
-        header:Dock(TOP)
-        header:DockMargin(0, 0, 0, 6)
-        header:SetTall(32)
-        local accentColor = lia.color.theme.theme
-        header:SetLineColor(accentColor)
-        header:SetLineWidth(2)
-        local lbl = header:Add("DLabel")
-        lbl:SetFont("LiliaFont.18")
-        lbl:SetText(L(key):upper())
-        lbl:SizeToContents()
-        lbl:Dock(FILL)
-        lbl:DockMargin(8, 0, 8, 0)
-        local textColor = lia.color.theme.text or Color(220, 220, 220)
-        lbl:SetTextColor(textColor)
-        lbl:SetContentAlignment(5)
-        return header
-    end
-
-    self.factionLabel = makeLabel("faction")
+    self:DockPadding(0, 4, 0, 0)
+    self.factionLabel = self:makeLabel("faction")
     self.factionCombo = self:makeFactionComboBox()
-    self.factionCombo:DockMargin(0, 6, 0, 16)
-    self.nameLabel = makeLabel("name")
-    self.nameEntry = self:makeTextEntry("name")
-    self.nameEntry:DockMargin(0, 6, 0, 16)
+    self.nameLabel = self:makeLabel("name")
+    self.nameEntry = self:makeTextEntry("name", false)
     if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false then
-        self.descLabel = makeLabel("desc")
-        self.descEntry = self:makeTextEntry("desc")
-        self.descEntry:DockMargin(0, 6, 0, 16)
+        self.descLabel = self:makeLabel("desc")
+        self.descEntry = self:makeTextEntry("desc", true)
     end
 
     self:addAttributes()
 end
 
-function PANEL:makeTextEntry(key)
+function PANEL:makeLabel(key)
+    local label = self:Add("DLabel")
+    label:Dock(TOP)
+    label:DockMargin(2, 0, 2, 5)
+    label:SetTall(22)
+    label:SetFont("LiliaFont.18")
+    label:SetText(L(key))
+    label:SetTextColor(themeColor("text", color_white))
+    label:SetContentAlignment(4)
+    return label
+end
+
+function PANEL:makeTextEntry(key, multiline)
     local entry = self:Add("liaEntry")
     entry:Dock(TOP)
-    entry:DockMargin(0, 8, 0, 12)
-    entry:SetTall(40)
+    entry:DockMargin(0, 0, 0, 16)
+    entry:SetTall(multiline and 104 or 42)
     entry:SetFont("LiliaFont.18")
-    entry.OnEnter = function() self:setContext(key, string.Trim(entry:GetValue())) end
-    entry.OnLoseFocus = function() self:setContext(key, string.Trim(entry:GetValue())) end
+    entry:SetMultiline(multiline)
+    entry.OnEnter = function() self:setContext(key, string.Trim(entry:GetValue() or "")) end
+    entry.OnLoseFocus = function() self:setContext(key, string.Trim(entry:GetValue() or "")) end
+    entry.OnTextChanged = function() self:setContext(key, string.Trim(entry:GetValue() or "")) end
     local saved = self:getContext(key)
     if saved then entry:SetValue(saved) end
     return entry
+end
+
+function PANEL:getFactionChoiceID(factionIndex)
+    for id, fac in pairs(lia.faction.teams or {}) do
+        if fac.index == factionIndex then return id end
+    end
 end
 
 function PANEL:makeFactionComboBox()
     local combo = self:Add("liaComboBox")
     combo:Dock(TOP)
     combo:PostInit()
-    combo:DockMargin(0, 8, 0, 12)
-
-    combo.OnSelect = function(_, _, data)
-        local factionID = nil
-        if data and isstring(data) then
-            for id, fac in pairs(lia.faction.teams) do
-                if fac.name == data then
-                    factionID = id
-                    break
-                end
-            end
-        end
-
-        if factionID then
-            local fac = lia.faction.teams[factionID]
-            if fac then
-                self:onFactionSelected(fac)
-                return
-            end
-        end
+    combo:DockMargin(0, 0, 0, 16)
+    combo:SetTall(42)
+    combo.OnSelect = function(_, _, _, factionID)
+        if self._suppressFactionSelect then return end
+        local fac = factionID and lia.faction.teams[factionID] or nil
+        if fac then self:onFactionSelected(fac) end
     end
 
-    local firstFactionID = nil
+    local firstFactionID
     for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
         if lia.faction.hasWhitelist(fac.index) then
             if fac.uniqueID == "staff" then continue end
             local desc = fac.desc or L("noDesc")
             combo:AddChoice(fac.name, id, desc ~= "" and desc or nil)
-            if not firstFactionID then firstFactionID = id end
+            firstFactionID = firstFactionID or id
         end
     end
 
     combo:FinishAddingOptions()
-    if firstFactionID then
+    local savedFaction = self:getContext("faction")
+    local savedFactionID = savedFaction and self:getFactionChoiceID(savedFaction) or nil
+    if savedFactionID then
+        self._suppressFactionSelect = true
+        combo:ChooseOptionData(savedFactionID)
+        self._suppressFactionSelect = false
+    elseif firstFactionID then
+        self._suppressFactionSelect = true
         combo:ChooseOptionData(firstFactionID)
+        self._suppressFactionSelect = false
         local fac = lia.faction.teams[firstFactionID]
         if fac then self:onFactionSelected(fac) end
     end
@@ -98,28 +103,8 @@ function PANEL:addAttributes()
     if IsValid(self.attribsPanel) then return end
     if not self._attemptedAttribLoad and lia.attribs and isfunction(lia.attribs.loadFromDir) then
         self._attemptedAttribLoad = true
-        local base = (SCHEMA and SCHEMA.folder) and SCHEMA.folder or engine.ActiveGamemode():gsub("\\", "/")
+        local base = SCHEMA and SCHEMA.folder or engine.ActiveGamemode():gsub("\\", "/")
         lia.attribs.loadFromDir(base .. "/schema/attributes")
-    end
-
-    local function makeLabel(key)
-        local header = self:Add("liaHeaderPanel")
-        header:Dock(TOP)
-        header:DockMargin(0, 0, 0, 6)
-        header:SetTall(32)
-        local accentColor = lia.color.theme.theme
-        header:SetLineColor(accentColor)
-        header:SetLineWidth(2)
-        local lbl = header:Add("DLabel")
-        lbl:SetFont("LiliaFont.18")
-        lbl:SetText(L(key):upper())
-        lbl:SizeToContents()
-        lbl:Dock(FILL)
-        lbl:DockMargin(8, 0, 8, 0)
-        local textColor = lia.color.theme.text or Color(220, 220, 220)
-        lbl:SetTextColor(textColor)
-        lbl:SetContentAlignment(5)
-        return header
     end
 
     local hasAttributes = false
@@ -136,48 +121,50 @@ function PANEL:addAttributes()
         if not self._attribRetry then
             self._attribRetry = true
             timer.Simple(0.25, function()
-                if IsValid(self) then
-                    self._attribRetry = nil
-                    self:addAttributes()
-                    if IsValid(self.attribsPanel) then
-                        self.attribsPanel:onDisplay()
-                        self:updateAttributesLabel()
-                    end
+                if not IsValid(self) then return end
+                self._attribRetry = nil
+                self:addAttributes()
+                if IsValid(self.attribsPanel) then
+                    self.attribsPanel:onDisplay()
+                    self:updateAttributesLabel()
                 end
             end)
         end
         return
     end
 
-    local attrLabel = makeLabel("attributes")
-    self.attrLabel = attrLabel
-    local bgPanel = attrLabel:GetChildren()[1]
-    if IsValid(bgPanel) then
-        local lblContainer = bgPanel:GetChildren()[1]
-        if IsValid(lblContainer) then
-            local lbl = lblContainer:GetChildren()[1]
-            if IsValid(lbl) and lbl.SetText then
-                self.attrLabelText = lbl
-                self:updateAttributesLabel()
-            end
-        end
-    end
+    self.attrHeader = self:Add("DPanel")
+    self.attrHeader:Dock(TOP)
+    self.attrHeader:DockMargin(0, 2, 0, 7)
+    self.attrHeader:SetTall(24)
+    self.attrHeader:SetPaintBackground(false)
+    self.attrLabelText = self.attrHeader:Add("DLabel")
+    self.attrLabelText:Dock(LEFT)
+    self.attrLabelText:SetFont("LiliaFont.18")
+    self.attrLabelText:SetTextColor(themeColor("text", color_white))
+    self.attrLabelText:SetContentAlignment(4)
+    self.pointsLabel = self.attrHeader:Add("DLabel")
+    self.pointsLabel:Dock(RIGHT)
+    self.pointsLabel:SetFont("LiliaFont.16")
+    self.pointsLabel:SetTextColor(themeColor("accent", themeColor("theme", color_white)))
+    self.pointsLabel:SetContentAlignment(6)
 
     self.attribsPanel = self:Add("liaCharacterAttribs")
     self.attribsPanel:Dock(TOP)
-    self.attribsPanel:DockMargin(0, 6, 0, 16)
+    self.attribsPanel:DockMargin(0, 0, 0, 8)
     local rows = 0
     for _, attrib in pairs(lia.attribs.list or {}) do
         if not attrib.noStartBonus then rows = rows + 1 end
     end
 
-    self.attribsPanel:SetTall(math.max(120, 80 + rows * 40))
+    self.attribsPanel:SetTall(math.max(120, rows * 46))
     self.attribsPanel:SetVisible(true)
     self.attribsPanel.parentBio = self
     if isfunction(self.attribsPanel.onDisplay) then self.attribsPanel:onDisplay() end
     if IsValid(self.attribsPanel.title) then self.attribsPanel.title:SetVisible(false) end
     if IsValid(self.attribsPanel.leftLabel) then self.attribsPanel.leftLabel:SetVisible(false) end
     self:styleAttribsPanel()
+    self:updateAttributesLabel()
 end
 
 function PANEL:styleAttribsPanel()
@@ -189,41 +176,38 @@ function PANEL:styleAttribsPanel()
     if not istable(self.attribsPanel.attribs) then return end
     for _, row in pairs(self.attribsPanel.attribs) do
         if not IsValid(row) then continue end
-        row:SetTall(40)
+        row:SetTall(42)
+        row:DockMargin(0, 0, 0, 4)
         row.Paint = function(s, w, h)
+            local background = themeColor("focus_panel", themeColor("background", Color(25, 28, 35)))
+            local accent = themeColor("accent", themeColor("theme", color_white))
             local hover = s:IsHovered() and 1 or 0
             s._hoverFrac = Lerp(FrameTime() * 10, s._hoverFrac or 0, hover)
-            lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(4, 12):Draw()
-            lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(25, 28, 35, 230)):Shape(lia.derma.SHAPE_IOS):Draw()
-            if s._hoverFrac > 0 then
-                local hov = lia.color.theme.button_hovered or Color(255, 255, 255)
-                lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(hov.r, hov.g, hov.b, math.floor(s._hoverFrac * 60))):Shape(lia.derma.SHAPE_IOS):Draw()
-            end
+            lia.derma.rect(0, 0, w, h):Rad(6):Color(alphaColor(background, 220)):Shape(lia.derma.SHAPE_IOS):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(6):Color(alphaColor(accent, 38 + math.floor(s._hoverFrac * 72))):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw()
         end
 
         if IsValid(row.name) then
             row.name:SetFont("LiliaFont.18")
-            row.name:SetTextColor(lia.color.theme.text)
+            row.name:SetTextColor(themeColor("text", color_white))
+            row.name:DockMargin(12, 0, 0, 0)
         end
 
         if IsValid(row.quantity) then
             row.quantity:SetFont("LiliaFont.18")
-            row.quantity:SetTextColor(lia.color.theme.text)
+            row.quantity:SetTextColor(themeColor("text", color_white))
         end
 
-        if IsValid(row.add) then
-            if row.add.SetRadius then row.add:SetRadius(16) end
-            if row.add.SetGradient then row.add:SetGradient(false) end
-            if row.add.PaintButton then row.add:PaintButton(lia.color.theme.focus_panel, lia.color.theme.hover or lia.color.theme.button_hovered) end
+        if IsValid(row.buttons) then
+            row.buttons:SetWide(112)
+            row.buttons:SetPaintBackground(false)
         end
 
-        if IsValid(row.sub) then
-            if row.sub.SetRadius then row.sub:SetRadius(16) end
-            if row.sub.SetGradient then row.sub:SetGradient(false) end
-            if row.sub.PaintButton then row.sub:PaintButton(lia.color.theme.focus_panel, lia.color.theme.hover or lia.color.theme.button_hovered) end
+        for _, button in ipairs({row.sub, row.add}) do
+            if not IsValid(button) then continue end
+            button:SetSize(30, 30)
+            button:SetFont("LiliaFont.18")
         end
-
-        if IsValid(row.buttons) then row.buttons:SetPaintBackground(false) end
     end
 end
 
@@ -232,27 +216,30 @@ function PANEL:shouldSkip()
 end
 
 function PANEL:updateAttributesLabel()
-    if IsValid(self.attrLabelText) then
-        local total = hook.Run("GetMaxStartingAttributePoints", LocalPlayer(), lia.config.get("StartingAttributePoints", 30))
-        local attribs = self:getContext("attribs", {})
-        local sum = 0
-        for _, quantity in pairs(attribs) do
-            sum = sum + quantity
-        end
+    local total = hook.Run("GetMaxStartingAttributePoints", LocalPlayer(), lia.config.get("StartingAttributePoints", 30)) or 0
+    local attribs = self:getContext("attribs", {})
+    local sum = 0
+    for _, quantity in pairs(attribs) do
+        sum = sum + quantity
+    end
 
-        local left = math.max((total or 0) - sum, 0)
-        self.attrLabelText:SetText(L("attributesModuleName"):upper() .. " - " .. left .. " " .. L("pointsLeft"):lower())
+    local left = math.max(total - sum, 0)
+    if IsValid(self.attrLabelText) then
+        self.attrLabelText:SetText(L("attributesModuleName"))
         self.attrLabelText:SizeToContents()
     end
 
-    if IsValid(self.attrLabel) then self.attrLabel:InvalidateLayout(true) end
+    if IsValid(self.pointsLabel) then
+        self.pointsLabel:SetText(left .. " " .. L("pointsLeft"):lower())
+        self.pointsLabel:SizeToContents()
+    end
 end
 
 function PANEL:validate()
     for _, info in ipairs({{self.nameEntry, "name"}, {self.descEntry, "desc"}}) do
         if IsValid(info[1]) then
-            local val = string.Trim(info[1]:GetValue() or "")
-            if val == "" then return false, L("requiredFieldError", info[2]) end
+            local value = string.Trim(info[1]:GetValue() or "")
+            if value == "" then return false, L("requiredFieldError", info[2]) end
         end
     end
 
@@ -263,8 +250,7 @@ function PANEL:validate()
         if #descWithoutSpaces < minLength then return false, L("descMinLen", minLength) end
     end
 
-    local factionID = self.factionCombo:GetSelectedData()
-    if not factionID then return false, L("requiredFieldError", "faction") end
+    if not IsValid(self.factionCombo) or not self.factionCombo:GetSelectedData() then return false, L("requiredFieldError", "faction") end
     return true
 end
 
@@ -273,7 +259,7 @@ function PANEL:onFactionSelected(fac)
     self:setContext("model", 1)
     self:updateModelPanel()
     self:updateNameAndDescForFaction(fac.index)
-    lia.gui.character:clickSound()
+    if IsValid(lia.gui.character) then lia.gui.character:clickSound() end
 end
 
 function PANEL:updateNameAndDescForFaction(factionIndex)
@@ -285,10 +271,9 @@ function PANEL:updateNameAndDescForFaction(factionIndex)
         local currentName = string.Trim(self.nameEntry:GetValue() or "")
         if currentName == "" or nameOverride then
             timer.Simple(0.01, function()
-                if IsValid(self) and IsValid(self.nameEntry) then
-                    self.nameEntry:SetValue(defaultName)
-                    self:setContext("name", defaultName)
-                end
+                if not IsValid(self) or not IsValid(self.nameEntry) then return end
+                self.nameEntry:SetValue(defaultName)
+                self:setContext("name", defaultName)
             end)
         end
     end
@@ -297,10 +282,9 @@ function PANEL:updateNameAndDescForFaction(factionIndex)
         local currentDesc = string.Trim(self.descEntry:GetValue() or "")
         if currentDesc == "" or descOverride then
             timer.Simple(0.01, function()
-                if IsValid(self) and IsValid(self.descEntry) then
-                    self.descEntry:SetValue(defaultDesc)
-                    self:setContext("desc", defaultDesc)
-                end
+                if not IsValid(self) or not IsValid(self.descEntry) then return end
+                self.descEntry:SetValue(defaultDesc)
+                self:setContext("desc", defaultDesc)
             end)
         end
     end
@@ -316,42 +300,28 @@ function PANEL:updateContext()
     end
 
     if IsValid(self.factionCombo) then
-        local factionUniqueID = self.factionCombo:GetSelectedData()
-        if factionUniqueID then
-            local faction = lia.faction.teams[factionUniqueID]
-            if faction then self:setContext("faction", faction.index) end
-        end
+        local factionID = self.factionCombo:GetSelectedData()
+        local faction = factionID and lia.faction.teams[factionID] or nil
+        if faction then self:setContext("faction", faction.index) end
     end
 end
 
 function PANEL:onDisplay()
-    local n = IsValid(self.nameEntry) and self.nameEntry:GetValue() or ""
-    local d = IsValid(self.descEntry) and self.descEntry:GetValue() or ""
-    local f = self:getContext("faction")
-    self:Clear()
-    self:Init()
-    if IsValid(self.nameEntry) then self.nameEntry:SetValue(n) end
-    if IsValid(self.descEntry) then self.descEntry:SetValue(d) end
-    if f then
-        self.factionCombo:ChooseOptionData(f)
-        self:setContext("faction", f)
-        self:updateModelPanel()
-        self:updateNameAndDescForFaction(f)
+    local factionIndex = self:getContext("faction")
+    local factionID = factionIndex and self:getFactionChoiceID(factionIndex) or nil
+    if factionID and IsValid(self.factionCombo) then
+        self._suppressFactionSelect = true
+        self.factionCombo:ChooseOptionData(factionID)
+        self._suppressFactionSelect = false
     end
-
+    if IsValid(self.nameEntry) then self.nameEntry:SetValue(self:getContext("name", self.nameEntry:GetValue() or "")) end
+    if IsValid(self.descEntry) then self.descEntry:SetValue(self:getContext("desc", self.descEntry:GetValue() or "")) end
     if IsValid(self.attribsPanel) then
         self.attribsPanel:onDisplay()
         self:styleAttribsPanel()
-        timer.Simple(0.01, function() if IsValid(self) then self:updateAttributesLabel() end end)
-    else
-        timer.Simple(0.1, function()
-            if IsValid(self) and IsValid(self.attribsPanel) then
-                self.attribsPanel:onDisplay()
-                self:styleAttribsPanel()
-                self:updateAttributesLabel()
-            end
-        end)
     end
+
+    self:updateAttributesLabel()
 end
 
 vgui.Register("liaCharacterBiography", PANEL, "liaCharacterCreateStep")

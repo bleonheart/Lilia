@@ -26,6 +26,8 @@ function PANEL:Init()
     self.radius = 6
     self.icon = nil
     self.icon_size = 16
+    self.text_align = TEXT_ALIGN_CENTER
+    self.text_padding = 14
     self.Selected = false
     self.ShowLine = false
     self.bool_gradient = false
@@ -68,6 +70,14 @@ end
 
 function PANEL:SetTxt(text)
     self._text = tostring(text or "")
+end
+
+function PANEL:SetTextAlign(align)
+    self.text_align = align or TEXT_ALIGN_CENTER
+end
+
+function PANEL:SetTextPadding(padding)
+    self.text_padding = math.max(tonumber(padding) or 0, 0)
 end
 
 function PANEL:SetText(text)
@@ -185,15 +195,31 @@ function PANEL:Paint(w, h)
     local text = self._text or ""
 
     if text ~= "" then
-        draw.SimpleText(text, self.font or "LiliaFont.18", w * 0.5 + (self.icon and iconSize * 0.5 + 2 or 0), h * 0.5, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        local align = self.text_align or TEXT_ALIGN_CENTER
+        local padding = self.text_padding or 14
+        local textX
+        local iconX
+        if align == TEXT_ALIGN_LEFT then
+            iconX = padding
+            textX = padding + (self.icon and iconSize + 8 or 0)
+        elseif align == TEXT_ALIGN_RIGHT then
+            iconX = w - padding - iconSize
+            textX = w - padding - (self.icon and iconSize + 8 or 0)
+        else
+            textX = w * 0.5 + (self.icon and iconSize * 0.5 + 2 or 0)
+            if self.icon then
+                surface.SetFont(self.font or "LiliaFont.18")
+                local textWidth = surface.GetTextSize(text)
+                iconX = (w - textWidth - iconSize) * 0.5 - 2
+            end
+        end
+
+        draw.SimpleText(text, self.font or "LiliaFont.18", textX, h * 0.5, textColor, align, TEXT_ALIGN_CENTER)
         if self.icon then
-            surface.SetFont(self.font or "LiliaFont.18")
-            local textWidth = surface.GetTextSize(text)
-            local posX = (w - textWidth - iconSize) * 0.5 - 2
             local posY = (h - iconSize) * 0.5
             surface.SetMaterial(self.icon)
             surface.SetDrawColor(self:IsEnabled() and textColor or lia.color.theme.text)
-            surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
+            surface.DrawTexturedRect(iconX or padding, posY, iconSize, iconSize)
         end
     elseif self.icon then
         local posX = (w - iconSize) * 0.5

@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 function PANEL:Init()
     self.title = nil
     self.placeholder = L("enterText")
@@ -24,14 +24,18 @@ function PANEL:Init()
     self.textEntry.PaintOver = function(s, w, h)
         local theme = lia.color.theme
         local accent = theme.accent or theme.header or theme.theme or Color(100, 150, 200)
-        local bgColor = Color(30, 33, 40, 255)
-        lia.derma.rect(0, 0, w, h):Rad(8):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        local bgColor = theme.text_entry
+        if not IsColor(bgColor) then bgColor = theme.focus_panel end
+        if not IsColor(bgColor) and istable(theme.panel) then bgColor = theme.panel[1] end
+        if not IsColor(bgColor) then bgColor = theme.background end
+        if not IsColor(bgColor) then bgColor = Color(30, 33, 40) end
+        lia.derma.rect(0, 0, w, h):Rad(6):Color(Color(bgColor.r, bgColor.g, bgColor.b, 245)):Shape(lia.derma.SHAPE_IOS):Draw()
         s._focusFrac = Lerp(FrameTime() * 10, s._focusFrac or 0, (s:IsEditing() or s:HasFocus()) and 1 or 0)
         if s._focusFrac > 0 then
             local ac = Color(accent.r, accent.g, accent.b, math.floor(s._focusFrac * 255))
-            lia.derma.rect(0, 0, w, h):Rad(8):Color(ac):Outline(1):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(6):Color(ac):Outline(1):Draw()
         else
-            lia.derma.rect(0, 0, w, h):Rad(8):Color(Color(255, 255, 255, 10)):Outline(1):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(6):Color(Color(255, 255, 255, 10)):Outline(1):Draw()
         end
 
         local value = self:GetValue()

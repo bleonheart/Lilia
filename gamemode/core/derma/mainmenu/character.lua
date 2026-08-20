@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Hooks:
         CharMenuOpened(self)
 
@@ -378,6 +378,14 @@ function PANEL:Init()
     end
 
     hook.Add("DrawPhysgunBeam", "liaMainMenuPreDrawPhysgunBeam", function() return IsValid(lia.gui.character) end)
+    self.viewModelHookID = "liaMainMenuPreDrawViewModel" .. tostring(self)
+    self.playerHandsHookID = "liaMainMenuPreDrawPlayerHands" .. tostring(self)
+    hook.Add("PreDrawViewModel", self.viewModelHookID, function()
+        if IsValid(self) and self:IsVisible() then return true end
+    end)
+    hook.Add("PreDrawPlayerHands", self.playerHandsHookID, function()
+        if IsValid(self) and self:IsVisible() then return true end
+    end)
     hook.Remove("RenderScreenspaceEffects", "liaCharMenuDarken")
     self:Dock(FILL)
     self:MakePopup()
@@ -1119,9 +1127,23 @@ function PANEL:createStartButton()
         return
     end
 
+    if IsValid(self.menuPanel) then
+        self.menuPanel:Remove()
+        self.menuPanel = nil
+    end
+
+    if IsValid(self.logo) then
+        self.logo:Remove()
+        self.logo = nil
+    end
+
+    for _, button in pairs(self.buttons or {}) do
+        if IsValid(button) then button:Remove() end
+    end
+
+    self.buttons = {}
     self.inMainMenu = true
     local clientChar = client.getChar and client:getChar()
-    local w, h, s = ScrW() * 0.2, ScrH() * 0.04, ScrH() * 0.01
     local logoPath = lia.config.get("ServerLogo") or ""
     local mainMenuLogoEnabled = lia.config.get("MainMenuLogoEnabled", true)
     local discordURL = lia.config.get("DiscordURL", "")
@@ -1159,13 +1181,10 @@ function PANEL:createStartButton()
             text = L("createCharacter"),
             tooltip = tooltip,
             doClick = function()
-                for _, b in pairs(self.buttons) do
-                    if IsValid(b) then b:Remove() end
-                end
-
+                if self.inCharacterCreation then return end
                 self:clickSound()
                 self.isLoadMode = false
-                self:showContent(true)
+                self.activeMenuAction = "create"
                 self:createCharacterCreation()
             end
         })
@@ -1318,42 +1337,259 @@ function PANEL:createStartButton()
         })
     end
 
-    self.buttons = {}
-    for i, data in ipairs(buttonsData) do
-        local x, y = ScrW() / 2 - w / 2, ScrH() * 0.3 + (i - 1) * (h + s)
-        local btn = self:Add("liaButton")
-        btn:SetFont("LiliaFont.25")
-        btn:SetSize(w, h)
-        btn:SetPos(x, y)
-        btn:SetText(string.upper(data.text))
-        btn:SetShowLine(true)
-        btn.DoClick = data.doClick
-        if data.tooltip and data.tooltip ~= "" then
-            btn.liaToolTip = true
-            btn:SetTooltip("<font=LiliaFont.16>" .. data.tooltip .. "</font>")
-        end
-
-        local oldSetPos = btn.SetPos
-        btn.SetPos = function(b, nx, ny)
-            oldSetPos(b, nx, ny)
-            if IsValid(self) then self:UpdateLogoPosition() end
-        end
-
-        self.buttons[data.id] = btn
+    local function getThemeColor(key, fallback)
+        local theme = lia.color and lia.color.theme or {}
+        local value = theme[key]
+        if IsColor(value) then return value end
+        if istable(value) and IsColor(value[1]) then return value[1] end
+        return fallback
     end
 
+    local function withAlpha(color, alpha)
+        return Color(color.r, color.g, color.b, alpha)
+    end
+
+    local dataByID = {}
+    for _, data in ipairs(buttonsData) do
+        dataByID[data.id] = data
+    end
+
+    local primaryData = {}
+    for _, id in ipairs({"return", "load", "loadmain", "create", "staff"}) do
+        if dataByID[id] then primaryData[#primaryData + 1] = dataByID[id] end
+    end
+
+    local utilityData = {}
+    for _, id in ipairs({"mount", "discord", "workshop"}) do
+        if dataByID[id] then utilityData[#utilityData + 1] = dataByID[id] end
+    end
+
+    local disconnectData = dataByID.disconnect
+    local accent = getThemeColor("accent", getThemeColor("theme", getThemeColor("maincolor", Color(70, 160, 220))))
+    local background = getThemeColor("background", Color(18, 20, 24))
+    local focus = getThemeColor("focus_panel", Color(30, 34, 42))
+    local text = getThemeColor("text", color_white)
+    local negative = getThemeColor("negative", Color(210, 70, 70))
+    local sideW = math.Clamp(math.floor(ScrW() * 0.34), 600, 900)
+    sideW = math.min(sideW, math.max(ScrW() - 32, 1))
+    local padding = math.Clamp(math.floor(sideW * 0.07), 36, 58)
+    local contentW = math.max(sideW - padding * 2, 1)
+
+    self.menuPanel = self:Add("DPanel")
+    self.menuPanel:SetPos(0, 0)
+    self.menuPanel:SetSize(sideW, ScrH())
+    self.menuPanel:SetPaintBackground(false)
+    self.menuPanel:SetZPos(50)
+    self.menuPanel.Paint = function(_, w, h)
+        surface.SetDrawColor(withAlpha(background, 242))
+        surface.DrawRect(0, 0, w, h)
+        surface.SetDrawColor(withAlpha(focus, 125))
+        surface.DrawRect(math.max(w - 2, 0), 0, 2, h)
+        surface.SetDrawColor(withAlpha(accent, 55))
+        surface.DrawRect(math.max(w - 1, 0), 0, 1, h)
+    end
+
+    local y = math.Clamp(math.floor(ScrH() * 0.045), 34, 64)
     if mainMenuLogoEnabled and logoPath ~= "" then
-        local function setLogo(img)
-            if not IsValid(self) then return end
-            img:SetZPos(9999)
-            self:UpdateLogoPosition()
-            timer.Simple(0, function() if IsValid(img) then img:MoveToFront() end end)
+        self.menuLogo = self.menuPanel:Add("DImage")
+        self.menuLogo:SetImage(logoPath)
+        self.menuLogo:SetPos(padding, y)
+        self.menuLogo:SetSize(math.min(contentW, 220), 58)
+        self.menuLogo:SetKeepAspect(true)
+        y = y + 78
+    else
+        local schemaName = SCHEMA and (SCHEMA.name or SCHEMA.Name) or "Lilia"
+        local brand = self.menuPanel:Add("DLabel")
+        brand:SetPos(padding, y)
+        brand:SetSize(contentW, 32)
+        brand:SetFont("LiliaFont.24")
+        brand:SetText(string.upper(tostring(schemaName)))
+        brand:SetTextColor(accent)
+        brand:SetContentAlignment(4)
+        y = y + 48
+    end
+
+    local title = self.menuPanel:Add("DLabel")
+    title:SetPos(padding, y)
+    title:SetSize(contentW, 54)
+    title:SetFont("LiliaFont.40")
+    title:SetText(L("character"))
+    title:SetTextColor(text)
+    title:SetContentAlignment(4)
+    y = y + 58
+
+    local subtitle = self.menuPanel:Add("DLabel")
+    subtitle:SetPos(padding, y)
+    subtitle:SetSize(contentW, 26)
+    subtitle:SetFont("LiliaFont.16")
+    subtitle:SetText(clientChar and clientChar:getName() or L("createCharacter"))
+    subtitle:SetTextColor(withAlpha(text, 150))
+    subtitle:SetContentAlignment(4)
+    y = y + 34
+
+    local underline = self.menuPanel:Add("DPanel")
+    underline:SetPos(padding, y)
+    underline:SetSize(44, 3)
+    underline.Paint = function(_, w, h)
+        surface.SetDrawColor(accent)
+        surface.DrawRect(0, 0, w, h)
+    end
+    y = y + 28
+
+    local function applyTooltip(button, data)
+        if not data.tooltip or data.tooltip == "" then return end
+        button.liaToolTip = true
+        button:SetTooltip("<font=LiliaFont.16>" .. data.tooltip .. "</font>")
+    end
+
+    local function addActionButton(data, buttonY, selected, danger)
+        local button = self.menuPanel:Add("DButton")
+        button:SetPos(padding, buttonY)
+        button:SetSize(contentW, 70)
+        button:SetText("")
+        button:SetCursor("hand")
+        button._hover = 0
+        button.Think = function(s)
+            local target = s:IsHovered() and 1 or 0
+            s._hover = Lerp(FrameTime() * 12, s._hover or 0, target)
+        end
+        button.Paint = function(s, w, h)
+            local hover = s._hover or 0
+            local active = self.activeMenuAction and self.activeMenuAction == data.id or not self.activeMenuAction and selected
+            local baseColor = danger and negative or active and accent or focus
+            local baseAlpha = danger and 16 or active and 34 or 205
+            local hoverAlpha = danger and 34 or active and 58 or 235
+            local fill = withAlpha(baseColor, math.floor(Lerp(hover, baseAlpha, hoverAlpha)))
+            lia.derma.rect(0, 0, w, h):Rad(7):Color(fill):Shape(lia.derma.SHAPE_IOS):Draw()
+            local lineColor = danger and negative or active and accent or withAlpha(accent, 75)
+            lia.derma.rect(0, 0, w, h):Rad(7):Color(withAlpha(lineColor, math.floor(65 + hover * 85))):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw()
+            if active then
+                surface.SetDrawColor(accent)
+                surface.DrawRect(0, 10, 3, h - 20)
+            end
+            local arrowColor = danger and negative or withAlpha(text, math.floor(145 + hover * 90))
+            surface.SetDrawColor(arrowColor)
+            local cx = w - 22
+            local cy = math.floor(h * 0.5)
+            surface.DrawLine(cx - 4, cy - 5, cx + 1, cy)
+            surface.DrawLine(cx + 1, cy, cx - 4, cy + 5)
         end
 
-        self.logo = self:Add("DImage")
-        self.logo:SetImage(logoPath)
-        setLogo(self.logo)
+        local label = button:Add("DLabel")
+        label:SetPos(18, 12)
+        label:SetSize(contentW - 56, 24)
+        label:SetFont("LiliaFont.18")
+        label:SetText(data.text)
+        label:SetTextColor(danger and negative or text)
+        label:SetContentAlignment(4)
+        label:SetMouseInputEnabled(false)
+
+        local hint = button:Add("DLabel")
+        hint:SetPos(18, 35)
+        hint:SetSize(contentW - 56, 22)
+        hint:SetFont("LiliaFont.14")
+        hint:SetText(data.tooltip or "")
+        hint:SetTextColor(withAlpha(text, 125))
+        hint:SetContentAlignment(4)
+        hint:SetMouseInputEnabled(false)
+
+        button.DoClick = data.doClick
+        applyTooltip(button, data)
+        self.buttons[data.id] = button
+        return button
     end
+
+    local function addUtilityButton(data, index, rowY, count)
+        local gap = 8
+        local width = math.floor((contentW - gap * (count - 1)) / count)
+        local x = padding + (index - 1) * (width + gap)
+        if index == count then width = contentW - (x - padding) end
+        local button = self.menuPanel:Add("DButton")
+        button:SetPos(x, rowY)
+        button:SetSize(width, 44)
+        button:SetText("")
+        button:SetCursor("hand")
+        button._hover = 0
+        button.Think = function(s)
+            s._hover = Lerp(FrameTime() * 12, s._hover or 0, s:IsHovered() and 1 or 0)
+        end
+        button.Paint = function(s, w, h)
+            local hover = s._hover or 0
+            lia.derma.rect(0, 0, w, h):Rad(6):Color(withAlpha(focus, math.floor(190 + hover * 45))):Shape(lia.derma.SHAPE_IOS):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(6):Color(withAlpha(accent, math.floor(45 + hover * 75))):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw()
+        end
+
+        local label = button:Add("DLabel")
+        label:Dock(FILL)
+        label:DockMargin(8, 0, 8, 0)
+        label:SetFont("LiliaFont.14")
+        label:SetText(data.text)
+        label:SetTextColor(text)
+        label:SetContentAlignment(5)
+        label:SetMouseInputEnabled(false)
+        button.DoClick = data.doClick
+        applyTooltip(button, data)
+        self.buttons[data.id] = button
+    end
+
+    for i, data in ipairs(primaryData) do
+        addActionButton(data, y, i == 1, false)
+        y = y + 82
+    end
+
+    if #utilityData > 0 then
+        y = y + 5
+        local utilityLabel = self.menuPanel:Add("DLabel")
+        utilityLabel:SetPos(padding, y)
+        utilityLabel:SetSize(contentW, 20)
+        utilityLabel:SetFont("LiliaFont.14")
+        utilityLabel:SetText(L("utilities"):upper())
+        utilityLabel:SetTextColor(withAlpha(text, 115))
+        utilityLabel:SetContentAlignment(4)
+        y = y + 27
+        for i, data in ipairs(utilityData) do
+            addUtilityButton(data, i, y, #utilityData)
+        end
+        y = y + 56
+    end
+
+    if disconnectData then
+        y = y + 8
+        addActionButton(disconnectData, y, false, true)
+    end
+
+    local status = self.menuPanel:Add("DPanel")
+    status:SetPos(padding, math.max(ScrH() - 116, y + 86))
+    status:SetSize(math.min(contentW, 230), 64)
+    status:SetPaintBackground(false)
+    status.Paint = function(_, w, h)
+        lia.derma.rect(0, 0, w, h):Rad(7):Color(withAlpha(focus, 185)):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(7):Color(withAlpha(accent, 55)):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw()
+        surface.SetDrawColor(75, 205, 105, 220)
+        surface.DrawRect(16, 40, 7, 7)
+    end
+
+    local countLabel = status:Add("DLabel")
+    countLabel:SetPos(16, 7)
+    countLabel:SetSize(200, 26)
+    countLabel:SetFont("LiliaFont.18")
+    countLabel:SetTextColor(text)
+    countLabel:SetContentAlignment(4)
+
+    local onlineLabel = status:Add("DLabel")
+    onlineLabel:SetPos(30, 32)
+    onlineLabel:SetSize(190, 22)
+    onlineLabel:SetFont("LiliaFont.14")
+    onlineLabel:SetTextColor(withAlpha(text, 150))
+    onlineLabel:SetContentAlignment(4)
+    onlineLabel:SetText(L("online"))
+
+    status.Think = function()
+        if not IsValid(countLabel) then return end
+        local value = player.GetCount() .. " / " .. game.MaxPlayers()
+        if countLabel:GetText() ~= value then countLabel:SetText(value) end
+    end
+
 end
 
 function PANEL:addTab(name, callback, justClick, height)
@@ -1404,6 +1640,7 @@ function PANEL:backToMainMenu()
     end
 
     self.buttons = {}
+    self.activeMenuAction = nil
     self.isLoadMode = false
     self.disableClientModel = false
     self.inCharacterCreation = false
@@ -1494,16 +1731,12 @@ function PANEL:createCharacterCreation()
         end
     end
 
-    for _, b in pairs(self.buttons) do
-        if IsValid(b) then b:Remove() end
-    end
-
-    self.buttons = {}
     if IsValid(self.bgLoader) then self.bgLoader:Remove() end
     self.content:Clear()
     self.content:InvalidateLayout(true)
-    self.content:Add("liaCharacterCreation")
+    self.activeMenuAction = "create"
     self.inCharacterCreation = true
+    self.content:Add("liaCharacterCreation")
 end
 
 function PANEL:createStaffCharacter()
@@ -1888,33 +2121,33 @@ end
 
 function PANEL:UpdateLogoPosition()
     if not IsValid(self.logo) then return end
+    if IsValid(self.menuPanel) then
+        local panelX, panelY = self.menuPanel:GetPos()
+        local panelW = self.menuPanel:GetWide()
+        local maxW = math.min(panelW, 360)
+        local logoW = maxW
+        local logoH = math.min(math.floor(logoW * 0.6), 150)
+        local logoY = math.max(20, panelY - logoH - 16)
+        self.logo:SetPos(panelX + math.floor((panelW - logoW) * 0.5), logoY)
+        self.logo:SetSize(logoW, logoH)
+        self.logo:SetKeepAspect(true)
+        return
+    end
+
     local pad = ScrH() * 0.03
     local baseSize = math.max(ScrW() * 0.15, 300)
     local logoW, logoH = baseSize * 0.95, baseSize * 0.6 * 0.95
-    local left, right, top = math.huge, -math.huge, math.huge
-    for _, v in pairs(self.buttons) do
-        if IsValid(v) then
-            local x, y = v:GetPos()
-            left = math.min(left, x)
-            right = math.max(right, x + v:GetWide())
-            top = math.min(top, y)
-        end
-    end
-
-    top = top == math.huge and ScrH() * 0.5 or top
-    local center = (left + right) * 0.5
-    local maxLogoW = math.min(logoW, ScrW() * 0.8)
-    local maxLogoH = math.min(logoH, ScrH() * 0.3)
-    logoW = maxLogoW
-    logoH = maxLogoH
-    local logoX = math.max(pad, math.min(center - logoW * 0.5, ScrW() - logoW - pad))
-    local logoY = math.max(pad, top - logoH - pad)
-    self.logo:SetPos(logoX, logoY)
-    self.logo:SetSize(logoW, logoH)
+    self.logo:SetPos(pad, pad)
+    self.logo:SetSize(math.min(logoW, ScrW() * 0.8), math.min(logoH, ScrH() * 0.3))
     self.logo:SetKeepAspect(true)
 end
 
 function PANEL:showContent(disableBg)
+    if IsValid(self.menuPanel) then
+        self.menuPanel:Remove()
+        self.menuPanel = nil
+    end
+
     if IsValid(self.infoFrame) then self.infoFrame:Remove() end
     if IsValid(self.bgLoader) then self.bgLoader:Remove() end
     if IsValid(self.background) then self.background:Remove() end
@@ -2067,6 +2300,8 @@ function PANEL:OnRemove()
     end
 
     hook.Remove("DrawPhysgunBeam", "liaMainMenuPreDrawPhysgunBeam")
+    if self.viewModelHookID then hook.Remove("PreDrawViewModel", self.viewModelHookID) end
+    if self.playerHandsHookID then hook.Remove("PreDrawPlayerHands", self.playerHandsHookID) end
     hook.Remove("RenderScreenspaceEffects", "liaCharMenuDarken")
     if self.charListUpdateHook then hook.Remove("CharListUpdated", self.charListUpdateHook) end
     if self.adminPrivilegesUpdateHook then hook.Remove("AdminPrivilegesUpdated", self.adminPrivilegesUpdateHook) end

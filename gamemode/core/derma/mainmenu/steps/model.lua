@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Hooks:
         FilterCharModels(Player client, table faction, any data, any index)
 
@@ -202,46 +202,30 @@ end
 
 function PANEL:addLabel(text, parent)
     local container = IsValid(parent) and parent or self
-    local header = container:Add("liaHeaderPanel")
-    header:Dock(TOP)
-    header:DockMargin(0, 0, 0, 16)
-    header:SetTall(32)
-    local accentColor = lia.color.theme.theme
-    header:SetLineColor(accentColor)
-    header:SetLineWidth(2)
-    local lbl = header:Add("DLabel")
-    lbl:SetFont("LiliaFont.18")
-    lbl:SetText(L(text):upper())
-    lbl:SizeToContents()
-    lbl:Dock(FILL)
-    lbl:DockMargin(8, 0, 8, 0)
-    local textColor = lia.color.theme.text or Color(220, 220, 220)
-    lbl:SetTextColor(textColor)
-    lbl:SetContentAlignment(5)
-    header.label = lbl
-    return header
+    local label = container:Add("DLabel")
+    label:Dock(TOP)
+    label:DockMargin(2, 0, 2, 12)
+    label:SetTall(24)
+    label:SetFont("LiliaFont.18")
+    label:SetText(L(text))
+    label:SetTextColor(lia.color.theme.text or color_white)
+    label:SetContentAlignment(4)
+    label.label = label
+    return label
 end
 
 function PANEL:addEntryHeader(text, parent)
     local container = IsValid(parent) and parent or (IsValid(self.controlsCanvas) and self.controlsCanvas or self.controls)
-    local header = container:Add("liaHeaderPanel")
-    header:Dock(TOP)
-    header:DockMargin(0, 12, 0, 12)
-    header:SetTall(32)
-    local accentColor = lia.color.theme.theme
-    header:SetLineColor(accentColor)
-    header:SetLineWidth(2)
-    local lbl = header:Add("DLabel")
-    lbl:SetFont("LiliaFont.18")
-    lbl:SetText(L(text):upper())
-    lbl:SizeToContents()
-    lbl:Dock(FILL)
-    lbl:DockMargin(8, 0, 8, 0)
-    local textColor = lia.color.theme.text or Color(220, 220, 220)
-    lbl:SetTextColor(textColor)
-    lbl:SetContentAlignment(5)
-    header.label = lbl
-    return header
+    local label = container:Add("DLabel")
+    label:Dock(TOP)
+    label:DockMargin(0, 8, 0, 8)
+    label:SetTall(22)
+    label:SetFont("LiliaFont.18")
+    label:SetText(L(text))
+    label:SetTextColor(lia.color.theme.text or color_white)
+    label:SetContentAlignment(4)
+    label.label = label
+    return label
 end
 
 function PANEL:addCustomizationSectionPanel()
@@ -252,8 +236,13 @@ function PANEL:addCustomizationSectionPanel()
     section:DockPadding(12, 12, 12, 12)
     section:SetTall(0)
     section.Paint = function(_, w, h)
-        local bgColor = Color(25, 28, 35, 220)
-        lia.derma.rect(0, 0, w, h):Rad(10):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        local theme = lia.color and lia.color.theme or {}
+        local accent = theme.accent or theme.theme or theme.maincolor or color_white
+        local bgColor = theme.focus_panel or theme.background or Color(25, 28, 35)
+        if istable(bgColor) then bgColor = bgColor[1] end
+        if not IsColor(bgColor) then bgColor = Color(25, 28, 35) end
+        lia.derma.rect(0, 0, w, h):Rad(6):Color(Color(bgColor.r, bgColor.g, bgColor.b, 220)):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(6):Color(Color(accent.r, accent.g, accent.b, 48)):Outline(1):Draw()
     end
 
     section.PerformLayout = function(s, w, h)
@@ -318,7 +307,7 @@ function PANEL:addBodygroupControls(entity, defaultGroups)
         bodygroupLabel:SetText(entity:GetBodygroupName(i))
         bodygroupLabel:SetFont("LiliaFont.16")
         bodygroupLabel:SetTextColor(lia.color.theme.text or color_white)
-        bodygroupLabel:SetContentAlignment(5)
+        bodygroupLabel:SetContentAlignment(4)
         bodygroupLabel:SetTall(20)
         local slider = section:Add("liaSlider")
         slider:Dock(TOP)
@@ -505,7 +494,7 @@ end
 
 function PANEL:paintIcon(icon, w, h)
     if self:getContext("model") ~= icon.index then return end
-    local col = lia.config.get("Color", color_white)
+    local col = lia.color.theme.accent or lia.color.theme.theme or lia.config.get("Color", color_white)
     surface.SetDrawColor(col.r, col.g, col.b, 200)
     for i = 1, 3 do
         local o = i * 2

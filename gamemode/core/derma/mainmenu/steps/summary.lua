@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Hooks:
         GetCharacterCreationSummary(Player client, table context, table summary, Panel panel)
 
@@ -80,28 +80,31 @@ function PANEL:Init()
     self.title:Dock(TOP)
     self.title:DockMargin(0, 0, 0, 4)
     self.title:SetTall(32)
-    local accentColor = lia.color.theme.theme
+    local accentColor = lia.color.theme.accent or lia.color.theme.theme or lia.color.theme.maincolor or color_white
     self.title:SetLineColor(accentColor)
-    self.title:SetLineWidth(2)
+    self.title:SetLineWidth(0)
     local lbl = self.title:Add("DLabel")
     lbl:SetFont("LiliaFont.18")
-    lbl:SetText(tostring(L("summary")):upper())
+    lbl:SetText(tostring(L("summary")))
     lbl:SizeToContents()
     lbl:Dock(FILL)
     lbl:DockMargin(8, 0, 8, 0)
     local textColor = lia.color.theme.text or Color(220, 220, 220)
     lbl:SetTextColor(textColor)
-    lbl:SetContentAlignment(5)
+    lbl:SetContentAlignment(4)
     self.title.label = lbl
     self.frame = self:Add("DPanel")
     self.frame:Dock(TOP)
     self.frame:DockMargin(0, 8, 0, 16)
     self.frame:DockPadding(16, 18, 16, 18)
     self.frame.Paint = function(_, w, h)
-        local bgColor = Color(25, 28, 35, 250)
-        lia.derma.rect(0, 0, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
-        lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
-        lia.derma.rect(0, 0, w, 5):Radii(12, 12, 0, 0):Color(lia.config.get("Color") or Color(255, 255, 255)):Draw()
+        local theme = lia.color and lia.color.theme or {}
+        local accent = theme.accent or theme.theme or theme.maincolor or color_white
+        local bgColor = theme.focus_panel or theme.background or Color(25, 28, 35)
+        if istable(bgColor) then bgColor = bgColor[1] end
+        if not IsColor(bgColor) then bgColor = Color(25, 28, 35) end
+        lia.derma.rect(0, 0, w, h):Rad(6):Color(Color(bgColor.r, bgColor.g, bgColor.b, 218)):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(6):Color(Color(accent.r, accent.g, accent.b, 52)):Outline(1):Draw()
     end
 
     self.create = self.frame:Add("liaButton")
@@ -110,6 +113,9 @@ function PANEL:Init()
     self.create:DockMargin(0, 12, 0, 0)
     self.create:SetTall(44)
     self.create:SetText((L("create") .. " " .. L("character")):upper())
+    self.create:SetRadius(6)
+    local createAccent = lia.color.theme.accent or lia.color.theme.theme or lia.color.theme.maincolor or color_white
+    self.create:PaintButton(Color(createAccent.r, createAccent.g, createAccent.b, 52), Color(createAccent.r, createAccent.g, createAccent.b, 92))
     self.create.DoClick = function()
         local createPanel = lia.gui and lia.gui.charCreate
         if IsValid(createPanel) and isfunction(createPanel.onFinish) then createPanel:onFinish() end
@@ -214,7 +220,7 @@ function PANEL:addEntry(entry)
     local header = self.list:Add("liaHeaderPanel")
     header:Dock(TOP)
     header:DockMargin(0, 0, 0, 12)
-    local accentColor = lia.color.theme.theme
+    local accentColor = lia.color.theme.accent or lia.color.theme.theme or lia.color.theme.maincolor or color_white
     header:SetLineColor(accentColor)
     header:SetLineWidth(2)
     header:DockPadding(10, 10, 10, 12)
@@ -227,7 +233,7 @@ function PANEL:addEntry(entry)
     title:SetContentAlignment(4)
     local value = header:Add("DLabel")
     value:SetFont("LiliaFont.17")
-    value:SetTextColor(Color(230, 230, 230))
+    value:SetTextColor(lia.color.theme.text or color_white)
     value:SetWrap(true)
     value:SetAutoStretchVertical(true)
     value:SetText(tostring(entry.value or ""))

@@ -89,11 +89,9 @@ end
 
 local DEBUG_TRACE_HULL_MINS = Vector(-6, -6, -6)
 local DEBUG_TRACE_HULL_MAXS = Vector(6, 6, 6)
-
 local function getDebugTrace(client)
     local trace = client:GetEyeTrace()
     if IsValid(trace.Entity) then return trace end
-
     local startPos = client:GetShootPos()
     local endPos = startPos + client:GetAimVector() * 32768
     local hullTrace = util.TraceHull({
@@ -369,11 +367,7 @@ SWEP:RegisterMode("quick", {
     CanUse = function(client) return IsValid(client) and (client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty()) end,
     PrimaryAttack = function(_, client)
         local target = isSelfSelectHeld(client) and client or client:GetEyeTrace().Entity
-        if not IsValid(target) then
-            client:notifyInfoLocalized("noOptionsAvailable")
-            return
-        end
-
+        if not IsValid(target) then return end
         closeAdminStickMenu()
         client.AdminStickTarget = target
         hook.Run("OpenAdminStickQuickMenu", target)

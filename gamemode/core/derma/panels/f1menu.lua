@@ -338,6 +338,58 @@ local function resolveCharInfoSectionName(sectionName)
 end
 
 -- theme colors are read directly from lia.color.theme
+local function themeColor(value, fallback)
+    if IsColor(value) then return value end
+    return fallback
+end
+
+local function colorAlpha(color, alpha)
+    return Color(color.r, color.g, color.b, alpha)
+end
+
+local function blendThemeColor(base, tint, fraction, alpha)
+    fraction = math.Clamp(fraction or 0, 0, 1)
+    return Color(math.Round(Lerp(fraction, base.r, tint.r)), math.Round(Lerp(fraction, base.g, tint.g)), math.Round(Lerp(fraction, base.b, tint.b)), alpha or math.Round(Lerp(fraction, base.a or 255, tint.a or 255)))
+end
+
+local function getMenuPalette()
+    local theme = lia.color and lia.color.theme or {}
+    local accent = themeColor(theme.accent or theme.header or theme.theme, Color(64, 170, 255))
+    local text = themeColor(theme.text, Color(240, 247, 247))
+    local backgroundBase = themeColor(theme.background, Color(2, 13, 18))
+    local panelBase = themeColor(theme.backgroundPanelPopup, Color(5, 18, 23))
+    local buttonBase = themeColor(theme.button, panelBase)
+    local buttonHoverBase = themeColor(theme.buttonHovered, buttonBase)
+    local borderBase = themeColor(theme.border, accent)
+    return {
+        accent = accent,
+        text = text,
+        textSecondary = themeColor(theme.textSecondary, blendThemeColor(text, backgroundBase, 0.14, 255)),
+        textMuted = themeColor(theme.textMuted, blendThemeColor(text, backgroundBase, 0.3, 255)),
+        textDim = themeColor(theme.textMuted, blendThemeColor(text, backgroundBase, 0.42, 255)),
+        textDisabled = blendThemeColor(text, backgroundBase, 0.58, 255),
+        topBar = themeColor(theme.f1TopBar, blendThemeColor(backgroundBase, accent, 0.12, 250)),
+        surface = themeColor(theme.f1Surface, blendThemeColor(panelBase, accent, 0.12, 220)),
+        surfaceRaised = themeColor(theme.f1SurfaceRaised, blendThemeColor(panelBase, accent, 0.2, 238)),
+        sidebar = themeColor(theme.f1Sidebar, blendThemeColor(panelBase, accent, 0.17, 237)),
+        content = themeColor(theme.f1Content, blendThemeColor(panelBase, accent, 0.1, 226)),
+        inset = themeColor(theme.f1Inset, blendThemeColor(backgroundBase, accent, 0.16, 185)),
+        row = themeColor(theme.f1Row, blendThemeColor(backgroundBase, accent, 0.13, 130)),
+        rowStrong = themeColor(theme.f1RowStrong, blendThemeColor(backgroundBase, accent, 0.14, 210)),
+        field = themeColor(theme.f1Field, blendThemeColor(panelBase, accent, 0.18, 235)),
+        modelSurface = themeColor(theme.f1ModelSurface, blendThemeColor(backgroundBase, accent, 0.1, 175)),
+        interactive = themeColor(theme.f1Interactive, blendThemeColor(buttonBase, accent, 0.2, 225)),
+        interactiveHover = themeColor(theme.f1InteractiveHover, blendThemeColor(buttonHoverBase, accent, 0.28, 235)),
+        hoverSoft = themeColor(theme.f1HoverSoft, colorAlpha(accent, 10)),
+        hover = themeColor(theme.f1Hover, colorAlpha(accent, 18)),
+        lineSoft = themeColor(theme.f1LineSoft, colorAlpha(borderBase, 22)),
+        line = themeColor(theme.f1Line, colorAlpha(borderBase, 34)),
+        neutralBorder = themeColor(theme.f1NeutralBorder, blendThemeColor(text, backgroundBase, 0.62, 28)),
+        neutralBorderStrong = themeColor(theme.f1NeutralBorderStrong, blendThemeColor(text, backgroundBase, 0.5, 42)),
+        overlay = themeColor(theme.f1Overlay, blendThemeColor(Color(0, 0, 0), accent, 0.08, 110))
+    }
+end
+
 local function drawPanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
@@ -467,8 +519,8 @@ function PANEL:Init()
     self.header:SetTall(184)
     self.header:DockMargin(0, 0, 0, 16)
     self.header.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, w, h, 8, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 80))
     end
 
     self.avatarWrap = self.header:Add("DPanel")
@@ -483,7 +535,7 @@ function PANEL:Init()
     self.identity.Paint = function() end
     self.characterName = self.identity:Add("DLabel")
     self.characterName:SetFont("LiliaFont.30")
-    self.characterName:SetTextColor(Color(242, 247, 247))
+    self.characterName:SetTextColor(getMenuPalette().text)
     self.characterName:SetPos(0, 4)
     self.characterName:SetSize(700, 40)
     self.characterSubtitle = self.identity:Add("DLabel")
@@ -538,11 +590,11 @@ end
 function PANEL:CreateStatCard(parent, title, icon, valueFunc)
     local card = parent:Add("DPanel")
     card.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, w, h, 9, Color(9, 24, 29, 238), Color(accent.r, accent.g, accent.b, 80))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, w, h, 9, getMenuPalette().surfaceRaised, Color(accent.r, accent.g, accent.b, 80))
         drawIcon(icon, 22, 20, 40, accent)
         draw.SimpleText(string.upper(title), "LiliaFont.17", 76, 28, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        draw.SimpleText(valueFunc() or "", "LiliaFont.25", 22, h - 60, Color(242, 247, 247), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText(valueFunc() or "", "LiliaFont.25", 22, h - 60, getMenuPalette().text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
     return card
 end
@@ -576,16 +628,16 @@ function PANEL:CreateIdentityAction(parent, width, icon, title, value, doClick)
     action:DockMargin(0, 0, 12, 0)
     if action.SetText then action:SetText("") end
     action.Paint = function(s, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getMenuPalette().accent
         local hovered = s.IsHovered and s:IsHovered() or false
         local borderAlpha = hovered and 100 or 60
-        local background = hovered and Color(16, 34, 40, 235) or Color(13, 30, 35, 225)
+        local background = hovered and getMenuPalette().interactiveHover or getMenuPalette().interactive
         drawPanel(0, 0, w, h, 6, background, Color(accent.r, accent.g, accent.b, borderAlpha))
         if title ~= "" then
-            draw.SimpleText(title, "LiliaFont.16", 16, 8, Color(165, 187, 188), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-            draw.SimpleText(value or "", "LiliaFont.18", 16, h - 8, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+            draw.SimpleText(title, "LiliaFont.16", 16, 8, getMenuPalette().textMuted, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            draw.SimpleText(value or "", "LiliaFont.18", 16, h - 8, getMenuPalette().textSecondary, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
         else
-            draw.SimpleText(value or "", "LiliaFont.18", 16, h * 0.5, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText(value or "", "LiliaFont.18", 16, h * 0.5, getMenuPalette().textSecondary, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end
     end
 
@@ -623,22 +675,22 @@ function PANEL:CreateTextEntryWithBackgroundAndLabel(parent, name, labelText, ma
     entry:Dock(FILL)
     local contentX = 18
     entry.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, w, h, 8, Color(10, 25, 30, 232), Color(accent.r, accent.g, accent.b, 45))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, w, h, 8, getMenuPalette().field, Color(accent.r, accent.g, accent.b, 45))
     end
 
     local lbl = entry:Add("DLabel")
     lbl:SetFont("LiliaFont.17")
     lbl:SetText(labelText or "")
-    lbl:SetTextColor(Color(165, 187, 188))
+    lbl:SetTextColor(getMenuPalette().textMuted)
     lbl:SetPos(contentX, 13)
     lbl:SetSize(260, 22)
     local txt = entry:Add("DTextEntry")
     txt:SetPos(contentX, 39)
     txt:SetTall(30)
     txt:SetFont("LiliaFont.18")
-    txt:SetTextColor(Color(230, 239, 239))
-    txt:SetCursorColor(lia.color.theme.accent)
+    txt:SetTextColor(getMenuPalette().textSecondary)
+    txt:SetCursorColor(getMenuPalette().accent)
     txt:SetPaintBackground(false)
     txt:SetPaintBackground(false)
     txt:SetPaintBorderEnabled(false)
@@ -683,16 +735,16 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
     entry:Dock(FILL)
     local contentX = 16
     entry.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, w, h, 8, Color(10, 25, 30, 232), Color(accent.r, accent.g, accent.b, 45))
-        draw.SimpleText(labelText or "", "LiliaFont.17", contentX, 12, Color(165, 187, 188), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, w, h, 8, getMenuPalette().field, Color(accent.r, accent.g, accent.b, 45))
+        draw.SimpleText(labelText or "", "LiliaFont.17", contentX, 12, getMenuPalette().textMuted, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
 
     local bar = entry:Add("liaProgressBar")
     bar:SetPos(contentX, 45)
     bar:SetTall(22)
     entry.PerformLayout = function(s) bar:SetWide(math.max(s:GetWide() - contentX - 16, 80)) end
-    bar:SetBarColor(lia.color.theme.accent)
+    bar:SetBarColor(getMenuPalette().accent)
     bar.Think = function(barSelf)
         local mn = isfunction(minFunc) and minFunc() or tonumber(minFunc) or 0
         local mx = isfunction(maxFunc) and maxFunc() or tonumber(maxFunc) or 1
@@ -754,8 +806,8 @@ function PANEL:GenerateSections()
             frame:DockMargin(0, 0, 0, 14)
             frame:DockPadding(14, 50, 14, 14)
             frame.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-                drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
+                local accent = getMenuPalette().accent
+                drawPanel(0, 0, w, h, 8, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 80))
                 draw.SimpleText(string.upper(L(section.name)), "LiliaFont.18", 17, 14, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             end
 
@@ -858,10 +910,10 @@ function PANEL:Init()
     local schemaIconMat = SCHEMA and SCHEMA.icon and Material(SCHEMA.icon, "smooth") or Material("lilia.png", "smooth")
     local schemaName = SCHEMA and SCHEMA.name
     self.topBar.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-        surface.SetDrawColor(4, 13, 17, 250)
+        local accent = getMenuPalette().accent
+        surface.SetDrawColor(getMenuPalette().topBar)
         surface.DrawRect(0, 0, w, h)
-        surface.SetDrawColor(255, 255, 255, 5)
+        surface.SetDrawColor(getMenuPalette().hoverSoft)
         surface.DrawRect(0, 0, w, 1)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 185)
         surface.DrawRect(0, h - 2, w, 2)
@@ -873,7 +925,7 @@ function PANEL:Init()
         surface.SetMaterial(schemaIconMat)
         surface.SetDrawColor(255, 255, 255, 245)
         surface.DrawTexturedRect(0, 6, 46, 46)
-        draw.SimpleText(L(schemaName), "LiliaFont.25", 58, h * 0.5, Color(244, 248, 248), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(L(schemaName), "LiliaFont.25", 58, h * 0.5, getMenuPalette().text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 
     self.headerUtility = self.topBar:Add("DPanel")
@@ -883,30 +935,30 @@ function PANEL:Init()
     self.statusGroup = self.topBar:Add("DPanel")
     self.statusGroup:SetSize(380, 50)
     self.statusGroup.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, w, h, 7, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 70))
-        surface.SetDrawColor(255, 255, 255, 18)
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, w, h, 7, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 70))
+        surface.SetDrawColor(getMenuPalette().line)
         surface.DrawRect(150, 9, 1, h - 18)
     end
 
     self.onlineDot = self.statusGroup:Add("DPanel")
     self.onlineDot:SetSize(12, 12)
     self.onlineDot.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getMenuPalette().accent
         draw.RoundedBox(math.floor(w * 0.5), 0, 0, w, h, Color(accent.r, accent.g, accent.b, 245))
     end
 
     self.onlineLabel = self.statusGroup:Add("DLabel")
     self.onlineLabel:SetFont("LiliaFont.17")
-    self.onlineLabel:SetTextColor(Color(220, 232, 232))
+    self.onlineLabel:SetTextColor(getMenuPalette().textSecondary)
     self.onlineLabel:SetContentAlignment(4)
     self.onlineLabel:SetTall(50)
     self.timeIcon = self.statusGroup:Add("DPanel")
     self.timeIcon:SetSize(22, 50)
-    self.timeIcon.Paint = function(_, _, h) drawIcon(Material("icon16/time.png", "smooth"), 1, math.floor(h * 0.5) - 8, 16, Color(185, 203, 203)) end
+    self.timeIcon.Paint = function(_, _, h) drawIcon(Material("icon16/time.png", "smooth"), 1, math.floor(h * 0.5) - 8, 16, getMenuPalette().textMuted) end
     self.timeLabel = self.statusGroup:Add("DLabel")
     self.timeLabel:SetFont("LiliaFont.17")
-    self.timeLabel:SetTextColor(Color(220, 232, 232))
+    self.timeLabel:SetTextColor(getMenuPalette().textSecondary)
     self.timeLabel:SetContentAlignment(4)
     self.timeLabel:SetTall(50)
     self.statusGroup.PerformLayout = function(_, w, h)
@@ -933,8 +985,8 @@ function PANEL:Init()
     self.utilityGroup:Dock(FILL)
     self.utilityGroup:DockPadding(5, 3, 5, 3)
     self.utilityGroup.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, w, h, 7, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 70))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, w, h, 7, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 70))
     end
 
     local utilityButtons = {
@@ -977,16 +1029,16 @@ function PANEL:Init()
         button._key = key
         button._icon = Material(data.icon, "smooth")
         button.Paint = function(s, w, h)
-        local accent = lia.color.theme.accent
+            local accent = getMenuPalette().accent
             local active = self.activeTabKey == s._key
             local hovered = s:IsHovered()
             if active or hovered then
-                local background = active and Color(accent.r, accent.g, accent.b, 30) or Color(255, 255, 255, 6)
+                local background = active and Color(accent.r, accent.g, accent.b, 30) or getMenuPalette().hoverSoft
                 local outline = active and Color(accent.r, accent.g, accent.b, 110) or Color(accent.r, accent.g, accent.b, 55)
                 drawPanel(0, 0, w, h, 6, background, outline)
             end
 
-            drawIcon(s._icon, math.floor((w - 22) * 0.5), math.floor((h - 22) * 0.5), 22, active and Color(244, 248, 248) or hovered and Color(220, 232, 232) or Color(175, 195, 195))
+            drawIcon(s._icon, math.floor((w - 22) * 0.5), math.floor((h - 22) * 0.5), 22, active and getMenuPalette().text or hovered and getMenuPalette().textSecondary or getMenuPalette().textMuted)
         end
 
         button.DoClick = function() if self.tabList and self.tabList[key] then self:setActiveTab(key) end end
@@ -1053,8 +1105,8 @@ function PANEL:Init()
     self.sidebar:DockMargin(26, 0, 16, 0)
     self.sidebar:DockPadding(12, 14, 12, 14)
     self.sidebar.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, w, h, 10, Color(7, 20, 25, 237), Color(accent.r, accent.g, accent.b, 78))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, w, h, 10, getMenuPalette().sidebar, Color(accent.r, accent.g, accent.b, 78))
     end
 
     self.sidebarScroll = self.sidebar:Add("liaScrollPanel")
@@ -1071,8 +1123,8 @@ function PANEL:Init()
     self.panelWrapper:DockMargin(0, 0, 26, 0)
     self.panelWrapper:DockPadding(18, 18, 18, 18)
     self.panelWrapper.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, w, h, 10, Color(6, 18, 23, 226), Color(accent.r, accent.g, accent.b, 72))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, w, h, 10, getMenuPalette().content, Color(accent.r, accent.g, accent.b, 72))
     end
 
     self.panel = self.panelWrapper:Add("EditablePanel")
@@ -1173,18 +1225,18 @@ function PANEL:AddSidebarButton(key, name, icon)
     button._icon = resolveIconMaterial(icon, sidebarIcons[key] or Material("icon16/bullet_white.png", "smooth"))
     button:SetTooltip(localizedName)
     button.Paint = function(s, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getMenuPalette().accent
         local active = self.activeTabKey == s._key
         local hovered = s:IsHovered()
-        local bg = active and Color(accent.r, accent.g, accent.b, 28) or hovered and Color(255, 255, 255, 7) or Color(0, 0, 0, 0)
+        local bg = active and Color(accent.r, accent.g, accent.b, 28) or hovered and getMenuPalette().hover or Color(0, 0, 0, 0)
         drawPanel(0, 0, w, h, 7, bg, active and Color(accent.r, accent.g, accent.b, 120) or nil)
         if active then
             surface.SetDrawColor(accent.r, accent.g, accent.b, 240)
             surface.DrawRect(0, 7, 3, h - 14)
         end
 
-        drawIcon(s._icon, 16, 14, 24, active and Color(245, 249, 249) or Color(165, 186, 186))
-        draw.SimpleText(s._label, "LiliaFont.17", 54, h * 0.5, active and Color(245, 249, 249) or Color(191, 207, 207), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        drawIcon(s._icon, 16, 14, 24, active and getMenuPalette().text or getMenuPalette().textMuted)
+        draw.SimpleText(s._label, "LiliaFont.17", 54, h * 0.5, active and getMenuPalette().text or getMenuPalette().textMuted, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 
     button.DoClick = function()
@@ -1202,7 +1254,7 @@ function PANEL:AddSidebarSectionLabel(label)
     section:SetTall(38)
     section:DockMargin(0, 8, 0, 4)
     section.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getMenuPalette().accent
         draw.SimpleText(label, "LiliaFont.15", 4, h * 0.5, Color(accent.r, accent.g, accent.b, 210), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 28)
         surface.DrawRect(4, h - 1, w - 8, 1)
@@ -1222,18 +1274,18 @@ function PANEL:AddAdminSidebarButton(index, page)
     button._icon = resolveIconMaterial(page.icon, Material("icon16/wrench.png", "smooth"))
     button:SetTooltip(button._label)
     button.Paint = function(s, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getMenuPalette().accent
         local active = self.activeTabKey == "@admin" and self.activeAdminPageIndex == s._adminPageIndex
         local hovered = s:IsHovered()
-        local bg = active and Color(accent.r, accent.g, accent.b, 28) or hovered and Color(255, 255, 255, 7) or Color(0, 0, 0, 0)
+        local bg = active and Color(accent.r, accent.g, accent.b, 28) or hovered and getMenuPalette().hover or Color(0, 0, 0, 0)
         drawPanel(0, 0, w, h, 7, bg, active and Color(accent.r, accent.g, accent.b, 120) or nil)
         if active then
             surface.SetDrawColor(accent.r, accent.g, accent.b, 240)
             surface.DrawRect(0, 7, 3, h - 14)
         end
 
-        drawIcon(s._icon, 16, 14, 24, active and Color(245, 249, 249) or Color(165, 186, 186))
-        draw.SimpleText(s._label, "LiliaFont.17", 54, h * 0.5, active and Color(245, 249, 249) or Color(191, 207, 207), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        drawIcon(s._icon, 16, 14, 24, active and getMenuPalette().text or getMenuPalette().textMuted)
+        draw.SimpleText(s._label, "LiliaFont.17", 54, h * 0.5, active and getMenuPalette().text or getMenuPalette().textMuted, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 
     button.DoClick = function()
@@ -1335,7 +1387,10 @@ function PANEL:OnRemove()
 end
 
 function PANEL:OnThemeChanged()
-    if IsValid(self) then self:UpdateTabColors() end
+    if not IsValid(self) then return end
+    self:ApplyCurrentTheme()
+    self:UpdateTabColors()
+    self:InvalidateLayout(true)
 end
 
 function PANEL:OnAdminPrivilegesUpdated()
@@ -1390,7 +1445,7 @@ end
 
 function PANEL:Paint()
     lia.util.drawBlackBlur(self, 1, 5, 255, 225)
-    surface.SetDrawColor(0, 8, 10, 110)
+    surface.SetDrawColor(getMenuPalette().overlay)
     surface.DrawRect(0, 0, self:GetWide(), self:GetTall())
 end
 
@@ -1408,9 +1463,9 @@ function PANEL:Init()
     self.header:Dock(TOP)
     self.header:SetTall(76)
     self.header.Paint = function()
-        local textColor = lia.color.theme.text
+        local textColor = getMenuPalette().text
         draw.SimpleText("Classes", "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        draw.SimpleText("Browse and select an available class.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText("Browse and select an available class.", "LiliaFont.17", 8, 43, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
 
     self.content = self:Add("DPanel")
@@ -1421,8 +1476,8 @@ function PANEL:Init()
     self.classBrowser:DockMargin(0, 0, 14, 0)
     self.classBrowser:DockPadding(12, 12, 12, 12)
     self.classBrowser.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, panelW, panelH, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, panelW, panelH, 8, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 80))
     end
 
     self.searchRow = self.classBrowser:Add("DPanel")
@@ -1435,7 +1490,7 @@ function PANEL:Init()
     self.filterCombo:SetWide(138)
     self.filterCombo:DockMargin(10, 0, 0, 0)
     self.filterCombo:SetFont("LiliaFont.17")
-    self.filterCombo:SetTextColor(Color(205, 220, 220))
+    self.filterCombo:SetTextColor(getMenuPalette().textSecondary)
     self.filterCombo:SetContentAlignment(4)
     self.filterCombo:SetValue("All Classes")
     self.filterCombo:AddChoice("All Classes", "all")
@@ -1447,29 +1502,29 @@ function PANEL:Init()
     end
 
     self.filterCombo.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, panelW, panelH, 5, Color(5, 18, 23, 235), Color(accent.r, accent.g, accent.b, 92))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, panelW, panelH, 5, getMenuPalette().field, Color(accent.r, accent.g, accent.b, 92))
     end
 
     if IsValid(self.filterCombo.DropButton) then
         self.filterCombo.DropButton:SetWide(30)
-        self.filterCombo.DropButton.Paint = function(_, panelW, panelH) draw.SimpleText("▼", "LiliaFont.17", panelW * 0.5, panelH * 0.5, Color(190, 210, 210), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+        self.filterCombo.DropButton.Paint = function(_, panelW, panelH) draw.SimpleText("▼", "LiliaFont.17", panelW * 0.5, panelH * 0.5, getMenuPalette().textMuted, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
     end
 
     self.searchWrap = self.searchRow:Add("DPanel")
     self.searchWrap:Dock(FILL)
     self.searchWrap:DockPadding(40, 0, 8, 0)
     self.searchWrap.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, panelW, panelH, 5, Color(5, 18, 23, 235), Color(accent.r, accent.g, accent.b, 92))
-        drawIcon(Material("icon16/magnifier.png", "smooth"), 14, math.floor(panelH * 0.5) - 8, 16, Color(155, 181, 182))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, panelW, panelH, 5, getMenuPalette().field, Color(accent.r, accent.g, accent.b, 92))
+        drawIcon(Material("icon16/magnifier.png", "smooth"), 14, math.floor(panelH * 0.5) - 8, 16, getMenuPalette().textDim)
     end
 
     self.searchEntry = self.searchWrap:Add("DTextEntry")
     self.searchEntry:Dock(FILL)
     self.searchEntry:SetFont("LiliaFont.17")
-    self.searchEntry:SetTextColor(Color(225, 236, 236))
-    self.searchEntry:SetCursorColor(lia.color.theme.accent)
+    self.searchEntry:SetTextColor(getMenuPalette().textSecondary)
+    self.searchEntry:SetCursorColor(getMenuPalette().accent)
     self.searchEntry:SetPlaceholderText("Search classes...")
     self.searchEntry:SetPaintBackground(false)
     self.searchEntry:SetPaintBackground(false)
@@ -1489,17 +1544,17 @@ function PANEL:Init()
     self.previewPanel:DockMargin(0, 0, 0, 0)
     self.previewPanel:DockPadding(14, 14, 14, 14)
     self.previewPanel.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, panelW, panelH, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, panelW, panelH, 8, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 80))
     end
 
     self.previewHeader = self.previewPanel:Add("DPanel")
     self.previewHeader:Dock(TOP)
     self.previewHeader:SetTall(66)
     self.previewHeader.Paint = function()
-        local textColor = lia.color.theme.text
+        local textColor = getMenuPalette().text
         draw.SimpleText("Character Preview", "LiliaFont.25", 0, 0, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        draw.SimpleText("Preview this class appearance.", "LiliaFont.17", 0, 36, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText("Preview this class appearance.", "LiliaFont.17", 0, 36, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
 
     self.previewBody = self.previewPanel:Add("DPanel")
@@ -1509,8 +1564,8 @@ function PANEL:Init()
     self.detailsPanel:Dock(FILL)
     self.detailsPanel:DockPadding(14, 14, 14, 14)
     self.detailsPanel.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, panelW, panelH, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, panelW, panelH, 8, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 80))
     end
 
     self.content.PerformLayout = function(_, panelW)
@@ -1560,19 +1615,19 @@ function PANEL:RebuildClassList()
         button._canBe = canBe
         button._icon = resolveIconMaterial(cl.icon or cl.logo, canBe and Material("icon16/group.png", "smooth") or Material("icon16/lock.png", "smooth"))
         button.Paint = function(s, panelW, panelH)
-        local accent = lia.color.theme.accent
+            local accent = getMenuPalette().accent
             local active = self.selectedClassIndex == s._classIndex
             local hovered = s:IsHovered()
-            local bg = active and Color(accent.r, accent.g, accent.b, 28) or hovered and Color(255, 255, 255, 7) or Color(2, 14, 18, 130)
+            local bg = active and Color(accent.r, accent.g, accent.b, 28) or hovered and getMenuPalette().hover or getMenuPalette().row
             drawPanel(0, 0, panelW, panelH, 5, bg, active and Color(accent.r, accent.g, accent.b, 145) or Color(accent.r, accent.g, accent.b, 42))
             if active then
                 surface.SetDrawColor(accent.r, accent.g, accent.b, 245)
                 surface.DrawRect(0, 7, 3, panelH - 14)
             end
 
-            drawIcon(s._icon, 16, 16, 24, active and Color(240, 247, 247) or Color(175, 196, 196))
-            draw.SimpleText(s._className, "LiliaFont.18", 54, 11, active and Color(244, 248, 248) or Color(220, 232, 232), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-            draw.SimpleText(s._factionName, "LiliaFont.15", 54, 33, s._canBe and accent or Color(135, 156, 157), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            drawIcon(s._icon, 16, 16, 24, active and getMenuPalette().text or getMenuPalette().textMuted)
+            draw.SimpleText(s._className, "LiliaFont.18", 54, 11, active and getMenuPalette().text or getMenuPalette().textSecondary, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            draw.SimpleText(s._factionName, "LiliaFont.15", 54, 33, s._canBe and accent or getMenuPalette().textDisabled, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         end
 
         button.DoClick = function()
@@ -1609,8 +1664,8 @@ function PANEL:populateClassDetails(cl, canBe)
     header:DockMargin(0, 0, 0, 12)
     header:DockPadding(16, 14, 96, 14)
     header.Paint = function(_, panelW, panelH)
-        local accent, textColor = lia.color.theme.accent, lia.color.theme.text
-        drawPanel(0, 0, panelW, panelH, 6, Color(3, 16, 21, 185), Color(accent.r, accent.g, accent.b, 68))
+        local accent, textColor = getMenuPalette().accent, getMenuPalette().text
+        drawPanel(0, 0, panelW, panelH, 6, getMenuPalette().inset, Color(accent.r, accent.g, accent.b, 68))
         draw.SimpleText(className, "LiliaFont.25", 16, 15, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
 
@@ -1619,7 +1674,7 @@ function PANEL:populateClassDetails(cl, canBe)
     desc:DockMargin(0, 34, 0, 0)
     desc:SetFont("LiliaFont.17")
     desc:SetText(description)
-    desc:SetTextColor(Color(185, 204, 204))
+    desc:SetTextColor(getMenuPalette().textMuted)
     desc:SetWrap(true)
     desc:SetContentAlignment(7)
     if cl.logo then
@@ -1646,8 +1701,8 @@ function PANEL:populateClassDetails(cl, canBe)
     action:DockMargin(0, 12, 0, 0)
     action:DockPadding(14, 14, 14, 14)
     action.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, panelW, panelH, 6, Color(3, 16, 21, 185), Color(accent.r, accent.g, accent.b, 68))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, panelW, panelH, 6, getMenuPalette().inset, Color(accent.r, accent.g, accent.b, 68))
     end
 
     self:addJoinButton(action, cl, canBe)
@@ -1658,8 +1713,8 @@ function PANEL:createModelPanel(parent, cl)
     local container = parent:Add("DPanel")
     container:Dock(FILL)
     container.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
-        drawPanel(0, 0, panelW, panelH, 6, Color(2, 14, 18, 175), Color(accent.r, accent.g, accent.b, 92))
+        local accent = getMenuPalette().accent
+        drawPanel(0, 0, panelW, panelH, 6, getMenuPalette().modelSurface, Color(accent.r, accent.g, accent.b, 92))
     end
 
     local panel = container:Add("liaModelPanel")
@@ -1669,7 +1724,7 @@ function PANEL:createModelPanel(parent, cl)
     panel:SetAnimated(true)
     panel:SetAmbientLight(Color(120, 138, 148))
     panel:SetDirectionalLight(BOX_TOP, Color(255, 255, 255))
-    panel:SetDirectionalLight(BOX_FRONT, Color(220, 232, 232))
+    panel:SetDirectionalLight(BOX_FRONT, getMenuPalette().textSecondary)
     panel:SetDirectionalLight(BOX_RIGHT, Color(90, 110, 118))
     panel:SetDirectionalLight(BOX_LEFT, Color(90, 110, 118))
     local function getModels(mdl)
@@ -1767,9 +1822,9 @@ function PANEL:createModelPanel(parent, cl)
             button:SetSize(arrowSize, arrowSize)
             button:SetText("")
             button.Paint = function(s, panelW, panelH)
-        local accent = lia.color.theme.accent
-                drawPanel(0, 0, panelW, panelH, 4, s:IsHovered() and Color(accent.r, accent.g, accent.b, 30) or Color(2, 14, 18, 210), Color(accent.r, accent.g, accent.b, 100))
-                draw.SimpleText(text, "LiliaFont.24", panelW * 0.5, panelH * 0.5 - 1, Color(220, 235, 235), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                local accent = getMenuPalette().accent
+                drawPanel(0, 0, panelW, panelH, 4, s:IsHovered() and Color(accent.r, accent.g, accent.b, 30) or getMenuPalette().rowStrong, Color(accent.r, accent.g, accent.b, 100))
+                draw.SimpleText(text, "LiliaFont.24", panelW * 0.5, panelH * 0.5 - 1, getMenuPalette().textSecondary, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
 
             button.DoClick = function()
@@ -1884,8 +1939,8 @@ function PANEL:addClassDetails(parent, cl)
         section:DockMargin(0, 0, 0, 10)
         section:DockPadding(12, 42, 12, 8)
         section.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
-            drawPanel(0, 0, panelW, panelH, 5, Color(3, 16, 21, 185), Color(accent.r, accent.g, accent.b, 68))
+            local accent = getMenuPalette().accent
+            drawPanel(0, 0, panelW, panelH, 5, getMenuPalette().inset, Color(accent.r, accent.g, accent.b, 68))
             draw.SimpleText(sectionData.title, "LiliaFont.17", 14, 12, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             surface.SetDrawColor(accent.r, accent.g, accent.b, 35)
             surface.DrawRect(12, 36, panelW - 24, 1)
@@ -1896,9 +1951,9 @@ function PANEL:addClassDetails(parent, cl)
             row:Dock(TOP)
             row:SetTall(34)
             row.Paint = function(_, panelW, panelH)
-                draw.SimpleText(rowData[1], "LiliaFont.17", 0, panelH * 0.5, Color(185, 204, 204), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                draw.SimpleText(rowData[2], "LiliaFont.17", panelW, panelH * 0.5, Color(232, 240, 240), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-                surface.SetDrawColor(255, 255, 255, 10)
+                draw.SimpleText(rowData[1], "LiliaFont.17", 0, panelH * 0.5, getMenuPalette().textMuted, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(rowData[2], "LiliaFont.17", panelW, panelH * 0.5, getMenuPalette().textSecondary, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+                surface.SetDrawColor(getMenuPalette().lineSoft)
                 surface.DrawRect(0, panelH - 1, panelW, 1)
             end
         end
@@ -1933,12 +1988,12 @@ function PANEL:addJoinButton(parent, cl, canBe)
     end
 
     parent.PaintOver = function(_, panelW)
-        local accent, textColor = lia.color.theme.accent, lia.color.theme.text
+        local accent, textColor = getMenuPalette().accent, getMenuPalette().text
         local available = canBe or isCurrent
         local icon = available and Material("icon16/accept.png", "smooth") or Material("icon16/lock.png", "smooth")
-        drawIcon(icon, 14, 15, 18, available and accent or Color(145, 160, 160))
+        drawIcon(icon, 14, 15, 18, available and accent or getMenuPalette().textDisabled)
         draw.SimpleText(titleText, "LiliaFont.20", 42, 12, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        draw.SimpleText(subtitleText, "LiliaFont.15", 14, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText(subtitleText, "LiliaFont.15", 14, 43, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
 
     local button = parent:Add("DButton")
@@ -1946,11 +2001,11 @@ function PANEL:addJoinButton(parent, cl, canBe)
     button:SetTall(44)
     button:SetText("")
     button.Paint = function(s, panelW, panelH)
-        local accent = lia.color.theme.accent
+        local accent = getMenuPalette().accent
         local disabled = s:GetDisabled()
-        local bg = disabled and Color(255, 255, 255, 5) or s:IsHovered() and Color(accent.r, accent.g, accent.b, 34) or Color(accent.r, accent.g, accent.b, 16)
-        drawPanel(0, 0, panelW, panelH, 5, bg, disabled and Color(255, 255, 255, 20) or Color(accent.r, accent.g, accent.b, 145))
-        draw.SimpleText(string.upper(buttonText), "LiliaFont.17", panelW * 0.5, panelH * 0.5, disabled and Color(105, 120, 120) or accent, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        local bg = disabled and getMenuPalette().hoverSoft or s:IsHovered() and Color(accent.r, accent.g, accent.b, 34) or Color(accent.r, accent.g, accent.b, 16)
+        drawPanel(0, 0, panelW, panelH, 5, bg, disabled and getMenuPalette().neutralBorder or Color(accent.r, accent.g, accent.b, 145))
+        draw.SimpleText(string.upper(buttonText), "LiliaFont.17", panelW * 0.5, panelH * 0.5, disabled and getMenuPalette().textDisabled or accent, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     button:SetDisabled((not canBe and not isCurrent) or isCurrent and not hasModelChoices)
@@ -2112,8 +2167,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             tabContainer:SetTall(54)
             tabContainer:DockMargin(0, 0, 0, 12)
             tabContainer.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-                drawPanel(0, 0, w, h, 7, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 54))
+                local accent = getMenuPalette().accent
+                drawPanel(0, 0, w, h, 7, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 54))
             end
 
             local contentArea = frame:Add("DPanel")
@@ -2128,11 +2183,11 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 local tabButton = tabContainer:Add("DButton")
                 tabButton:SetText("")
                 tabButton.Paint = function(s, w, h)
-                    local accent, textColor = lia.color.theme.accent, lia.color.theme.text
+                    local accent, textColor = getMenuPalette().accent, getMenuPalette().text
                     local active = activeTab == index
                     local hovered = s:IsHovered()
                     if active or hovered then
-                        local background = active and Color(accent.r, accent.g, accent.b, 22) or Color(255, 255, 255, 6)
+                        local background = active and Color(accent.r, accent.g, accent.b, 22) or getMenuPalette().hoverSoft
                         drawPanel(0, 0, w, h, 5, background, active and Color(accent.r, accent.g, accent.b, 70) or nil)
                     end
 
@@ -2141,7 +2196,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         surface.DrawRect(0, h - 3, w, 3)
                     end
 
-                    local color = active and textColor or hovered and Color(215, 229, 229) or Color(165, 188, 189)
+                    local color = active and textColor or hovered and getMenuPalette().textSecondary or getMenuPalette().textMuted
                     draw.SimpleText(string.upper(tostring(localizeMenuLabel(pageData.name))), "LiliaFont.18", w * 0.5, h * 0.5, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 end
 
@@ -2205,18 +2260,18 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             header:Dock(TOP)
             header:SetTall(76)
             header.Paint = function()
-                local textColor = lia.color.theme.text
+                local textColor = getMenuPalette().text
                 draw.SimpleText(L("settings"), "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                draw.SimpleText("Manage configuration options and preferences.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                draw.SimpleText("Manage configuration options and preferences.", "LiliaFont.17", 8, 43, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             end
 
             if #pages == 0 then
                 local empty = frame:Add("DPanel")
                 empty:Dock(FILL)
                 empty.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-                    drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
-                    draw.SimpleText(L("noDesc"), "LiliaFont.20", w * 0.5, h * 0.5, Color(165, 187, 188), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    local accent = getMenuPalette().accent
+                    drawPanel(0, 0, w, h, 8, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 80))
+                    draw.SimpleText(L("noDesc"), "LiliaFont.20", w * 0.5, h * 0.5, getMenuPalette().textMuted, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 end
                 return
             end
@@ -2227,8 +2282,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             tabContainer:DockMargin(0, 0, 0, 12)
             tabContainer:DockPadding(8, 8, 8, 8)
             tabContainer.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-                drawPanel(0, 0, w, h, 7, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 54))
+                local accent = getMenuPalette().accent
+                drawPanel(0, 0, w, h, 7, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 54))
             end
 
             local contentArea = frame:Add("DPanel")
@@ -2252,11 +2307,11 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 tabButton:SetText("")
                 tabButton._label = tostring(localizeMenuLabel(pageData.name))
                 tabButton.Paint = function(s, w, h)
-                    local accent, textColor = lia.color.theme.accent, lia.color.theme.text
+                    local accent, textColor = getMenuPalette().accent, getMenuPalette().text
                     local active = activeTab == index
                     local hovered = s:IsHovered()
                     if active or hovered then
-                        local background = active and Color(accent.r, accent.g, accent.b, 22) or Color(255, 255, 255, 6)
+                        local background = active and Color(accent.r, accent.g, accent.b, 22) or getMenuPalette().hoverSoft
                         drawPanel(0, 0, w, h, 5, background, active and Color(accent.r, accent.g, accent.b, 70) or nil)
                     end
 
@@ -2265,7 +2320,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         surface.DrawRect(0, h - 3, w, 3)
                     end
 
-                    local color = active and textColor or hovered and Color(215, 229, 229) or Color(165, 188, 189)
+                    local color = active and textColor or hovered and getMenuPalette().textSecondary or getMenuPalette().textMuted
                     draw.SimpleText(string.upper(s._label), "LiliaFont.18", w * 0.5, h * 0.5, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 end
 
@@ -2286,8 +2341,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 contentPanel:DockPadding(14, 14, 14, 14)
                 contentPanel:SetVisible(index == 1)
                 contentPanel.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-                    drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
+                    local accent = getMenuPalette().accent
+                    drawPanel(0, 0, w, h, 8, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 80))
                 end
 
                 tabPanels[index] = contentPanel
@@ -2333,11 +2388,11 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 header:Dock(TOP)
                 header:SetTall(76)
                 header.Paint = function()
-                local textColor = lia.color.theme.text
+                    local textColor = getMenuPalette().text
                     local pageName = adminPanel._activeAdminPageName or L("admin")
                     local pageDescription = adminPanel._activeAdminPageDescription or "Manage server administration tools and staff information."
                     draw.SimpleText(pageName, "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                    draw.SimpleText(pageDescription, "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText(pageDescription, "LiliaFont.17", 8, 43, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                 end
 
                 local content = frame:Add("DPanel")
@@ -2411,8 +2466,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         staffBrowser:DockMargin(0, 0, 14, 0)
                         staffBrowser:DockPadding(12, 12, 12, 12)
                         staffBrowser.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-                            drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
+                            local accent = getMenuPalette().accent
+                            drawPanel(0, 0, w, h, 8, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 80))
                         end
 
                         local searchWrap = staffBrowser:Add("DPanel")
@@ -2421,16 +2476,16 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         searchWrap:DockMargin(0, 0, 0, 12)
                         searchWrap:DockPadding(40, 0, 8, 0)
                         searchWrap.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-                            drawPanel(0, 0, w, h, 5, Color(5, 18, 23, 235), Color(accent.r, accent.g, accent.b, 92))
-                            drawIcon(Material("icon16/magnifier.png", "smooth"), 14, math.floor(h * 0.5) - 8, 16, Color(155, 181, 182))
+                            local accent = getMenuPalette().accent
+                            drawPanel(0, 0, w, h, 5, getMenuPalette().field, Color(accent.r, accent.g, accent.b, 92))
+                            drawIcon(Material("icon16/magnifier.png", "smooth"), 14, math.floor(h * 0.5) - 8, 16, getMenuPalette().textDim)
                         end
 
                         local searchEntry = searchWrap:Add("DTextEntry")
                         searchEntry:Dock(FILL)
                         searchEntry:SetFont("LiliaFont.17")
-                        searchEntry:SetTextColor(Color(225, 236, 236))
-                            searchEntry:SetCursorColor(lia.color.theme.accent)
+                        searchEntry:SetTextColor(getMenuPalette().textSecondary)
+                        searchEntry:SetCursorColor(getMenuPalette().accent)
                         searchEntry:SetPlaceholderText(L("searchStaff"))
                         searchEntry:SetPaintBackground(false)
                         searchEntry:SetPaintBackground(false)
@@ -2448,8 +2503,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         staffDetails:Dock(FILL)
                         staffDetails:DockPadding(14, 14, 14, 14)
                         staffDetails.Paint = function(_, w, h)
-                            local accent = lia.color.theme.accent
-                            drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
+                            local accent = getMenuPalette().accent
+                            drawPanel(0, 0, w, h, 8, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 80))
                         end
 
                         staffContent.PerformLayout = function(_, w) staffBrowser:SetWide(math.Clamp(math.floor(w * 0.34), 300, 390)) end
@@ -2460,8 +2515,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                             section:DockMargin(0, 0, 0, 12)
                             section:DockPadding(14, 42, 14, 8)
                             section.Paint = function(_, w, h)
-                                local accent = lia.color.theme.accent
-                                drawPanel(0, 0, w, h, 6, Color(3, 16, 21, 185), Color(accent.r, accent.g, accent.b, 68))
+                                local accent = getMenuPalette().accent
+                                drawPanel(0, 0, w, h, 6, getMenuPalette().inset, Color(accent.r, accent.g, accent.b, 68))
                                 draw.SimpleText(title, "LiliaFont.17", 14, 12, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                                 surface.SetDrawColor(accent.r, accent.g, accent.b, 35)
                                 surface.DrawRect(12, 36, w - 24, 1)
@@ -2472,9 +2527,9 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                                 row:Dock(TOP)
                                 row:SetTall(38)
                                 row.Paint = function(_, w, h)
-                                    draw.SimpleText(rowData[1], "LiliaFont.17", 0, h * 0.5, Color(185, 204, 204), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                                    draw.SimpleText(rowData[2], "LiliaFont.17", w, h * 0.5, Color(225, 236, 236), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-                                    surface.SetDrawColor(255, 255, 255, 16)
+                                    draw.SimpleText(rowData[1], "LiliaFont.17", 0, h * 0.5, getMenuPalette().textMuted, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                                    draw.SimpleText(rowData[2], "LiliaFont.17", w, h * 0.5, getMenuPalette().textSecondary, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+                                    surface.SetDrawColor(getMenuPalette().line)
                                     surface.DrawRect(0, h - 1, w, 1)
                                 end
                             end
@@ -2486,14 +2541,14 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                                 local empty = staffDetails:Add("DLabel")
                                 empty:Dock(FILL)
                                 empty:SetText(L("noStaffCurrentlyOnline"))
-                                empty:SetTextColor(Color(150, 170, 170))
+                                empty:SetTextColor(getMenuPalette().textDisabled)
                                 empty:SetFont("LiliaFont.20")
                                 empty:SetContentAlignment(5)
                                 return
                             end
 
                             panel.selectedStaffKey = getStaffKey(staffInfo)
-                            local accent, textColor = lia.color.theme.accent, lia.color.theme.text
+                            local accent, textColor = getMenuPalette().accent, getMenuPalette().text
                             local steamName = tostring(staffInfo.name or L("unknown"))
                             local displayName = getStaffDisplayName(staffInfo)
                             local characterName = tostring(staffInfo.characterName or L("unknown"))
@@ -2505,20 +2560,20 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                             staffHeader:SetTall(116)
                             staffHeader:DockMargin(0, 0, 0, 12)
                             staffHeader.Paint = function(_, w, h)
-                                drawPanel(0, 0, w, h, 6, Color(3, 16, 21, 185), Color(accent.r, accent.g, accent.b, 68))
+                                drawPanel(0, 0, w, h, 6, getMenuPalette().inset, Color(accent.r, accent.g, accent.b, 68))
                                 surface.SetDrawColor(accent.r, accent.g, accent.b, 235)
                                 surface.DrawRect(0, 0, 3, h)
                                 drawIcon(Material("icon16/user.png", "smooth"), 26, math.floor(h * 0.5) - 28, 56, color_white)
                                 local textX = 104
                                 draw.SimpleText(displayName, "LiliaFont.25", textX, 24, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                                draw.SimpleText(characterName .. "  •  " .. usergroup, "LiliaFont.17", textX, 73, Color(185, 204, 204), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                                draw.SimpleText(characterName .. "  •  " .. usergroup, "LiliaFont.17", textX, 73, getMenuPalette().textMuted, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                                 local badgeW = 120
                                 local badgeH = 34
                                 local badgeX = w - badgeW - 22
                                 local badgeY = math.floor((h - badgeH) * 0.5)
-                                local badgeFill = isOnDuty and Color(accent.r, accent.g, accent.b, 20) or Color(255, 255, 255, 7)
-                                local badgeOutline = isOnDuty and Color(accent.r, accent.g, accent.b, 95) or Color(255, 255, 255, 28)
-                                local badgeColor = isOnDuty and accent or Color(145, 163, 164)
+                                local badgeFill = isOnDuty and Color(accent.r, accent.g, accent.b, 20) or getMenuPalette().hover
+                                local badgeOutline = isOnDuty and Color(accent.r, accent.g, accent.b, 95) or getMenuPalette().neutralBorderStrong
+                                local badgeColor = isOnDuty and accent or getMenuPalette().textDisabled
                                 drawPanel(badgeX, badgeY, badgeW, badgeH, 5, badgeFill, badgeOutline)
                                 draw.RoundedBox(4, badgeX + 14, badgeY + 13, 8, 8, badgeColor)
                                 draw.SimpleText(dutyText, "LiliaFont.15", badgeX + 31, badgeY + badgeH * 0.5, badgeColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -2563,20 +2618,20 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                                 button:DockMargin(0, 0, 0, 8)
                                 button:SetText("")
                                 button.Paint = function(s, w, h)
-                                    local currentAccent = lia.color.theme.accent
+                                    local currentAccent = getMenuPalette().accent
                                     local active = panel.selectedStaffKey == currentKey
                                     local hovered = s:IsHovered()
-                                    local bg = active and Color(currentAccent.r, currentAccent.g, currentAccent.b, 28) or hovered and Color(255, 255, 255, 7) or Color(2, 14, 18, 130)
+                                    local bg = active and Color(currentAccent.r, currentAccent.g, currentAccent.b, 28) or hovered and getMenuPalette().hover or getMenuPalette().row
                                     drawPanel(0, 0, w, h, 5, bg, active and Color(currentAccent.r, currentAccent.g, currentAccent.b, 145) or Color(currentAccent.r, currentAccent.g, currentAccent.b, 42))
                                     if active then
                                         surface.SetDrawColor(currentAccent.r, currentAccent.g, currentAccent.b, 245)
                                         surface.DrawRect(0, 7, 3, h - 14)
                                     end
 
-                                    drawIcon(Material("icon16/user.png", "smooth"), 14, 18, 28, active and color_white or Color(175, 196, 196))
-                                    draw.SimpleText(displayName, "LiliaFont.18", 54, 12, active and color_white or Color(220, 232, 232), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                                    draw.SimpleText(usergroup, "LiliaFont.15", 54, 38, Color(185, 204, 204), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                                    local statusColor = isOnDuty and currentAccent or Color(135, 156, 157)
+                                    drawIcon(Material("icon16/user.png", "smooth"), 14, 18, 28, active and color_white or getMenuPalette().textMuted)
+                                    draw.SimpleText(displayName, "LiliaFont.18", 54, 12, active and color_white or getMenuPalette().textSecondary, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                                    draw.SimpleText(usergroup, "LiliaFont.15", 54, 38, getMenuPalette().textMuted, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                                    local statusColor = isOnDuty and currentAccent or getMenuPalette().textDisabled
                                     draw.SimpleText(isOnDuty and "ON DUTY" or usergroup, "LiliaFont.15", w - 12, h * 0.5, statusColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
                                 end
 
@@ -2595,7 +2650,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                                 empty:Dock(TOP)
                                 empty:SetTall(64)
                                 empty:SetText(L("noStaffCurrentlyOnline"))
-                                empty:SetTextColor(Color(145, 165, 166))
+                                empty:SetTextColor(getMenuPalette().textDisabled)
                                 empty:SetFont("LiliaFont.17")
                                 empty:SetContentAlignment(5)
                                 buildStaffDetails(nil)
@@ -2782,14 +2837,14 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 local function styleThemeButton(button, primary)
                     button:SetFont("LiliaFont.18")
                     button.Paint = function(self, w, h)
-                        local accent, textColor = lia.color.theme.accent, lia.color.theme.text
+                        local accent, textColor = getMenuPalette().accent, getMenuPalette().text
                         local hovered = self:IsHovered()
                         if primary then
                             local background = hovered and Color(accent.r, accent.g, accent.b, 235) or Color(accent.r, accent.g, accent.b, 205)
                             drawPanel(0, 0, w, h, 6, background, Color(accent.r, accent.g, accent.b, 255))
                             self:SetTextColor(color_white)
                         else
-                            local background = hovered and Color(accent.r, accent.g, accent.b, 24) or Color(3, 16, 21, 185)
+                            local background = hovered and Color(accent.r, accent.g, accent.b, 24) or getMenuPalette().inset
                             drawPanel(0, 0, w, h, 6, background, Color(accent.r, accent.g, accent.b, 68))
                             self:SetTextColor(textColor)
                         end
@@ -2807,9 +2862,9 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 header:Dock(TOP)
                 header:SetTall(76)
                 header.Paint = function()
-                    local textColor = lia.color.theme.text
+                    local textColor = getMenuPalette().text
                     draw.SimpleText("Themes", "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                    draw.SimpleText("Choose and apply an interface color preset.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Choose and apply an interface color preset.", "LiliaFont.17", 8, 43, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                 end
 
                 local body = root:Add("EditablePanel")
@@ -2820,8 +2875,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 presetPanel:SetWide(300)
                 presetPanel:DockMargin(0, 0, 16, 0)
                 presetPanel.Paint = function(_, w, h)
-                    local accent, textColor = lia.color.theme.accent, lia.color.theme.text
-                    drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
+                    local accent, textColor = getMenuPalette().accent, getMenuPalette().text
+                    drawPanel(0, 0, w, h, 8, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 80))
                     draw.SimpleText("Presets", "LiliaFont.25", 16, 14, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                 end
 
@@ -2830,11 +2885,11 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 currentCard:Dock(BOTTOM)
                 currentCard:SetTall(96)
                 currentCard.Paint = function(_, w, h)
-                    local accent, textColor = lia.color.theme.accent, lia.color.theme.text
-                    drawPanel(0, 0, w, h, 6, Color(3, 16, 21, 185), Color(accent.r, accent.g, accent.b, 68))
-                    draw.SimpleText("Active Theme", "LiliaFont.17", 18, 14, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    local accent, textColor = getMenuPalette().accent, getMenuPalette().text
+                    drawPanel(0, 0, w, h, 6, getMenuPalette().inset, Color(accent.r, accent.g, accent.b, 68))
+                    draw.SimpleText("Active Theme", "LiliaFont.17", 18, 14, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                     draw.SimpleText(getLocalizedThemeName(currentTheme or ""), "LiliaFont.24", 18, 39, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                    draw.SimpleText("Currently applied to the interface.", "LiliaFont.16", 18, 68, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Currently applied to the interface.", "LiliaFont.16", 18, 68, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                 end
 
                 local presetScroll = presetPanel:Add("liaScrollPanel")
@@ -2843,8 +2898,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 local contentPanel = body:Add("EditablePanel")
                 contentPanel:Dock(FILL)
                 contentPanel.Paint = function(_, w, h)
-                    local accent = lia.color.theme.accent
-                    drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
+                    local accent = getMenuPalette().accent
+                    drawPanel(0, 0, w, h, 8, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 80))
                 end
 
                 contentPanel:DockPadding(16, 16, 16, 16)
@@ -2852,9 +2907,9 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 contentHeader:Dock(TOP)
                 contentHeader:SetTall(54)
                 contentHeader.Paint = function(_, w, h)
-                    local accent, textColor = lia.color.theme.accent, lia.color.theme.text
+                    local accent, textColor = getMenuPalette().accent, getMenuPalette().text
                     draw.SimpleText("Color Settings", "LiliaFont.25", 0, 0, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                    draw.SimpleText("Read-only color values for the selected preset.", "LiliaFont.16", 0, 30, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Read-only color values for the selected preset.", "LiliaFont.16", 0, 30, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                     surface.SetDrawColor(accent.r, accent.g, accent.b, 35)
                     surface.DrawLine(0, h - 1, w, h - 1)
                 end
@@ -2864,10 +2919,10 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 columnHeader:SetTall(30)
                 columnHeader:DockMargin(0, 8, 0, 8)
                 columnHeader.Paint = function(_, w, h)
-                    draw.SimpleText("Name", "LiliaFont.15", 20, 0, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                    draw.SimpleText("Description", "LiliaFont.15", math.floor(w * 0.42), 0, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                    draw.SimpleText("Hex", "LiliaFont.15", w - 198, 0, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                    draw.SimpleText("Preview", "LiliaFont.15", w - 88, 0, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Name", "LiliaFont.15", 20, 0, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Description", "LiliaFont.15", math.floor(w * 0.42), 0, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Hex", "LiliaFont.15", w - 198, 0, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Preview", "LiliaFont.15", w - 88, 0, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                 end
 
                 local footer = contentPanel:Add("EditablePanel")
@@ -2875,7 +2930,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 footer:SetTall(82)
                 footer:DockMargin(0, 14, 0, 0)
                 footer.Paint = function(_, w, h)
-                    local accent = lia.color.theme.accent
+                    local accent = getMenuPalette().accent
                     surface.SetDrawColor(accent.r, accent.g, accent.b, 35)
                     surface.DrawLine(0, 0, w, 0)
                 end
@@ -2904,12 +2959,12 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         row:DockMargin(0, 0, 0, 8)
                         row:SetTall(68)
                         row.Paint = function(_, w, h)
-                            local accent, textColor = lia.color.theme.accent, lia.color.theme.text
-                            drawPanel(0, 0, w, h, 6, Color(3, 16, 21, 185), Color(accent.r, accent.g, accent.b, 68))
+                            local accent, textColor = getMenuPalette().accent, getMenuPalette().text
+                            drawPanel(0, 0, w, h, 6, getMenuPalette().inset, Color(accent.r, accent.g, accent.b, 68))
                             draw.SimpleText(prettify(entry.name), "LiliaFont.18", 20, 15, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                            draw.SimpleText(getEntryDescription(entry.name), "LiliaFont.16", math.floor(w * 0.42), 17, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                            draw.SimpleText(getEntryDescription(entry.name), "LiliaFont.16", math.floor(w * 0.42), 17, getMenuPalette().textDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                             local hexValue = colorToHex(entry.colors[1])
-                            drawPanel(w - 208, 12, 92, h - 24, 6, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 45))
+                            drawPanel(w - 208, 12, 92, h - 24, 6, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 45))
                             draw.SimpleText(hexValue, "LiliaFont.16", w - 162, h * 0.5, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                             local swatchX = w - 84
                             local swatchSize = 44
@@ -2945,24 +3000,24 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                             button:SetText("")
                             local previewColors = getPreviewColors(themeData)
                             button.Paint = function(self, w, h)
-                                local accent = lia.color.theme.accent
+                                local accent = getMenuPalette().accent
                                 local isSelected = selectedTheme == themeID
-                                local background = isSelected and Color(accent.r, accent.g, accent.b, 26) or self:IsHovered() and Color(255, 255, 255, 7) or Color(3, 16, 21, 185)
+                                local background = isSelected and Color(accent.r, accent.g, accent.b, 26) or self:IsHovered() and getMenuPalette().hover or getMenuPalette().inset
                                 local outline = isSelected and Color(accent.r, accent.g, accent.b, 145) or Color(accent.r, accent.g, accent.b, 68)
                                 drawPanel(0, 0, w, h, 6, background, outline)
                                 if isSelected then
                                     draw.SimpleText("✓", "LiliaFont.24", 24, h * 0.5, Color(accent.r, accent.g, accent.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                                 else
-                                    surface.SetDrawColor(98, 126, 130, 180)
+                                    surface.SetDrawColor(getMenuPalette().neutralBorder)
                                     surface.DrawOutlinedRect(16, h * 0.5 - 8, 16, 16, 1)
                                 end
 
-                                local textColor = lia.color.theme.text
+                                local textColor = getMenuPalette().text
                                 draw.SimpleText(displayName, "LiliaFont.20", 48, h * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                                 local startX = w - 112
                                 for index, col in ipairs(previewColors) do
                                     draw.RoundedBox(6, startX + (index - 1) * 22, h * 0.5 - 8, 16, 16, col)
-                                    surface.SetDrawColor(255, 255, 255, 18)
+                                    surface.SetDrawColor(getMenuPalette().line)
                                     surface.DrawOutlinedRect(startX + (index - 1) * 22, h * 0.5 - 8, 16, 16, 1)
                                 end
                             end

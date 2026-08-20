@@ -10,6 +10,20 @@ local listCanvas
 local searchEntry
 local openButton
 local previewButton
+local familyButtons = {}
+local countLabel
+local themePanel
+local themeScroller
+local themeButtons = {}
+local themeButtonSignature = ""
+local activeFamily = "Lilia"
+local selectedTheme
+local originalTheme
+local collapsedCategories = {
+    Lilia = {},
+    GMOD = {}
+}
+
 local function traceback(errorMessage)
     return debug.traceback(tostring(errorMessage), 2)
 end
@@ -135,62 +149,6 @@ setups.liaComboBox = function(panel)
     panel:ChooseOptionID(1)
 end
 
-setups.liaFrameNew = function(panel)
-    panel:SetDisplayTitle("Species Creator Frame")
-    panel:SetDisplaySubtitle("Standalone themed frame preview")
-    panel:SetAccentTop(true)
-    panel:SetAccentBottom(false)
-    panel:SetSurfaceVisible(true)
-    local content = panel:Add("DPanel")
-    content:Dock(FILL)
-    content:DockMargin(18, 78, 18, 18)
-    content.Paint = nil
-    local title = content:Add("liaSpeciesText")
-    title:Dock(TOP)
-    title:SetTall(30)
-    title:SetFont("LiliaFont.20")
-    title:SetText("Reusable species creator content")
-    local muted = content:Add("liaSpeciesText")
-    muted:Dock(TOP)
-    muted:DockMargin(0, 8, 0, 0)
-    muted:SetTall(24)
-    muted:SetText("Frame, dropdown, theme button, and text can be instantiated independently.")
-    muted:SetThemeTone("muted")
-end
-
-setups.liaSpeciesDropdown = function(panel)
-    panel:SetLabelText("Species Dropdown")
-    panel:AddChoice("Human", "human")
-    panel:AddChoice("Vortigaunt", "vortigaunt")
-    panel:AddChoice("Transhuman", "transhuman")
-    panel:SetValue("Human")
-    panel:ChooseOptionID(1)
-end
-
-setups.liaSpeciesThemeButton = function(panel)
-    panel:SetThemeID("teal")
-    panel:SetCompact(false)
-    panel:SetThemeSelected(true)
-end
-
-setups.liaSpeciesText = function(panel)
-    panel:SetFont("LiliaFont.24")
-    panel:SetText("Standalone themed species text")
-    panel:SetThemeTone("accent")
-    panel:SetContentAlignment(5)
-    panel:SetWrap(true)
-end
-
-setups.liaDermaMenu = function(panel)
-    panel:AddOption("Primary action", function() end, "icon16/accept.png")
-    panel:AddOption("Secondary action", function() end, "icon16/information.png")
-    panel:AddSpacer()
-    local submenu = panel:AddSubMenu("Submenu", nil, "icon16/folder.png")
-    if IsValid(submenu) then submenu:AddOption("Nested action", function() end, "icon16/bullet_go.png") end
-    local x, y = gui.MousePos()
-    panel:Open(x, y)
-end
-
 setups.liaDialogMenu = function(panel)
     panel:SetDialogTitle("Panel Tester")
     panel:SetDialogText("This is a safe local dialog preview. Choose an option to test the response layout.")
@@ -255,15 +213,6 @@ setups.liaInventory = function(panel)
 end
 
 setups.liaHeaderPanel = function(panel) panel:SetLineWidth(2) end
-setups.liaHorizontalScroll = function(panel)
-    for index = 1, 10 do
-        local button = createSampleButton(panel, "Item " .. index)
-        button:SetWide(110)
-        button:DockMargin(0, 0, 8, 0)
-        panel:AddItem(button)
-    end
-end
-
 setups.liaItemIcon = function(panel)
     local uniqueID = findFirstItemType()
     if not uniqueID then error("No item types are registered in lia.item.list") end
@@ -293,7 +242,6 @@ setups.liaRadialPanel = function(panel)
     panel:AddOption("Settings", function() end, "icon16/cog.png", "Open settings")
     panel:AddOption("Radio", function() end, "icon16/sound.png", "Open radio options")
     panel:AddOption("Help", function() end, "icon16/help.png", "Show help")
-
     local moreOptions = panel:CreateSubMenu("More Options", "Choose an additional sample action")
     moreOptions:AddOption("Map", function() end, "icon16/map.png", "Open the map")
     moreOptions:AddOption("Friends", function() end, "icon16/group.png", "Open the friends list")
@@ -385,12 +333,6 @@ setups.liaTabs = function(panel)
         label:Dock(TOP)
         panel:AddTab(name, content, index == 1 and "icon16/house.png" or "icon16/cog.png")
     end
-end
-
-setups.liaUserGroupButton = function(panel)
-    panel:SetText("superadmin")
-    panel:SetFont("LiliaFont.25")
-    panel:SetSelected(true)
 end
 
 setups.liaVoicePanel = function(panel)
@@ -752,10 +694,12 @@ setups.RichText = function(panel)
 end
 
 local function registerEntry(className, source, category, mode, description, width, height, warning, setupName)
+    local family = (category == "GMOD" or source == "Garry's Mod VGUI") and "GMOD" or "Lilia"
     entries[#entries + 1] = {
         class = className,
         source = source,
         category = category,
+        family = family,
         mode = mode,
         description = description,
         width = width,
@@ -821,11 +765,6 @@ registerEntry("liaChatBox", "chatbox.lua", "Menus", "window", "Live custom chatb
 registerEntry("liaCheckbox", "checkbox.lua", "Controls", "embedded", "Themed toggle switch.", 180, 42)
 registerEntry("liaActionCircle", "circle.lua", "Overlays", "overlay", "Timed circular action indicator.", 0, 0)
 registerEntry("liaComboBox", "combobox.lua", "Controls", "embedded", "Custom combobox with choices, tooltips, and separators.", 360, 42)
-registerEntry("liaSpeciesDropdown", "species_dropdown.lua", "Species Creator", "embedded", "Standalone themed species creator dropdown with a custom scrollable option popup.", 420, 86)
-registerEntry("liaSpeciesThemeButton", "species_theme_button.lua", "Species Creator", "embedded", "Standalone species creator theme selection button.", 360, 58)
-registerEntry("liaSpeciesText", "species_text.lua", "Species Creator", "embedded", "Standalone themed species creator text label with configurable color tones.", 520, 90)
-registerEntry("liaFrameNew", "frame_new.lua", "Species Creator", "window", "Standalone themed species creator frame with title, subtitle, surface, outline, and accent controls.", 760, 500)
-registerEntry("liaDermaMenu", "derma_menu.lua", "Menus", "overlay", "Custom context menu with a submenu.", 0, 0)
 registerEntry("liaDialogMenu", "dialog.lua", "Menus", "window", "Local NPC-style dialog preview with conversation history.", 720, 540, "Opening this temporarily replaces lia.dialog.vgui.")
 registerEntry("liaDListView", "dlistview.lua", "Menus", "window", "Searchable and sortable list window.", 960, 720)
 registerEntry("liaDoorMenu", "door.lua", "Menus", "window", "Door access table preview using sample rows.", 700, 600, "The tester does not attach this preview to a real door.")
@@ -841,8 +780,6 @@ registerEntry("liaClasses", "f1menu.lua", "Character", "window", "Class selectio
 registerEntry("liaFrame", "frame.lua", "Windows", "window", "Base themed Lilia frame with sample content.", 720, 500)
 registerEntry("liaInventory", "frame.lua", "Menus", "window", "Live local-character inventory window.", 900, 700, "Requires an active character inventory.")
 registerEntry("liaHeaderPanel", "headerpanel.lua", "Controls", "embedded", "Header divider line.", 560, 44)
-registerEntry("liaHorizontalScroll", "horizontal_scroll.lua", "Controls", "embedded", "Horizontal scrolling container with sample buttons.", 720, 80)
-registerEntry("liaHorizontalScrollBar", "horizontal_scroll.lua", "Internal Controls", "embedded", "Internal horizontal scroll bar control.", 600, 24, "Normally managed by liaHorizontalScroll.")
 registerEntry("liaItemIcon", "item.lua", "Items", "embedded", "Lilia item icon using the first registered item type.", 160, 160, "Requires at least one registered item type.")
 registerEntry("liaModelPanel", "modelpanel.lua", "Controls", "embedded", "Model panel displaying the local player model.", 360, 420)
 registerEntry("liaNotice", "notice.lua", "Overlays", "overlay", "Animated success notification.", 0, 0)
@@ -858,7 +795,6 @@ registerEntry("liaSpawnIcon", "spawnicon.lua", "Controls", "embedded", "Spawn ic
 registerEntry("liaTabButton", "tab_button.lua", "Controls", "embedded", "Single active tab button.", 260, 48)
 registerEntry("liaTable", "table.lua", "Controls", "embedded", "Sortable table with sample rows.", 760, 420)
 registerEntry("liaTabs", "tabs.lua", "Controls", "embedded", "Tabbed content container with three sample pages.", 760, 480)
-registerEntry("liaUserGroupButton", "buttons.lua", "Administration", "embedded", "Selected user-group button styled through liaButton.", 420, 58)
 registerEntry("liaVoicePanel", "voice.lua", "Overlays", "embedded", "Voice indicator using the local player.", 360, 70)
 registerEntry("Weapon Selector", "weaponselector.lua", "Integrations", "integration", "HUD weapon selector integration.", 0, 0, "Equip multiple weapons and use the normal next/previous weapon binds to test it.")
 local function getSortedEntries()
@@ -868,33 +804,69 @@ local function getSortedEntries()
     end
 
     table.sort(sorted, function(first, second)
-        if first.category == second.category then return first.class:lower() < second.class:lower() end
-        return first.category:lower() < second.category:lower()
+        if first.family ~= second.family then return first.family < second.family end
+        if first.category ~= second.category then return first.category:lower() < second.category:lower() end
+        return first.class:lower() < second.class:lower()
     end)
     return sorted
 end
 
+local function getThemeNames()
+    local names = {}
+    if not lia or not lia.color or not istable(lia.color.themes) then return names end
+    for name in pairs(lia.color.themes) do
+        names[#names + 1] = tostring(name)
+    end
+
+    table.sort(names, function(a, b) return a:lower() < b:lower() end)
+    return names
+end
+
+local function getThemeAccent(themeName)
+    local theme = lia and lia.color and lia.color.themes and lia.color.themes[themeName]
+    if not istable(theme) then return Color(90, 145, 220) end
+    return theme.accent or theme.header or theme.theme or Color(90, 145, 220)
+end
+
+local function restoreTheme()
+    if not originalTheme or not lia or not lia.color then return end
+    lia.color.theme = table.Copy(originalTheme)
+    hook.Run("OnThemeChanged")
+    lia.color.theme = table.Copy(originalTheme)
+end
+
+local function applyTheme(themeName)
+    if not lia or not lia.color or not istable(lia.color.themes) then return false end
+    local theme = lia.color.themes[themeName]
+    if not istable(theme) then return false end
+    lia.color.theme = table.Copy(theme)
+    selectedTheme = themeName
+    hook.Run("OnThemeChanged", themeName)
+    lia.color.theme = table.Copy(theme)
+    return true
+end
+
 local function clearPreview()
-    if not IsValid(previewRoot) then return end
-    previewRoot:Clear()
+    if IsValid(previewRoot) then previewRoot:Clear() end
 end
 
 local function formatEntryMeta(entry)
     local availability
     if entry.mode == "integration" then
-        availability = "Hook-driven integration"
+        availability = "Integration"
     elseif controlExists(entry.class) then
         availability = "Registered"
     else
-        availability = "Not registered"
+        availability = "Missing"
     end
-    return string.format("Source: %s\nMode: %s\nStatus: %s", entry.source, entry.mode, availability)
+    return string.format("%s  |  %s  |  %s", entry.source, entry.mode, availability)
 end
 
 local function showPreviewMessage(entry, bodyText)
     clearPreview()
+    if not IsValid(previewRoot) then return end
     local card = previewRoot:Add("DPanel")
-    card:SetSize(math.min(previewRoot:GetWide() - 48, 720), 220)
+    card:SetSize(math.min(math.max(previewRoot:GetWide() - 48, 280), 720), 190)
     card:Center()
     card.Paint = function(_, w, h)
         draw.RoundedBox(8, 0, 0, w, h, Color(28, 32, 38, 245))
@@ -902,24 +874,23 @@ local function showPreviewMessage(entry, bodyText)
         surface.DrawOutlinedRect(0, 0, w, h, 1)
     end
 
-    local title = createLabel(card, entry.class, "DermaLarge")
+    local title = createLabel(card, entry and entry.class or "Panel Tester", "DermaLarge")
     title:Dock(TOP)
     title:DockMargin(18, 18, 18, 0)
-    local text = createLabel(card, bodyText, "DermaDefault")
-    text:Dock(FILL)
-    text:DockMargin(18, 12, 18, 12)
+    local body = createLabel(card, bodyText or "", "DermaDefault")
+    body:Dock(FILL)
+    body:DockMargin(18, 10, 18, 14)
 end
 
 local function setupPanel(entry, panel, host)
-    if not entry.setup then return end
-    entry.setup(panel, host)
+    if entry.setup then entry.setup(panel, host) end
 end
 
 local function createEmbeddedPreview(entry)
     clearPreview()
     if not controlExists(entry.class) then
-        showPreviewMessage(entry, "This control is not currently registered. Ensure the associated panel file is loaded before opening the tester.")
-        setStatus("Missing VGUI registration: " .. entry.class, false)
+        showPreviewMessage(entry, "This control is not registered. Load its panel file before previewing it.")
+        setStatus("Missing registration: " .. entry.class, false)
         return
     end
 
@@ -943,11 +914,11 @@ local function createEmbeddedPreview(entry)
     end)
 
     if ok then
-        setStatus("Preview created successfully.", true)
+        setStatus("Preview ready.", true)
     else
-        showPreviewMessage(entry, "The preview failed to initialize. The full error was printed to the console.\n\n" .. tostring(result))
+        showPreviewMessage(entry, "Preview failed. The traceback was printed to the console.\n\n" .. tostring(result))
         ErrorNoHalt("[Lilia Panel Tester] " .. tostring(result) .. "\n")
-        setStatus("Preview failed. Check the console for the full traceback.", false)
+        setStatus("Preview failed. Check console.", false)
     end
 end
 
@@ -957,7 +928,7 @@ local function createWrapper(entry)
     local height = math.max(120, (entry.height or 520) + 58)
     wrapper:SetSize(math.min(width, ScrW() - 80), math.min(height, ScrH() - 80))
     wrapper:Center()
-    wrapper:SetTitle("Panel Tester: " .. entry.class)
+    wrapper:SetTitle(entry.family .. " Panel: " .. entry.class)
     wrapper:MakePopup()
     wrapper:SetDeleteOnClose(true)
     addActivePanel(wrapper)
@@ -966,13 +937,13 @@ end
 
 local function launchEntry(entry)
     if entry.mode == "integration" then
-        showPreviewMessage(entry, entry.warning or "This source file is hook-driven and does not expose a standalone VGUI panel.")
-        setStatus("This entry must be tested through its normal game integration.", false)
+        showPreviewMessage(entry, entry.warning or "This entry is integration-driven and has no standalone VGUI panel.")
+        setStatus("Use this entry through its normal game integration.", false)
         return
     end
 
     if not controlExists(entry.class) then
-        setStatus("Missing VGUI registration: " .. entry.class, false)
+        setStatus("Missing registration: " .. entry.class, false)
         return
     end
 
@@ -1006,28 +977,119 @@ local function launchEntry(entry)
         setStatus("Opened " .. entry.class .. ".", true)
     else
         ErrorNoHalt("[Lilia Panel Tester] " .. tostring(result) .. "\n")
-        setStatus("Launch failed. Check the console for the full traceback.", false)
+        setStatus("Launch failed. Check console.", false)
     end
+end
+
+local function refreshThemeButtons()
+    if not IsValid(themeScroller) then return end
+    local themeNames = getThemeNames()
+    local signature = table.concat(themeNames, "\31")
+    if signature ~= themeButtonSignature then
+        for _, button in ipairs(themeButtons) do
+            if IsValid(button) then button:Remove() end
+        end
+
+        themeButtons = {}
+        themeButtonSignature = signature
+        for _, themeName in ipairs(themeNames) do
+            local name = themeName
+            local button = vgui.Create("DButton")
+            button:SetSize(132, 34)
+            button:SetText("")
+            button.Paint = function(s, w, h)
+                local accent = getThemeAccent(name)
+                local active = selectedTheme == name
+                local hovered = s:IsHovered()
+                local background = active and Color(accent.r, accent.g, accent.b, 45) or hovered and Color(43, 49, 58, 245) or Color(30, 34, 40, 235)
+                draw.RoundedBox(6, 0, 0, w, h, background)
+                surface.SetDrawColor(accent.r, accent.g, accent.b, active and 230 or 150)
+                surface.DrawOutlinedRect(0, 0, w, h, active and 2 or 1)
+                draw.RoundedBox(4, 9, 7, 20, 20, accent)
+                draw.SimpleText(name, "DermaDefault", 38, h * 0.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            end
+
+            button.DoClick = function()
+                if not applyTheme(name) then return end
+                for _, themeButton in ipairs(themeButtons) do
+                    if IsValid(themeButton) then themeButton:InvalidateLayout(true) end
+                end
+
+                if selectedEntry and selectedEntry.family == "Lilia" then
+                    if selectedEntry.mode == "embedded" then
+                        createEmbeddedPreview(selectedEntry)
+                    else
+                        setStatus("Theme applied to Lilia panels for this tester session.", true)
+                    end
+                end
+            end
+
+            themeScroller:AddPanel(button)
+            themeButtons[#themeButtons + 1] = button
+        end
+    end
+
+    for _, button in ipairs(themeButtons) do
+        if IsValid(button) then button:InvalidateLayout(true) end
+    end
+end
+
+local function updateThemeVisibility()
+    local visible = activeFamily == "Lilia" and #getThemeNames() > 0
+    if IsValid(themePanel) then
+        themePanel:SetVisible(visible)
+        themePanel:SetTall(visible and 72 or 0)
+        themePanel:DockMargin(0, visible and 10 or 0, 0, 0)
+    end
+
+    if visible then refreshThemeButtons() end
 end
 
 local function updateSelection(entry)
     selectedEntry = entry
+    if not entry then
+        if IsValid(previewTitle) then
+            previewTitle:SetText("No matching panels")
+            previewTitle:SizeToContentsY()
+        end
+
+        if IsValid(previewMeta) then
+            previewMeta:SetText("")
+            previewMeta:SizeToContentsY()
+        end
+
+        if IsValid(openButton) then openButton:SetEnabled(false) end
+        if IsValid(previewButton) then previewButton:SetEnabled(false) end
+        showPreviewMessage(nil, "Try a different search or expand another category.")
+        return
+    end
+
     previewTitle:SetText(entry.class)
     previewTitle:SizeToContentsY()
-    previewMeta:SetText(formatEntryMeta(entry) .. (entry.warning and "\nWarning: " .. entry.warning or "") .. "\n\n" .. entry.description)
+    local details = formatEntryMeta(entry) .. "\n" .. entry.description
+    if entry.warning then details = details .. "\nWarning: " .. entry.warning end
+    previewMeta:SetText(details)
     previewMeta:SizeToContentsY()
     openButton:SetEnabled(entry.mode ~= "integration" and controlExists(entry.class))
     previewButton:SetEnabled(entry.mode == "embedded" and controlExists(entry.class))
     if entry.mode == "embedded" then
         createEmbeddedPreview(entry)
     else
-        showPreviewMessage(entry, entry.description .. "\n\nUse Open Live to instantiate this menu in its intended top-level mode." .. (entry.warning and "\n\n" .. entry.warning or ""))
+        local message = entry.description
+        if entry.mode == "integration" then
+            message = message .. "\n\nUse this through its normal game integration."
+        else
+            message = message .. "\n\nUse Open Live to instantiate this panel."
+        end
+
+        if entry.warning then message = message .. "\n\n" .. entry.warning end
+        showPreviewMessage(entry, message)
         if entry.mode == "integration" then
             setStatus("Integration entry selected.", false)
         elseif controlExists(entry.class) then
             setStatus("Ready to open live.", true)
         else
-            setStatus("Missing VGUI registration: " .. entry.class, false)
+            setStatus("Missing registration: " .. entry.class, false)
         end
     end
 end
@@ -1036,11 +1098,11 @@ local function createListButton(parent, entry)
     local button = parent:Add("DButton")
     button:Dock(TOP)
     button:DockMargin(0, 0, 0, 4)
-    button:SetTall(38)
+    button:SetTall(40)
     button:SetText("")
-    button.Paint = function(self, w, h)
+    button.Paint = function(s, w, h)
         local selected = selectedEntry == entry
-        local hovered = self:IsHovered()
+        local hovered = s:IsHovered()
         local background = selected and Color(55, 88, 115, 245) or hovered and Color(43, 49, 58, 245) or Color(31, 35, 42, 235)
         draw.RoundedBox(5, 0, 0, w, h, background)
         local statusColor
@@ -1064,42 +1126,169 @@ local function createListButton(parent, entry)
     return button
 end
 
-local function rebuildList()
-    if not IsValid(listCanvas) then return end
-    listCanvas:Clear()
-    local term = IsValid(searchEntry) and string.Trim(string.lower(searchEntry:GetValue() or "")) or ""
-    local lastCategory
-    local firstVisible
-    for _, entry in ipairs(getSortedEntries()) do
-        local searchable = string.lower(entry.class .. " " .. entry.source .. " " .. entry.category .. " " .. entry.description)
-        if term == "" or string.find(searchable, term, 1, true) then
-            if entry.category ~= lastCategory then
-                local category = createLabel(listCanvas, entry.category, "DermaDefaultBold")
-                category:Dock(TOP)
-                category:DockMargin(6, lastCategory and 10 or 2, 6, 5)
-                category:SetTextColor(Color(165, 185, 205))
-                lastCategory = entry.category
-            end
-
-            createListButton(listCanvas, entry)
-            firstVisible = firstVisible or entry
+local function getFamilyCategories()
+    local categories = {}
+    local seen = {}
+    for _, entry in ipairs(entries) do
+        if entry.family == activeFamily and not seen[entry.category] then
+            seen[entry.category] = true
+            categories[#categories + 1] = entry.category
         end
     end
 
-    if not selectedEntry and firstVisible then updateSelection(firstVisible) end
+    table.sort(categories, function(a, b) return a:lower() < b:lower() end)
+    return categories
+end
+
+local function setAllCategoriesCollapsed(collapsed)
+    collapsedCategories[activeFamily] = collapsedCategories[activeFamily] or {}
+    for _, category in ipairs(getFamilyCategories()) do
+        collapsedCategories[activeFamily][category] = collapsed
+    end
+end
+
+local function entryMatchesSearch(entry, term)
+    if entry.family ~= activeFamily then return false end
+    if term == "" then return true end
+    local searchable = string.lower(entry.class .. " " .. entry.source .. " " .. entry.category .. " " .. entry.description)
+    return string.find(searchable, term, 1, true) ~= nil
+end
+
+local rebuildList
+local function createCategoryHeader(parent, category, count, searching)
+    local button = parent:Add("DButton")
+    button:Dock(TOP)
+    button:DockMargin(0, 8, 0, 4)
+    button:SetTall(32)
+    button:SetText("")
+    button.Paint = function(s, w, h)
+        local collapsed = not searching and collapsedCategories[activeFamily] and collapsedCategories[activeFamily][category] == true
+        local hovered = s:IsHovered()
+        draw.RoundedBox(5, 0, 0, w, h, hovered and Color(43, 49, 58, 245) or Color(27, 31, 37, 245))
+        surface.SetDrawColor(62, 72, 84, 150)
+        surface.DrawOutlinedRect(0, 0, w, h, 1)
+        draw.SimpleText(collapsed and ">" or "v", "DermaDefaultBold", 12, h * 0.5, Color(175, 190, 205), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(category, "DermaDefaultBold", 28, h * 0.5, Color(205, 214, 224), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(tostring(count), "DermaDefault", w - 10, h * 0.5, Color(140, 154, 170), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+    end
+
+    button.DoClick = function()
+        if searching then return end
+        collapsedCategories[activeFamily] = collapsedCategories[activeFamily] or {}
+        collapsedCategories[activeFamily][category] = not collapsedCategories[activeFamily][category]
+        rebuildList()
+    end
+    return button
+end
+
+rebuildList = function()
+    if not IsValid(listCanvas) then return end
+    listCanvas:Clear()
+    local term = IsValid(searchEntry) and string.Trim(string.lower(searchEntry:GetValue() or "")) or ""
+    local searching = term ~= ""
+    local grouped = {}
+    local categoryOrder = {}
+    local firstVisible
+    local selectedMatches = false
+    local totalVisible = 0
+    for _, entry in ipairs(getSortedEntries()) do
+        if entryMatchesSearch(entry, term) then
+            if not grouped[entry.category] then
+                grouped[entry.category] = {}
+                categoryOrder[#categoryOrder + 1] = entry.category
+            end
+
+            grouped[entry.category][#grouped[entry.category] + 1] = entry
+            totalVisible = totalVisible + 1
+            firstVisible = firstVisible or entry
+            if selectedEntry == entry then selectedMatches = true end
+        end
+    end
+
+    for _, category in ipairs(categoryOrder) do
+        local categoryEntries = grouped[category]
+        createCategoryHeader(listCanvas, category, #categoryEntries, searching)
+        local collapsed = not searching and collapsedCategories[activeFamily] and collapsedCategories[activeFamily][category] == true
+        if not collapsed then
+            for _, entry in ipairs(categoryEntries) do
+                createListButton(listCanvas, entry)
+            end
+        end
+    end
+
+    if IsValid(countLabel) then
+        countLabel:SetText(string.format("%d %s in %d %s", totalVisible, totalVisible == 1 and "panel" or "panels", #categoryOrder, #categoryOrder == 1 and "category" or "categories"))
+        countLabel:SizeToContentsY()
+    end
+
+    if not selectedMatches then updateSelection(firstVisible) end
+end
+
+local function setFamily(family)
+    if activeFamily == family then return end
+    activeFamily = family
+    selectedEntry = nil
+    for _, button in pairs(familyButtons) do
+        if IsValid(button) then button:InvalidateLayout(true) end
+    end
+
+    updateThemeVisibility()
+    rebuildList()
+end
+
+local function createFamilyButton(parent, family, label)
+    local button = parent:Add("DButton")
+    button:Dock(LEFT)
+    button:SetWide(150)
+    button:DockMargin(0, 0, 8, 0)
+    button:SetText("")
+    button.Paint = function(s, w, h)
+        local active = activeFamily == family
+        local hovered = s:IsHovered()
+        local background = active and Color(55, 88, 115, 245) or hovered and Color(39, 45, 54, 245) or Color(27, 31, 37, 235)
+        draw.RoundedBox(6, 0, 0, w, h, background)
+        if active then
+            surface.SetDrawColor(100, 165, 230, 230)
+            surface.DrawRect(0, h - 2, w, 2)
+        end
+
+        draw.SimpleText(label, "DermaDefaultBold", w * 0.5, h * 0.5, active and color_white or Color(175, 187, 201), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+
+    button.DoClick = function() setFamily(family) end
+    familyButtons[family] = button
+    return button
 end
 
 local function buildTester()
     if IsValid(testerFrame) then testerFrame:Remove() end
+    if lia and lia.color and istable(lia.color.theme) then originalTheme = table.Copy(lia.color.theme) end
+    if lia and lia.color and isfunction(lia.color.getCurrentTheme) then selectedTheme = lia.color.getCurrentTheme() end
+    activeFamily = "Lilia"
+    selectedEntry = nil
+    familyButtons = {}
+    themeButtons = {}
+    themeButtonSignature = ""
+    collapsedCategories = {
+        Lilia = {},
+        GMOD = {}
+    }
+
     testerFrame = vgui.Create("DFrame")
-    testerFrame:SetSize(math.min(1400, ScrW() - 60), math.min(900, ScrH() - 60))
+    testerFrame:SetSize(math.min(1420, ScrW() - 60), math.min(900, ScrH() - 60))
     testerFrame:Center()
-    testerFrame:SetTitle("Lilia and Garry's Mod Panel Tester V2")
+    testerFrame:SetTitle("Panel Tester")
     testerFrame:SetDeleteOnClose(false)
     testerFrame:MakePopup()
     testerFrame.OnClose = function()
         closeActivePanels()
+        restoreTheme()
         testerFrame:SetVisible(false)
+    end
+
+    testerFrame.OnRemove = function()
+        closeActivePanels()
+        restoreTheme()
     end
 
     local root = testerFrame:Add("DPanel")
@@ -1110,71 +1299,141 @@ local function buildTester()
         surface.DrawRect(0, 0, w, h)
     end
 
-    local sidebar = root:Add("DPanel")
+    local familyBar = root:Add("DPanel")
+    familyBar:Dock(TOP)
+    familyBar:SetTall(48)
+    familyBar:DockPadding(10, 7, 10, 7)
+    familyBar.Paint = function(_, w, h)
+        surface.SetDrawColor(24, 28, 34, 255)
+        surface.DrawRect(0, 0, w, h)
+        surface.SetDrawColor(62, 72, 84, 150)
+        surface.DrawRect(0, h - 1, w, 1)
+    end
+
+    createFamilyButton(familyBar, "Lilia", "Lilia Panels")
+    createFamilyButton(familyBar, "GMOD", "Garry's Mod")
+    local body = root:Add("DPanel")
+    body:Dock(FILL)
+    body.Paint = nil
+    local sidebar = body:Add("DPanel")
     sidebar:Dock(LEFT)
-    sidebar:SetWide(310)
+    sidebar:SetWide(300)
     sidebar:DockPadding(10, 10, 10, 10)
     sidebar.Paint = function(_, w, h)
         surface.SetDrawColor(24, 28, 34, 255)
         surface.DrawRect(0, 0, w, h)
-        surface.SetDrawColor(62, 72, 84, 180)
+        surface.SetDrawColor(62, 72, 84, 160)
         surface.DrawRect(w - 1, 0, 1, h)
     end
 
     searchEntry = sidebar:Add("DTextEntry")
     searchEntry:Dock(TOP)
     searchEntry:SetTall(34)
-    searchEntry:SetPlaceholderText("Search panels or source files")
+    searchEntry:SetPlaceholderText("Search panels")
     searchEntry.OnChange = rebuildList
-    local countLabel = createLabel(sidebar, tostring(#entries) .. " test entries", "DermaDefault")
+    countLabel = createLabel(sidebar, "", "DermaDefault")
     countLabel:Dock(TOP)
-    countLabel:DockMargin(4, 8, 4, 8)
+    countLabel:DockMargin(4, 8, 4, 5)
     countLabel:SetTextColor(Color(150, 160, 172))
+    local categoryActions = sidebar:Add("DPanel")
+    categoryActions:Dock(TOP)
+    categoryActions:SetTall(28)
+    categoryActions:DockMargin(0, 0, 0, 4)
+    categoryActions.Paint = nil
+    local expandAll = categoryActions:Add("DButton")
+    expandAll:Dock(LEFT)
+    expandAll:SetWide(92)
+    expandAll:SetText("Expand all")
+    expandAll.DoClick = function()
+        setAllCategoriesCollapsed(false)
+        rebuildList()
+    end
+
+    local collapseAll = categoryActions:Add("DButton")
+    collapseAll:Dock(LEFT)
+    collapseAll:DockMargin(6, 0, 0, 0)
+    collapseAll:SetWide(92)
+    collapseAll:SetText("Collapse all")
+    collapseAll.DoClick = function()
+        setAllCategoriesCollapsed(true)
+        rebuildList()
+    end
+
     local list = sidebar:Add("DScrollPanel")
     list:Dock(FILL)
     listCanvas = list:GetCanvas()
     listCanvas:DockPadding(0, 0, 4, 0)
-    local content = root:Add("DPanel")
+    local content = body:Add("DPanel")
     content:Dock(FILL)
-    content:DockPadding(14, 12, 14, 14)
+    content:DockPadding(16, 14, 16, 16)
     content.Paint = nil
     previewTitle = createLabel(content, "Select a panel", "DermaLarge")
     previewTitle:Dock(TOP)
     previewTitle:SetTextColor(Color(235, 240, 245))
     previewMeta = createLabel(content, "", "DermaDefault")
     previewMeta:Dock(TOP)
-    previewMeta:DockMargin(0, 6, 0, 10)
+    previewMeta:DockMargin(0, 5, 0, 9)
     previewMeta:SetTextColor(Color(170, 180, 192))
     local actions = content:Add("DPanel")
     actions:Dock(TOP)
-    actions:SetTall(38)
+    actions:SetTall(36)
     actions.Paint = nil
-    previewButton = createSampleButton(actions, "Rebuild Preview")
+    previewButton = createSampleButton(actions, "Preview")
     previewButton:Dock(LEFT)
-    previewButton:SetWide(140)
+    previewButton:SetWide(100)
     previewButton.DoClick = function() if selectedEntry then createEmbeddedPreview(selectedEntry) end end
     openButton = createSampleButton(actions, "Open Live")
     openButton:Dock(LEFT)
-    openButton:DockMargin(8, 0, 0, 0)
-    openButton:SetWide(120)
+    openButton:DockMargin(7, 0, 0, 0)
+    openButton:SetWide(100)
     openButton.DoClick = function() if selectedEntry then launchEntry(selectedEntry) end end
     local closeButton = createSampleButton(actions, "Close Spawned")
     closeButton:Dock(LEFT)
-    closeButton:DockMargin(8, 0, 0, 0)
-    closeButton:SetWide(130)
+    closeButton:DockMargin(7, 0, 0, 0)
+    closeButton:SetWide(118)
     closeButton.DoClick = function()
         closeActivePanels()
         setStatus("Closed tester-spawned panels.", true)
     end
 
-    local refreshButton = createSampleButton(actions, "Refresh Registry")
+    local refreshButton = createSampleButton(actions, "Refresh")
     refreshButton:Dock(RIGHT)
-    refreshButton:SetWide(140)
+    refreshButton:SetWide(92)
     refreshButton.DoClick = function()
         rebuildList()
         if selectedEntry then updateSelection(selectedEntry) end
     end
 
+    themePanel = content:Add("DPanel")
+    themePanel:Dock(TOP)
+    themePanel:DockMargin(0, 10, 0, 0)
+    themePanel:SetTall(72)
+    themePanel.Paint = function(_, w, h)
+        draw.RoundedBox(7, 0, 0, w, h, Color(24, 28, 34, 235))
+        surface.SetDrawColor(62, 72, 84, 120)
+        surface.DrawOutlinedRect(0, 0, w, h, 1)
+    end
+
+    local themeLabel = createLabel(themePanel, "Lilia Theme Preview", "DermaDefaultBold")
+    themeLabel:SetPos(10, 7)
+    themeLabel:SetSize(180, 18)
+    themeLabel:SetTextColor(Color(205, 214, 224))
+    local resetTheme = themePanel:Add("DButton")
+    resetTheme:SetText("Reset")
+    resetTheme:SetSize(64, 24)
+    resetTheme:SetPos(196, 4)
+    resetTheme.DoClick = function()
+        restoreTheme()
+        if lia and lia.color and isfunction(lia.color.getCurrentTheme) then selectedTheme = lia.color.getCurrentTheme() end
+        refreshThemeButtons()
+        if selectedEntry and selectedEntry.family == "Lilia" and selectedEntry.mode == "embedded" then createEmbeddedPreview(selectedEntry) end
+    end
+
+    themeScroller = themePanel:Add("DHorizontalScroller")
+    themeScroller:SetPos(10, 30)
+    themeScroller:SetTall(36)
+    themeScroller:SetOverlap(-4)
+    themePanel.PerformLayout = function(_, w) themeScroller:SetWide(math.max(w - 20, 1)) end
     previewStatus = createLabel(content, "", "DermaDefaultBold")
     previewStatus:Dock(TOP)
     previewStatus:DockMargin(0, 8, 0, 8)
@@ -1186,8 +1445,14 @@ local function buildTester()
         surface.DrawOutlinedRect(0, 0, w, h, 1)
     end
 
+    updateThemeVisibility()
     rebuildList()
 end
 
-concommand.Add("lia_panel_tester", buildTester, nil, "Open the Lilia and Garry's Mod VGUI panel tester V2")
-hook.Add("OnGamemodeLoaded", "liaPanelTesterV2Ready", function() if IsValid(testerFrame) then rebuildList() end end)
+concommand.Add("lia_panel_tester", buildTester, nil, "Open the split Lilia and Garry's Mod VGUI panel tester with collapsible categories")
+hook.Add("OnGamemodeLoaded", "liaPanelTesterV4Ready", function()
+    if IsValid(testerFrame) then
+        updateThemeVisibility()
+        rebuildList()
+    end
+end)

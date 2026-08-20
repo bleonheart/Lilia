@@ -595,11 +595,12 @@ else
                 filter:AddChoice("Not Mounted", "unmounted")
                 filter:SetFont("LiliaFont.16")
                 filter:SetTextColor(Color(215, 229, 229))
-                filter.btn.Paint = function(_, w, h)
+                filter.Paint = function(self, w, h)
                     local accent = lia.color.theme.accent
                     drawWorkshopPanel(0, 0, w, h, 5, Color(6, 20, 26, 225), Color(accent.r, accent.g, accent.b, 60))
-                    draw.SimpleText(filter:GetValue(), "LiliaFont.16", 12, h * 0.5, Color(215, 229, 229), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(tostring(self:GetSelectedText() or self:GetValue() or "All Addons"), "LiliaFont.16", 12, h * 0.5, Color(215, 229, 229), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                     draw.SimpleText("▼", "LiliaFont.15", w - 14, h * 0.5, Color(175, 197, 198), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    return true
                 end
 
                 local searchPanel = controls:Add("DPanel")

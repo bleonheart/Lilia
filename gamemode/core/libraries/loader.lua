@@ -13,74 +13,6 @@
 ]]
 --[[
     Hooks:
-        DiscordRelaySend(table embed)
-
-    Purpose:
-        Runs before a Discord relay embed is dispatched through the configured webhook.
-
-    Category:
-        Loader
-
-    Parameters:
-        embed (table)
-            The embed payload being prepared for relay.
-
-    Example Usage:
-        ```lua
-        hook.Add("DiscordRelaySend", "liaExampleDiscordRelaySend", function(embed)
-            print("[MyModule] handled DiscordRelaySend")
-        end)
-        ```
-
-    Realm:
-        Shared
-]]
---[[
-    Hooks:
-        DiscordRelayUnavailable()
-
-    Purpose:
-        Runs when the Discord relay cannot use the CHTTP send path and falls back to the HTTP send path.
-
-    Category:
-        Loader
-
-    Example Usage:
-        ```lua
-        hook.Add("DiscordRelayUnavailable", "liaExampleDiscordRelayUnavailable", function()
-            print("[MyModule] handled DiscordRelayUnavailable")
-        end)
-        ```
-
-    Realm:
-        Shared
-]]
---[[
-    Hooks:
-        DiscordRelayed(table embed)
-
-    Purpose:
-        Runs after the Discord relay request has been dispatched.
-
-    Category:
-        Loader
-
-    Parameters:
-        embed (table)
-            The embed payload that was dispatched.
-
-    Example Usage:
-        ```lua
-        hook.Add("DiscordRelayed", "liaExampleDiscordRelayed", function(embed)
-            print("[MyModule] handled DiscordRelayed")
-        end)
-        ```
-
-    Realm:
-        Shared
-]]
---[[
-    Hooks:
         SetupDatabase()
 
     Purpose:
@@ -337,126 +269,126 @@ local ConditionalFiles = {
         global = "VCMod",
         name = "VCMod",
         realm = "shared",
-        callback = function() return "Routes VCMod affordability and vehicle money transactions through Lilia character money." end
+        callback = function() return "Uses Lilia character money." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/vjbase.lua",
         global = "VJ",
         name = "VJ",
         realm = "server",
-        callback = function() return "Blocks unsafe VJ net calls and spawners, tunes NPC processing, and restricts VJ NPC properties to superadmins." end
+        callback = function() return "Secures VJ spawners and NPCs." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/advdupe.lua",
         global = "AdvDupe",
         name = "AdvDupe",
         realm = "server",
-        callback = function() return "Blocks NoDuplicate entities and oversized model scales from Advanced Duplicator pastes." end
+        callback = function() return "Secures duplicated entities." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/advdupe2.lua",
         global = "AdvDupe2",
         name = "AdvDupe2",
         realm = "server",
-        callback = function() return "Secures dupe pastes against protected or oversized entities and bridges Lilia duplicator data into AdvDupe2 pasting." end
+        callback = function() return "Secures AdvDupe2 pastes." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/mediaplayer.lua",
         global = "MediaPlayer",
         name = "Media Player",
         realm = "shared",
-        callback = function() return "Sanitizes media history SQL values and reports suspicious SQL-injection-style requests." end
+        callback = function() return "Secures media history queries." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/pac.lua",
         global = "pac",
         name = "PAC3",
         realm = "shared",
-        callback = function() return "Syncs PAC parts with Lilia items and ragdolls, adds PAC recovery controls, and restricts PAC usage by flag and privilege." end
+        callback = function() return "Integrates PAC items and permissions." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/prone.lua",
         global = "prone",
         name = "Prone",
         realm = "server",
-        callback = function() return "Forces players out of prone when they die or load a character." end
+        callback = function() return "Resets prone state safely." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/cami.lua",
         global = "CAMI",
         name = "CAMI",
         realm = "shared",
-        callback = function() return "Synchronizes CAMI access checks, usergroups, privileges, and usergroup changes with Lilia administration." end
+        callback = function() return "Syncs CAMI permissions and groups." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/ulx.lua",
         global = "ulx",
         name = "ULX",
         realm = "shared",
-        callback = function() return "Mirrors ULib group permissions into Lilia/CAMI and routes Lilia admin commands and usergroup changes through ULX." end
+        callback = function() return "Syncs ULX permissions and commands." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/serverguard.lua",
         global = "serverguard",
         name = "ServerGuard",
         realm = "shared",
-        callback = function() return "Synchronizes ServerGuard ranks and permissions with Lilia/CAMI and routes admin actions through ServerGuard." end
+        callback = function() return "Syncs ServerGuard administration." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/sam.lua",
         global = "sam",
         name = "SAM | Admin Mod",
         realm = "shared",
-        callback = function() return "Synchronizes Lilia privileges and ranks with SAM, routes admin commands, enforces staff restrictions, and uses SAM playtime." end
+        callback = function() return "Syncs SAM administration and playtime." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/sadmin.lua",
         condition = function() return sadmin ~= nil or concommand.GetTable().sa ~= nil end,
         name = "sAdmin",
         realm = "server",
-        callback = function() return "Routes Lilia admin commands and usergroup changes through sAdmin console commands." end
+        callback = function() return "Routes administration through sAdmin." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/simfphys.lua",
         global = "simfphys",
         name = "Simfphys Vehicles",
         realm = "shared",
-        callback = function() return "Adds Lilia vehicle entry, damage, trunk and property rules while applying Simfphys HUD and crash protections." end
+        callback = function() return "Integrates Simfphys vehicle rules." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/sitanywhere.lua",
         global = "SitAnywhere",
         name = "Sit Anywhere",
         realm = "shared",
-        callback = function() return "Disables Sit Anywhere hooks, commands, methods, seats, and state to prevent conflicts with Lilia seating." end
+        callback = function() return "Disables conflicting Sit Anywhere features." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/permaprops.lua",
         global = "PermaProps",
         name = "PermaProps",
         realm = "server",
-        callback = function() return "Protects Lilia, persistent, and map entities from PermaProps while tracking overlap warnings and saved props." end
+        callback = function() return "Protects Lilia entities from PermaProps." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/arccw.lua",
         global = "ArcCWInstalled",
         name = "ArcCW",
         realm = "shared",
-        callback = function() return "Disables conflicting ArcCW inventory and pickup behavior and registers ArcCW attachments as Lilia items." end
+        callback = function() return "Integrates ArcCW attachments and inventory." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/wiremod.lua",
         global = "WireLib",
         name = "Wiremod",
         realm = "server",
-        callback = function() return "Secures Expression 2 uploads with chip validation, permission checks, safe decoding, and friend-write protection." end
+        callback = function() return "Secures Expression 2 uploads." end
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/vmanip.lua",
         global = "VManip",
         name = "VManip",
         realm = "shared",
-        callback = function() return "Plays the VManip pickup animation when Lilia items are taken unless the item disables it." end
+        callback = function() return "Adds VManip pickup animations." end
     },
 }
 
@@ -939,61 +871,6 @@ function lia.debug(...)
     MsgC(textColor, "\n")
 end
 
---[[
-    Purpose:
-        Sends a Discord webhook embed through the configured relay endpoint and fires relay lifecycle hooks.
-
-    Parameters:
-        embed (table)
-            The Discord embed payload to send. Default title, color, timestamp, and footer values are filled in when omitted.
-
-    Example Usage:
-        ```lua
-        lia.relaydiscordMessage({
-            title = "Character Created",
-            description = "A new character joined the server."
-        })
-        ```
-
-    Realm:
-        Shared
-]]
-function lia.relaydiscordMessage(embed)
-    if not lia.discordWebhook or not istable(embed) then return end
-    local ForceHTTPMode = not util.IsBinaryModuleInstalled("chttp")
-    embed.title = embed.title or L("Lilia")
-    embed.color = tonumber(embed.color) or 7506394
-    embed.timestamp = embed.timestamp or os.date("!%Y-%m-%dT%H:%M:%SZ")
-    embed.footer = embed.footer or {
-        text = L("discordRelayLiliaDiscordRelay")
-    }
-
-    local payload = {
-        embeds = {embed},
-        username = L("discordRelayLiliaLogger")
-    }
-
-    hook.Run("DiscordRelaySend", embed)
-    if util.IsBinaryModuleInstalled("chttp") and not ForceHTTPMode then
-        require("chttp")
-        CHTTP({
-            url = lia.discordWebhook,
-            method = "POST",
-            headers = {
-                ["Content-Type"] = "application/json"
-            },
-            body = util.TableToJSON(payload)
-        })
-    else
-        if not ForceHTTPMode then hook.Run("DiscordRelayUnavailable") end
-        http.Post(lia.discordWebhook, {
-            payload_json = util.TableToJSON(payload)
-        }, function() end, function(err) lia.error("Discord relay HTTP failed: " .. tostring(err)) end)
-    end
-
-    hook.Run("DiscordRelayed", embed)
-end
-
 for _, files in ipairs(FilesToLoad) do
     lia.loader.include(files.path, files.realm)
 end
@@ -1259,5 +1136,5 @@ for _, compatFile in ipairs(ConditionalFiles) do
     end
 end
 
-if #loadedCompatibility > 0 then lia.bootstrap(L("compatibility"), table.concat(loadedCompatibility, " | ")) end
+if #loadedCompatibility > 0 then MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("logBootstrap") .. "] ", Color(0, 255, 0), "[" .. L("compatibility") .. "]:\n\n", Color(255, 255, 255), table.concat(loadedCompatibility, "\n"), "\n") end
 if game.IsDedicated() then concommand.Remove("gm_save") end

@@ -1,10 +1,12 @@
-SIMPSit.Config.Debug = false
-SIMPSit.Config.MaxDistance = 10000
-SIMPSit.Config.MaxPitch = 10
-SIMPSit.Config.CircleBuffer = 15
-SIMPSit.Config.MaxIdealLeaveDistance = 50000
-SIMPSit.Config.ButtonsToSit = {KEY_LALT, KEY_E}
-function SIMPSit.Core.CheckValidRotation(pos, surfaceAng, rotation)
+lia.sit = lia.sit or {}
+lia.sit.config = lia.sit.config or {}
+lia.sit.cooldown = lia.sit.cooldown or {}
+lia.sit.config.MaxDistance = 10000
+lia.sit.config.MaxPitch = 10
+lia.sit.config.CircleBuffer = 15
+lia.sit.config.MaxIdealLeaveDistance = 50000
+lia.sit.config.ButtonsToSit = {KEY_LALT, KEY_E}
+function lia.sit.checkValidRotation(pos, surfaceAng, rotation)
     if not isnumber(rotation) then return false end
     local rad = math.rad(rotation)
     local dir = Vector(math.cos(rad), math.sin(rad), 0)
@@ -24,49 +26,36 @@ function SIMPSit.Core.CheckValidRotation(pos, surfaceAng, rotation)
 end
 
 if SERVER then
-    util.AddNetworkString("SIMPSit:SitFacing")
+    util.AddNetworkString("lia.sit.sitFacing")
     local pitchOffset = Angle(270, 0, 0)
     local optimalOffset = Vector(0, 0, 5)
     local optimalOffsetHeight = Vector(0, 0, -20)
     concommand.Add("sit", function(ply)
         local curTime = CurTime()
         local steamID = ply:SteamID64()
-        if not SIMPSit.Cooldown[steamID] then SIMPSit.Cooldown[steamID] = 0 end
-        if SIMPSit.Cooldown[steamID] > curTime then return end
-        SIMPSit.Cooldown[steamID] = curTime + 0.5
+        if not lia.sit.cooldown[steamID] then lia.sit.cooldown[steamID] = 0 end
+        if lia.sit.cooldown[steamID] > curTime then return end
+        lia.sit.cooldown[steamID] = curTime + 0.5
         local eyeTrace = ply:GetEyeTrace()
         local pos = eyeTrace.HitPos
         local ent = eyeTrace.Entity
         local pitch = (eyeTrace.HitNormal:Angle() - pitchOffset).pitch
-        local canSit, optimalRotation = SIMPSit.Core.CanSitHere(ply, pos, pitch, ent)
-        if not canSit then
-            if SIMPSit.Config.Debug then print("[SIMPSIT]", ply, "attempted to sit but could not find a suitable location.") end
-            return
-        end
-
-        SIMPSit.Core.Sit(ply, pos, ent:IsWorld() and NULL or ent, optimalRotation, pitch)
+        local canSit, optimalRotation = lia.sit.canSitHere(ply, pos, pitch, ent)
+        if not canSit then return end
+        lia.sit.sit(ply, pos, ent:IsWorld() and NULL or ent, optimalRotation, pitch)
     end)
 
-    function SIMPSit.Core.OptimalRotation(pos)
+    function lia.sit.optimalRotation(pos)
         local allPly = player.GetAll()
         local furthest
         for i = 0, 360, 45 do
             local rad = math.rad(i)
             local dir = Vector(math.cos(rad), math.sin(rad), 0)
-            local startPos = pos + dir * SIMPSit.Config.CircleBuffer + optimalOffset
+            local startPos = pos + dir * lia.sit.config.CircleBuffer + optimalOffset
             local trace = util.QuickTrace(startPos, optimalOffsetHeight, allPly)
-            if SIMPSit.Config.Debug then
-                if not trace.Hit then
-                    debugoverlay.Line(startPos, startPos + optimalOffsetHeight, 5, Color(0, 255, 0), true)
-                else
-                    debugoverlay.Line(startPos, startPos + optimalOffsetHeight, 5, Color(255, 0, 0), true)
-                end
-            end
-
             if trace.Hit then continue end
-            local traceToStart = util.QuickTrace(startPos + (-optimalOffset * 1.2), dir * -SIMPSit.Config.CircleBuffer, allPly)
+            local traceToStart = util.QuickTrace(startPos + (-optimalOffset * 1.2), dir * -lia.sit.config.CircleBuffer, allPly)
             traceToStart.rotation = i
-            if SIMPSit.Config.Debug then debugoverlay.Line(startPos + (-optimalOffset * 1.2), startPos + (-optimalOffset * 1.2) + (dir * -SIMPSit.Config.CircleBuffer), 5, Color(0, 0, 255), true) end
             if not furthest then
                 furthest = traceToStart
                 continue
@@ -79,21 +68,21 @@ if SERVER then
         return furthest.rotation
     end
 
-    function SIMPSit.Core.CanSitHere(ply, pos, pitch, ent)
-        if ply:GetPos():DistToSqr(pos) > SIMPSit.Config.MaxDistance then return false end
+    function lia.sit.canSitHere(ply, pos, pitch, ent)
+        if ply:GetPos():DistToSqr(pos) > lia.sit.config.MaxDistance then return false end
         if ent:IsPlayer() then return false end
-        if pitch > SIMPSit.Config.MaxPitch then return false end
-        if pitch < -SIMPSit.Config.MaxPitch then return false end
+        if pitch > lia.sit.config.MaxPitch then return false end
+        if pitch < -lia.sit.config.MaxPitch then return false end
         local canSit, sitRotation = hook.Run("ShouldAllowSit", ply, pos, pitch, ent)
-        if not (canSit == nil) then return canSit, sitRotation or SIMPSit.Core.OptimalRotation(pos) or 0 end
-        local rotation = SIMPSit.Core.OptimalRotation(pos)
+        if not (canSit == nil) then return canSit, sitRotation or lia.sit.optimalRotation(pos) or 0 end
+        local rotation = lia.sit.optimalRotation(pos)
         if not rotation then return false end
         return true, rotation
     end
 
-    function SIMPSit.Core.Sit(ply, pos, ent, rotation, pitch, manualFacing)
+    function lia.sit.sit(ply, pos, ent, rotation, pitch, manualFacing)
         local chair = ents.Create("prop_vehicle_prisoner_pod")
-        chair.SIMPSit = true
+        chair.liaSit = true
         if IsValid(ent) and not ent:IsWorld() then
             chair:SetParent(ent)
             ply:DropObject()
@@ -109,11 +98,11 @@ if SERVER then
         chair:Spawn()
         chair:Activate()
         chair:SetVehicleClass("Seat_Airboat")
-        if not SIMPSit.Config.Debug then chair:SetNotSolid(true) end
-        ent.SIMPSitChair = chair
+        chair:SetNotSolid(true)
+        ent.liaSitChair = chair
         chair:CallOnRemove("UnTie", function(entChair)
             local parent = entChair:GetParent()
-            if IsValid(parent) then parent.SIMPSitChair = nil end
+            if IsValid(parent) then parent.liaSitChair = nil end
         end)
 
         local phys = chair:GetPhysicsObject()
@@ -125,12 +114,9 @@ if SERVER then
             phys:SetMass(1)
         end
 
-        if not SIMPSit.Config.Debug then
-            chair:SetColor(Color(0, 0, 0, 0))
-            chair:SetRenderMode(RENDERMODE_TRANSALPHA)
-            chair:DrawShadow(false)
-        end
-
+        chair:SetColor(Color(0, 0, 0, 0))
+        chair:SetRenderMode(RENDERMODE_TRANSALPHA)
+        chair:DrawShadow(false)
         chair.PhysgunDisabled = true
         chair.m_tblToolsAllowed = {}
         chair.customCheck = function() return false end
@@ -145,12 +131,12 @@ if SERVER then
         end
     end
 
-    net.Receive("SIMPSit:SitFacing", function(_, ply)
+    net.Receive("lia.sit.sitFacing", function(_, ply)
         local curTime = CurTime()
         local steamID = ply:SteamID64()
-        if not SIMPSit.Cooldown[steamID] then SIMPSit.Cooldown[steamID] = 0 end
-        if SIMPSit.Cooldown[steamID] > curTime then return end
-        SIMPSit.Cooldown[steamID] = curTime + 0.5
+        if not lia.sit.cooldown[steamID] then lia.sit.cooldown[steamID] = 0 end
+        if lia.sit.cooldown[steamID] > curTime then return end
+        lia.sit.cooldown[steamID] = curTime + 0.5
         local wantedRotation = net.ReadFloat()
         local traceDirection = net.ReadVector()
         if wantedRotation ~= wantedRotation then return end
@@ -168,10 +154,10 @@ if SERVER then
         local pos = eyeTrace.HitPos
         local ent = eyeTrace.Entity
         local pitch = (eyeTrace.HitNormal:Angle() - pitchOffset).pitch
-        if ply:GetPos():DistToSqr(pos) > SIMPSit.Config.MaxDistance then return end
+        if ply:GetPos():DistToSqr(pos) > lia.sit.config.MaxDistance then return end
         if IsValid(ent) and ent:IsPlayer() then return end
-        if pitch > SIMPSit.Config.MaxPitch then return end
-        if pitch < -SIMPSit.Config.MaxPitch then return end
+        if pitch > lia.sit.config.MaxPitch then return end
+        if pitch < -lia.sit.config.MaxPitch then return end
         local canSit, sitRotation = hook.Run("ShouldAllowSit", ply, pos, pitch, ent)
         if canSit == false then return end
         local rotation = math.NormalizeAngle(wantedRotation)
@@ -179,45 +165,45 @@ if SERVER then
         if isnumber(sitRotation) then
             rotation = sitRotation
             manualFacing = false
-        elseif not SIMPSit.Core.CheckValidRotation(pos, eyeTrace.HitNormal:Angle(), rotation) then
+        elseif not lia.sit.checkValidRotation(pos, eyeTrace.HitNormal:Angle(), rotation) then
             return
         end
 
-        SIMPSit.Core.Sit(ply, pos, IsValid(ent) and not ent:IsWorld() and ent or NULL, rotation, pitch, manualFacing)
+        lia.sit.sit(ply, pos, IsValid(ent) and not ent:IsWorld() and ent or NULL, rotation, pitch, manualFacing)
     end)
 
-    hook.Add("PlayerLeaveVehicle", "SIMPSit:Remove", function(ply, chair)
+    hook.Add("PlayerLeaveVehicle", "lia.sit.remove", function(ply, chair)
         if not IsValid(chair) then return end
-        if not chair.SIMPSit then return end
+        if not chair.liaSit then return end
         local idealLeaveSpace = chair.SIMPIdealLeaveSpace
         chair:Remove()
-        if idealLeaveSpace:DistToSqr(chair:GetPos()) < SIMPSit.Config.MaxIdealLeaveDistance then ply:SetPos(idealLeaveSpace) end
+        if idealLeaveSpace:DistToSqr(chair:GetPos()) < lia.sit.config.MaxIdealLeaveDistance then ply:SetPos(idealLeaveSpace) end
     end)
 
-    hook.Add("PlayerDisconnected", "SIMPSit:Remove", function(ply)
+    hook.Add("PlayerDisconnected", "lia.sit.remove", function(ply)
         local chair = ply:GetVehicle()
         if not IsValid(chair) then return end
-        if not chair.SIMPSit then return end
+        if not chair.liaSit then return end
         chair:Remove()
     end)
 
-    hook.Add("CanUndo", "SIMPSit:AntiAbuse", function(ply, tUndo)
+    hook.Add("CanUndo", "lia.sit.antiAbuse", function(ply, tUndo)
         if isstring(tUndo.Name) and string.lower(tUndo.Name):find("precision") then
             local fn = tUndo.Functions[1]
             local data = fn and fn[2]
             local ent = data and data[1]
-            if IsValid(ent) and IsValid(ent.SIMPSitChair) then return false end
+            if IsValid(ent) and IsValid(ent.liaSitChair) then return false end
         end
     end)
 
-    hook.Add("CanTool", "SIMPSit:AntiAbuse", function(ply, tr, toolname, tool, button)
+    hook.Add("CanTool", "lia.sit.antiAbuse", function(ply, tr, toolname, tool, button)
         local trEnt = tr.Entity
-        if IsValid(trEnt) and IsValid(trEnt.SIMPSitChair) then return false end
+        if IsValid(trEnt) and IsValid(trEnt.liaSitChair) then return false end
     end)
 
-    hook.Add("PhysgunPickup", "SIMPSit:AntiAbuse", function(ply, trEnt) if IsValid(trEnt) and IsValid(trEnt.SIMPSitChair) then return false end end)
+    hook.Add("PhysgunPickup", "lia.sit.antiAbuse", function(ply, trEnt) if IsValid(trEnt) and IsValid(trEnt.liaSitChair) then return false end end)
 else
-    local tag = "SIMPSit:"
+    local tag = "lia.sit."
     local arrow = Material("widgets/arrow.png")
     local white = Color(255, 255, 255, 255)
     local red = Color(255, 0, 0, 255)
@@ -232,12 +218,12 @@ else
     end
 
     local function GetTriggerButton()
-        local buttons = SIMPSit.Config.ButtonsToSit
+        local buttons = lia.sit.config.ButtonsToSit
         return buttons[#buttons]
     end
 
     local function AreModifierButtonsDown()
-        local buttons = SIMPSit.Config.ButtonsToSit
+        local buttons = lia.sit.config.ButtonsToSit
         if #buttons < 2 then return true end
         for i = 1, #buttons - 1 do
             if not input.IsButtonDown(buttons[i]) then return false end
@@ -270,7 +256,7 @@ else
             local posOnPlane = WorldToLocal(vec, Angle(0, 90, 0), trace.HitPos, Angle(0, 0, 0))
             local testVec = posOnPlane:GetNormal() * traceScaled
             local currentAng = (trace.HitPos - vec):Angle()
-            local goodSit = SIMPSit.Core.CheckValidRotation(trace.HitPos, trace.HitNormal:Angle(), currentAng.y)
+            local goodSit = lia.sit.checkValidRotation(trace.HitPos, trace.HitNormal:Angle(), currentAng.y)
             if goodSit then
                 wantedRotation = currentAng.y
             else
@@ -295,14 +281,14 @@ else
             local traceDirection = trace.HitPos - trace.StartPos
             if traceDirection:LengthSqr() <= 0 then return end
             traceDirection:Normalize()
-            net.Start("SIMPSit:SitFacing")
+            net.Start("lia.sit.sitFacing")
             net.WriteFloat(wantedRotation)
             net.WriteVector(traceDirection)
             net.SendToServer()
         end
     end
 
-    hook.Add("PlayerButtonDown", "SIMPSit:KeyPress", function(ply, button)
+    hook.Add("PlayerButtonDown", "lia.sit.keyPress", function(ply, button)
         if not game.SinglePlayer() and not IsFirstTimePredicted() then return end
         if ply ~= LocalPlayer() then return end
         if button ~= GetTriggerButton() then return end
@@ -314,7 +300,7 @@ else
         currentSit = StartSit(table.Copy(trace))
     end)
 
-    hook.Add("PlayerButtonUp", "SIMPSit:KeyRelease", function(ply, button)
+    hook.Add("PlayerButtonUp", "lia.sit.keyRelease", function(ply, button)
         if not game.SinglePlayer() and not IsFirstTimePredicted() then return end
         if ply ~= LocalPlayer() then return end
         if button ~= GetTriggerButton() then return end

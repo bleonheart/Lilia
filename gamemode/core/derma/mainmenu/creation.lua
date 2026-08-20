@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Hooks:
         ConfigureCharacterCreationSteps(Panel self)
 
@@ -53,6 +53,18 @@
     Realm:
         Client
 ]]
+
+local function themeColor(key, fallback)
+    local theme = lia.color and lia.color.theme or {}
+    local value = theme[key]
+    if IsColor(value) then return value end
+    if istable(value) and IsColor(value[1]) then return value[1] end
+    return fallback
+end
+
+local function alphaColor(color, alpha)
+    return Color(color.r, color.g, color.b, alpha)
+end
 local PANEL = {}
 function PANEL:configureSteps()
     self:addStep(vgui.Create("liaCharacterBiography"))
@@ -117,16 +129,14 @@ function PANEL:onFinish()
         if IsValid(step) and step.updateContext then step:updateContext() end
     end
 
-    self.content:SetVisible(false)
-    self.buttons:SetVisible(false)
+    if IsValid(self.shell) then self.shell:SetVisible(false) end
     self:showMessage("creating")
     self.creating = true
     local function finish()
         timer.Remove("liaFailedToCreate")
         if not IsValid(self) then return end
         self.creating = false
-        self.content:SetVisible(true)
-        self.buttons:SetVisible(true)
+        if IsValid(self.shell) then self.shell:SetVisible(true) end
         self:showMessage()
     end
 
@@ -153,15 +163,15 @@ function PANEL:showError(msg, ...)
     local err = self.content:Add("DLabel")
     err:SetFont("LiliaFont.18")
     err:SetText(L(msg, ...))
-    err:SetTextColor(color_white)
+    err:SetTextColor(themeColor("text", color_white))
     err:Dock(TOP)
     err:SetTall(32)
     err:DockMargin(0, 0, 0, 8)
     err:SetContentAlignment(5)
-    err.Paint = function(box, w, h)
-        local bgColor = Color(25, 28, 35, 250)
-        local lineColor = Color(220, 70, 70)
-        lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+    err.Paint = function(_, w, h)
+        local bgColor = themeColor("focus_panel", themeColor("background", Color(25, 28, 35)))
+        local lineColor = themeColor("negative", Color(220, 70, 70))
+        lia.derma.rect(0, 0, w, h):Rad(6):Color(alphaColor(bgColor, 245)):Shape(lia.derma.SHAPE_IOS):Draw()
         surface.SetDrawColor(lineColor)
         surface.DrawRect(0, 0, w, 2)
     end
@@ -175,16 +185,22 @@ end
 function PANEL:showMessage(msg, ...)
     if not msg or msg == "" then
         if IsValid(self.message) then self.message:Remove() end
+        self.message = nil
         return
     end
 
-    if IsValid(self.message) then self.message:SetText(L(msg, ...):upper()) end
+    local text = L(msg, ...):upper()
+    if IsValid(self.message) then
+        self.message:SetText(text)
+        return
+    end
+
     local lbl = self:Add("DLabel")
     lbl:SetFont("LiliaFont.16")
-    lbl:SetTextColor(lia.gui.character.color)
+    lbl:SetTextColor(themeColor("text", color_white))
     lbl:Dock(FILL)
     lbl:SetContentAlignment(5)
-    lbl:SetText(L(msg, ...):upper())
+    lbl:SetText(text)
     self.message = lbl
 end
 
@@ -253,95 +269,53 @@ function PANEL:onStepChanged(oldStep, newStep)
     local finish = self.curStep == #self.steps
     local key = finish and "finish" or "next"
     if IsValid(newStep) then
-        local panelName = newStep:GetName()
-        local shouldShowModel = panelName == "liaCharacterModel"
-        if IsValid(self.model) then self.model:SetVisible(shouldShowModel and not (IsValid(lia.gui.character) and lia.gui.character.inWorldPreview)) end
+        local shouldShowModel = newStep:GetName() == "liaCharacterModel"
+        self.layoutMode = shouldShowModel and "preview" or "form"
+        if IsValid(self.model) then self.model:SetVisible(false) end
         if IsValid(lia.gui.character) then
-            lia.gui.character.inCharacterCreationModelStep = shouldShowModel or false
+            lia.gui.character.inCharacterCreationModelStep = shouldShowModel
+            lia.gui.character.noBlur = not shouldShowModel
             if shouldShowModel then
-                if IsValid(self.content) then
-                    self.content:Dock(RIGHT)
-                    self.content:SetWide(ScrW() * 0.5)
-                    self.content:DockMargin(0, 64, 64, 96)
-                end
-
-                lia.gui.character.noBlur = true
-                if IsValid(self.model) then
-                    self.model:SetVisible(false)
-                    self.model:SetWide(0)
-                end
-
-                if IsValid(self.buttons) then
-                    self.buttons:SetParent(self)
-                    self.buttons:SetTall(48)
-                    self.buttons:MoveToFront()
-                    self.buttons:Dock(NODOCK)
-                    self.buttons._liaFullWidthBottom = true
-                    if self.buttons._liaOldThink == nil then self.buttons._liaOldThink = self.buttons.Think end
-                    self.buttons.Think = function(pnl)
-                        if isfunction(pnl._liaOldThink) then pnl._liaOldThink(pnl) end
-                        if not pnl._liaFullWidthBottom then return end
-                        local h = pnl:GetTall()
-                        pnl:SetSize(self:GetWide(), h)
-                        pnl:SetPos(0, self:GetTall() - h)
-                        pnl:MoveToFront()
-                    end
-                end
-
                 lia.gui.character:setInWorldPreviewEnabled(true)
                 lia.gui.character:updateCreationModelEntity(self.context)
-            else
-                if lia.gui.character.inWorldPreview then lia.gui.character:setInWorldPreviewEnabled(false) end
-                lia.gui.character.noBlur = false
-                if IsValid(self.content) then
-                    local margin = ScrW() > 1280 and ScrW() * 0.15 or ScrW() > 720 and ScrW() * 0.075 or 0
-                    self.content:Dock(FILL)
-                    self.content:DockMargin(margin, 64, margin, 96)
-                    self.content:SetWide(0)
-                end
-
-                if IsValid(self.buttons) then
-                    self.buttons:SetParent(self)
-                    self.buttons._liaFullWidthBottom = nil
-                    if self.buttons._liaOldThink ~= nil then
-                        self.buttons.Think = self.buttons._liaOldThink
-                        self.buttons._liaOldThink = nil
-                    else
-                        self.buttons.Think = nil
-                    end
-
-                    self.buttons:Dock(BOTTOM)
-                    self.buttons:DockMargin(0, 0, 0, 0)
-                    self.buttons:SetTall(48)
-                    self.buttons:MoveToFront()
-                end
+            elseif lia.gui.character.inWorldPreview then
+                lia.gui.character:setInWorldPreviewEnabled(false)
             end
         end
+
+        self:InvalidateLayout(true)
+        self:PerformLayout(self:GetWide(), self:GetTall())
     end
 
     if IsValid(self:getPreviousStep()) then
-        self.prev:AlphaTo(255, 0.5)
+        self.prev:AlphaTo(255, 0.2)
+        self.prev:SetMouseInputEnabled(true)
     else
-        self.prev:AlphaTo(0, 0.5)
+        self.prev:AlphaTo(0, 0.2)
+        self.prev:SetMouseInputEnabled(false)
     end
 
-    local function sizeButton(btn, txt)
-        btn:SetText(txt)
+    local function sizeButton(btn, text)
+        btn:SetText(text)
         surface.SetFont(btn:GetFont())
-        local w = select(1, surface.GetTextSize(txt))
-        btn:SetWide(w + 40)
+        local textW = surface.GetTextSize(text)
+        btn:SetWide(math.max(112, textW + 40))
     end
 
-    if L(key):upper() ~= self.next:GetText() then self.next:AlphaTo(0, 0.5) end
+    local nextText = L(key):upper()
+    if nextText ~= self.next:GetText() then
+        self.next:SetAlpha(0)
+        sizeButton(self.next, nextText)
+    end
+
     local function show()
-        if not IsValid(newStep) then return end
+        if not IsValid(newStep) or not IsValid(self.content) then return end
         local parent = self.content
-        if not IsValid(parent) then return end
         parent:InvalidateLayout(true)
         parent:PerformLayout()
         local pw, ph = parent:GetWide(), parent:GetTall()
-        if pw <= 0 then pw = ScrW() end
-        if ph <= 0 then ph = ScrH() end
+        if pw <= 0 then pw = math.max(self:GetWide() - 64, 1) end
+        if ph <= 0 then ph = math.max(self:GetTall() - 160, 1) end
         local dir = self._transitionDir or 1
         newStep:Stop()
         newStep:Dock(NODOCK)
@@ -351,14 +325,8 @@ function PANEL:onStepChanged(oldStep, newStep)
         newStep:SetVisible(true)
         newStep:onDisplay()
         newStep:InvalidateChildren(true)
-        if L(key):upper() ~= self.next:GetText() then
-            self.next:SetAlpha(0)
-            sizeButton(self.next, L(key):upper())
-        end
-
-        self.next:AlphaTo(255, 0.5)
-        local duration = 0.35
-        newStep:MoveTo(0, 0, duration, 0, 0.2, function()
+        self.next:AlphaTo(255, 0.2)
+        newStep:MoveTo(0, 0, 0.2, 0, 0.2, function()
             if not IsValid(newStep) then return end
             newStep:Dock(FILL)
             parent:InvalidateLayout(true)
@@ -367,25 +335,48 @@ function PANEL:onStepChanged(oldStep, newStep)
 
     if IsValid(oldStep) then
         local parent = self.content
-        local pw = IsValid(parent) and parent:GetWide() or ScrW()
-        if pw <= 0 then pw = ScrW() end
+        local pw = IsValid(parent) and parent:GetWide() or self:GetWide()
+        local ph = IsValid(parent) and parent:GetTall() or self:GetTall()
         local dir = self._transitionDir or 1
         oldStep:Stop()
         oldStep:Dock(NODOCK)
-        oldStep:SetSize(pw, IsValid(parent) and parent:GetTall() or ScrH())
+        oldStep:SetSize(math.max(pw, 1), math.max(ph, 1))
         oldStep:SetPos(0, 0)
         oldStep:SetAlpha(255)
-        oldStep:MoveTo(-dir * pw, 0, 0.35, 0, 0.2, function()
+        oldStep:MoveTo(-dir * math.max(pw, 1), 0, 0.2, 0, 0.2, function()
             if not IsValid(oldStep) then return end
             self:showError()
             oldStep:SetVisible(false)
             oldStep:onHide()
         end)
-
         show()
     else
         show()
     end
+end
+
+function PANEL:PerformLayout(w, h)
+    if not IsValid(self.shell) then return end
+    w = w or self:GetWide()
+    h = h or self:GetTall()
+    local margin = math.max(12, math.floor(h * 0.02))
+    local left = margin
+    local menu = IsValid(lia.gui.character) and lia.gui.character.menuPanel or nil
+    if IsValid(menu) then
+        local selfX = select(1, self:LocalToScreen(0, 0))
+        local menuX = select(1, menu:LocalToScreen(0, 0))
+        left = math.max(left, menuX + menu:GetWide() - selfX + margin)
+    end
+
+    local availableW = math.max(w - left - margin, 1)
+    local maxWidth = self.layoutMode == "preview" and 820 or 1080
+    local widthScale = self.layoutMode == "preview" and 0.72 or 0.9
+    local minWidth = self.layoutMode == "preview" and 520 or 680
+    local shellW = math.min(math.max(math.floor(availableW * widthScale), math.min(minWidth, availableW)), maxWidth, availableW)
+    local shellH = math.max(h - margin * 2, 1)
+    local shellX = left + math.floor((availableW - shellW) * 0.5)
+    self.shell:SetPos(shellX, margin)
+    self.shell:SetSize(shellW, shellH)
 end
 
 function PANEL:Init()
@@ -393,11 +384,57 @@ function PANEL:Init()
     local ok, reason = self:canCreateCharacter()
     if not ok then return self:showMessage(reason) end
     lia.gui.charCreate = self
-    self.content = self:Add("DPanel")
-    local margin = ScrW() > 1280 and ScrW() * 0.15 or ScrW() > 720 and ScrW() * 0.075 or 0
+    self.layoutMode = "form"
+    self.steps = {}
+    self.curStep = 0
+    self.context = {}
+
+    self.shell = self:Add("DPanel")
+    self.shell:SetPaintBackground(false)
+    self.shell.Paint = function(_, w, h)
+        local background = themeColor("background", Color(18, 20, 24))
+        local accent = themeColor("accent", themeColor("theme", Color(100, 150, 200)))
+        lia.derma.rect(0, 0, w, h):Rad(10):Color(alphaColor(background, 238)):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(10):Color(alphaColor(accent, 92)):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw()
+    end
+
+    self.header = self.shell:Add("DPanel")
+    self.header:Dock(TOP)
+    self.header:SetTall(84)
+    self.header:SetPaintBackground(false)
+    self.header.Paint = function(_, w, h)
+        local accent = themeColor("accent", themeColor("theme", Color(100, 150, 200)))
+        local text = themeColor("text", color_white)
+        local count = math.max(#self.steps, 1)
+        local step = math.Clamp(self.curStep, 1, count)
+        draw.SimpleText(L("createCharacter"):upper(), "LiliaFont.25", 24, 22, text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(step .. " / " .. count, "LiliaFont.18", w - 24, 22, alphaColor(text, 180), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+        local barX, barY, barW = 24, h - 20, math.max(w - 48, 1)
+        surface.SetDrawColor(alphaColor(text, 28))
+        surface.DrawRect(barX, barY, barW, 2)
+        surface.SetDrawColor(accent)
+        surface.DrawRect(barX, barY, math.max(math.floor(barW * step / count), 2), 2)
+        if count > 1 then
+            for i = 1, count do
+                local x = barX + math.floor((i - 1) * barW / (count - 1))
+                local active = i <= step
+                local marker = active and accent or alphaColor(text, 65)
+                lia.derma.rect(x - 5, barY - 4, 10, 10):Rad(5):Color(marker):Shape(lia.derma.SHAPE_IOS):Draw()
+            end
+        end
+    end
+
+    self.buttons = self.shell:Add("DPanel")
+    self.buttons:Dock(BOTTOM)
+    self.buttons:DockMargin(24, 0, 24, 16)
+    self.buttons:SetTall(48)
+    self.buttons:SetPaintBackground(false)
+
+    self.content = self.shell:Add("DPanel")
     self.content:Dock(FILL)
-    self.content:DockMargin(margin, 64, margin, 0)
+    self.content:DockMargin(24, 0, 24, 12)
     self.content:SetPaintBackground(false)
+
     self.model = self.content:Add("liaModelPanel")
     if not IsValid(self.model) then return self:showError(L("failedToCreateModelPanel")) end
     self.model:SetWide(0)
@@ -405,35 +442,40 @@ function PANEL:Init()
     self.model:SetModel("models/error.mdl")
     self.model:fitFOV()
     self.model:SetVisible(false)
-    self.buttons = self:Add("DPanel")
-    self.buttons:Dock(BOTTOM)
-    self.buttons:SetTall(48)
-    self.buttons:SetPaintBackground(false)
-    local function sizeButton(btn, text)
+
+    local function configureButton(btn, text, primary)
+        btn:SetFont("LiliaFont.18")
         btn:SetText(text)
-        local font = btn:GetFont()
-        surface.SetFont(font)
-        local textW, _ = surface.GetTextSize(text)
-        local padding = 20
-        btn:SetWide(textW + padding * 2)
+        btn:SetTall(44)
+        surface.SetFont(btn:GetFont())
+        local textW = surface.GetTextSize(text)
+        btn:SetWide(math.max(112, textW + 40))
+        btn:SetRadius(6)
+        if primary then
+            local accent = themeColor("accent", themeColor("theme", Color(100, 150, 200)))
+            btn:PaintButton(alphaColor(accent, 52), alphaColor(accent, 92))
+        else
+            local focus = themeColor("focus_panel", themeColor("background", Color(30, 33, 40)))
+            local hover = themeColor("button_hovered", themeColor("hover", focus))
+            btn:PaintButton(alphaColor(focus, 220), alphaColor(hover, 235))
+        end
     end
 
     self.prev = self.buttons:Add("liaButton")
-    self.prev:SetFont("LiliaFont.25")
-    sizeButton(self.prev, L("back"):upper())
+    configureButton(self.prev, L("back"):upper(), false)
     self.prev:Dock(LEFT)
     self.prev.DoClick = function() self:previousStep() end
     self.prev:SetAlpha(0)
+    self.prev:SetMouseInputEnabled(false)
+
     self.next = self.buttons:Add("liaButton")
-    self.next:SetFont("LiliaFont.25")
-    sizeButton(self.next, L("next"):upper())
+    configureButton(self.next, L("next"):upper(), true)
     self.next:Dock(RIGHT)
     self.next.DoClick = function() self:nextStep() end
-    self.steps = {}
-    self.curStep = 0
-    self.context = {}
+
     self:configureSteps()
     if #self.steps == 0 then return self:showError("noCharacterSteps") end
+    self:InvalidateLayout(true)
     self:nextStep()
     timer.Simple(0.5, function() if IsValid(self) and IsValid(self.model) then hook.Run("ModifyCharacterModel", self.model:GetEntity()) end end)
 end

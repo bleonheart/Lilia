@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 function PANEL:Init()
     local client = LocalPlayer()
     self.title = self:addLabel("attributes")
@@ -131,18 +131,21 @@ function PANEL:addButton(symbol, delta)
     button:SetZPos(100)
     local parent = self
     button.Paint = function(btn, w, h)
-        local bgColor = Color(25, 28, 35, 250)
-        local accentColor = lia.color.theme.theme
-        local base = ColorAlpha(bgColor, 200)
+        local theme = lia.color and lia.color.theme or {}
+        local accentColor = theme.accent or theme.theme or theme.maincolor or color_white
+        local bgColor = theme.focus_panel or theme.background or Color(25, 28, 35)
+        if istable(bgColor) then bgColor = bgColor[1] end
+        if not IsColor(bgColor) then bgColor = Color(25, 28, 35) end
+        local base = Color(bgColor.r, bgColor.g, bgColor.b, 210)
         if btn:IsDown() then
-            base = ColorAlpha(accentColor, 220)
+            base = Color(accentColor.r, accentColor.g, accentColor.b, 95)
         elseif btn:IsHovered() then
-            base = ColorAlpha(accentColor, 180)
+            base = Color(accentColor.r, accentColor.g, accentColor.b, 58)
         end
 
         lia.derma.rect(0, 0, w, h):Rad(6):Color(base):Shape(lia.derma.SHAPE_IOS):Draw()
-        lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, btn:IsHovered() and 180 or 90)):Outline(1):Draw()
-        draw.SimpleText(symbol, "LiliaFont.24", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        lia.derma.rect(0, 0, w, h):Rad(6):Color(Color(accentColor.r, accentColor.g, accentColor.b, btn:IsHovered() and 150 or 70)):Outline(1):Draw()
+        draw.SimpleText(symbol, "LiliaFont.18", w / 2, h / 2, theme.text or color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     button.DoClick = nil
@@ -183,15 +186,13 @@ function PANEL:updateQuantity()
 end
 
 function PANEL:Paint(w, h)
-    local bgColor = Color(25, 28, 35, 250)
-    local accentColor = lia.color.theme.theme
-    local base = ColorAlpha(bgColor, 240)
-    lia.derma.rect(0, 0, w, h):Rad(6):Color(base):Shape(lia.derma.SHAPE_IOS):Draw()
-    lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(Color(255, 255, 255), 18)):Outline(1):Draw()
-    if self:IsHovered() then
-        lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 28)):Shape(lia.derma.SHAPE_IOS):Draw()
-        lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 170)):Outline(1):Draw()
-    end
+    local theme = lia.color and lia.color.theme or {}
+    local accentColor = theme.accent or theme.theme or theme.maincolor or color_white
+    local bgColor = theme.focus_panel or theme.background or Color(25, 28, 35)
+    if istable(bgColor) then bgColor = bgColor[1] end
+    if not IsColor(bgColor) then bgColor = Color(25, 28, 35) end
+    lia.derma.rect(0, 0, w, h):Rad(6):Color(Color(bgColor.r, bgColor.g, bgColor.b, 220)):Shape(lia.derma.SHAPE_IOS):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(6):Color(Color(accentColor.r, accentColor.g, accentColor.b, self:IsHovered() and 120 or 40)):Outline(1):Draw()
 end
 
 vgui.Register("liaCharacterAttribsRow", PANEL, "DPanel")

@@ -258,6 +258,7 @@ end
 function PANEL:Paint(w, h)
     if self.backgroundBlur then Derma_DrawBackgroundBlur(self, self.backgroundBlurTime) end
     local accent = lia.color.theme.accent or lia.color.theme.maincolor
+    local colors = lia.color.returnMainAdjustedColors()
     drawFramePanel(0, 0, w, h, 10, lia.color.theme.background, Color(accent.r, accent.g, accent.b, 72))
     if not self.bool_lite then
         if self.iconMat then
