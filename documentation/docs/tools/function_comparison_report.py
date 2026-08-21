@@ -201,26 +201,1373 @@ if not _is_quiet:
         print(f"    {i}. {path}")
     print()
 
-# Import from existing files
+# Embedded dependency implementations
+# Embedded dependencies: this report can run as a standalone script.
+
+# The original modules remain available as independent tools.
+
+#!/usr/bin/env python3
+"""
+Function comparison module for analyzing Lua function documentation coverage.
+"""
+
 import os
+import re
+import sys
+from pathlib import Path
+from typing import Dict, List, Set, Tuple, Optional
+from dataclasses import dataclass
 
-# Add current directory to path for imports
-current_dir = os.path.dirname(os.path.abspath(__file__))
-if current_dir not in sys.path:
-    sys.path.insert(0, current_dir)
+# Functions that should NOT be checked during documentation analysis
+# These are typically internal functions, callbacks, or auto-generated code
+FUNCTIONS_NOT_TO_CHECK = {
+    # Derma/UI related functions that are internal callbacks
+    "lia.derma.menuPlayerSelector.btn_close.DoClick",
 
-try:
-    from compare_functions import FunctionComparator, LuaFunctionExtractor, DocumentationParser
-    from missinghooks import scan_hooks, read_documented_hooks, GMOD_HOOKS_BLACKLIST, FRAMEWORK_HOOKS_WHITELIST
-    from localization_analysis_report import (
-        analyze_data, write_framework_md, write_framework_txt,
-        write_modules_md, write_modules_txt, DEFAULT_FRAMEWORK_GAMEMODE_DIR,
-        DEFAULT_LANGUAGE_FILE, DEFAULT_MODULES_PATHS
-    )
-except ImportError as e:
-    print(f"Error importing required modules: {e}")
-    print("Make sure compare_functions.py, missinghooks.py, and localization_analysis_report.py exist in the same directory")
-    sys.exit(1)
+    # GUI library functions - these are internal and don't need documentation
+    "lia.gui.*",
+
+    # Add other functions here as needed
+}
+
+# Functions that should be checked (explicit allowlist)
+# If a function is not in this list and not in FUNCTIONS_NOT_TO_CHECK,
+# it will be flagged for documentation review
+FUNCTIONS_TO_CHECK = {
+    # Core framework functions that need documentation
+    "lia.util.*",
+    "lia.config.*",
+    "lia.database.*",
+    "lia.admin.*",
+    "lia.attribs.*",
+    "lia.bar.*",
+    "lia.char.*",
+    "lia.chat.*",
+    "lia.class.*",
+    "lia.color.*",
+    "lia.command.*",
+    "lia.currency.*",
+    "lia.darkrp.*",
+    "lia.data.*",
+    "lia.derma.*",
+    "lia.dialog.*",
+    "lia.doors.*",
+    "lia.faction.*",
+    "lia.flag.*",
+    "lia.font.*",
+    "lia.inventory.*",
+    "lia.item.*",
+    "lia.keybind.*",
+    "lia.lang.*",
+    "lia.loader.*",
+    "lia.log.*",
+    "lia.menu.*",
+    "lia.module.*",
+    "lia.net.*",
+    "lia.notice.*",
+    "lia.option.*",
+    "lia.performance.*",
+    "lia.playerinteract.*",
+    "lia.thirdparty.*",
+    "lia.time.*",
+    "lia.vendor.*",
+    "lia.webimage.*",
+    "lia.websound.*",
+    "lia.workshop.*",
+    # Meta table functions
+    "characterMeta:*",
+    "itemMeta:*",
+    "inventoryMeta:*",
+    "entityMeta:*",
+    "panelMeta:*",
+    "playerMeta:*",
+    # Add other patterns here as needed
+}
+
+# Define the functions locally to avoid circular import
+def should_check_function(func_name):
+    """
+    Determine if a function should be checked for documentation.
+
+    Args:
+        func_name (str): The name of the function to check
+
+    Returns:
+        bool: True if the function should be checked, False otherwise
+    """
+
+def should_check_function(func_name):
+    """
+    Determine if a function should be checked for documentation.
+
+    Args:
+        func_name (str): The name of the function to check
+
+    Returns:
+        bool: True if the function should be checked, False otherwise
+    """
+    # First check if it's explicitly in the "not to check" list
+    if func_name in FUNCTIONS_NOT_TO_CHECK:
+        return False
+
+    # Check if it matches any pattern in the "not to check" list
+    for pattern in FUNCTIONS_NOT_TO_CHECK:
+        if pattern.endswith("*") and func_name.startswith(pattern[:-1]):
+            return False
+
+    # Then check if it matches any pattern in the "to check" list
+    for pattern in FUNCTIONS_TO_CHECK:
+        if func_name.startswith(pattern.replace("*", "")):
+            return True
+
+    # Default behavior: check the function
+    return True
+
+def get_exclusion_reason(func_name):
+    """
+    Get the reason why a function is excluded from checking.
+    
+    Args:
+        func_name (str): The name of the function
+        
+    Returns:
+        str: Reason for exclusion, or None if not excluded
+    """
+    FUNCTIONS_NOT_TO_CHECK = {
+        "lia.derma.menuPlayerSelector.btn_close.DoClick",
+    }
+    
+    if func_name in FUNCTIONS_NOT_TO_CHECK:
+        return "Explicitly excluded from documentation checking"
+    return None
+
+
+@dataclass
+class FunctionInfo:
+    """Information about a function"""
+    name: str
+    line_number: int
+    is_server_only: bool = False
+    is_client_only: bool = False
+    parameters: List[str] = None
+    description: str = ""
+
+    def __post_init__(self):
+        if self.parameters is None:
+            self.parameters = []
+
+
+class LuaFunctionExtractor:
+    """Extracts functions from Lua files"""
+
+    def __init__(self, base_path: str):
+        self.base_path = Path(base_path)
+
+    def extract_functions_from_file(self, file_path: str) -> Dict[str, FunctionInfo]:
+        """Extract all functions from a single Lua file"""
+        functions = {}
+
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+        except Exception as e:
+            print(f"Warning: Could not read {file_path}: {e}")
+            return functions
+
+        lines = content.split('\n')
+
+        for line_num, line in enumerate(lines, 1):
+            func_name = None
+            params = ""
+            
+            # Check for function lia.xxxxx.xxxx(...) pattern - ONLY lia functions
+            match1 = re.search(r'^\s*function\s+(lia\.[A-Za-z_][\w\.]*)\s*\(([^)]*)\)', line)
+            if match1:
+                func_name = match1.group(1)
+                params = match1.group(2)
+            else:
+                # Check for lia.xxxxx.xxxx = function(...) pattern - ONLY lia functions
+                match2 = re.search(r'^\s*(lia\.[A-Za-z_][\w\.]*)\s*=\s*function\s*\(([^)]*)\)', line)
+                if match2:
+                    func_name = match2.group(1)
+                    params = match2.group(2)
+                else:
+                    # Check for meta function pattern: function metaTable:functionName(...)
+                    # Only detect meta functions that end with "Meta" (e.g., characterMeta, itemMeta, etc.)
+                    match3 = re.search(r'^\s*function\s+([A-Za-z_]*Meta):([A-Za-z_][\w]*)\s*\(([^)]*)\)', line)
+                    if match3:
+                        meta_table = match3.group(1)
+                        method_name = match3.group(2)
+                        params = match3.group(3)
+                        # Keep meta table type to distinguish same method names across different metas
+                        func_name = f"{meta_table}:{method_name}"
+                    else:
+                        continue  # Skip if no pattern matched
+
+            if func_name:
+                # Check if this function should be checked for documentation
+                if not should_check_function(func_name):
+                    continue  # Skip functions that shouldn't be checked
+
+                # Parse parameters
+                param_list = []
+                if params and params.strip():
+                    param_list = [p.strip() for p in params.split(',') if p.strip()]
+
+                # Determine realm (server/client/shared)
+                is_server = self._is_server_realm(content, line_num)
+                is_client = self._is_client_realm(content, line_num)
+
+                functions[func_name] = FunctionInfo(
+                    name=func_name,
+                    line_number=line_num,
+                    is_server_only=is_server and not is_client,
+                    is_client_only=is_client and not is_server,
+                    parameters=param_list
+                )
+
+        return functions
+
+    def _is_server_realm(self, content: str, line_num: int) -> bool:
+        """Check if function is in server realm"""
+        lines = content.split('\n')
+        start_line = max(0, line_num - 20)  # Look 20 lines back
+
+        for i in range(start_line, line_num):
+            line = lines[i].strip().lower()
+            if 'if server' in line or 'if (server)' in line:
+                return True
+            if 'if client' in line or 'if (client)' in line:
+                return False
+            if 'server' in line and ('then' in line or '{' in line):
+                return True
+
+        return False
+
+    def _is_client_realm(self, content: str, line_num: int) -> bool:
+        """Check if function is in client realm"""
+        lines = content.split('\n')
+        start_line = max(0, line_num - 20)  # Look 20 lines back
+
+        for i in range(start_line, line_num):
+            line = lines[i].strip().lower()
+            if 'if client' in line or 'if (client)' in line:
+                return True
+            if 'if server' in line or 'if (server)' in line:
+                return False
+            if 'client' in line and ('then' in line or '{' in line):
+                return True
+
+        return False
+
+    def extract_all_functions(self) -> Dict[str, Dict[str, FunctionInfo]]:
+        """Extract functions from all Lua files in the gamemode"""
+        all_functions = {}
+
+        # Scan all .lua files
+        for root, dirs, files in os.walk(self.base_path):
+            # Skip certain directories
+            dirs[:] = [d for d in dirs if d not in ['node_modules', '.git', 'docs', 'documentation']]
+
+            for file in files:
+                if file.endswith('.lua'):
+                    file_path = os.path.join(root, file)
+                    relative_path = os.path.relpath(file_path, self.base_path)
+
+                    functions = self.extract_functions_from_file(file_path)
+                    if functions:
+                        all_functions[relative_path] = functions
+
+        return all_functions
+
+
+class DocumentationParser:
+    """Parses documentation files to extract documented functions"""
+
+    def __init__(self, docs_path: str):
+        self.docs_path = Path(docs_path)
+
+    def _existing_doc_dirs(self, *relative_paths: str) -> List[Path]:
+        """Return existing documentation directories in preferred order."""
+        return [
+            self.docs_path.joinpath(*parts.split("/"))
+            for parts in relative_paths
+            if self.docs_path.joinpath(*parts.split("/")).exists()
+        ]
+
+    def extract_documented_functions(self) -> Dict[str, Dict[str, FunctionInfo]]:
+        """Extract all documented functions from documentation files"""
+        documented_functions = {}
+
+        # Prefer the current docs/developer layout, then older legacy paths.
+        library_dirs = self._existing_doc_dirs(
+            "docs/developer/libraries",
+            "docs/development/libraries",
+            "docs/libraries",
+        )
+        for libraries_path in library_dirs:
+            prefix = ""
+            if libraries_path.parts[-2:] == ("docs", "libraries"):
+                prefix = "old/"
+
+            for md_file in libraries_path.glob("*.md"):
+                # Skip index.md and other non-library files
+                if md_file.name == "index.md":
+                    continue
+                functions = self._parse_library_file(md_file)
+                if functions:
+                    documented_functions[f"{prefix}{md_file.name}"] = functions
+
+        meta_dirs = self._existing_doc_dirs(
+            "docs/developer/meta",
+            "docs/development/meta",
+            "docs/meta",
+        )
+        for meta_path in meta_dirs:
+            prefix = "meta/"
+            if meta_path.parts[-2:] == ("docs", "meta"):
+                prefix = "old/meta/"
+
+            for md_file in meta_path.glob("*.md"):
+                functions = self._parse_meta_file(md_file)
+                if functions:
+                    documented_functions[f"{prefix}{md_file.name}"] = functions
+
+        return documented_functions
+
+    def _parse_library_file(self, file_path: Path) -> Dict[str, FunctionInfo]:
+        """Parse a library documentation file"""
+        functions = {}
+
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+        except Exception as e:
+            print(f"Warning: Could not read {file_path}: {e}")
+            return functions
+
+        lines = content.split('\n')
+
+        # Determine library name: prefer content backticked name (e.g., (`lia.administrator`)); fallback to filename stem
+        library_name = file_path.stem
+        try:
+            # Capture `lia` or dotted forms like `lia.util`, `lia.administrator`
+            m = re.search(r"\(`(lia(?:\.[\w\.]+)?)`\)", content)
+            if m:
+                library_name = m.group(1)
+        except Exception:
+            pass
+
+        # Define global lia functions that should always be qualified as lia.functionName
+        global_lia_functions = {
+            'bootstrap', 'error', 'warning', 'information', 'relaydiscordMessage'
+        }
+        is_core_library_page = file_path.stem == "lia.core"
+
+        # Look for function headers in the format "### functionName" or "### lia.util.functionName"
+        for line_num, line in enumerate(lines, 1):
+            stripped = line.strip()
+
+            # Look for function headers like "### lia.include" or "### information"
+            func_match = re.search(r'^###+\s+([A-Za-z_][\w\.]*)\s*$', stripped)
+            if func_match:
+                header_name = func_match.group(1)
+                
+                # If header already includes dots (fully qualified), keep it
+                if '.' in header_name:
+                    qualified_name = header_name
+                else:
+                    # Bare names on non-core library pages are hook docs, not library functions.
+                    if not is_core_library_page and header_name not in global_lia_functions:
+                        continue
+                    # Special handling for global lia functions
+                    if header_name in global_lia_functions:
+                        qualified_name = f"lia.{header_name}"
+                    else:
+                        # Default: qualify with library name
+                        qualified_name = f"{library_name}.{header_name}"
+                
+                # Extract parameters from the following lines
+                params = self._extract_parameters_from_docs(lines, line_num)
+
+                functions[qualified_name] = FunctionInfo(
+                    name=qualified_name,
+                    line_number=line_num,
+                    parameters=params
+                )
+
+        # Also extract function names from HTML summary tags used by the docs site.
+        summary_pattern = re.compile(
+            r'<summary\b[^>]*>.*?<a[^>]*></a>\s*([A-Za-z_][\w\.:]*)\(([^)]*)\)',
+            re.DOTALL,
+        )
+        for match in summary_pattern.finditer(content):
+            func_name = match.group(1).strip()
+            # Find the line number for this match
+            line_num = content[:match.start()].count('\n') + 1
+            params_str = match.group(2)
+            params = [p.strip() for p in params_str.split(',') if p.strip()] if params_str.strip() else []
+            
+            # If function name already includes dots (fully qualified), use it as-is
+            if '.' in func_name:
+                qualified_name = func_name
+            else:
+                # Bare summaries on non-core library pages are library-local hook docs.
+                if not is_core_library_page and func_name not in global_lia_functions:
+                    continue
+                # Special handling for global lia functions
+                if func_name in global_lia_functions:
+                    qualified_name = f"lia.{func_name}"
+                else:
+                    # Otherwise qualify with library name
+                    qualified_name = f"{library_name}.{func_name}"
+            
+            # Only add if not already found (markdown headers take precedence)
+            if qualified_name not in functions:
+                functions[qualified_name] = FunctionInfo(
+                    name=qualified_name,
+                    line_number=line_num,
+                    parameters=params
+                )
+
+        return functions
+
+    def _extract_parameters_from_docs(self, lines: List[str], start_line: int) -> List[str]:
+        """Extract parameters from documentation following a function header"""
+        params = []
+
+        # Look for the Parameters section
+        in_params_section = False
+        for i in range(start_line, min(start_line + 50, len(lines))):  # Look up to 50 lines ahead
+            line = lines[i].strip()
+
+            if line.lower() == '**parameters**':
+                in_params_section = True
+                continue
+            elif line.startswith('**') and in_params_section:
+                # We've moved to the next section
+                break
+            elif in_params_section and line.startswith('* `'):
+                # Extract parameter name from format: * `param` (*type*): description
+                param_match = re.search(r'\* `([^`]+)`', line)
+                if param_match:
+                    params.append(param_match.group(1))
+
+        return params
+
+    def _parse_meta_file(self, file_path: Path) -> Dict[str, FunctionInfo]:
+        """Parse a meta documentation file"""
+        functions = {}
+
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+        except Exception as e:
+            print(f"Warning: Could not read {file_path}: {e}")
+            return functions
+
+        lines = content.split('\n')
+        # Derive meta table name from file name with overrides
+        # Default: <stem>Meta (e.g., character.md -> characterMeta)
+        stem = file_path.stem
+        overrides = {
+            'tool': 'toolGunMeta',
+        }
+        meta_table = overrides.get(stem, f"{stem}Meta")
+
+        # Look for method definitions in two formats:
+        # 1. ### methodName (standard meta documentation format)
+        # 2. `object:method(param)` (inline code format)
+        for line_num, line in enumerate(lines, 1):
+            stripped = line.strip()
+            
+            # Look for method headers like "### methodName"
+            method_match = re.search(r'^###+\s+([A-Za-z_][\w]*)\s*$', stripped)
+            if method_match:
+                method_name = method_match.group(1)
+                # Extract parameters from the following lines
+                params = self._extract_parameters_from_docs(lines, line_num)
+
+                # Store type-qualified meta name to avoid cross-type overrides
+                qualified_name = f"{meta_table}:{method_name}"
+                functions[qualified_name] = FunctionInfo(
+                    name=qualified_name,
+                    line_number=line_num,
+                    parameters=params
+                )
+            else:
+                # Look for method signatures like: `object:method(param)`
+                method_match = re.search(r'`([A-Za-z_][\w\.:]*)\(([^)]*)\)`', line)
+                if method_match:
+                    method_name = method_match.group(1)
+                    params_str = method_match.group(2)
+                    params = [p.strip() for p in params_str.split(',') if p.strip()]
+
+                    # If inline format includes object:method, keep as-is; otherwise, qualify
+                    if ':' in method_name and method_name.split(':', 1)[0].endswith('Meta'):
+                        qualified_name = method_name
+                    else:
+                        qualified_name = f"{meta_table}:{method_name}"
+
+                    functions[qualified_name] = FunctionInfo(
+                        name=qualified_name,
+                        line_number=line_num,
+                        parameters=params
+                    )
+
+        # Also extract method names from HTML summary tags used by the docs site.
+        summary_pattern = re.compile(
+            r'<summary\b[^>]*>.*?<a[^>]*></a>\s*([A-Za-z_][\w\.:]*)\(([^)]*)\)',
+            re.DOTALL,
+        )
+        for match in summary_pattern.finditer(content):
+            method_name = match.group(1).strip()
+            # Find the line number for this match
+            line_num = content[:match.start()].count('\n') + 1
+            # Extract parameters from the match
+            params_str = match.group(2)
+            params = [p.strip() for p in params_str.split(',') if p.strip()] if params_str.strip() else []
+            
+            # Qualify with meta table name
+            qualified_name = f"{meta_table}:{method_name}"
+            
+            # Only add if not already found (markdown headers and inline code take precedence)
+            if qualified_name not in functions:
+                functions[qualified_name] = FunctionInfo(
+                    name=qualified_name,
+                    line_number=line_num,
+                    parameters=params
+                )
+
+        return functions
+
+
+class FunctionComparator:
+    """Compares functions between code and documentation"""
+
+    def __init__(self, base_path: str, docs_path: str = None):
+        self.base_path = Path(base_path)
+        self.docs_path = Path(docs_path) if docs_path else self.base_path.parent / "documentation"
+
+        self.extractor = LuaFunctionExtractor(str(self.base_path))
+        self.parser = DocumentationParser(str(self.docs_path))
+
+    def compare_functions(self) -> Dict[str, Dict]:
+        """Compare functions between code and documentation"""
+        print("Extracting functions from code...")
+        code_functions = self.extractor.extract_all_functions()
+
+        print(f"Found {sum(len(funcs) for funcs in code_functions.values())} functions in code")
+        print("Extracting functions from documentation...")
+        doc_functions = self.parser.extract_documented_functions()
+
+        print("Comparing functions...")
+        comparison_results = {}
+
+        # Flatten all code functions for global comparison
+        all_code_functions = set()
+        for file_functions in code_functions.values():
+            all_code_functions.update(file_functions.keys())
+
+        # Flatten all documented functions
+        all_documented_functions = set()
+        for doc_file_functions in doc_functions.values():
+            all_documented_functions.update(doc_file_functions.keys())
+
+        # Find truly extra documented functions (documented but don't exist in any code file)
+        # Filter out global functions that are not expected to follow library naming patterns
+        excluded_functions = {'L'}  # Global localization function
+        filtered_documented = {func for func in all_documented_functions if func not in excluded_functions}
+        extra_documented = sorted(filtered_documented - all_code_functions)
+
+        # Compare each code file with documentation
+        for file_path, functions in code_functions.items():
+            file_comparison = self._compare_file_functions(file_path, functions, doc_functions)
+            if file_comparison:
+                comparison_results[file_path] = file_comparison
+
+        # Add global extra documented functions to the first file's results for reporting
+        if comparison_results and extra_documented:
+            first_file = next(iter(comparison_results.keys()))
+            comparison_results[first_file]['extra_documented'] = extra_documented
+            comparison_results[first_file]['extra_documented_count'] = len(extra_documented)
+
+        return comparison_results
+
+    def _extract_base_function_name(self, full_name: str) -> str:
+        """Extract base function name from dotted name (e.g., 'lia.administrator.hasAccess' -> 'hasAccess')"""
+        if '.' in full_name:
+            return full_name.split('.')[-1]
+        return full_name
+
+    def _compare_file_functions(self, file_path: str, code_functions: Dict[str, FunctionInfo],
+                               doc_functions: Dict[str, Dict[str, FunctionInfo]]) -> Dict:
+        """Compare functions for a single file"""
+        # Flatten all documented functions
+        all_documented = {}
+        for doc_file, funcs in doc_functions.items():
+            for func_name, func_info in funcs.items():
+                all_documented[func_name] = func_info
+
+        # Find functions in this file that are documented
+        documented_in_file = {}
+        missing_functions = []
+
+        for func_name, func_info in code_functions.items():
+            # Check if function is documented
+            is_documented = False
+
+            # First check if the full function name is documented
+            if func_name in all_documented:
+                is_documented = True
+            else:
+                # For meta functions, require exact type-qualified match (e.g., characterMeta:tostring)
+                if ':' in func_name and func_name.split(':', 1)[0].endswith('Meta'):
+                    if func_name in all_documented:
+                        is_documented = True
+                else:
+                    # For lia.xxxxx functions, extract base function name and check
+                    if func_name.startswith('lia.'):
+                        # Require either fully qualified or base-name match present in docs
+                        if func_name in all_documented:
+                            is_documented = True
+                        else:
+                            base_name = self._extract_base_function_name(func_name)
+                            if base_name in all_documented:
+                                is_documented = True
+
+            if is_documented:
+                documented_in_file[func_name] = func_info
+            else:
+                missing_functions.append(func_name)
+
+        # Don't list "extra documented" functions per-file - this causes false positives
+        # Instead, we'll handle this globally in the main comparison method
+        extra_documented = []
+
+        # Create unique lists for missing and extra functions
+        unique_missing = sorted(set(missing_functions))
+        unique_extra = sorted(set(extra_documented))
+
+        return {
+            'total_functions': len(code_functions),
+            'documented_functions': len(documented_in_file),
+            'missing_functions': unique_missing,
+            'extra_documented': unique_extra,
+            'functions': {name: {
+                'line_number': info.line_number,
+                'is_server_only': info.is_server_only,
+                'is_client_only': info.is_client_only,
+                'parameters': info.parameters
+            } for name, info in code_functions.items()},
+            # Keep original counts for detailed analysis
+            'missing_functions_count': len(missing_functions),
+            'extra_documented_count': len(extra_documented)
+        }
+
+if __name__ == "__main__":
+    # Test the function
+    base_path = Path(__file__).parent.parent.parent.parent.parent  # Go up to Lilia root
+    comparator = FunctionComparator(str(base_path), str(base_path / "documentation"))
+
+    print("Running function comparison...")
+    results = comparator.compare_functions()
+
+    print(f"\nComparison completed. Found {len(results)} files with functions.")
+    for file_path, data in results.items():
+        print(f"\n{file_path}:")
+        print(f"  Total functions: {data['total_functions']}")
+        print(f"  Documented functions: {data['documented_functions']}")
+        print(f"  Missing functions: {len(data['missing_functions'])}")
+
+        if data['missing_functions']:
+            print("  Missing:", data['missing_functions'][:5])  # Show first 5
+
+#!/usr/bin/env python3
+"""
+Hook analysis module for finding missing hook documentation.
+"""
+
+import os
+import re
+from pathlib import Path
+from typing import List, Set
+
+# Blacklist of standard Garry's Mod hooks that should not be counted as missing documentation
+# These are built-in GMod hooks and don't need Lilia-specific documentation
+GMOD_HOOKS_BLACKLIST = {
+    "AcceptInput", "AddDeathNotice", "AdjustMouseSensitivity", "AllowPlayerPickup",
+    "CalcMainActivity", "CalcVehicleView", "CalcView", "CalcViewModelView",
+    "CanCreateUndo", "CanEditVariable", "CanExitVehicle", "CanPlayerEnterVehicle",
+    "CanPlayerSuicide", "CanPlayerUnfreeze", "CanProperty", "CanUndo",
+    "CaptureVideo", "ChatText", "ChatTextChanged", "CheckPassword",
+    "ClientSignOnStateChanged", "CloseDermaMenus", "CreateClientsideRagdoll",
+    "CreateEntityRagdoll", "CreateMove", "CreateTeams", "DoAnimationEvent",
+    "DoPlayerDeath", "DrawDeathNotice", "DrawMonitors", "DrawOverlay",
+    "DrawPhysgunBeam", "EndEntityDriving", "EntityEmitSound", "EntityFireBullets",
+    "EntityKeyValue", "EntityNetworkedVarChanged", "EntityRemoved", "EntityTakeDamage",
+    "FindUseEntity", "FinishChat", "FinishMove", "ForceDermaSkin",
+    "GameContentChanged", "GetDeathNoticeEntityName", "GetFallDamage",
+    "GetGameDescription", "GetMotionBlurValues", "GetPreferredCarryAngles",
+    "GetTeamColor", "GetTeamNumColor", "GrabEarAnimation", "GravGunOnDropped",
+    "GravGunOnPickedUp", "GravGunPickupAllowed", "GravGunPunt", "GUIMouseDoublePressed",
+    "GUIMousePressed", "GUIMouseReleased", "HandlePlayerArmorReduction",
+    "HandlePlayerDriving", "HandlePlayerDucking", "HandlePlayerJumping",
+    "HandlePlayerLanding", "HandlePlayerNoClipping", "HandlePlayerSwimming",
+    "HandlePlayerVaulting", "HideTeam", "HUDAmmoPickedUp", "HUDDrawPickupHistory",
+    "HUDDrawScoreBoard", "HUDDrawTargetID", "HUDItemPickedUp", "HUDPaint",
+    "HUDPaintBackground", "HUDShouldDraw", "HUDWeaponPickedUp", "Initialize",
+    "InitPostEntity", "InputMouseApply", "IsSpawnpointSuitable", "KeyPress",
+    "KeyRelease", "LoadGModSave", "LoadGModSaveFailed", "MenuStart",
+    "MouthMoveAnimation", "Move", "NeedsDepthPass", "NetworkEntityCreated",
+    "NetworkIDValidated", "NotifyShouldTransmit", "OnAchievementAchieved",
+    "OnChatTab", "OnCleanup", "OnClientLuaError", "OnCloseCaptionEmit",
+    "OnContextMenuClose", "OnContextMenuOpen", "OnCrazyPhysics",
+    "OnDamagedByExplosion", "OnEntityCreated", "OnEntityWaterLevelChanged",
+    "OnGamemodeLoaded", "OnLuaError", "OnNotifyAddonConflict", "OnNPCDropItem",
+    "OnNPCKilled", "OnPauseMenuBlockedTooManyTimes", "OnPauseMenuShow",
+    "OnPermissionsChanged", "OnPhysgunFreeze", "OnPhysgunPickup",
+    "OnPhysgunReload", "OnPlayerChangedTeam", "OnPlayerChat", "OnPlayerHitGround",
+    "OnPlayerJump", "OnPlayerPhysicsDrop", "OnPlayerPhysicsPickup",
+    "OnReloaded", "OnScreenSizeChanged", "OnSpawnMenuClose", "OnSpawnMenuOpen",
+    "OnTextEntryGetFocus", "OnTextEntryLoseFocus", "OnUndo", "OnViewModelChanged",
+    "PhysgunDrop", "PhysgunPickup", "PlayerAmmoChanged", "PlayerAuthed",
+    "PlayerBindPress", "PlayerButtonDown", "PlayerButtonUp",
+    "PlayerCanHearPlayersVoice", "PlayerCanJoinTeam", "PlayerCanPickupItem",
+    "PlayerCanPickupWeapon", "PlayerCanSeePlayersChat", "PlayerChangedTeam",
+    "PlayerCheckLimit", "PlayerClassChanged", "PlayerConnect", "PlayerDeath", "PlayerDisconnect",
+    "PlayerDeathSound", "PlayerDeathThink", "PlayerDisconnected",
+    "PlayerDriveAnimate", "PlayerDroppedWeapon", "PlayerEndVoice",
+    "PlayerEnteredVehicle", "PlayerFireAnimationEvent", "PlayerFootstep",
+    "PlayerFrozeObject", "PlayerHandleAnimEvent", "PlayerHurt",
+    "PlayerInitialSpawn", "PlayerJoinTeam", "PlayerLeaveVehicle",
+    "PlayerLoadout", "PlayerNoClip", "PlayerPostThink", "PlayerRequestTeam",
+    "PlayerSay", "PlayerSelectSpawn", "PlayerSelectTeamSpawn",
+    "PlayerSetHandsModel", "PlayerSetModel", "PlayerShouldAct", "PlayerShouldTakeDamage",
+    "PlayerShouldTaunt", "PlayerSilentDeath", "PlayerSpawn",
+    "PlayerSpawnAsSpectator", "PlayerSpray", "PlayerStartTaunt",
+    "PlayerStartVoice", "PlayerStepSoundTime", "PlayerSwitchFlashlight",
+    "PlayerSwitchWeapon", "PlayerTick", "PlayerTraceAttack",
+    "PlayerUnfrozeObject", "PlayerUse", "PopulateMenuBar", "PostCleanupMap",
+    "PostDraw2DSkyBox", "PostDrawEffects", "PostDrawHUD",
+    "PostDrawOpaqueRenderables", "PostDrawPlayerHands", "PostDrawSkyBox",
+    "PostDrawTranslucentRenderables", "PostDrawViewModel",
+    "PostEntityFireBullets", "PostEntityTakeDamage", "PostGamemodeLoaded",
+    "PostPlayerDeath", "PostPlayerDraw", "PostProcessPermitted", "PostRender",
+    "PostRenderVGUI", "PostUndo", "PreCleanupMap", "PreDrawEffects",
+    "PreDrawHalos", "PreDrawHUD", "PreDrawOpaqueRenderables",
+    "PreDrawPlayerHands", "PreDrawSkyBox", "PreDrawTranslucentRenderables",
+    "PreDrawViewModel", "PreDrawViewModels", "PreGamemodeLoaded",
+    "PrePlayerDraw", "PreRegisterSENT", "PreRegisterSWEP", "PreRender",
+    "PreUndo", "PreventScreenClicks", "PropBreak", "RenderScene",
+    "RenderScreenspaceEffects", "Restored", "Saved", "ScaleNPCDamage",
+    "ScalePlayerDamage", "ScoreboardHide", "ScoreboardShow", "SendDeathNotice",
+    "SetPlayerSpeed", "SetupMove", "SetupPlayerVisibility", "SetupSkyboxFog",
+    "SetupWorldFog", "ShouldCollide", "ShouldDrawLocalPlayer", "ShowHelp",
+    "ShowSpare1", "ShowSpare2", "ShowTeam", "ShutDown", "SpawniconGenerated",
+    "SpawnMenuCreated", "StartChat", "StartCommand", "StartEntityDriving",
+    "StartGame", "Think", "Tick", "TranslateActivity", "UpdateAnimation",
+    "VariableEdited", "VehicleMove", "VGUIMousePressAllowed", "VGUIMousePressed",
+    "WeaponEquip", "WorkshopDownloadedFile", "WorkshopDownloadFile",
+    "WorkshopDownloadProgress", "WorkshopDownloadTotals", "WorkshopEnd",
+    "WorkshopExtractProgress", "WorkshopStart", "WorkshopSubscriptionsChanged",
+    "WorkshopSubscriptionsMessage",     "WorkshopSubscriptionsProgress",
+    # Additional spawn menu and tool menu hooks
+    "AddGamemodeToolMenuCategories", "AddGamemodeToolMenuTabs", "AddToolMenuCategories",
+    "AddToolMenuTabs", "CanArmDupe", "CanDrive", "CanTool", "ContentSidebarSelection",
+    "ContextMenuClosed", "ContextMenuCreated", "ContextMenuEnabled", "ContextMenuOpen",
+    "ContextMenuOpened", "ContextMenuShowTool", "OnRevertSpawnlist", "OnSaveSpawnlist",
+    "OpenToolbox", "PaintNotes", "PaintWorldTips", "PersistenceLoad", "PersistenceSave",
+    "PlayerGiveSWEP", "PlayerSpawnedEffect", "PlayerSpawnedNPC", "PlayerSpawnedProp",
+    "PlayerSpawnedRagdoll", "PlayerSpawnedSENT", "PlayerSpawnedSWEP", "PlayerSpawnedVehicle",
+    "PlayerSpawnEffect", "PlayerSpawnNPC", "PlayerSpawnObject", "PlayerSpawnProp",
+    "PlayerSpawnRagdoll", "PlayerSpawnSENT", "PlayerSpawnSWEP", "PlayerSpawnVehicle",
+    "PopulateContent", "PopulateEntities", "PopulateNPCs", "PopulatePropMenu",
+    "PopulateToolMenu", "PopulateVehicles", "PopulateWeapons", "PostReloadToolsMenu",
+    "PreRegisterTOOL", "PreReloadToolsMenu", "SpawnlistContentChanged",
+    "SpawnlistOpenGenericMenu", "SpawnMenuEnabled", "SpawnmenuIconMenuOpen",
+    "SpawnMenuOpen", "SpawnMenuOpened",
+    # CAMI (Compatibility and Mod Integration) hooks
+    "CAMI.OnPrivilegeRegistered", "CAMI.OnPrivilegeUnregistered", "CAMI.OnUsergroupRegistered",
+    "CAMI.OnUsergroupUnregistered", "CAMI.PlayerHasAccess", "CAMI.PlayerUsergroupChanged",
+    "CAMI.SteamIDUsergroupChanged",
+    # Additional addon hooks
+    "server_addban", "server_removeban", "serverguard.RankPermissionGiven",
+    "serverguard.RankPermissionTaken", "serverguard.RanksLoaded", "VC_canAddMoney",
+    "VC_canAfford", "VC_canRemoveMoney", "ULibGroupAccessChanged", "SAM.CanRunCommand",
+    "SAM.RankPermissionGiven", "SAM.RankPermissionTaken", "PAC3RegisterEvents",
+    "PermaProps.CanPermaProp", "PermaProps.OnEntityCreated", "PermaProps.OnEntitySaved",
+    "simfphysUse", "CheckValidSit", "simfphysPhysicsCollide",
+    # ArcCW addon hooks
+    "ArcCW_PlayerCanShoot", "ArcCW_PlayerReload", "ArcCW_PlayerShoot",
+    # Bonemerge module hooks (lowercase variants and custom hooks)
+    "player_disconnect", "player_spawn", "PlayerAccessorChanged",
+    # Lockpicking and property-related hooks
+    "canDarkRPUse", "canLockpick", "InputMouseAppl_", "lockpickCompleted",
+    "onKeysMenuOpened", "playerBoughtCustomEntity", "playerBuyDoor",
+    "YorkshireRP_PropertyPurchased", "zlockpick_success",
+    # Compatibility and addon-specific hooks intentionally used by bundled integrations
+    "AdvDupe_FinishPasting", "PrePACEditorOpen", "pac_CanWearParts", "SAM.LoadedRanks",
+    # Base Garry's Mod / Sandbox hook triggered through hook.Run
+    "SuppressHint",
+    # Example hooks from documentation that should not be counted as documented
+    "GetSetting", "GetValidatedData", "SaveComplexData", "SaveSettings"
+}
+
+# Whitelist of framework hooks that are documented but may not be explicitly registered
+# These are legitimate hooks that are part of the Lilia framework and should not be flagged as unused
+FRAMEWORK_HOOKS_WHITELIST = {
+    "AddEssentialItems", "AddFactionEquipment", "AnalyzeCharacterListChanges",
+    "ApplyBackgroundEffects", "ApplyCharacterSettings", "ApplyChatFilters",
+    "ApplyContentFilters", "ApplyEconomicModifiers", "ApplyFactionModifications",
+    "ApplyMenuPreferences", "ApplyMenuTheme", "ApplyServerModifiers",
+    "ApplyStartingBonuses", "ArchiveCharacterData", "AreClassesRelated",
+    "AttemptDiscordRecovery", "CalculateDynamicFactionLimit", "CalculateEffectiveMemberCount",
+    "CalculatePerformanceBonus", "CanLockDoor", "CanSetDoorPrice", "CanToggleDoorOwnable",
+    "CanToggleDoorVisibility", "CancelPendingCharacterOperations", "CharacterMeetsPrerequisites",
+    "CheckAdvancedFlagInheritance", "CheckCommandAbuse", "CheckConditionalFlags",
+    "CheckDeletionTriggers", "CheckFactionClassFlags", "CheckFlagInheritance",
+    "CleanupCharacterPreviews", "CleanupCharacterReferences", "CleanupDoorOwnership",
+    "CleanupQuestData", "CleanupQuestOnCharDelete", "CleanupTemporaryPanels",
+    "ClearCharacterCache", "ConfigureMainChatPanel", "CreateAppearanceStep",
+    "CreateBackgroundStoryStep", "CreateCategoryTabs", "CreateCharacterBackup",
+    "CreateCustomInventory", "CreateEquipmentStep", "CreateFactionSpecificStep",
+    "CreateReviewStep", "CreateSearchBar", "CreateSkillsStep", "CustomCharacterValidation",
+    "EnhanceHUDWithCharacterInfo", "ExecutePostCommandActions", "ExecuteTriggerAction",
+    "FactionWouldUnbalanceServer", "FilterDiscordContent", "FinalCharacterValidation",
+    "GenerateCharacterAnalytics", "GenerateCharacterGoals", "GetBackgroundBonuses",
+    "GetBaseSalary", "GetCharacterChanges", "GetEquippedWeight", "GetFactionIcon",
+    "GetFactionMemberStats", "GetFactionModels", "GetFactionSalaryMultiplier",
+    "GetInventoryWeight", "GetPlayerCharacterCount", "GetPlayerProtectionLevel",
+    "GetRecentPlayerCommands", "GetStartingEquipment", "GetTotalAchievements",
+    "GetTraitBonuses", "GetXPForLevel", "HandleCharacterSwitch", "HandleCommandAbuse",
+    "HandleMechanicalLock", "HandleSoulboundItems", "HandleSpecialCharacterSelection",
+    "HasCharacterChanged", "HasDoorTogglePermission", "HasFactionJoinOverride",
+    "HideDoorWithEffect", "ITEM", "InitializeAnalyticsTracking", "InitializeCharacterData",
+    "InitializeCharacterPermissions", "InitializeCharacterPreviews", "InitializeCharacterRelationships",
+    "InitializeChatFilters", "InitializeMenuSounds", "IsDoorOwner", "IsFactionAlly",
+    "IsFactionHostile", "IsInFactionQueue", "IsNameTaken", "IsOnFactionRecruitmentCooldown",
+    "IsSpamCommand", "IsValidCharacterModel", "IsValidSkin", "LoadCharacterMenuPreferences",
+    "LoadDataFromFile", "LogCharacterCreation", "LogFailedSelection", "LogSuccessfulSelection",
+    "MODULE", "MeetsFactionDiversityRequirements", "NotifyStaffOfDiscordOutage",
+    "ParseChatMessageArgs", "PreProcessCharacterData", "ProcessDiscordChatMessage",
+    "RemoveCharacterFromGroups", "RemoveFromGroup", "ResetCameraState", "RunDatabaseMigrations",
+    "SanitizeArguments", "SaveCharacterMenuPreferences", "SaveEntityData", "SaveSkinPreference",
+    "SendCharacterSelectionConfirmation", "SendCommandAnalytics", "SendCreationAnalytics",
+    "SetupAccessibilityFeatures", "SetupAdvancedUI", "SetupAutoSave", "SetupCharacterPreview",
+    "SetupCustomEventHandlers", "SetupKeyboardShortcuts", "SetupRealTimeUpdates",
+    "SetupStepNavigation", "SetupWelcomeSequence", "ShowNewPlayerTutorial", "StoreCommandHistory",
+    "TrackMenuSession", "TriggerDoorAlarm", "UpdateCharacterPreview", "UpdateCharacterRelationships",
+    "UpdateCharacterSelectionStats", "UpdatePlayerCommandStats", "UpdateServerSelectionStats",
+    "ValidateCharacterCreation", "ValidateCharacterData", "ValidateCharacterForSave",
+    "ValidateCommandData", "ValidateConfigurationChange", "ValidateDatabaseSchema",
+    "ValidateDeletionRequest", "ValidateDiscordEmbed", "ValidateDiscordMessage",
+    "ValidateDoorPrice", "ValidateHUDInfo", "ValidateModuleStructure", "ValidateRestoredCharacter",
+    "AddWarning", "ChooseCharacter", "CreateCharacter", "CreateSalaryTimers", "DeleteCharacter",
+    "FetchSpawns", "ForceRecognizeRange", "GetAllCaseClaims", "GetTicketsByRequester",
+    "GetWarningsByIssuer", "InitializeStorage", "OnPlayerDropWeapon",
+    "RemoveWarning", "SendPopup", "StorageItemRemoved", "StoreSpawns", "SyncCharList", "ToggleLock"
+}
+
+
+def scan_hooks(base_path: str) -> List[str]:
+    """Scan Lua files for hook.Add and hook.Run calls"""
+    hooks_found = set()
+    base_path = Path(base_path)
+
+    # Scan all .lua files
+    for root, dirs, files in os.walk(base_path):
+        # Skip certain directories
+        dirs[:] = [d for d in dirs if d not in ['node_modules', '.git']]
+
+        for file in files:
+            if file.endswith('.lua'):
+                file_path = os.path.join(root, file)
+                file_hooks = _extract_hooks_from_file(file_path)
+                hooks_found.update(file_hooks)
+
+    return sorted(list(hooks_found))
+
+
+def _extract_hooks_from_file(file_path: str) -> Set[str]:
+    """Extract hooks from a single Lua file"""
+    hooks = set()
+
+    try:
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+    except Exception as e:
+        print(f"Warning: Could not read {file_path}: {e}")
+        return hooks
+
+    # Pattern for hook.Add calls
+    # Matches: hook.Add("hook_name", ...)
+    hook_add_pattern = r'hook\.Add\s*\(\s*([\'"`])([^\'"`]+)\1'
+
+    # Pattern for hook.Run calls
+    # Matches: hook.Run("hook_name", ...)
+    hook_run_pattern = r'hook\.Run\s*\(\s*([\'"`])([^\'"`]+)\1'
+
+    # Find hook.Add calls
+    for match in re.finditer(hook_add_pattern, content):
+        hook_name = match.group(2)
+        if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+            hooks.add(hook_name.strip())
+
+    # Find hook.Run calls
+    for match in re.finditer(hook_run_pattern, content):
+        hook_name = match.group(2)
+        if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+            hooks.add(hook_name.strip())
+
+    return hooks
+
+
+def read_documented_hooks(hooks_doc_path: str) -> List[str]:
+    """Read documented hooks from the hooks documentation file"""
+    documented_hooks = set()
+    hooks_doc_path = Path(hooks_doc_path)
+
+    if not hooks_doc_path.exists():
+        print(f"Warning: Hooks documentation file not found: {hooks_doc_path}")
+        return []
+
+    try:
+        with open(hooks_doc_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+    except Exception as e:
+        print(f"Warning: Could not read hooks documentation: {e}")
+        return []
+
+    lines = content.split('\n')
+
+    in_code_block = False
+    for line in lines:
+        # Check if we're entering or leaving a code block
+        if line.strip().startswith('```'):
+            in_code_block = not in_code_block
+            continue
+
+        # Skip processing lines inside code blocks
+        if in_code_block:
+            continue
+
+        # Look for hook names in backticks - be more selective
+        # Only match backticks that appear to be hook names in hook.Add examples
+        # Exclude backticks in parameter tables (| `ParamName` |) and config references
+        if not line.strip().startswith('|') and 'hook.Add(' in line:
+            hook_match = re.search(r'hook\.Add\s*\(\s*["\']([^"\']+)["\']', line)
+            if hook_match:
+                hook_name = hook_match.group(1).strip()
+                if hook_name and len(hook_name) > 2 and hook_name not in GMOD_HOOKS_BLACKLIST:
+                    documented_hooks.add(hook_name)
+
+        # Check for markdown headers that look like hook names
+        # Only match headers that start with capital letter and look like hook names
+        header_match = re.search(r'^###+\s+([A-Z][A-Za-z0-9_]+)\s*$', line)
+        if header_match:
+            header_text = header_match.group(1).strip()
+            # Only add if it looks like a hook name (starts with capital, reasonable length)
+            # and is not in the blacklist
+            if (len(header_text) > 2 and re.search(r'^[A-Z][A-Za-z0-9_]+$', header_text)
+                and header_text not in GMOD_HOOKS_BLACKLIST):
+                documented_hooks.add(header_text)
+
+    return sorted(list(documented_hooks))
+
+#!/usr/bin/env python3
+"""
+Localization analysis module for analyzing language file usage.
+"""
+
+import os
+import re
+from pathlib import Path
+from typing import Dict, List, Tuple, Set
+from collections import defaultdict
+
+
+LOCALIZATION_CALL_PATTERNS = [
+    (re.compile(r'\bL\s*\(\s*(["\'])([^"\']+)\1'), 'L'),
+    (re.compile(r'\blia\.lang\.getLocalizedString\s*\(\s*(["\'])([^"\']+)\1'), 'lia.lang.getLocalizedString'),
+    (re.compile(r'\blia\.lang\.resolveToken\s*\(\s*(["\'])([^"\']+)\1'), 'lia.lang.resolveToken'),
+    (re.compile(r':notifyLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifyLocalized'),
+    (re.compile(r':notifyErrorLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifyErrorLocalized'),
+    (re.compile(r':notifyWarningLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifyWarningLocalized'),
+    (re.compile(r':notifyInfoLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifyInfoLocalized'),
+    (re.compile(r':notifySuccessLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifySuccessLocalized'),
+    (re.compile(r':notifyMoneyLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifyMoneyLocalized'),
+    (re.compile(r':notifyAdminLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifyAdminLocalized'),
+]
+GENERIC_AT_TOKEN_PATTERN = re.compile(r'(["\'])(@[A-Za-z_][A-Za-z0-9_\.:-]*)\1')
+AT_VALUE_PATTERN = re.compile(r'@[A-Za-z_][A-Za-z0-9_\.:-]*')
+
+
+def _normalize_localization_key(key: str) -> str:
+    """Normalize localization references so @token and token map to the same language key."""
+    if not isinstance(key, str):
+        return key
+    return key[1:] if key.startswith('@') else key
+
+
+def analyze_data(language_file: str, gamemode_path: str) -> Dict:
+    """
+    Analyze localization data from language file and gamemode usage.
+
+    Args:
+        language_file: Path to the language file (e.g., english.lua)
+        gamemode_path: Path to the gamemode directory
+
+    Returns:
+        Dict containing analysis results
+    """
+    # Load language keys from file
+    keys, key_lines = _load_language_keys(language_file)
+
+    # Scan gamemode for localization usage
+    usage_data = _scan_localization_usage(gamemode_path)
+
+    # Analyze the data
+    return _analyze_localization_data(keys, key_lines, usage_data, gamemode_path)
+
+
+def _load_language_keys(language_file: str) -> Tuple[Dict[str, str], Dict[str, int]]:
+    """Load language keys from Lua language file using a simple, robust approach"""
+    keys = {}
+    key_lines = {}
+
+    if not os.path.exists(language_file):
+        print(f"Warning: Language file not found: {language_file}")
+        return keys, key_lines
+
+    try:
+        with open(language_file, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+    except Exception as e:
+        print(f"Warning: Could not read language file {language_file}: {e}")
+        return keys, key_lines
+
+    lines = content.split('\n')
+    inside_table = False
+    
+    for line_num, line in enumerate(lines, 1):
+        stripped = line.strip()
+        
+        # Check for table start/end
+        if 'LANGUAGE = {' in stripped:
+            inside_table = True
+            continue
+        elif inside_table and stripped == '}':
+            inside_table = False
+            continue
+        
+        # Only process lines inside the table
+        if not inside_table:
+            continue
+        
+        # Skip empty lines and comments
+        if not stripped or stripped.startswith('--'):
+            continue
+        
+        # Handle multiline strings
+        if '= [[' in stripped:
+            # Extract key name
+            key_match = re.match(r'^(\w+)\s*=\s*\[\[', stripped)
+            if key_match:
+                key = key_match.group(1)
+                # Find the closing ]]
+                multiline_content = []
+                current_line = line
+                # Remove the key = [[ part from first line
+                first_line_content = current_line.split('= [[')[1] if '= [[' in current_line else ''
+                if first_line_content.strip():
+                    multiline_content.append(first_line_content)
+                
+                # Look for closing ]] in subsequent lines
+                for next_line_num in range(line_num + 1, len(lines)):
+                    next_line = lines[next_line_num]
+                    if ']]' in next_line:
+                        # Split on ]] and take the part before it
+                        before_close = next_line.split(']]')[0]
+                        if before_close.strip():
+                            multiline_content.append(before_close)
+                        break
+                    else:
+                        multiline_content.append(next_line)
+                
+                # Join all lines and clean up
+                value = '\n'.join(multiline_content).strip()
+                keys[key] = value
+                key_lines[key] = line_num
+            continue
+        
+        # Simple pattern: key = "value" or key = "value",
+        pattern = r'^(\w+)\s*=\s*"([^"]*)"'
+        match = re.match(pattern, stripped)
+        if match:
+            key = match.group(1)
+            value = match.group(2)
+            keys[key] = value
+            key_lines[key] = line_num
+
+    return keys, key_lines
+
+
+def _scan_localization_usage(gamemode_path: str) -> Dict[str, List[Tuple[str, int, str, str]]]:
+    """Scan gamemode files for localization function calls"""
+    usage_data = defaultdict(list)
+    gamemode_path = Path(gamemode_path)
+
+    # Scan all Lua files
+    for root, dirs, files in os.walk(gamemode_path):
+        # Skip certain directories
+        skip_dirs = ['node_modules', '.git', 'docs', 'documentation']
+        dirs[:] = [d for d in dirs if d not in skip_dirs]
+
+        for file in files:
+            if file.endswith('.lua'):
+                file_path = os.path.join(root, file)
+                relative_path = os.path.relpath(file_path, gamemode_path)
+                # Normalize path separators to match report format (use backslashes on Windows)
+                if os.sep == '\\':
+                    relative_path = relative_path.replace('/', '\\')
+                else:
+                    relative_path = relative_path.replace('\\', '/')
+
+                # Skip language files themselves to avoid false positives
+                if 'languages' in str(file_path) and file.endswith('.lua'):
+                    continue
+
+                try:
+                    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
+                except Exception:
+                    continue
+
+                lines = content.split('\n')
+
+                for line_num, line in enumerate(lines, 1):
+                    seen_entries = set()
+
+                    for pattern, func_type in LOCALIZATION_CALL_PATTERNS:
+                        for match in pattern.finditer(line):
+                            key = match.group(2)
+                            # lia.lang.resolveToken only performs localization lookup for @-prefixed args
+                            if func_type == 'lia.lang.resolveToken' and not key.startswith('@'):
+                                continue
+                            normalized_key = _normalize_localization_key(key)
+                            entry_key = (normalized_key, match.span())
+                            if not normalized_key or entry_key in seen_entries:
+                                continue
+                            seen_entries.add(entry_key)
+                            usage_data[normalized_key].append((relative_path, line_num, line.strip(), func_type))
+
+                    for match in GENERIC_AT_TOKEN_PATTERN.finditer(line):
+                        raw_key = match.group(2)
+                        normalized_key = _normalize_localization_key(raw_key)
+                        entry_key = (normalized_key, match.span())
+                        if not normalized_key or entry_key in seen_entries:
+                            continue
+                        seen_entries.add(entry_key)
+                        usage_data[normalized_key].append((relative_path, line_num, line.strip(), '@token'))
+
+    return usage_data
+
+
+def _analyze_localization_data(keys: Dict[str, str], key_lines: Dict[str, int],
+                              usage_data: Dict[str, List[Tuple[str, int, str, str]]],
+                              gamemode_path: str) -> Dict:
+    """Analyze localization data and return results"""
+    results = {
+        'keys': keys,
+        'key_lines': key_lines,
+        'usage_data': usage_data,
+        'unused': [],
+        'undefined_rows': [],
+        'mismatch_rows': [],
+        'at_pattern_rows': [],
+        'total_hits': 0,
+        'unused_count': 0,
+        'undefined_count': 0,
+        'mismatch_count': 0,
+        'at_pattern_count': 0
+    }
+
+    # Count total usage
+    for key, usages in usage_data.items():
+        results['total_hits'] += len(usages)
+
+    # Find unused keys
+    used_keys = set(usage_data.keys())
+    unused_keys = []
+    for key in keys:
+        if key not in used_keys:
+            unused_keys.append(key)
+    results['unused'] = unused_keys
+    results['unused_count'] = len(unused_keys)
+
+    # Find undefined keys (used but not defined) - unique keys only
+    undefined_keys_seen = set()
+    for key, usages in usage_data.items():
+        # Skip keys that start with [[ (special format keys)
+        if key.startswith('[['):
+            continue
+        # Check if key is in the keys dict (case-sensitive exact match)
+        if key not in keys and key not in undefined_keys_seen:
+            undefined_keys_seen.add(key)
+            # Use the first usage as representative
+            usage = usages[0]
+            results['undefined_rows'].append(usage + (key,))
+    results['undefined_count'] = len(results['undefined_rows'])
+
+    # Look for @xxxxx patterns (placeholders) - unique keys only
+    at_pattern_keys_seen = set()
+    for key, usages in usage_data.items():
+        if key in keys and key not in at_pattern_keys_seen:
+            value = keys[key]
+            if AT_VALUE_PATTERN.search(value):
+                at_pattern_keys_seen.add(key)
+                # Use the first usage as representative
+                usage = usages[0]
+                results['at_pattern_rows'].append(usage + (key,))
+    results['at_pattern_count'] = len(results['at_pattern_rows'])
+
+    # Look for argument mismatches - unique keys only
+    mismatch_keys_seen = set()
+    for key, usages in usage_data.items():
+        if key in keys and key not in mismatch_keys_seen:
+            value = keys[key]
+            # Count %s placeholders in the value
+            placeholder_count = value.count('%s')
+
+            for usage in usages:
+                file_path, line_num, line_content, func_type = usage
+
+                # Define patterns for different function types
+                patterns = {
+                    'L': r'\bL\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    'lia.lang.getLocalizedString': r'\blia\.lang\.getLocalizedString\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    'lia.lang.resolveToken': r'\blia\.lang\.resolveToken\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifyLocalized': r':notifyLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifyErrorLocalized': r':notifyErrorLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifyWarningLocalized': r':notifyWarningLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifyInfoLocalized': r':notifyInfoLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifySuccessLocalized': r':notifySuccessLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifyMoneyLocalized': r':notifyMoneyLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifyAdminLocalized': r':notifyAdminLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                }
+
+                # Check if this function type has argument checking
+                if func_type in patterns:
+                    # Extract arguments after the key
+                    args_match = re.search(patterns[func_type], line_content)
+                    if args_match:
+                        args_str = args_match.group(1)
+                        # Count commas (rough estimate of argument count)
+                        arg_count = args_str.count(',') + 1 if args_str.strip() else 0
+
+                        if arg_count != placeholder_count:
+                            mismatch_keys_seen.add(key)
+                            results['mismatch_rows'].append(usage + (key,))
+                            break  # Only add once per key
+    results['mismatch_count'] = len(results['mismatch_rows'])
+
+    return results
+
+
+# Report generation functions
+def write_framework_md(data: Dict, output_path: str = None) -> str:
+    """Write framework localization analysis to markdown"""
+    if not output_path:
+        output_path = "localization_framework_report.md"
+
+    content = ["# Framework Localization Analysis", ""]
+
+    content.extend(_generate_localization_summary(data))
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(content))
+
+    return output_path
+
+
+def write_framework_txt(data: Dict, output_path: str = None) -> str:
+    """Write framework localization analysis to text"""
+    if not output_path:
+        output_path = "localization_framework_report.txt"
+
+    content = ["FRAMEWORK LOCALIZATION ANALYSIS", "=" * 40, ""]
+
+    # Simple text summary
+    content.append(f"Language Keys: {len(data.get('keys', {}))}")
+    content.append(f"Total Usages: {data.get('total_hits', 0)}")
+    content.append(f"Unused Keys: {len(data.get('unused', []))}")
+    content.append(f"Undefined Calls: {len(data.get('undefined_rows', []))}")
+    content.append(f"Argument Mismatches: {len(data.get('mismatch_rows', []))}")
+    content.append(f"@xxxxx Patterns: {len(data.get('at_pattern_rows', []))}")
+    content.append("")
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(content))
+
+    return output_path
+
+
+def write_modules_md(data: Dict, output_path: str = None) -> str:
+    """Write modules localization analysis to markdown"""
+    if not output_path:
+        output_path = "localization_modules_report.md"
+
+    content = ["# Modules Localization Analysis", ""]
+
+    # This would analyze module-specific localization
+    content.append("Module-specific localization analysis not yet implemented.")
+    content.append("")
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(content))
+
+    return output_path
+
+
+def write_modules_txt(data: Dict, output_path: str = None) -> str:
+    """Write modules localization analysis to text"""
+    if not output_path:
+        output_path = "localization_modules_report.txt"
+
+    content = ["MODULES LOCALIZATION ANALYSIS", "=" * 30, ""]
+
+    content.append("Module-specific localization analysis not yet implemented.")
+    content.append("")
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(content))
+
+    return output_path
+
+
+def _generate_localization_summary(data: Dict) -> List[str]:
+    """Generate localization summary section"""
+    lines = ["## Summary", ""]
+
+    lines.append(f"- **Language Keys:** {len(data.get('keys', {}))}")
+    lines.append(f"- **Total Usages:** {data.get('total_hits', 0)}")
+    lines.append(f"- **Unused Keys:** {len(data.get('unused', []))}")
+    lines.append(f"- **Undefined Calls:** {len(data.get('undefined_rows', []))}")
+    lines.append(f"- **Argument Mismatches:** {len(data.get('mismatch_rows', []))}")
+    lines.append(f"- **@xxxxx Patterns:** {len(data.get('at_pattern_rows', []))}")
+    lines.append("")
+
+    return lines
+
+
+# Default paths for backwards compatibility
+DEFAULT_FRAMEWORK_GAMEMODE_DIR = r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode"
+DEFAULT_LANGUAGE_FILE = r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua"
+DEFAULT_MODULES_PATHS = [
+    r"D:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules",
+    r"D:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"
+]
 
 # Functions that should NOT be checked during documentation analysis
 # These are typically internal functions, callbacks, or auto-generated code
@@ -336,7 +1683,15 @@ def get_exclusion_reason(function_name):
 class FunctionInfo:
     """Information about a function"""
     name: str
-    parameters: List[str]
+    line_number: int = 0
+    is_server_only: bool = False
+    is_client_only: bool = False
+    parameters: List[str] = None
+    description: str = ""
+
+    def __post_init__(self):
+        if self.parameters is None:
+            self.parameters = []
 
 @dataclass
 class CombinedReportData:
@@ -387,6 +1742,8 @@ class CombinedReportData:
     derma_panels_unused: List[Dict[str, Any]]
     module_derma_panels_outside_folder: List[Dict[str, Any]]
     module_file_placement_issues: List[Dict[str, Any]]
+    duplicate_key_analysis: Dict[str, Any]
+    privilege_report: Dict[str, Any]
     generated_at: str
 
 @dataclass(frozen=True)
@@ -1963,6 +3320,352 @@ class FunctionComparisonReportGenerator:
 
         return sorted(issues, key=lambda entry: (entry["type"], entry["module_name"], entry["file"], entry["line"]))
 
+    def _collect_language_file_targets(self) -> List[Dict[str, Any]]:
+        """Collect framework and module language files for duplicate-key analysis."""
+        targets: List[Dict[str, Any]] = []
+        seen: Set[str] = set()
+        languages = ["english", "french", "german", "portuguese", "spanish", "russian"]
+
+        def add_target(file_path: Path, language: str, scope: str, module_name: Optional[str] = None):
+            try:
+                resolved = str(file_path.resolve()).lower()
+            except Exception:
+                resolved = str(file_path).lower()
+            if resolved in seen or not file_path.exists():
+                return
+            seen.add(resolved)
+            targets.append({
+                "path": file_path,
+                "language": language,
+                "scope": scope,
+                "module_name": module_name,
+                "file": self._path_ref_for_report(file_path),
+            })
+
+        for language in languages:
+            add_target(self.base_path / "languages" / f"{language}.lua", language, "framework")
+
+        for module in self._discover_module_roots():
+            module_path = module.get("path")
+            module_name = module.get("name")
+            if not isinstance(module_path, Path):
+                continue
+            for language in languages:
+                add_target(module_path / "languages" / f"{language}.lua", language, "module", module_name)
+
+        return sorted(targets, key=lambda entry: (entry["scope"], entry.get("module_name") or "", entry["language"], entry["file"]))
+
+    def _scan_duplicate_assignments_in_file(self, file_path: Path, pattern: re.Pattern, value_group: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Find duplicate keyed assignments in a file while keeping the first occurrence."""
+        duplicates: List[Dict[str, Any]] = []
+        key_occurrences: Dict[str, Dict[str, Any]] = {}
+        try:
+            lines = file_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+        except OSError:
+            return duplicates
+
+        for line_num, line in enumerate(lines, 1):
+            match = pattern.match(line)
+            if not match:
+                continue
+            key = match.group("key") if "key" in match.re.groupindex else match.group(1)
+            value = ""
+            if value_group:
+                try:
+                    value = match.group(value_group) or ""
+                except IndexError:
+                    value = ""
+            if key not in key_occurrences:
+                key_occurrences[key] = {
+                    "first_line": line_num,
+                    "first_value": value,
+                    "first_raw": line.strip(),
+                }
+                continue
+
+            first = key_occurrences[key]
+            duplicates.append({
+                "key": key,
+                "value": value,
+                "line": line_num,
+                "raw": line.strip(),
+                "first_line": first["first_line"],
+                "first_value": first["first_value"],
+                "first_raw": first["first_raw"],
+            })
+
+        return duplicates
+
+    def _run_duplicate_key_analysis(self) -> Dict[str, Any]:
+        """Analyze duplicate keyed assignments across language files using both language-specific and generic patterns."""
+        language_pattern = re.compile(r'^\s*(?P<key>\w+)\s*=\s*"(?P<value>[^"]*)"', re.MULTILINE)
+        generic_pattern = re.compile(r'^\s*(?P<key>\[?"?[\w]+"?\]?)\s*=\s*".*",?', re.MULTILINE)
+
+        language_files: List[Dict[str, Any]] = []
+        generic_files: List[Dict[str, Any]] = []
+        language_duplicate_total = 0
+        generic_duplicate_total = 0
+
+        for target in self._collect_language_file_targets():
+            file_path: Path = target["path"]
+            language_duplicates = self._scan_duplicate_assignments_in_file(file_path, language_pattern, value_group="value")
+            generic_duplicates = self._scan_duplicate_assignments_in_file(file_path, generic_pattern)
+
+            language_duplicate_total += len(language_duplicates)
+            generic_duplicate_total += len(generic_duplicates)
+
+            if language_duplicates:
+                language_files.append({
+                    **{k: v for k, v in target.items() if k != "path"},
+                    "duplicate_count": len(language_duplicates),
+                    "duplicates": language_duplicates,
+                })
+            if generic_duplicates:
+                generic_files.append({
+                    **{k: v for k, v in target.items() if k != "path"},
+                    "duplicate_count": len(generic_duplicates),
+                    "duplicates": generic_duplicates,
+                })
+
+        return {
+            "dry_run": True,
+            "language_duplicates": {
+                "total_duplicates": language_duplicate_total,
+                "files_with_duplicates": len(language_files),
+                "files": language_files,
+            },
+            "generic_duplicates": {
+                "total_duplicates": generic_duplicate_total,
+                "files_with_duplicates": len(generic_files),
+                "files": generic_files,
+            },
+        }
+
+    def _privilege_extract_used_in_dir(self, base_dir: Path) -> List[str]:
+        pattern = re.compile(r"[:.]hasPrivilege\s*\(\s*(['\"])([^'\"\s)]+)\1\s*\)", re.IGNORECASE | re.DOTALL)
+        privileges: Set[str] = set()
+        for lua_file in base_dir.rglob("*.lua"):
+            try:
+                content = lua_file.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                continue
+            for _, privilege_id in pattern.findall(content):
+                privileges.add(privilege_id)
+        return sorted(privileges, key=str.lower)
+
+    def _privilege_load_localizations(self) -> Dict[str, str]:
+        localizations: Dict[str, str] = {}
+        language_path = Path(self.language_file)
+        if not language_path.exists():
+            return localizations
+        try:
+            content = language_path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            return localizations
+        for key, value in re.findall(r'^\s*(\w+)\s*=\s*"(.*?)"\s*$', content, re.MULTILINE):
+            localizations[key] = value
+        for key, value in re.findall(r'^\s*L\.\s*(\w+)\s*=\s*"(.*?)"\s*$', content, re.MULTILINE):
+            localizations[key] = value
+        for key, value in re.findall(r'L\[\s*["\']([^"\']+)["\']\s*\]\s*=\s*["\']([^"\']*)["\']', content, re.MULTILINE):
+            localizations[key] = value
+        for key, value in re.findall(
+            r'lia\.(?:lang|language)\.Add\(\s*["\']([^"\']+)["\']\s*,\s*["\']([^"\']*)["\']\s*\)',
+            content,
+            re.IGNORECASE,
+        ):
+            localizations[key] = value
+        return localizations
+
+    def _privilege_load_registered_json_ids(self) -> List[str]:
+        data_path = self.base_path.parent / "data" / "lilia_registered_privileges.json"
+        if not data_path.exists():
+            return []
+        try:
+            payload = json.loads(data_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return []
+
+        ids: List[str] = []
+        seen: Set[str] = set()
+
+        def add(value: Any):
+            text = str(value)
+            if text and text != "None" and text not in seen:
+                seen.add(text)
+                ids.append(text)
+
+        def walk(value: Any):
+            if isinstance(value, list):
+                for item in value:
+                    walk(item)
+            elif isinstance(value, dict):
+                for key, item in value.items():
+                    if key.lower() == "id" and isinstance(item, (str, int)):
+                        add(item)
+                    elif key.lower() == "privileges":
+                        walk(item)
+                    elif isinstance(item, (list, dict)):
+                        walk(item)
+            elif isinstance(value, (str, int)):
+                add(value)
+
+        walk(payload)
+        return sorted(ids, key=str.lower)
+
+    def _privilege_extract_registered_ids_from_content(self, content: str) -> List[str]:
+        ids: Set[str] = set()
+        start_pos = 0
+        while True:
+            match = re.search(r"\bPrivileges\s*=\s*\{", content[start_pos:], re.IGNORECASE)
+            if not match:
+                break
+            block_start = start_pos + match.end() - 1
+            index = block_start
+            depth = 0
+            in_string = False
+            string_char = ""
+            escaped = False
+            while index < len(content):
+                char = content[index]
+                if in_string:
+                    if escaped:
+                        escaped = False
+                    elif char == "\\":
+                        escaped = True
+                    elif char == string_char:
+                        in_string = False
+                else:
+                    if char in ('"', "'"):
+                        in_string = True
+                        string_char = char
+                    elif char == "{":
+                        depth += 1
+                    elif char == "}":
+                        depth -= 1
+                        if depth == 0:
+                            block_end = index
+                            break
+                index += 1
+            else:
+                block_end = len(content)
+            block = content[block_start:block_end + 1]
+            brace_depth = 0
+            for line in block.splitlines():
+                if brace_depth == 1:
+                    key_match = re.match(r'^\s*(?:\[\s*["\']([^"\']+)["\']\s*\]|([A-Za-z_]\w*))\s*=\s*\{', line)
+                    if key_match:
+                        privilege_id = key_match.group(1) or key_match.group(2)
+                        if privilege_id and privilege_id.lower() != "privileges":
+                            ids.add(privilege_id)
+
+                in_string = False
+                string_char = ""
+                escaped = False
+                for char in line:
+                    if in_string:
+                        if escaped:
+                            escaped = False
+                        elif char == "\\":
+                            escaped = True
+                        elif char == string_char:
+                            in_string = False
+                    else:
+                        if char in ('"', "'"):
+                            in_string = True
+                            string_char = char
+                        elif char == "{":
+                            brace_depth += 1
+                        elif char == "}":
+                            brace_depth = max(0, brace_depth - 1)
+            for privilege_id in re.findall(r'(?i)\bID\s*=\s*["\']([^"\']+)["\']', block):
+                ids.add(privilege_id)
+            start_pos = block_end + 1
+        return sorted(ids, key=str.lower)
+
+    def _privilege_extract_registered_ids_in_dir(self, base_dir: Path) -> List[str]:
+        ids: Set[str] = set()
+        for lua_file in base_dir.rglob("*.lua"):
+            try:
+                content = lua_file.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                continue
+            for privilege_id in self._privilege_extract_registered_ids_from_content(content):
+                ids.add(privilege_id)
+        return sorted(ids, key=str.lower)
+
+    def _privilege_build_framework_report(self, used: List[str], registered: List[str], localizations: Dict[str, str]) -> Dict[str, Any]:
+        used_set = set(used)
+        registered_set = set(registered)
+        missing = sorted(used_set - registered_set, key=str.lower)
+        unused = sorted(registered_set - used_set, key=str.lower)
+        return {
+            "counts": {
+                "used_in_code": len(used),
+                "registered": len(registered),
+                "used_but_not_registered": len(missing),
+                "registered_but_not_used": len(unused),
+            },
+            "used_but_not_registered": [{"id": privilege_id, "name": localizations.get(privilege_id, "")} for privilege_id in missing],
+            "registered_but_not_used": [{"id": privilege_id, "name": localizations.get(privilege_id, "")} for privilege_id in unused],
+        }
+
+    def _privilege_build_module_reports(self, framework_registered: List[str], localizations: Dict[str, str]) -> List[Dict[str, Any]]:
+        reports: List[Dict[str, Any]] = []
+        framework_registered_set = set(framework_registered)
+        seen_paths: Set[str] = set()
+
+        for module in sorted(self._discover_module_roots(), key=lambda entry: str(entry.get("name", "")).lower()):
+            module_path = module.get("path")
+            module_name = module.get("name") or Path(module_path).name
+            if not isinstance(module_path, Path):
+                continue
+            try:
+                resolved_key = str(module_path.resolve()).lower()
+            except Exception:
+                resolved_key = str(module_path).lower()
+            if resolved_key in seen_paths:
+                continue
+            seen_paths.add(resolved_key)
+
+            used = self._privilege_extract_used_in_dir(module_path)
+            registered_in_module = self._privilege_extract_registered_ids_in_dir(module_path)
+            allowed = framework_registered_set | set(registered_in_module)
+            missing = sorted(set(used) - allowed, key=str.lower)
+            reports.append({
+                "name": module_name,
+                "path": str(module_path),
+                "scope": module.get("source", "module"),
+                "counts": {
+                    "used_in_code": len(used),
+                    "registered_in_module": len(registered_in_module),
+                    "missing_registrations": len(missing),
+                },
+                "used_but_not_registered": [{"id": privilege_id, "name": localizations.get(privilege_id, "")} for privilege_id in missing],
+            })
+
+        return reports
+
+    def _run_privilege_analysis(self) -> Dict[str, Any]:
+        """Analyze privilege usage and registration coverage for the framework and modules."""
+        localizations = self._privilege_load_localizations()
+        used = self._privilege_extract_used_in_dir(self.base_path)
+        registered_json = self._privilege_load_registered_json_ids()
+        registered_lua = self._privilege_extract_registered_ids_in_dir(self.base_path)
+        framework_registered = sorted(set(registered_json) | set(registered_lua), key=str.lower)
+        framework_report = self._privilege_build_framework_report(used, framework_registered, localizations)
+        module_reports = self._privilege_build_module_reports(framework_registered, localizations)
+
+        return {
+            "generated_at": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+            "repo_root": str(self.base_path.parent),
+            "framework": framework_report,
+            "modules": module_reports,
+            "counts": {
+                "modules_scanned": len(module_reports),
+                "modules_with_missing_registrations": len([entry for entry in module_reports if entry["counts"]["missing_registrations"] > 0]),
+            },
+        }
+
     def run_all_analyses(self) -> CombinedReportData:
         """Run all three analyses and combine results"""
 
@@ -2019,7 +3722,15 @@ class FunctionComparisonReportGenerator:
         derma_panels_defined, derma_panels_used, derma_panels_unused, module_derma_panels_outside_folder, derma_file_placement_issues = self._scan_derma_panel_analysis()
         module_file_placement_issues = self._run_module_file_placement_analysis(net_messages_used, derma_file_placement_issues)
 
-        # 10. Undefined inferred localization keys — gated (scans external modules too)
+        # 10. Duplicate key analysis
+        print("Analyzing duplicate keys...")
+        duplicate_key_analysis = self._run_duplicate_key_analysis()
+
+        # 11. Privilege analysis
+        print("Analyzing privileges...")
+        privilege_report = self._run_privilege_analysis()
+
+        # 12. Undefined inferred localization keys — gated (scans external modules too)
         undefined_inferred_loc_keys = []
         print("Detecting undefined inferred localization keys...")
         undefined_inferred_loc_keys = self._detect_undefined_inferred_loc_keys()
@@ -2069,6 +3780,8 @@ class FunctionComparisonReportGenerator:
             derma_panels_unused=derma_panels_unused,
             module_derma_panels_outside_folder=module_derma_panels_outside_folder,
             module_file_placement_issues=module_file_placement_issues,
+            duplicate_key_analysis=duplicate_key_analysis,
+            privilege_report=privilege_report,
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
@@ -3368,6 +5081,8 @@ class FunctionComparisonReportGenerator:
             derma_panels_unused=scoped_derma_unused,
             module_derma_panels_outside_folder=scoped_derma_outside,
             module_file_placement_issues=scoped_file_placement,
+            duplicate_key_analysis={},
+            privilege_report={},
             generated_at=data.generated_at,
         )
 
@@ -4861,6 +6576,204 @@ class FunctionComparisonReportGenerator:
                 lines.append("")
 
         return lines
+
+    def _json_safe(self, value: Any) -> Any:
+        """Recursively convert analysis data into JSON-safe values."""
+        if isinstance(value, Path):
+            return str(value)
+        if isinstance(value, set):
+            return sorted(self._json_safe(item) for item in value)
+        if isinstance(value, tuple):
+            return [self._json_safe(item) for item in value]
+        if isinstance(value, list):
+            return [self._json_safe(item) for item in value]
+        if isinstance(value, dict):
+            return {str(key): self._json_safe(item) for key, item in value.items()}
+        if hasattr(value, "__dataclass_fields__"):
+            return {
+                field_name: self._json_safe(getattr(value, field_name))
+                for field_name in value.__dataclass_fields__.keys()
+            }
+        return value
+
+    def _build_executive_summary_payload(self, data: CombinedReportData) -> Dict[str, Any]:
+        """Build a compact summary payload for dashboard consumers."""
+        total_functions = sum(r.get('total_functions', 0) for r in data.function_comparison.values())
+        total_documented = sum(r.get('documented_functions', 0) for r in data.function_comparison.values())
+        total_missing_unique = sum(r.get('missing_functions_count', len(r.get('missing_functions', []))) for r in data.function_comparison.values())
+        hooks_missing_count = len(data.hooks_missing)
+        unused_hooks_count = len([
+            h for h in data.hooks_documented
+            if h not in data.hooks_registered and h not in FRAMEWORK_HOOKS_WHITELIST and h not in HOOKS_REPORT_IGNORE
+        ])
+        undefined_calls = data.localization_data.get('undefined_count', len(data.localization_data.get('undefined_rows', []))) if data.localization_data else 0
+        at_patterns = data.localization_data.get('at_pattern_count', len(data.localization_data.get('at_pattern_rows', []))) if data.localization_data else 0
+        module_conflicts = len(getattr(data, 'module_localization_conflicts', {}) or {})
+        config_undefined_count = len(getattr(data, 'config_undefined_get_calls', []) or [])
+        net_defined_count = len(getattr(data, 'net_messages_defined', {}) or {})
+        net_used_count = len(getattr(data, 'net_messages_used', {}) or {})
+        net_unused_count = len(getattr(data, 'net_messages_unused_defined', []) or [])
+        net_undefined_count = len(getattr(data, 'net_messages_used_but_undefined', []) or [])
+        derma_defined_count = len(getattr(data, 'derma_panels_defined', []) or [])
+        derma_unused_count = len(getattr(data, 'derma_panels_unused', []) or [])
+        file_placement_count = len(getattr(data, 'module_file_placement_issues', []) or [])
+        duplicate_language_total = len((((getattr(data, "duplicate_key_analysis", {}) or {}).get("language_duplicates", {}) or {}).get("files", []) or []))
+        duplicate_language_entries = (((getattr(data, "duplicate_key_analysis", {}) or {}).get("language_duplicates", {}) or {}).get("total_duplicates", 0))
+        privilege_framework = (getattr(data, "privilege_report", {}) or {}).get("framework", {}) or {}
+        privilege_modules = (getattr(data, "privilege_report", {}) or {}).get("counts", {}) or {}
+
+        coverage_percent = round((total_documented / total_functions) * 100, 2) if total_functions else None
+
+        return {
+            "functions": {
+                "total": total_functions,
+                "documented": total_documented,
+                "missing_unique": total_missing_unique,
+                "missing_library": len(data.missing_library_functions),
+                "missing_hooks": len(data.missing_hook_functions),
+                "missing_meta": len(data.missing_meta_functions),
+                "coverage_percent": coverage_percent,
+            },
+            "hooks": {
+                "missing": hooks_missing_count,
+                "unused": unused_hooks_count,
+                "documented_total": len(data.hooks_documented),
+                "registered_total": len(data.hooks_registered),
+            },
+            "localization": {
+                "undefined_calls": undefined_calls,
+                "at_patterns": at_patterns,
+                "argument_mismatches": len(data.argument_mismatches),
+                "module_conflicts": module_conflicts,
+                "undefined_inferred_keys": len(getattr(data, "undefined_inferred_loc_keys", []) or []),
+            },
+            "net_messages": {
+                "defined": net_defined_count,
+                "used": net_used_count,
+                "unused_defined": net_unused_count,
+                "used_but_undefined": net_undefined_count,
+                "direction_issues": len(getattr(data, "net_messages_direction_issues", []) or []),
+            },
+            "derma": {
+                "defined": derma_defined_count,
+                "unused": derma_unused_count,
+                "outside_folder": len(getattr(data, "module_derma_panels_outside_folder", []) or []),
+            },
+            "file_placement": {
+                "issues": file_placement_count,
+            },
+            "config": {
+                "undefined_get_calls": config_undefined_count,
+            },
+            "modules": {
+                "scanned": len(getattr(data, "modules_scan", []) or []),
+                "localization_entries": len(getattr(data, "modules_data", []) or []),
+            },
+            "duplicates": {
+                "language_files_with_duplicates": duplicate_language_total,
+                "duplicate_entries": duplicate_language_entries,
+            },
+            "privileges": {
+                "framework_missing": (privilege_framework.get("counts", {}) or {}).get("used_but_not_registered", 0),
+                "framework_unused": (privilege_framework.get("counts", {}) or {}).get("registered_but_not_used", 0),
+                "modules_with_missing_registrations": privilege_modules.get("modules_with_missing_registrations", 0),
+                "modules_scanned": privilege_modules.get("modules_scanned", 0),
+            },
+        }
+
+    def build_dashboard_snapshot(self, data: CombinedReportData, metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Return a stable JSON snapshot for the local dashboard."""
+        metadata = dict(metadata or {})
+        metadata.setdefault("schema_version", 1)
+        metadata.setdefault("generated_at", data.generated_at)
+        metadata.setdefault("report_generated_at", data.generated_at)
+
+        functions_by_file = []
+        for file_path, file_data in sorted((data.function_comparison or {}).items(), key=lambda item: str(item[0]).lower()):
+            functions_by_file.append({
+                "file": file_path,
+                "total_functions": file_data.get("total_functions", 0),
+                "documented_functions": file_data.get("documented_functions", 0),
+                "missing_functions_count": file_data.get("missing_functions_count", len(file_data.get("missing_functions", []))),
+                "missing_functions": list(file_data.get("missing_functions", [])),
+                "extra_documented": list(file_data.get("extra_documented", [])),
+                "functions": self._json_safe(file_data.get("functions", {})),
+            })
+
+        hooks_unused = sorted([
+            h for h in data.hooks_documented
+            if h not in data.hooks_registered and h not in FRAMEWORK_HOOKS_WHITELIST and h not in HOOKS_REPORT_IGNORE
+        ], key=str.lower)
+
+        snapshot = {
+            "metadata": self._json_safe(metadata),
+            "summary": self._build_executive_summary_payload(data),
+            "sections": {
+                "functions": {
+                    "missing_library_functions": self._json_safe(data.missing_library_functions),
+                    "missing_hook_functions": self._json_safe(data.missing_hook_functions),
+                    "missing_meta_functions": self._json_safe(data.missing_meta_functions),
+                    "files": functions_by_file,
+                },
+                "hooks": {
+                    "missing": list(data.hooks_missing),
+                    "unused": hooks_unused,
+                    "documented": list(data.hooks_documented),
+                    "registered": list(data.hooks_registered),
+                    "signatures": self._json_safe(getattr(data, "hooks_signatures", {}) or {}),
+                    "locations": self._json_safe(getattr(data, "hooks_locations", {}) or {}),
+                    "method_hooks": list(getattr(data, "hooks_method", []) or []),
+                    "standard_hooks": list(getattr(data, "hooks_standard", []) or []),
+                },
+                "localization": {
+                    "overview": self._json_safe(data.localization_data or {}),
+                    "argument_mismatches": self._json_safe(data.argument_mismatches),
+                    "inferred_localization": self._json_safe(data.inferred_localization),
+                    "module_conflicts": self._json_safe(data.module_localization_conflicts),
+                    "modules_data": self._json_safe(data.modules_data),
+                    "language_comparison": self._json_safe(data.language_comparison),
+                    "undefined_inferred_loc_keys": self._json_safe(getattr(data, "undefined_inferred_loc_keys", []) or []),
+                },
+                "net_messages": {
+                    "defined": self._json_safe(data.net_messages_defined),
+                    "used": self._json_safe(data.net_messages_used),
+                    "unused_defined": self._json_safe(data.net_messages_unused_defined),
+                    "used_but_undefined": self._json_safe(data.net_messages_used_but_undefined),
+                    "analysis_notes": self._json_safe(data.net_message_analysis_notes),
+                    "module_misregistered": self._json_safe(data.module_net_messages_misregistered),
+                    "module_undefined": self._json_safe(data.module_net_messages_undefined),
+                    "module_notes": self._json_safe(data.module_net_messages_notes),
+                    "direction_issues": self._json_safe(data.net_messages_direction_issues),
+                },
+                "derma": {
+                    "defined": self._json_safe(data.derma_panels_defined),
+                    "used": self._json_safe(data.derma_panels_used),
+                    "unused": self._json_safe(data.derma_panels_unused),
+                    "outside_folder": self._json_safe(data.module_derma_panels_outside_folder),
+                },
+                "file_placement": {
+                    "issues": self._json_safe(data.module_file_placement_issues),
+                },
+                "config": {
+                    "undefined_get_calls": self._json_safe(data.config_undefined_get_calls),
+                },
+                "fonts": {
+                    "registered": self._json_safe(data.fonts_registered),
+                    "used": self._json_safe(data.fonts_used),
+                    "unregistered": self._json_safe(data.fonts_unregistered),
+                    "default_gmod": self._json_safe(data.fonts_default_gmod),
+                    "variable": self._json_safe(data.fonts_variable),
+                    "getfont_count": data.fonts_getfont_count,
+                    "file_usages": self._json_safe(data.fonts_file_usages),
+                },
+                "modules": {
+                    "scan_results": self._json_safe(data.modules_scan),
+                },
+                "duplicates": self._json_safe(getattr(data, "duplicate_key_analysis", {}) or {}),
+                "privileges": self._json_safe(getattr(data, "privilege_report", {}) or {}),
+            },
+        }
+        return snapshot
 
     def save_report(self, data: CombinedReportData, output_file: str = None):
         """Generate and save the comprehensive report"""

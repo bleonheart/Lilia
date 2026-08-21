@@ -121,6 +121,10 @@ GMOD_HOOKS_BLACKLIST = {
     "canDarkRPUse", "canLockpick", "InputMouseAppl_", "lockpickCompleted",
     "onKeysMenuOpened", "playerBoughtCustomEntity", "playerBuyDoor",
     "YorkshireRP_PropertyPurchased", "zlockpick_success",
+    # Compatibility and addon-specific hooks intentionally used by bundled integrations
+    "AdvDupe_FinishPasting", "PrePACEditorOpen", "pac_CanWearParts", "SAM.LoadedRanks",
+    # Base Garry's Mod / Sandbox hook triggered through hook.Run
+    "SuppressHint",
     # Example hooks from documentation that should not be counted as documented
     "GetSetting", "GetValidatedData", "SaveComplexData", "SaveSettings"
 }
