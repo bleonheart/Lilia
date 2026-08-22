@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Hooks:
         CharMenuOpened(self)
 
@@ -380,12 +380,8 @@ function PANEL:Init()
     hook.Add("DrawPhysgunBeam", "liaMainMenuPreDrawPhysgunBeam", function() return IsValid(lia.gui.character) end)
     self.viewModelHookID = "liaMainMenuPreDrawViewModel" .. tostring(self)
     self.playerHandsHookID = "liaMainMenuPreDrawPlayerHands" .. tostring(self)
-    hook.Add("PreDrawViewModel", self.viewModelHookID, function()
-        if IsValid(self) and self:IsVisible() then return true end
-    end)
-    hook.Add("PreDrawPlayerHands", self.playerHandsHookID, function()
-        if IsValid(self) and self:IsVisible() then return true end
-    end)
+    hook.Add("PreDrawViewModel", self.viewModelHookID, function() if IsValid(self) and self:IsVisible() then return true end end)
+    hook.Add("PreDrawPlayerHands", self.playerHandsHookID, function() if IsValid(self) and self:IsVisible() then return true end end)
     hook.Remove("RenderScreenspaceEffects", "liaCharMenuDarken")
     self:Dock(FILL)
     self:MakePopup()
@@ -1374,7 +1370,6 @@ function PANEL:createStartButton()
     sideW = math.min(sideW, math.max(ScrW() - 32, 1))
     local padding = math.Clamp(math.floor(sideW * 0.07), 36, 58)
     local contentW = math.max(sideW - padding * 2, 1)
-
     self.menuPanel = self:Add("DPanel")
     self.menuPanel:SetPos(0, 0)
     self.menuPanel:SetSize(sideW, ScrH())
@@ -1417,7 +1412,6 @@ function PANEL:createStartButton()
     title:SetTextColor(text)
     title:SetContentAlignment(4)
     y = y + 58
-
     local subtitle = self.menuPanel:Add("DLabel")
     subtitle:SetPos(padding, y)
     subtitle:SetSize(contentW, 26)
@@ -1426,7 +1420,6 @@ function PANEL:createStartButton()
     subtitle:SetTextColor(withAlpha(text, 150))
     subtitle:SetContentAlignment(4)
     y = y + 34
-
     local underline = self.menuPanel:Add("DPanel")
     underline:SetPos(padding, y)
     underline:SetSize(44, 3)
@@ -1434,8 +1427,8 @@ function PANEL:createStartButton()
         surface.SetDrawColor(accent)
         surface.DrawRect(0, 0, w, h)
     end
-    y = y + 28
 
+    y = y + 28
     local function applyTooltip(button, data)
         if not data.tooltip or data.tooltip == "" then return end
         button.liaToolTip = true
@@ -1453,6 +1446,7 @@ function PANEL:createStartButton()
             local target = s:IsHovered() and 1 or 0
             s._hover = Lerp(FrameTime() * 12, s._hover or 0, target)
         end
+
         button.Paint = function(s, w, h)
             local hover = s._hover or 0
             local active = self.activeMenuAction and self.activeMenuAction == data.id or not self.activeMenuAction and selected
@@ -1467,6 +1461,7 @@ function PANEL:createStartButton()
                 surface.SetDrawColor(accent)
                 surface.DrawRect(0, 10, 3, h - 20)
             end
+
             local arrowColor = danger and negative or withAlpha(text, math.floor(145 + hover * 90))
             surface.SetDrawColor(arrowColor)
             local cx = w - 22
@@ -1483,7 +1478,6 @@ function PANEL:createStartButton()
         label:SetTextColor(danger and negative or text)
         label:SetContentAlignment(4)
         label:SetMouseInputEnabled(false)
-
         local hint = button:Add("DLabel")
         hint:SetPos(18, 35)
         hint:SetSize(contentW - 56, 22)
@@ -1492,7 +1486,6 @@ function PANEL:createStartButton()
         hint:SetTextColor(withAlpha(text, 125))
         hint:SetContentAlignment(4)
         hint:SetMouseInputEnabled(false)
-
         button.DoClick = data.doClick
         applyTooltip(button, data)
         self.buttons[data.id] = button
@@ -1510,9 +1503,7 @@ function PANEL:createStartButton()
         button:SetText("")
         button:SetCursor("hand")
         button._hover = 0
-        button.Think = function(s)
-            s._hover = Lerp(FrameTime() * 12, s._hover or 0, s:IsHovered() and 1 or 0)
-        end
+        button.Think = function(s) s._hover = Lerp(FrameTime() * 12, s._hover or 0, s:IsHovered() and 1 or 0) end
         button.Paint = function(s, w, h)
             local hover = s._hover or 0
             lia.derma.rect(0, 0, w, h):Rad(6):Color(withAlpha(focus, math.floor(190 + hover * 45))):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -1550,6 +1541,7 @@ function PANEL:createStartButton()
         for i, data in ipairs(utilityData) do
             addUtilityButton(data, i, y, #utilityData)
         end
+
         y = y + 56
     end
 
@@ -1575,7 +1567,6 @@ function PANEL:createStartButton()
     countLabel:SetFont("LiliaFont.18")
     countLabel:SetTextColor(text)
     countLabel:SetContentAlignment(4)
-
     local onlineLabel = status:Add("DLabel")
     onlineLabel:SetPos(30, 32)
     onlineLabel:SetSize(190, 22)
@@ -1583,13 +1574,11 @@ function PANEL:createStartButton()
     onlineLabel:SetTextColor(withAlpha(text, 150))
     onlineLabel:SetContentAlignment(4)
     onlineLabel:SetText(L("online"))
-
     status.Think = function()
         if not IsValid(countLabel) then return end
         local value = player.GetCount() .. " / " .. game.MaxPlayers()
         if countLabel:GetText() ~= value then countLabel:SetText(value) end
     end
-
 end
 
 function PANEL:addTab(name, callback, justClick, height)

@@ -107,8 +107,8 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
         btn.icon = buttonIcons[textKey]
         btn.primary = primary
         btn.Paint = function(button, w, h)
-        local accent = lia.color.theme.accent
-        local textColor = lia.color.theme.text
+            local accent = lia.color.theme.accent
+            local textColor = lia.color.theme.text
             local disabledColor = Color(120, 130, 132)
             local hovered = button:IsHovered() and not button.Disabled
             local pressed = button:IsDown() and not button.Disabled

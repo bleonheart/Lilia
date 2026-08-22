@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.chat.md
-]]
---[[
-    Chat
-
-    Chat helpers for registering chat classes, parsing player messages, formatting timestamps, and sending chat messages to eligible recipients.
-]]
---[[
-    Overview:
-        The chat library centralizes shared chat class registration, message prefix parsing, timestamp formatting, per-class permission and hearing checks, and server-to-client chat dispatch under `lia.chat`.
-]]
---[[
     Hooks:
         GetDisplayedName(Player speaker, string chatType)
 
@@ -154,6 +141,19 @@
 
     Realm:
         Server
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.chat.md
+]]
+--[[
+    Chat
+
+    Chat helpers for registering chat classes, parsing player messages, formatting timestamps, and sending chat messages to eligible recipients.
+]]
+--[[
+    Overview:
+        The chat library centralizes shared chat class registration, message prefix parsing, timestamp formatting, per-class permission and hearing checks, and server-to-client chat dispatch under `lia.chat`.
 ]]
 lia.chat = lia.chat or {}
 lia.chat.classes = lia.chat.classes or {}

@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.faction.md
-]]
---[[
-    Faction
-
-    Faction helpers for registering factions, loading faction definitions, resolving models, validating character customization, and querying faction membership data.
-]]
---[[
-    Overview:
-        The faction library centralizes shared faction behavior under `lia.faction`. It stores factions by index and unique ID, registers Garry's Mod teams, resolves localized names and descriptions, prepares faction models, validates skin and bodygroup restrictions, and exposes helpers used during character creation and faction lookups.
-]]
---[[
     Hooks:
         OverrideFactionName(string uniqueID, string name)
 
@@ -147,6 +134,19 @@
 
     Realm:
         Shared
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.faction.md
+]]
+--[[
+    Faction
+
+    Faction helpers for registering factions, loading faction definitions, resolving models, validating character customization, and querying faction membership data.
+]]
+--[[
+    Overview:
+        The faction library centralizes shared faction behavior under `lia.faction`. It stores factions by index and unique ID, registers Garry's Mod teams, resolves localized names and descriptions, prepares faction models, validates skin and bodygroup restrictions, and exposes helpers used during character creation and faction lookups.
 ]]
 lia.faction = lia.faction or {}
 lia.faction.indices = lia.faction.indices or {}

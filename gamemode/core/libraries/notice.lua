@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.notices.md
-]]
---[[
-    Notices
-
-    Notice helpers for sending, receiving, localizing, displaying, and routing Lilia notification messages.
-]]
---[[
-    Overview:
-        The notices library centralizes notification delivery under `lia.notices`. Serverside calls send networked notices to one client or broadcast them to all players, while clientside calls build `liaNotice` panels, organize their screen positions, emit the notice sound, and print the message to the console. Localized helpers resolve language keys through `L` before using the normal notice pipeline.
-]]
---[[
     Hooks:
         LiliaNoticeOverride(string message, string noticeType)
 
@@ -43,6 +30,19 @@
 
     Realm:
         Client
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.notices.md
+]]
+--[[
+    Notices
+
+    Notice helpers for sending, receiving, localizing, displaying, and routing Lilia notification messages.
+]]
+--[[
+    Overview:
+        The notices library centralizes notification delivery under `lia.notices`. Serverside calls send networked notices to one client or broadcast them to all players, while clientside calls build `liaNotice` panels, organize their screen positions, emit the notice sound, and print the message to the console. Localized helpers resolve language keys through `L` before using the normal notice pipeline.
 ]]
 lia.notices = lia.notices or {}
 if CLIENT then

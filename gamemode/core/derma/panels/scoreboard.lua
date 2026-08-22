@@ -1,4 +1,262 @@
-﻿local PANEL = {}
+﻿--[[
+    Hooks:
+        CanPlayerOpenScoreboard(client)
+
+    Purpose:
+        Determines whether the local player may open the Lilia scoreboard.
+
+    Category:
+        Scoreboard
+
+    Parameters:
+        client (Player)
+            The local player attempting to open the scoreboard.
+
+    Example Usage:
+        ```lua
+        hook.Add("CanPlayerOpenScoreboard", "liaExampleCanPlayerOpenScoreboard", function(client)
+            if IsValid(client) and not client:Alive() then return false end
+        end)
+        ```
+
+    Returns:
+        boolean|nil
+            Return false to prevent the scoreboard from opening. Returning nil allows it.
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ModifyScoreboardModel(model, client)
+
+    Purpose:
+        Allows clientside code to customize the model entity displayed in a scoreboard row after its appearance is applied.
+
+    Category:
+        Scoreboard
+
+    Parameters:
+        model (Entity)
+            The clientside model entity rendered by the row's model panel.
+
+        client (Player)
+            The player represented by the scoreboard row.
+
+    Example Usage:
+        ```lua
+        hook.Add("ModifyScoreboardModel", "liaExampleModifyScoreboardModel", function(model, client)
+            if IsValid(model) and IsValid(client) and client:IsAdmin() then
+                model:SetColor(Color(255, 220, 120))
+            end
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ScoreboardClosed(scoreboard)
+
+    Purpose:
+        Called when the Lilia scoreboard is hidden or removed.
+
+    Category:
+        Scoreboard
+
+    Parameters:
+        scoreboard (Panel)
+            The scoreboard panel being closed.
+
+    Example Usage:
+        ```lua
+        hook.Add("ScoreboardClosed", "liaExampleScoreboardClosed", function(scoreboard)
+            print("Scoreboard closed", scoreboard)
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ScoreboardOpened(scoreboard)
+
+    Purpose:
+        Called when the Lilia scoreboard is created or made visible again.
+
+    Category:
+        Scoreboard
+
+    Parameters:
+        scoreboard (Panel)
+            The scoreboard panel that was opened.
+
+    Example Usage:
+        ```lua
+        hook.Add("ScoreboardOpened", "liaExampleScoreboardOpened", function(scoreboard)
+            if IsValid(scoreboard) then scoreboard.nextUpdate = 0 end
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ScoreboardRowCreated(row, client)
+
+    Purpose:
+        Called after a scoreboard row has been created and initialized for a player.
+
+    Category:
+        Scoreboard
+
+    Parameters:
+        row (Panel)
+            The newly created scoreboard row panel.
+
+        client (Player)
+            The player represented by the row.
+
+    Example Usage:
+        ```lua
+        hook.Add("ScoreboardRowCreated", "liaExampleScoreboardRowCreated", function(row, client)
+            if IsValid(row) and IsValid(client) then row:SetTooltip(client:SteamID()) end
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ScoreboardRowRemoved(row, client)
+
+    Purpose:
+        Called immediately before a scoreboard row is removed because its player or character is no longer valid.
+
+    Category:
+        Scoreboard
+
+    Parameters:
+        row (Panel)
+            The scoreboard row that is about to be removed.
+
+        client (Player)
+            The player previously represented by the row. The player may already be invalid.
+
+    Example Usage:
+        ```lua
+        hook.Add("ScoreboardRowRemoved", "liaExampleScoreboardRowRemoved", function(row, client)
+            print("Removing scoreboard row", row, client)
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ShouldShowClassOnScoreboard(class)
+
+    Purpose:
+        Determines whether a registered class receives a visible section on the scoreboard.
+
+    Category:
+        Scoreboard
+
+    Parameters:
+        class (table)
+            The registered class data being evaluated.
+
+    Example Usage:
+        ```lua
+        hook.Add("ShouldShowClassOnScoreboard", "liaExampleShouldShowClassOnScoreboard", function(class)
+            if class.uniqueID == "observer" then return false end
+        end)
+        ```
+
+    Returns:
+        boolean|nil
+            Return false to hide the class section. Returning nil allows the default behavior.
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ShouldShowFactionOnScoreboard(client)
+
+    Purpose:
+        Determines whether a player's faction and its player row may appear on the scoreboard.
+
+    Category:
+        Scoreboard
+
+    Parameters:
+        client (Player)
+            The player whose faction is being evaluated.
+
+    Example Usage:
+        ```lua
+        hook.Add("ShouldShowFactionOnScoreboard", "liaExampleShouldShowFactionOnScoreboard", function(client)
+            if IsValid(client) and client:Team() == FACTION_STAFF then return false end
+        end)
+        ```
+
+    Returns:
+        boolean|nil
+            Return false to exclude the player's faction row from the scoreboard. Returning nil allows it.
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ShouldShowPlayerOnScoreboard(client)
+
+    Purpose:
+        Determines whether an individual player may appear on the scoreboard.
+
+    Category:
+        Scoreboard
+
+    Parameters:
+        client (Player)
+            The player being evaluated for display.
+
+    Example Usage:
+        ```lua
+        hook.Add("ShouldShowPlayerOnScoreboard", "liaExampleShouldShowPlayerOnScoreboard", function(client)
+            if IsValid(client) and client:GetNWBool("HideFromScoreboard") then return false end
+        end)
+        ```
+
+    Returns:
+        boolean|nil
+            Return false to hide the player from the scoreboard. Returning nil allows the default behavior.
+
+    Realm:
+        Client
+]]
+local PANEL = {}
 local frameColor = Color(4, 14, 19, 248)
 local headerColor = Color(5, 18, 24, 252)
 local panelColor = Color(6, 21, 28, 246)

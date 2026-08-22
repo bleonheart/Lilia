@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Hooks:
         FilterCharModels(Player client, table faction, any data, any index)
 

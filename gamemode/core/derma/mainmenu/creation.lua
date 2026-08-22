@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Hooks:
         ConfigureCharacterCreationSteps(Panel self)
 
@@ -53,7 +53,6 @@
     Realm:
         Client
 ]]
-
 local function themeColor(key, fallback)
     local theme = lia.color and lia.color.theme or {}
     local value = theme[key]
@@ -65,6 +64,7 @@ end
 local function alphaColor(color, alpha)
     return Color(color.r, color.g, color.b, alpha)
 end
+
 local PANEL = {}
 function PANEL:configureSteps()
     self:addStep(vgui.Create("liaCharacterBiography"))
@@ -349,6 +349,7 @@ function PANEL:onStepChanged(oldStep, newStep)
             oldStep:SetVisible(false)
             oldStep:onHide()
         end)
+
         show()
     else
         show()
@@ -388,7 +389,6 @@ function PANEL:Init()
     self.steps = {}
     self.curStep = 0
     self.context = {}
-
     self.shell = self:Add("DPanel")
     self.shell:SetPaintBackground(false)
     self.shell.Paint = function(_, w, h)
@@ -429,12 +429,10 @@ function PANEL:Init()
     self.buttons:DockMargin(24, 0, 24, 16)
     self.buttons:SetTall(48)
     self.buttons:SetPaintBackground(false)
-
     self.content = self.shell:Add("DPanel")
     self.content:Dock(FILL)
     self.content:DockMargin(24, 0, 24, 12)
     self.content:SetPaintBackground(false)
-
     self.model = self.content:Add("liaModelPanel")
     if not IsValid(self.model) then return self:showError(L("failedToCreateModelPanel")) end
     self.model:SetWide(0)
@@ -442,7 +440,6 @@ function PANEL:Init()
     self.model:SetModel("models/error.mdl")
     self.model:fitFOV()
     self.model:SetVisible(false)
-
     local function configureButton(btn, text, primary)
         btn:SetFont("LiliaFont.18")
         btn:SetText(text)
@@ -467,12 +464,10 @@ function PANEL:Init()
     self.prev.DoClick = function() self:previousStep() end
     self.prev:SetAlpha(0)
     self.prev:SetMouseInputEnabled(false)
-
     self.next = self.buttons:Add("liaButton")
     configureButton(self.next, L("next"):upper(), true)
     self.next:Dock(RIGHT)
     self.next.DoClick = function() self:nextStep() end
-
     self:configureSteps()
     if #self.steps == 0 then return self:showError("noCharacterSteps") end
     self:InvalidateLayout(true)

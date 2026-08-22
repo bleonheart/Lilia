@@ -337,7 +337,6 @@ local function resolveCharInfoSectionName(sectionName)
     return localizedSectionName
 end
 
--- theme colors are read directly from lia.color.theme
 local function themeColor(value, fallback)
     if IsColor(value) then return value end
     return fallback
@@ -405,7 +404,11 @@ end
 local function resolveIconMaterial(icon, fallback)
     if not icon then return fallback end
     if type(icon) == "IMaterial" then return icon end
-    if isstring(icon) and icon ~= "" then return Material(icon, "smooth") end
+    if isstring(icon) and icon ~= "" then
+        local webMaterial = lia.webimage and lia.webimage.get(icon)
+        if webMaterial then return webMaterial end
+        return Material(icon, "smooth")
+    end
     return fallback
 end
 
@@ -423,16 +426,16 @@ local function getFieldValue(panel, name)
 end
 
 local sidebarIcons = {
-    ["@admin"] = Material("icon16/shield.png", "smooth"),
-    ["@characters"] = Material("icon16/user.png", "smooth"),
-    ["@classes"] = Material("icon16/group.png", "smooth"),
-    ["@information"] = Material("icon16/information.png", "smooth"),
-    ["@inventory"] = Material("icon16/box.png", "smooth"),
-    ["@logisticslogs"] = Material("icon16/page_white_text.png", "smooth"),
-    ["@logisticsstorage"] = Material("icon16/database.png", "smooth"),
-    ["@settings"] = Material("icon16/cog.png", "smooth"),
-    ["@themes"] = Material("icon16/color_wheel.png", "smooth"),
-    ["@you"] = Material("icon16/user.png", "smooth")
+    admin = Material("icon16/shield.png", "smooth"),
+    characters = Material("characterlist.png", "smooth"),
+    classes = Material("icon16/group.png", "smooth"),
+    information = Material("information.png", "smooth"),
+    inventory = Material("inventory.png", "smooth"),
+    logisticslogs = Material("logs.png", "smooth"),
+    logisticsstorage = Material("icon16/database.png", "smooth"),
+    settings = Material("settings.png", "smooth"),
+    themes = Material("themes.png", "smooth"),
+    you = Material("you.png", "smooth")
 }
 
 local function drawcirclepoly(w, h)
@@ -449,61 +452,6 @@ local function drawcirclepoly(w, h)
     return poly
 end
 
-local CIRCULAR_AVATAR = {}
-function CIRCULAR_AVATAR:Init()
-    self.base = vgui.Create("AvatarImage", self)
-    self.base:Dock(FILL)
-    self.base:SetPaintedManually(true)
-end
-
-function CIRCULAR_AVATAR:GetBase()
-    return self.base
-end
-
-function CIRCULAR_AVATAR:PushMask(mask)
-    render.ClearStencil()
-    render.SetStencilEnable(true)
-    render.SetStencilWriteMask(1)
-    render.SetStencilTestMask(1)
-    render.SetStencilFailOperation(STENCILOPERATION_REPLACE)
-    render.SetStencilPassOperation(STENCILOPERATION_ZERO)
-    render.SetStencilZFailOperation(STENCILOPERATION_ZERO)
-    render.SetStencilCompareFunction(STENCILCOMPARISONFUNCTION_NEVER)
-    render.SetStencilReferenceValue(1)
-    mask()
-    render.SetStencilFailOperation(STENCILOPERATION_ZERO)
-    render.SetStencilPassOperation(STENCILOPERATION_REPLACE)
-    render.SetStencilZFailOperation(STENCILOPERATION_ZERO)
-    render.SetStencilCompareFunction(STENCILCOMPARISONFUNCTION_EQUAL)
-    render.SetStencilReferenceValue(1)
-end
-
-function CIRCULAR_AVATAR:PopMask()
-    render.SetStencilEnable(false)
-    render.ClearStencil()
-end
-
-function CIRCULAR_AVATAR:OnSizeChanged(w, h)
-    self.poly = drawcirclepoly(w, h)
-end
-
-function CIRCULAR_AVATAR:Paint(w, h)
-    self.poly = self.poly or drawcirclepoly(w, h)
-    self:PushMask(function()
-        draw.NoTexture()
-        surface.SetDrawColor(255, 255, 255)
-        surface.DrawPoly(self.poly)
-    end)
-
-    self.base:PaintManual()
-    self:PopMask()
-end
-
-function CIRCULAR_AVATAR:SetPlayer(pl, size)
-    self.base:SetPlayer(pl, size)
-end
-
-vgui.Register("CircularAvatar", CIRCULAR_AVATAR, "Panel")
 local PANEL = {}
 function PANEL:Init()
     if IsValid(lia.gui.info) then lia.gui.info:Remove() end
@@ -932,55 +880,6 @@ function PANEL:Init()
     self.headerUtility:SetTall(50)
     self.headerUtility:SetZPos(50)
     self.headerUtility.Paint = function() end
-    self.statusGroup = self.topBar:Add("DPanel")
-    self.statusGroup:SetSize(380, 50)
-    self.statusGroup.Paint = function(_, w, h)
-        local accent = getMenuPalette().accent
-        drawPanel(0, 0, w, h, 7, getMenuPalette().surface, Color(accent.r, accent.g, accent.b, 70))
-        surface.SetDrawColor(getMenuPalette().line)
-        surface.DrawRect(150, 9, 1, h - 18)
-    end
-
-    self.onlineDot = self.statusGroup:Add("DPanel")
-    self.onlineDot:SetSize(12, 12)
-    self.onlineDot.Paint = function(_, w, h)
-        local accent = getMenuPalette().accent
-        draw.RoundedBox(math.floor(w * 0.5), 0, 0, w, h, Color(accent.r, accent.g, accent.b, 245))
-    end
-
-    self.onlineLabel = self.statusGroup:Add("DLabel")
-    self.onlineLabel:SetFont("LiliaFont.17")
-    self.onlineLabel:SetTextColor(getMenuPalette().textSecondary)
-    self.onlineLabel:SetContentAlignment(4)
-    self.onlineLabel:SetTall(50)
-    self.timeIcon = self.statusGroup:Add("DPanel")
-    self.timeIcon:SetSize(22, 50)
-    self.timeIcon.Paint = function(_, _, h) drawIcon(Material("icon16/time.png", "smooth"), 1, math.floor(h * 0.5) - 8, 16, getMenuPalette().textMuted) end
-    self.timeLabel = self.statusGroup:Add("DLabel")
-    self.timeLabel:SetFont("LiliaFont.17")
-    self.timeLabel:SetTextColor(getMenuPalette().textSecondary)
-    self.timeLabel:SetContentAlignment(4)
-    self.timeLabel:SetTall(50)
-    self.statusGroup.PerformLayout = function(_, w, h)
-        local onlineSectionWidth = 150
-        local timeSectionWidth = w - onlineSectionWidth
-        local onlineGap = 8
-        surface.SetFont("LiliaFont.17")
-        local onlineTextWidth = select(1, surface.GetTextSize(self.onlineLabel:GetText()))
-        self.onlineLabel:SetWide(onlineTextWidth)
-        local onlineWidth = self.onlineDot:GetWide() + onlineGap + onlineTextWidth
-        local onlineX = math.floor((onlineSectionWidth - onlineWidth) * 0.5)
-        self.onlineDot:SetPos(onlineX, math.floor((h - self.onlineDot:GetTall()) * 0.5))
-        self.onlineLabel:SetPos(onlineX + self.onlineDot:GetWide() + onlineGap, 0)
-        local timeGap = 10
-        local timeTextWidth = select(1, surface.GetTextSize(self.timeLabel:GetText()))
-        self.timeLabel:SetWide(timeTextWidth)
-        local timeWidth = self.timeIcon:GetWide() + timeGap + timeTextWidth
-        local timeX = onlineSectionWidth + math.floor((timeSectionWidth - timeWidth) * 0.5)
-        self.timeIcon:SetPos(timeX, 0)
-        self.timeLabel:SetPos(timeX + self.timeIcon:GetWide() + timeGap, 0)
-    end
-
     self.utilityGroup = self.headerUtility:Add("DPanel")
     self.utilityGroup:Dock(FILL)
     self.utilityGroup:DockPadding(5, 3, 5, 3)
@@ -992,27 +891,27 @@ function PANEL:Init()
     local utilityButtons = {
         {
             key = "characters",
-            icon = "icon16/user.png",
+            icon = "characters.png",
             tooltip = "characters"
         },
         {
             key = "@logs",
-            icon = "icon16/book_open.png",
+            icon = "logs.png",
             tooltip = "@logs"
         },
         {
             key = "@information",
-            icon = "icon16/information.png",
+            icon = "information.png",
             tooltip = "@information"
         },
         {
             key = "@settings",
-            icon = "icon16/cog.png",
+            icon = "settings.png",
             tooltip = "@settings"
         },
         {
             key = "@themes",
-            icon = "icon16/color_wheel.png",
+            icon = "themes.png",
             tooltip = "@themes"
         }
     }
@@ -1059,27 +958,6 @@ function PANEL:Init()
         if IsValid(self.topBar) then self.topBar:InvalidateLayout(true) end
     end
 
-    self.headerUtility.Think = function()
-        local changed = false
-        if IsValid(self.onlineLabel) then
-            local onlineText = #player.GetAll() .. " " .. L("online")
-            if self.onlineLabel:GetText() ~= onlineText then
-                self.onlineLabel:SetText(onlineText)
-                changed = true
-            end
-        end
-
-        if IsValid(self.timeLabel) then
-            local timeText = L("serverTime") .. ": " .. os.date("%H:%M")
-            if self.timeLabel:GetText() ~= timeText then
-                self.timeLabel:SetText(timeText)
-                changed = true
-            end
-        end
-
-        if changed and IsValid(self.statusGroup) then self.statusGroup:InvalidateLayout(true) end
-    end
-
     self.tabs = self.topBar:Add("liaTabs")
     self.tabs:SetSize(1, 1)
     self.tabs:SetPos(-8, -8)
@@ -1088,7 +966,6 @@ function PANEL:Init()
     self.tabs:SetKeyboardInputEnabled(false)
     self.topBar.PerformLayout = function(_, w, h)
         self.brandPanel:SetPos(26, math.floor((h - self.brandPanel:GetTall()) * 0.5))
-        self.statusGroup:SetPos(math.floor((w - self.statusGroup:GetWide()) * 0.5), math.floor((h - self.statusGroup:GetTall()) * 0.5))
         local utilityButtonCount = self._visibleUtilityButtonCount or #utilityButtons
         local utilityWidth = utilityButtonCount > 0 and 5 + utilityButtonCount * 49 + 5 or 0
         self.headerUtility:SetSize(utilityWidth, 50)
@@ -1194,7 +1071,7 @@ function PANEL:Init()
 
             table.insert(adminPages, 1, {
                 name = "onlineStaff",
-                icon = "icon16/user.png"
+                icon = "onlinestaff.png"
             })
 
             self.adminSidebarPages = adminPages
@@ -1221,8 +1098,9 @@ function PANEL:AddSidebarButton(key, name, icon)
     button:SetText("")
     button._key = key
     local localizedName = tostring(localizeMenuLabel(name))
+    local iconKey = isstring(key) and key:gsub("^@", "") or key
     button._label = string.upper(localizedName)
-    button._icon = resolveIconMaterial(icon, sidebarIcons[key] or Material("icon16/bullet_white.png", "smooth"))
+    button._icon = resolveIconMaterial(icon, sidebarIcons[iconKey] or sidebarIcons[key] or Material("icon16/bullet_white.png", "smooth"))
     button:SetTooltip(localizedName)
     button.Paint = function(s, w, h)
         local accent = getMenuPalette().accent
@@ -2130,7 +2008,7 @@ end)
 hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
     tabs["@you"] = {
         name = "@you",
-        icon = "icon16/user.png",
+        icon = "you.png",
         func = function(statusPanel)
             statusPanel.info = vgui.Create("liaCharInfo", statusPanel)
             statusPanel.info:Dock(FILL)
@@ -2142,7 +2020,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
     tabs["@information"] = {
         name = "@information",
-        icon = "icon16/information.png",
+        icon = "information.png",
         func = function(infoTabPanel)
             infoTabPanel:Clear()
             local frame = infoTabPanel:Add("DPanel")
@@ -2237,7 +2115,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
     tabs["@settings"] = {
         name = "@settings",
-        icon = "icon16/cog.png",
+        icon = "settings.png",
         func = function(settingsPanel)
             settingsPanel:Clear()
             local frame = settingsPanel:Add("EditablePanel")
@@ -2415,7 +2293,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
                 table.insert(pages, 1, {
                     name = "onlineStaff",
-                    icon = "icon16/user.png",
+                    icon = "onlinestaff.png",
                     drawFunc = function(panel)
                         panel:Clear()
                         panel.originalStaffData = {}
@@ -2742,7 +2620,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
     if hasThemesPrivilege then
         tabs["@themes"] = {
             name = "@themes",
-            icon = "icon16/color_wheel.png",
+            icon = "themes.png",
             func = function(themesPanel)
                 themesPanel:Clear()
                 local function getLocalizedThemeName(themeID)

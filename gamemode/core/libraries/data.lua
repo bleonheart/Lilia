@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.data.md
-]]
---[[
-    Data
-
-    Data persistence helpers for Lilia serialized data storage, map equivalency, entity persistence, and runtime data lookup.
-]]
---[[
-    Overview:
-        The data library centralizes persistent data under `lia.data`. It serializes vectors, angles, colors, primitive values, and nested tables into JSON-safe data, stores scoped key/value data in Garry's Mod data files, loads scoped data, manages persistent entity records through the database, and maps equivalent map names for shared persistence.
-]]
---[[
     Hooks:
         OnDataSet(string key, any value, string gamemode, string map)
 
@@ -89,6 +76,19 @@
 
     Realm:
         Server
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.data.md
+]]
+--[[
+    Data
+
+    Data persistence helpers for Lilia serialized data storage, map equivalency, entity persistence, and runtime data lookup.
+]]
+--[[
+    Overview:
+        The data library centralizes persistent data under `lia.data`. It serializes vectors, angles, colors, primitive values, and nested tables into JSON-safe data, stores scoped key/value data in Garry's Mod data files, loads scoped data, manages persistent entity records through the database, and maps equivalent map names for shared persistence.
 ]]
 lia.data = lia.data or {}
 lia.data.stored = lia.data.stored or {}

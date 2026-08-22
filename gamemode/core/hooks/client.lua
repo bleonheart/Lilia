@@ -233,42 +233,6 @@
 ]]
 --[[
     Hooks:
-        ModifyVoiceIndicatorText(client, voiceText, voiceType)
-
-    Purpose:
-        Allows plugins or modules to replace the text shown on the local voice indicator.
-
-    Category:
-        Voice
-
-    Parameters:
-        client (Player)
-            The local speaking player.
-
-        voiceText (string)
-            The text that will be drawn on the voice indicator.
-
-        voiceType (string)
-            The current voice range mode.
-
-    Returns:
-        string|nil
-            Return a replacement string to override the indicator text. Returning nil allows the default text to be used.
-
-    Example Usage:
-        ```lua
-        hook.Add("ModifyVoiceIndicatorText", "liaExampleModifyVoiceIndicatorText", function(client, voiceText, voiceType)
-            if voiceType == "yelling" then
-                return voiceText .. " [Broadcast]"
-            end
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
         TooltipInitialize(var, panel)
 
     Purpose:
@@ -1852,7 +1816,7 @@ function GM:CharLoaded(character)
 end
 
 function GM:PrePlayerDraw(client)
-    if lia.view.shouldHidePlayer(client) then
+    if lia.camera.shouldHidePlayer(client) then
         client:DrawShadow(false)
         return true
     end

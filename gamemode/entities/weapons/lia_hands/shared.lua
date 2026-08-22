@@ -1,6 +1,4 @@
-﻿SWEP.PrintName = L("handsWeaponName")
-SWEP.Slot = 0
---[[
+﻿--[[
     Hooks:
         CanPlayerKnock(Player client, Entity door)
 
@@ -167,6 +165,8 @@ SWEP.Slot = 0
     Realm:
         Server
 ]]
+SWEP.PrintName = L("handsWeaponName")
+SWEP.Slot = 0
 SWEP.SlotPos = 1
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false

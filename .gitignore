@@ -39,10 +39,3 @@ luac.out
 *.x86_64
 *.hex
 .vscode/*
-/documentation/docs/tools
-*.bat
-/documentation/site
-/documentation/reports
-/__pycache__
-fieldaudit.md
-/gamemode/modules/species_creator_poc

@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.playerinteract.md
-]]
---[[
-    Player Interactions
-
-    Player interaction and personal action helpers for registering, syncing, categorizing, and opening interaction menu options.
-]]
---[[
-    Overview:
-        The player interaction library centralizes menu-driven player interactions under `lia.playerinteract`. It stores registered interactions and personal actions, groups options by category, synchronizes safe option metadata to clients, opens the clientside options menu, and provides built-in money transfer and voice mode actions.
-]]
---[[
     Hooks:
         OnVoiceTypeChanged(Player client)
 
@@ -35,6 +22,19 @@
 
     Realm:
         Server
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.playerinteract.md
+]]
+--[[
+    Player Interactions
+
+    Player interaction and personal action helpers for registering, syncing, categorizing, and opening interaction menu options.
+]]
+--[[
+    Overview:
+        The player interaction library centralizes menu-driven player interactions under `lia.playerinteract`. It stores registered interactions and personal actions, groups options by category, synchronizes safe option metadata to clients, opens the clientside options menu, and provides built-in money transfer and voice mode actions.
 ]]
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
@@ -514,7 +514,6 @@ else
         lia.gui = lia.gui or {}
         if IsValid(lia.gui.InteractionMenu) then lia.gui.InteractionMenu:Remove() end
         if not istable(options) or table.IsEmpty(options) then return end
-
         local entries = {}
         if preFiltered then
             for name, option in pairs(options) do
@@ -543,7 +542,6 @@ else
         local radial = lia.derma.radialMenu()
         local categories = {}
         radial:SetCenterText(titleText or (isInteraction and L("playerInteractions") or L("actionsMenu")), L("selectOption"))
-
         for _, entry in ipairs(categorized) do
             if entry.isCategory then
                 local submenu = radial:CreateSubMenu(entry.name, L("selectOption"))
@@ -553,7 +551,12 @@ else
                 local submenu = categories[entry.opt.category] or radial
                 submenu:AddOption(entry.label, function()
                     if entry.opt.serverOnly and netMsg then
-                        net.Start(netMsg)
+                        if netMsg == "liaRunInteraction" then
+                            net.Start("liaRunInteraction")
+                        else
+                            net.Start(netMsg)
+                        end
+
                         net.WriteString(entry.id)
                         net.WriteBool(isInteraction)
                         net.WriteEntity(IsValid(ent) and ent or Entity(0))
@@ -572,7 +575,6 @@ else
             if lia.gui.InteractionMenu == self then lia.gui.InteractionMenu = nil end
             hook.Run("InteractionMenuClosed")
         end
-
         return radial
     end
 
@@ -638,25 +640,3 @@ else
     if lia.playerinteract.stored then table.Empty(lia.playerinteract.stored) end
     if lia.playerinteract.categories then table.Empty(lia.playerinteract.categories) end
 end
-
-lia.keybind.add("interactionMenu", {
-    keyBind = KEY_TAB,
-    desc = "@interactionMenuDesc",
-    category = "@core",
-    onPress = function()
-        net.Start("liaRequestInteractOptions")
-        net.WriteString("interaction")
-        net.SendToServer()
-    end,
-})
-
-lia.keybind.add("personalActions", {
-    keyBind = KEY_G,
-    desc = "@personalActionsDesc",
-    category = "@core",
-    onPress = function()
-        net.Start("liaRequestInteractOptions")
-        net.WriteString("action")
-        net.SendToServer()
-    end,
-})

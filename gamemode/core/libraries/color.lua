@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.color.md
-]]
---[[
-    Color
-
-    Color and theme helpers for Lilia UI colors, named color lookup, theme registration, active theme application, and clientside theme transitions.
-]]
---[[
-    Overview:
-        The color library centralizes Lilia color storage under `lia.color`. It stores named colors, registers UI themes, applies the configured theme, provides utility functions for color adjustment and interpolation, and supports animated clientside transitions between themes.
-]]
---[[
     Hooks:
         OnThemeChanged(string themeName, boolean useTransition)
 
@@ -37,6 +24,19 @@
 
     Realm:
         Client
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.color.md
+]]
+--[[
+    Color
+
+    Color and theme helpers for Lilia UI colors, named color lookup, theme registration, active theme application, and clientside theme transitions.
+]]
+--[[
+    Overview:
+        The color library centralizes Lilia color storage under `lia.color`. It stores named colors, registers UI themes, applies the configured theme, provides utility functions for color adjustment and interpolation, and supports animated clientside transitions between themes.
 ]]
 lia.color = lia.color or {}
 lia.color.stored = lia.color.stored or {}

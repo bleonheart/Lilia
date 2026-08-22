@@ -199,6 +199,33 @@
     Realm:
         Client
 ]]
+--[[
+    Hooks:
+        OpenAdminStickQuickMenu(target)
+
+    Purpose:
+        Opens the clientside admin-stick quick menu for a targeted player or door when the local player has permission.
+
+    Category:
+        Administration
+
+    Parameters:
+        target (Entity)
+            The player or door entity targeted by the admin stick.
+
+    Example Usage:
+        ```lua
+        hook.Add("OpenAdminStickQuickMenu", "liaExampleOpenAdminStickQuickMenu", function(target)
+            if IsValid(target) then print("Opening quick menu for", target) end
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
 local MODULE = MODULE
 AdminStickIsOpen = false
 AdminStickMenu = nil
@@ -1312,13 +1339,7 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
                 for _, argument in ipairs(argumentDefinitions) do
                     local name = argument.name or "argument"
                     fields[#fields + 1] = {name, argument.type or "string"}
-
-                    -- A targeted command with an optional numeric argument should
-                    -- retain the command's normal admin-stick default when the
-                    -- field is left untouched (for example, door clearance = 1).
-                    if argument.optional and id ~= "" and (argument.type == "number" or argument.type == "int" or argument.type == "float") then
-                        defaults[name] = 1
-                    end
+                    if argument.optional and id ~= "" and (argument.type == "number" or argument.type == "int" or argument.type == "float") then defaults[name] = 1 end
                 end
 
                 lia.derma.requestArguments(buttonText, fields, function(success, values)
@@ -2247,7 +2268,7 @@ function ADMIN_STICK_PANEL:BuildDoorAccessPanel()
             classAction.Paint = function(button, w, h)
                 local hovered = button:IsHovered()
                 local allowed = button._liaDoorAccessState == true
-            local color = allowed and Color(210, 85, 85) or lia.color.theme.accent
+                local color = allowed and Color(210, 85, 85) or lia.color.theme.accent
                 drawAdminStickPanel(0, 0, w, h, 6, hovered and Color(color.r, color.g, color.b, 35) or Color(8, 28, 33, 230), Color(color.r, color.g, color.b, hovered and 170 or 110))
                 draw.SimpleText(allowed and "REMOVE" or "ALLOW", "LiliaFont.15", w * 0.5, h * 0.5, hovered and Color(245, 249, 249) or Color(color.r, color.g, color.b), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
@@ -2738,9 +2759,7 @@ function ADMIN_STICK_PANEL:BuildActionArgumentFields(parent, action)
         entry:SetCursorColor(lia.color.theme.accent)
         if argument.type == "number" or argument.type == "int" or argument.type == "float" then entry:SetNumeric(true) end
         entry.OnValueChange = function(_, value) state[argument.name] = value end
-        entry.OnTextChanged = function(field)
-            state[argument.name] = field:GetValue()
-        end
+        entry.OnTextChanged = function(field) state[argument.name] = field:GetValue() end
         row.PerformLayout = function(panel, w)
             local availableWidth = math.max(w, 1)
             local wrappedLines = lia.util.wrapText(titleText, availableWidth, "LiliaFont.16")
@@ -2976,13 +2995,11 @@ function MODULE:OpenAdminStickQuickMenu(tgt)
     local cl = LocalPlayer()
     if not IsValid(tgt) or not (tgt:IsPlayer() or tgt.isDoor and tgt:isDoor()) then return end
     if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then return end
-
     RegisterDefaultAdminStickListHooks()
     MODULE.adminStickCategories = {}
     MODULE.adminStickCategoryOrder = {}
     local menu = DermaMenu()
     if not IsValid(menu) then return end
-
     local stores = {}
     CreateOrganizedAdminStickMenu(tgt, stores, menu)
     if tgt:IsPlayer() then
@@ -2995,9 +3012,7 @@ function MODULE:OpenAdminStickQuickMenu(tgt)
     for key, data in pairs(lia.command.list) do
         if data.AdminStick and istable(data.AdminStick) and not data.realCommand then
             local targetClass = data.AdminStick.TargetClass
-            if (targetClass == "door" and tgt.isDoor and tgt:isDoor()) or targetClass == tgt:GetClass() or (not targetClass and tgt:IsPlayer()) then
-                AddCommandToMenu(menu, data, key, tgt, data.AdminStick.Name or key, stores)
-            end
+            if (targetClass == "door" and tgt.isDoor and tgt:isDoor()) or targetClass == tgt:GetClass() or (not targetClass and tgt:IsPlayer()) then AddCommandToMenu(menu, data, key, tgt, data.AdminStick.Name or key, stores) end
         end
     end
 

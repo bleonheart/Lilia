@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.item.md
-]]
---[[
-    Item
-
-    Item definition, registration, instancing, inventory helper, rarity, and generated weapon/ammunition item utilities for Lilia.
-]]
---[[
-    Overview:
-        The item library manages registered item definitions and base items under `lia.item`, creates and restores item instances, creates inventory helpers, registers deferred item definitions and overrides, supports generated weapon and ammunition item definitions, and applies persistent weapon override data.
-]]
---[[
     Hooks:
         OnPlayerDroppedItem(Player client, Entity itemEntity)
 
@@ -276,6 +263,19 @@
 
     Realm:
         Shared
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.item.md
+]]
+--[[
+    Item
+
+    Item definition, registration, instancing, inventory helper, rarity, and generated weapon/ammunition item utilities for Lilia.
+]]
+--[[
+    Overview:
+        The item library manages registered item definitions and base items under `lia.item`, creates and restores item instances, creates inventory helpers, registers deferred item definitions and overrides, supports generated weapon and ammunition item definitions, and applies persistent weapon override data.
 ]]
 lia.item = lia.item or {}
 lia.item.base = lia.item.base or {}
@@ -2198,6 +2198,7 @@ else
                         if not IsValid(entry) then return end
                         onChanged(entry:GetValue(), entry)
                     end
+
                     entry.OnEnter = submit
                     entry.OnLoseFocus = submit
                     return entry

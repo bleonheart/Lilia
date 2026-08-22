@@ -66,7 +66,7 @@ This page documents hooks in the recognition category.
 ---
 
 <details class="realm-client" id="function-getdisplayeddescription">
-<summary><span class="summary-main"><a id="GetDisplayedDescription"></a>GetDisplayedDescription(client, isHUD)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/recognition/libraries/client.lua#L41" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetDisplayedDescription"></a>GetDisplayedDescription(client, isHUD)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/recognition/libraries/client.lua#L34" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getdisplayeddescription"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -110,7 +110,7 @@ This page documents hooks in the recognition category.
 ---
 
 <details class="realm-shared" id="function-ischarfakerecognized">
-<summary><span class="summary-main"><a id="IsCharFakeRecognized"></a>IsCharFakeRecognized(character, id)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/recognition/libraries/shared.lua#L70" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="IsCharFakeRecognized"></a>IsCharFakeRecognized(character, id)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/recognition/libraries/shared.lua#L34" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="ischarfakerecognized"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -154,7 +154,7 @@ This page documents hooks in the recognition category.
 ---
 
 <details class="realm-shared" id="function-ischarrecognized">
-<summary><span class="summary-main"><a id="IsCharRecognized"></a>IsCharRecognized(character, id)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/recognition/libraries/shared.lua#L8" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="IsCharRecognized"></a>IsCharRecognized(character, id)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/recognition/libraries/shared.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="ischarrecognized"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

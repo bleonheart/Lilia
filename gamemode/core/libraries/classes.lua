@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.class.md
-]]
---[[
-    Class
-
-    Character class helpers for registering, loading, retrieving, counting, validating, and resolving playable classes.
-]]
---[[
-    Overview:
-        The class library centralizes shared character class behavior under `lia.class`. It stores class definitions in `lia.class.list`, loads class files, validates whether a player can join a class, resolves class identifiers, manages whitelist checks, reports class membership counts, and applies default or overridden bodygroups for characters.
-]]
---[[
     Hooks:
         CanPlayerJoinClass(Player client, number class, table classData)
 
@@ -46,6 +33,19 @@
 
     Realm:
         Shared
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.class.md
+]]
+--[[
+    Class
+
+    Character class helpers for registering, loading, retrieving, counting, validating, and resolving playable classes.
+]]
+--[[
+    Overview:
+        The class library centralizes shared character class behavior under `lia.class`. It stores class definitions in `lia.class.list`, loads class files, validates whether a player can join a class, resolves class identifiers, manages whitelist checks, reports class membership counts, and applies default or overridden bodygroups for characters.
 ]]
 lia.class = lia.class or {}
 lia.class.list = lia.class.list or {}

@@ -500,69 +500,6 @@ net.Receive("liaStringRequestCancel", function(_, client)
     if client.liaStrReqs and client.liaStrReqs[id] then client.liaStrReqs[id] = nil end
 end)
 
-net.Receive("liaKickCharacter", function(_, client)
-    local char = client:getChar()
-    local canManageAny = client:hasPrivilege("canManageFactions")
-    local canKick = char and char:hasFlags("K")
-    local permission = canKick or canManageAny
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaKickCharacter", "hasPrivilege(canManageFactions)=", tostring(canManageAny), "charExists=", tostring(char ~= nil), "char:hasFlags(K)=", tostring(canKick), "finalResult=", tostring(permission))
-    if not permission then return end
-    local defaultFaction
-    for _, fac in pairs(lia.faction.teams) do
-        if fac.isDefault and fac.uniqueID ~= "staff" then
-            defaultFaction = fac
-            break
-        end
-    end
-
-    if not defaultFaction then
-        for _, fac in pairs(lia.faction.teams) do
-            if fac.uniqueID ~= "staff" then
-                defaultFaction = fac
-                break
-            end
-        end
-    end
-
-    if not defaultFaction then
-        local _, fac = next(lia.faction.teams)
-        defaultFaction = fac
-    end
-
-    local characterID = net.ReadUInt(32)
-    local isOnline = false
-    for _, target in player.Iterator() do
-        local targetChar = target:getChar()
-        if targetChar and targetChar:getID() == characterID and (canManageAny or canKick and char and targetChar:getFaction() == char:getFaction()) then
-            isOnline = true
-            local oldFaction = targetChar:getFaction()
-            local oldFactionData = lia.faction.indices[oldFaction]
-            if oldFactionData and oldFactionData.isDefault then return end
-            target:notifyWarningLocalized("kickedFromFaction")
-            hook.Run("TrackFactionTransfer", targetChar, oldFaction, defaultFaction, client, "kickToBase")
-            targetChar.vars.faction = defaultFaction.uniqueID
-            targetChar:setFaction(defaultFaction.index)
-            hook.Run("OnTransferred", target)
-            if defaultFaction.OnTransferred then defaultFaction:OnTransferred(target, oldFaction) end
-            hook.Run("PlayerLoadout", target)
-            targetChar:save()
-        end
-    end
-
-    if not isOnline then
-        lia.db.query("SELECT faction FROM lia_characters WHERE id = " .. characterID):next(function(data)
-            if not data or not data[1] then return end
-            local oldFactionID = data[1].faction
-            local oldFactionData = lia.faction.teams[oldFactionID]
-            if oldFactionData and oldFactionData.isDefault then return end
-            hook.Run("TrackOfflineFactionTransfer", characterID, oldFactionID, defaultFaction, client, "kickToBase")
-            lia.db.updateTable({
-                faction = defaultFaction.uniqueID
-            }, nil, "characters", "id = " .. characterID):next(function() lia.char.setCharDatabase(characterID, "factionKickWarn", true) end):catch(function(err) lia.error(L("failedToUpdateCharacterFaction") .. " " .. tostring(err)) end)
-        end):catch(function(err) lia.error(L("failedToQueryCharacterFaction") .. " " .. tostring(err)) end)
-    end
-end)
-
 net.Receive("liaCheckSeed", function(_, client)
     local sentSteamID = net.ReadString()
     if not sentSteamID or sentSteamID == "" then
@@ -574,46 +511,6 @@ net.Receive("liaCheckSeed", function(_, client)
     if client:SteamID() ~= sentSteamID then
         lia.adminstrator.notifyAdmin(L("steamIDMismatch", client:Name(), client:SteamID(), sentSteamID))
         lia.log.add(client, "steamIDMismatch", client:Name(), client:SteamID(), sentSteamID)
-    end
-end)
-
-net.Receive("liaCheckHack", function(_, client)
-    lia.log.add(client, "hackAttempt", "CheckHack")
-    hook.Run("PlayerCheatDetected", client)
-    if IsValid(client) then
-        lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID())
-        client:notifyErrorLocalized("caughtCheating")
-        for _, p in player.Iterator() do
-            local isStaffOnDuty = p:isStaffOnDuty()
-            local hasReceiveCheaterNotifications = p:hasPrivilege("receiveCheaterNotifications")
-            local permission = isStaffOnDuty or hasReceiveCheaterNotifications
-            lia.debug("[Permissions]", "Permission Check for net.Receive liaCheckHack cheater recipient", "targetPlayer=", tostring(p:Name()), "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(receiveCheaterNotifications)=", tostring(hasReceiveCheaterNotifications), "finalResult=", tostring(permission))
-            if permission then p:notifyWarningLocalized("cheaterDetectedStaff", client:Name(), client:SteamID()) end
-        end
-
-        if client:getChar() then
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            local severity = "High"
-            hook.Run("AddWarning", client:getChar():getID(), client:Nick(), client:SteamID(), timestamp, L("cheaterWarningReason"), "System", "SYSTEM", severity)
-            local charID = client:getChar():getID()
-            local message = L("staffLogCheaterFlagged", client:Name(), charID, client:SteamID64(), severity)
-            StaffAddTextShadowed(Color(255, 0, 0), "CHEAT", Color(255, 255, 255), message, function(staff)
-                local permission = staff:hasPrivilege("receiveCheaterNotifications")
-                lia.debug("[Permissions]", "Permission Check for net.Receive liaCheckHack StaffAddTextShadowed recipient", "targetPlayer=", tostring(staff:Name()), "hasPrivilege(receiveCheaterNotifications)=", tostring(permission), "finalResult=", tostring(permission))
-                return permission
-            end)
-        end
-    end
-
-    hook.Run("OnCheaterCaught", client)
-end)
-
-net.Receive("liaVerifyCheatsResponse", function(_, client)
-    lia.log.add(client, "verifyCheatsOK")
-    client.VerifyCheatsPending = nil
-    if client.VerifyCheatsTimer then
-        timer.Remove(client.VerifyCheatsTimer)
-        client.VerifyCheatsTimer = nil
     end
 end)
 
@@ -649,37 +546,6 @@ local function getEntityDisplayName(ent)
     if className:StartWith("lia_") then return className:sub(5):gsub("_", " "):gsub("^%l", string.upper) end
     return className
 end
-
-net.Receive("liaTeleportToEntity", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaTeleportToEntity", "hasPrivilege(teleportToEntity)=", tostring(client:hasPrivilege("teleportToEntity")), "finalResult=", tostring(client:hasPrivilege("teleportToEntity")))
-    if not client:hasPrivilege("teleportToEntity") then
-        client:notifyErrorLocalized("noPrivilege")
-        return
-    end
-
-    local entity = net.ReadEntity()
-    if not IsValid(entity) then
-        client:notifyErrorLocalized("invalidEntity")
-        return
-    end
-
-    client.previousPosition = client:GetPos()
-    local entityPos = entity:GetPos()
-    local trace = util.TraceLine({
-        start = entityPos,
-        endpos = entityPos + Vector(0, 0, 100),
-        mask = MASK_SOLID
-    })
-
-    if trace.Hit then
-        client:SetPos(trace.HitPos + Vector(0, 0, 10))
-    else
-        client:SetPos(entityPos + Vector(0, 0, 50))
-    end
-
-    client:notifySuccessLocalized("teleportedToEntity")
-    lia.log.add(client, "entityTeleport", client:Name(), getEntityDisplayName(entity), tostring(entity:GetPos()))
-end)
 
 net.Receive("liaCharChoose", function(_, client)
     local function response(message)
@@ -933,29 +799,6 @@ net.Receive("liaStaffDiscordResponse", function(_, client)
     client:notifySuccessLocalized("staffDescUpdated")
 end)
 
-net.Receive("liaReturnFromEntity", function(_, client)
-    if not client.previousPosition then
-        client:notifyErrorLocalized("noPreviousPosition")
-        return
-    end
-
-    local returnPos = client.previousPosition
-    client:SetPos(returnPos)
-    client.previousPosition = nil
-    client:notifySuccessLocalized("returnedFromEntity")
-    lia.log.add(client, "entityReturn", client:Name(), tostring(returnPos))
-end)
-
-net.Receive("liaNPCWeaponChange", function(_, ply)
-    local ent = net.ReadEntity()
-    local wep = net.ReadString()
-    if not IsValid(ent) or not ent:IsNPC() then return end
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaNPCWeaponChange", "isValidPlayer=", tostring(IsValid(ply)), "hasPrivilege(canSpawnSWEPs)=", tostring(IsValid(ply) and ply:hasPrivilege("canSpawnSWEPs") or false), "finalResult=", tostring(IsValid(ply) and ply:hasPrivilege("canSpawnSWEPs") or false))
-    if not IsValid(ply) or not ply:hasPrivilege("canSpawnSWEPs") then return end
-    if IsValid(ent:GetActiveWeapon()) then ent:GetActiveWeapon():Remove() end
-    ent:Give(wep)
-end)
-
 net.Receive("liaCharRequest", function(_, client)
     local charID = net.ReadUInt(32)
     lia.char.getCharacter(charID, client, function(character) if character then character:sync(client) end end)
@@ -1150,11 +993,6 @@ net.Receive("liaPopupQuestionRequest", function(_, client)
     client.liaPopupReqs[id] = nil
 end)
 
-net.Receive("liaPopupQuestionRequestCancel", function(_, client)
-    local id = net.ReadUInt(32)
-    if client.liaPopupReqs then client.liaPopupReqs[id] = nil end
-end)
-
 net.Receive("liaButtonRequest", function(_, client)
     local id = net.ReadUInt(32)
     local choice = net.ReadUInt(8)
@@ -1163,11 +1001,6 @@ net.Receive("liaButtonRequest", function(_, client)
         data[choice](client)
         client.buttonRequests[id] = nil
     end
-end)
-
-net.Receive("liaButtonRequestCancel", function(_, client)
-    local id = net.ReadUInt(32)
-    if client.buttonRequests and client.buttonRequests[id] then client.buttonRequests[id] = nil end
 end)
 
 net.Receive("liaTransferItem", function(_, client)
@@ -1410,17 +1243,6 @@ net.Receive("liaBigTableAck", function(_, ply)
         if not ss then return end
         sendChunk(ply, ss, sid, ss.idx + 1)
     end)
-end)
-
-net.Receive("liaNetMessage", function(_, client)
-    local name = net.ReadString()
-    local args = net.ReadTable()
-    if lia.net.registry[name] then
-        local success, err = pcall(lia.net.registry[name], client, unpack(args))
-        if not success then lia.error(L("netMessageCallbackError", name, tostring(err))) end
-    else
-        lia.error(L("unregisteredNetMessage", name))
-    end
 end)
 
 net.Receive("liaWaypointReached", function(_, client)
@@ -1724,7 +1546,7 @@ net.Receive("liaRequestNPCSelection", function(_, client)
     end
 end)
 
-net.Receive("BodygrouperMenuClose", function(_, client)
+net.Receive("liaBodygrouperMenuClose", function(_, client)
     for _, v in pairs(ents.FindByClass("lia_bodygrouper")) do
         if v:HasUser(client) then v:RemoveUser(client) end
     end
@@ -1740,7 +1562,7 @@ local function CanAccessBodygrouper(client)
     return hasPrivilege
 end
 
-net.Receive("BodygrouperMenu", function(_, client)
+net.Receive("liaBodygrouperMenu", function(_, client)
     local target = net.ReadEntity()
     local skn = net.ReadUInt(10)
     local groups = net.ReadTable()
@@ -1750,14 +1572,14 @@ net.Receive("BodygrouperMenu", function(_, client)
         local hasManageBodygroups = client:hasPrivilege("manageBodygroups")
         local hasChangeBodygroups = client:hasPrivilege("changeBodygroups")
         local permission = hasManageBodygroups or hasChangeBodygroups
-        lia.debug("[Permissions]", "Permission Check for net.Receive BodygrouperMenu target-other", "hasPrivilege(manageBodygroups)=", tostring(hasManageBodygroups), "hasPrivilege(changeBodygroups)=", tostring(hasChangeBodygroups), "finalResult=", tostring(permission))
+        lia.debug("[Permissions]", "Permission Check for net.Receive liaBodygrouperMenu target-other", "hasPrivilege(manageBodygroups)=", tostring(hasManageBodygroups), "hasPrivilege(changeBodygroups)=", tostring(hasChangeBodygroups), "finalResult=", tostring(permission))
         if not permission then
             client:notifyLocalized("noAccess")
             return
         end
     else
         local canAccessBodygrouper = CanAccessBodygrouper(client)
-        lia.debug("[Permissions]", "Permission Check for net.Receive BodygrouperMenu self-target", "CanAccessBodygrouper=", tostring(canAccessBodygrouper), "finalResult=", tostring(canAccessBodygrouper))
+        lia.debug("[Permissions]", "Permission Check for net.Receive liaBodygrouperMenu self-target", "CanAccessBodygrouper=", tostring(canAccessBodygrouper), "finalResult=", tostring(canAccessBodygrouper))
         if not canAccessBodygrouper then
             client:notifyLocalized("noAccess")
             return
@@ -1796,7 +1618,7 @@ net.Receive("BodygrouperMenu", function(_, client)
         target:notifyLocalized("bodygroupChangedBy", client:Name())
     end
 
-    net.Start("BodygrouperMenuCloseClientside")
+    net.Start("liaBodygrouperMenuCloseClientside")
     net.Send(client)
     if closetuser then
         for _, v in pairs(ents.FindByClass("lia_bodygrouper")) do
@@ -1844,7 +1666,7 @@ local function canAccessWardrobe(client)
     return client:hasPrivilege("manageBodygroups")
 end
 
-net.Receive("WardrobeChangeModel", function(_, client)
+net.Receive("liaWardrobeChangeModel", function(_, client)
     local character = client:getChar()
     if not character then return end
     if not canAccessWardrobe(client) then

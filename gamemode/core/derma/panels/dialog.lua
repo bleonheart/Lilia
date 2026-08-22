@@ -5,7 +5,6 @@ local function isGeneratedCloseNode(node)
     return nodeID == "goodbye" or nodeID == "bye" or nodeID == "farewell" or nodeID == "close"
 end
 
--- theme colors are read directly from lia.color.theme
 local function drawPanel(x, y, w, h, radius, color, outline)
     if lia.derma and lia.derma.rect and lia.derma.SHAPE_IOS then
         lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()

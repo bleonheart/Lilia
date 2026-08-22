@@ -403,36 +403,6 @@
 ]]
 --[[
     Hooks:
-        DoorDataReceived(door, syncData)
-
-    Purpose:
-        Runs after door data has been synchronized to a clientside door entity.
-
-    Category:
-        Doors
-
-    Parameters:
-        door (Entity)
-            The door entity that received synchronized data.
-
-        syncData (table)
-            The synchronized door data table.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("DoorDataReceived", "liaExampleDoorDataReceived", function(door, syncData)
-            print("[Doors] Received data for", door)
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
         CharListLoaded(table newCharList)
 
     Purpose:
@@ -559,16 +529,6 @@ net.Receive("liaSetWaypoint", function()
     local pos = net.ReadVector()
     local logo = net.ReadString()
     LocalPlayer():setWaypoint(name, pos, logo ~= "" and logo or nil)
-end)
-
-net.Receive("liaSetWaypointWithLogo", function()
-    local name = net.ReadString()
-    local pos = net.ReadVector()
-    local logo = net.ReadString()
-    local hasOnReach = net.ReadBool()
-    local onReach = nil
-    if hasOnReach then onReach = net.ReadString() end
-    LocalPlayer():setWaypoint(name, pos, logo, onReach)
 end)
 
 net.Receive("liaWeaponOverrideSync", function()
@@ -918,13 +878,6 @@ net.Receive("liaServerChatAddTextShadowed", function()
     if not IsColor(args[1]) or not isstring(args[2]) or not IsColor(args[3]) then chat.AddText(unpack(args)) end
 end)
 
-net.Receive("liaProvideServerPassword", function()
-    local pw = net.ReadString()
-    if not isstring(pw) or pw == "" then return end
-    SetClipboardText(pw)
-    chat.AddText(Color(0, 200, 0), L("serverPasswordCopied"))
-end)
-
 net.Receive("liaBlindTarget", function()
     local enabled = net.ReadBool()
     if enabled then
@@ -948,21 +901,6 @@ net.Receive("liaInventoryData", function()
     instance.data[key] = value
     instance:onDataChanged(key, oldValue, value)
     hook.Run("InventoryDataChanged", instance, key, oldValue, value)
-end)
-
-net.Receive("liaSeqSet", function()
-    local entity = net.ReadEntity()
-    if not IsValid(entity) then return end
-    local hasSequence = net.ReadBool()
-    if not hasSequence then
-        entity.liaForceSeq = nil
-        return
-    end
-
-    local seqId = net.ReadInt(16)
-    entity:SetCycle(0)
-    entity:SetPlaybackRate(1)
-    entity.liaForceSeq = seqId
 end)
 
 net.Receive("liaInventoryInit", function()
@@ -1099,18 +1037,6 @@ net.Receive("liaCharVar", function()
     end)
 end)
 
-net.Receive("liaItemData", function()
-    local uniqueID = net.ReadString()
-    local id = net.ReadUInt(32)
-    local data = net.ReadTable()
-    local invID = net.ReadType()
-    local item = lia.item.new(uniqueID, id)
-    item.data = {}
-    if data then item.data = data end
-    item.invID = invID or 0
-    hook.Run("ItemInitialized", item)
-end)
-
 net.Receive("liaInvData", function()
     local id = net.ReadUInt(32)
     local key = net.ReadString()
@@ -1213,6 +1139,829 @@ net.Receive("liaOpenInvMenu", function()
 end)
 
 lia.net.readBigTable("liaSendTableUI", function(data) lia.util.createTableUI(data.title, data.columns, data.data, data.options, data.characterID) end)
+local function requestThemeColor(value, fallback)
+    if IsColor(value) then return value end
+    return fallback
+end
+
+local function blendRequestColor(base, tint, fraction, alpha)
+    fraction = math.Clamp(fraction or 0, 0, 1)
+    return Color(math.Round(Lerp(fraction, base.r, tint.r)), math.Round(Lerp(fraction, base.g, tint.g)), math.Round(Lerp(fraction, base.b, tint.b)), alpha or 255)
+end
+
+local function getRequestPalette()
+    local theme = lia.color and lia.color.theme or {}
+    local accent = requestThemeColor(theme.accent or theme.maincolor or theme.theme, Color(60, 140, 140))
+    local textColor = requestThemeColor(theme.text, Color(210, 235, 235))
+    local background = requestThemeColor(theme.background, Color(24, 32, 32))
+    local popup = requestThemeColor(theme.backgroundPanelPopup or theme.background_panelpopup, Color(20, 28, 28))
+    local button = requestThemeColor(theme.button, Color(38, 66, 66))
+    local buttonHovered = requestThemeColor(theme.buttonHovered or theme.button_hovered, Color(70, 140, 140))
+    return {
+        accent = accent,
+        text = textColor,
+        textSecondary = blendRequestColor(textColor, background, 0.18, 255),
+        textMuted = blendRequestColor(textColor, background, 0.46, 255),
+        surface = blendRequestColor(popup, accent, 0.08, 248),
+        surfaceRaised = blendRequestColor(popup, accent, 0.14, 245),
+        inset = blendRequestColor(background, accent, 0.09, 235),
+        button = blendRequestColor(button, accent, 0.08, 238),
+        buttonHovered = blendRequestColor(buttonHovered, accent, 0.14, 248),
+        keycap = blendRequestColor(background, accent, 0.16, 245),
+        border = Color(accent.r, accent.g, accent.b, 68),
+        borderStrong = Color(accent.r, accent.g, accent.b, 126),
+        separator = Color(accent.r, accent.g, accent.b, 32)
+    }
+end
+
+local function drawRequestPanel(x, y, w, h, radius, color, outline)
+    if lia.derma and lia.derma.rect and lia.derma.SHAPE_IOS then
+        lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
+        if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
+        return
+    end
+
+    draw.RoundedBox(radius, x, y, w, h, color)
+    if outline then
+        surface.SetDrawColor(outline)
+        surface.DrawOutlinedRect(x, y, w, h, 1)
+    end
+end
+
+local function drawRequestOutline(x, y, w, h, radius, color)
+    if lia.derma and lia.derma.rect and lia.derma.SHAPE_IOS then
+        lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw()
+        return
+    end
+
+    surface.SetDrawColor(color)
+    surface.DrawOutlinedRect(x, y, w, h, 1)
+end
+
+local function fitRequestText(text, font, maxWidth)
+    text = tostring(text or "")
+    surface.SetFont(font)
+    if surface.GetTextSize(text) <= maxWidth then return text end
+    local suffix = "..."
+    local suffixWidth = surface.GetTextSize(suffix)
+    local length = #text
+    while length > 0 do
+        local candidate = text:sub(1, length)
+        if surface.GetTextSize(candidate) + suffixWidth <= maxWidth then return candidate .. suffix end
+        length = length - 1
+    end
+    return suffix
+end
+
+local function resolveClientRequestText(value, fallback)
+    if value == nil then return fallback end
+    if istable(value) then
+        local token = value[1]
+        if isstring(token) and token:sub(1, 1) == "@" then return lia.lang.resolveToken(token, unpack(value, 2)) end
+        if token ~= nil then return tostring(token) end
+        return fallback
+    end
+
+    if isstring(value) and value:sub(1, 1) == "@" then return L(value:sub(2)) end
+    return tostring(value)
+end
+
+local function resolveClientRequestOption(value)
+    if not istable(value) then return resolveClientRequestText(value, value) end
+    local result = table.Copy(value)
+    if result.text ~= nil then result.text = resolveClientRequestText(result.text, result.text) end
+    if result[1] ~= nil then result[1] = resolveClientRequestText(result[1], result[1]) end
+    return result
+end
+
+local function StyleRequestFrame(frame, kind, title, description)
+    if not IsValid(frame) then return frame end
+    frame._liaRequestKind = string.upper(tostring(kind or "REQUEST"))
+    frame._liaRequestTitle = resolveClientRequestText(title, frame.GetTitle and frame:GetTitle() or "Request")
+    frame._liaRequestDescription = resolveClientRequestText(description, "")
+    frame._liaRequestHeaderHeight = frame._liaRequestDescription ~= "" and 82 or 66
+    if frame.SetTitle then frame:SetTitle("") end
+    if frame.SetCenterTitle then frame:SetCenterTitle("") end
+    if frame.SetDraggable then frame:SetDraggable(true) end
+    frame:DockPadding(18, frame._liaRequestHeaderHeight, 18, 18)
+    frame:SetDrawOnTop(true)
+    frame:SetZPos(30000)
+    frame.Paint = function(s, w, h)
+        local palette = getRequestPalette()
+        draw.RoundedBox(10, 5, 6, math.max(w - 10, 0), math.max(h - 3, 0), Color(0, 0, 0, 115))
+        drawRequestPanel(0, 0, w, h, 9, palette.surface, palette.borderStrong)
+        draw.RoundedBoxEx(8, 0, 0, 4, h, palette.accent, true, false, true, false)
+        draw.SimpleText(s._liaRequestKind, "LiliaFont.15", 18, 12, palette.accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText(fitRequestText(s._liaRequestTitle, "LiliaFont.20", math.max(w - 86, 60)), "LiliaFont.20", 18, 30, palette.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        if s._liaRequestDescription ~= "" then draw.SimpleText(fitRequestText(s._liaRequestDescription, "LiliaFont.15", math.max(w - 86, 60)), "LiliaFont.15", 18, 54, palette.textMuted, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP) end
+        surface.SetDrawColor(palette.separator)
+        surface.DrawRect(18, s._liaRequestHeaderHeight - 8, math.max(w - 36, 0), 1)
+    end
+
+    if IsValid(frame.cls) then
+        frame.cls.Paint = function(s, w, h)
+            local palette = getRequestPalette()
+            if s:IsHovered() then drawRequestPanel(0, 0, w, h, 5, Color(palette.accent.r, palette.accent.g, palette.accent.b, 24), Color(palette.accent.r, palette.accent.g, palette.accent.b, 70)) end
+            draw.SimpleText("X", "LiliaFont.18", w * 0.5, h * 0.5, s:IsHovered() and palette.accent or palette.textMuted, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        end
+    end
+    return frame
+end
+
+local function CreateRequestButton(parent, text, mode, icon)
+    local button = parent:Add("DButton")
+    button:SetText("")
+    button:SetCursor("hand")
+    button._liaRequestText = tostring(text or "")
+    button._liaRequestMode = mode or "secondary"
+    button._liaRequestHover = 0
+    button._liaRequestIcon = isstring(icon) and icon ~= "" and Material(icon, "smooth") or type(icon) == "IMaterial" and icon or nil
+    button.Paint = function(s, w, h)
+        local palette = getRequestPalette()
+        s._liaRequestHover = Lerp(math.Clamp(FrameTime() * 14, 0, 1), s._liaRequestHover, s:IsHovered() and 1 or 0)
+        local primary = s._liaRequestMode == "primary"
+        local base = primary and blendRequestColor(palette.button, palette.accent, 0.16, 248) or palette.button
+        local hovered = primary and blendRequestColor(palette.buttonHovered, palette.accent, 0.18, 252) or palette.buttonHovered
+        local background = Color(math.Round(Lerp(s._liaRequestHover, base.r, hovered.r)), math.Round(Lerp(s._liaRequestHover, base.g, hovered.g)), math.Round(Lerp(s._liaRequestHover, base.b, hovered.b)), math.Round(Lerp(s._liaRequestHover, base.a or 245, hovered.a or 250)))
+        local outlineAlpha = math.Round(Lerp(s._liaRequestHover, primary and 88 or 42, primary and 165 or 125))
+        drawRequestPanel(0, 0, w, h, 6, background, Color(palette.accent.r, palette.accent.g, palette.accent.b, outlineAlpha))
+        if primary or s._liaRequestHover > 0.01 then
+            surface.SetDrawColor(palette.accent.r, palette.accent.g, palette.accent.b, math.Round(primary and Lerp(s._liaRequestHover, 110, 225) or 200 * s._liaRequestHover))
+            surface.DrawRect(6, h - 2, math.max(w - 12, 0), 2)
+        end
+
+        local textX = w * 0.5
+        local align = TEXT_ALIGN_CENTER
+        if s._liaRequestIcon and not s._liaRequestIcon:IsError() then
+            surface.SetMaterial(s._liaRequestIcon)
+            surface.SetDrawColor(palette.textSecondary)
+            surface.DrawTexturedRect(13, math.floor((h - 16) * 0.5), 16, 16)
+            textX = 38
+            align = TEXT_ALIGN_LEFT
+        end
+
+        draw.SimpleText(s._liaRequestText, "LiliaFont.17", textX, h * 0.5, palette.textSecondary, align, TEXT_ALIGN_CENTER)
+    end
+    return button
+end
+
+local function CreateRequestCard(parent, height)
+    local card = parent:Add("DPanel")
+    card:Dock(TOP)
+    card:SetTall(height or 62)
+    card:DockMargin(0, 0, 0, 8)
+    card.Paint = function(_, w, h)
+        local palette = getRequestPalette()
+        drawRequestPanel(0, 0, w, h, 7, palette.inset, Color(palette.accent.r, palette.accent.g, palette.accent.b, 34))
+    end
+    return card
+end
+
+local function CreateRequestFooter(frame, cancelText, submitText, onCancel, onSubmit)
+    local footer = frame:Add("DPanel")
+    footer:Dock(BOTTOM)
+    footer:SetTall(54)
+    footer:DockMargin(0, 10, 0, 0)
+    footer.Paint = function(_, w)
+        local palette = getRequestPalette()
+        surface.SetDrawColor(palette.separator)
+        surface.DrawRect(0, 0, w, 1)
+    end
+
+    local cancel
+    if cancelText then
+        cancel = CreateRequestButton(footer, cancelText, "secondary")
+        cancel:SetSize(126, 40)
+        cancel.DoClick = onCancel
+    end
+
+    local submit
+    if submitText then
+        submit = CreateRequestButton(footer, submitText, "primary")
+        submit:SetSize(126, 40)
+        submit.DoClick = onSubmit
+    end
+
+    footer.PerformLayout = function(_, w)
+        if IsValid(cancel) then cancel:SetPos(0, 10) end
+        if IsValid(submit) then submit:SetPos(w - submit:GetWide(), 10) end
+    end
+    return footer, submit, cancel
+end
+
+local function CreateRequestScroll(frame)
+    local scroll = frame:Add("liaScrollPanel")
+    scroll:Dock(FILL)
+    scroll:DockMargin(0, 6, 0, 0)
+    scroll.Paint = function() end
+    return scroll
+end
+
+local function AddComboChoices(combo, options, defaultValue)
+    local defaultChoice
+    for index, option in ipairs(options or {}) do
+        local display = resolveClientRequestOption(option)
+        if istable(display) then
+            combo:AddChoice(tostring(display[1]), display[2])
+            if defaultValue ~= nil and (display[2] == defaultValue or display[1] == defaultValue) then defaultChoice = index end
+        else
+            combo:AddChoice(tostring(display))
+            if defaultValue ~= nil and tostring(display) == tostring(defaultValue) then defaultChoice = index end
+        end
+    end
+
+    if combo.FinishAddingOptions then combo:FinishAddingOptions() end
+    if combo.PostInit then combo:PostInit() end
+    if defaultChoice and combo.ChooseOptionID then
+        combo:ChooseOptionID(defaultChoice)
+    elseif #options > 0 and combo.ChooseOptionID then
+        combo:ChooseOptionID(1)
+    end
+end
+
+lia.derma.requestOptions = function(title, subTitle, options, callback, onCancel)
+    if IsValid(lia.gui.menuRequestOptions) then lia.gui.menuRequestOptions:Remove() end
+    options = istable(options) and options or {}
+    local count = #options
+    local width = 620
+    local height = math.Clamp(154 + count * 70, 270, math.floor(ScrH() * 0.68))
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(width, height)
+    frame:Center()
+    frame:MakePopup()
+    StyleRequestFrame(frame, "OPTION REQUEST", resolveClientRequestText(title, L("options")), resolveClientRequestText(subTitle, ""))
+    local finished = false
+    local controls = {}
+    local function cancelRequest()
+        if finished then return end
+        finished = true
+        if onCancel then onCancel() end
+        if IsValid(frame) then frame:Remove() end
+    end
+
+    local function submitRequest()
+        if finished then return end
+        finished = true
+        local selected = {}
+        for _, info in ipairs(controls) do
+            if info.kind == "checkbox" then
+                if info.control:GetChecked() then selected[#selected + 1] = info.data end
+            else
+                local selectedText, selectedData = info.control:GetSelected()
+                selected[info.name] = selectedData ~= nil and selectedData or selectedText
+            end
+        end
+
+        if callback then callback(selected) end
+        if IsValid(frame) then frame:Remove() end
+    end
+
+    CreateRequestFooter(frame, L("cancel"), L("submit"), cancelRequest, submitRequest)
+    local scroll = CreateRequestScroll(frame)
+    for _, option in ipairs(options) do
+        local optionName
+        local optionData
+        if istable(option) then
+            optionName = option[1] or tostring(option[2] or "")
+            optionData = option[2]
+        else
+            optionName = tostring(option)
+            optionData = option
+        end
+
+        optionName = resolveClientRequestText(optionName, optionName)
+        local card = CreateRequestCard(scroll, istable(optionData) and 70 or 60)
+        local label = card:Add("DLabel")
+        label:SetFont("LiliaFont.17")
+        label:SetText(optionName)
+        label:SetTextColor(getRequestPalette().textSecondary)
+        label:SetContentAlignment(4)
+        label:SetMouseInputEnabled(false)
+        local control
+        local kind
+        if istable(optionData) then
+            kind = "combo"
+            control = card:Add("liaComboBox")
+            control:SetTall(36)
+            AddComboChoices(control, optionData)
+        else
+            kind = "checkbox"
+            control = card:Add("liaCheckbox")
+            control:SetChecked(false)
+        end
+
+        card.PerformLayout = function(_, w, h)
+            local rightWidth = kind == "checkbox" and 60 or math.min(250, math.floor(w * 0.43))
+            label:SetPos(14, 0)
+            label:SetSize(math.max(w - rightWidth - 42, 80), h)
+            if kind == "checkbox" then
+                control:SetSize(60, 22)
+                control:SetPos(w - 74, math.floor((h - 22) * 0.5))
+            else
+                control:SetSize(rightWidth, 36)
+                control:SetPos(w - rightWidth - 12, math.floor((h - 36) * 0.5))
+            end
+        end
+
+        controls[#controls + 1] = {
+            name = optionName,
+            data = optionData,
+            control = control,
+            kind = kind
+        }
+    end
+
+    frame.OnRemove = function()
+        if finished then return end
+        finished = true
+        if onCancel then onCancel() end
+    end
+
+    lia.gui.menuRequestOptions = frame
+    return frame
+end
+
+lia.derma.requestDropdown = function(title, options, callback, defaultValue)
+    if IsValid(lia.gui.menuRequestDropdown) then lia.gui.menuRequestDropdown:Remove() end
+    options = istable(options) and options or {}
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(500, 280)
+    frame:Center()
+    frame:MakePopup()
+    StyleRequestFrame(frame, "SELECTION REQUEST", resolveClientRequestText(title, L("selectOption")), "Choose one option from the list.")
+    local finished = false
+    local selectedText
+    local selectedData
+    local function cancelRequest()
+        if finished then return end
+        finished = true
+        if callback then callback(false) end
+        if IsValid(frame) then frame:Remove() end
+    end
+
+    local function submitRequest()
+        if finished then return end
+        local text = selectedText
+        local data = selectedData
+        if not text then
+            local first = resolveClientRequestOption(options[1])
+            if istable(first) then
+                text, data = tostring(first[1]), first[2]
+            elseif first ~= nil then
+                text = tostring(first)
+            end
+        end
+
+        if not text then return end
+        finished = true
+        if callback then
+            if data ~= nil then
+                callback(text, data)
+            else
+                callback(text)
+            end
+        end
+
+        if IsValid(frame) then frame:Remove() end
+    end
+
+    CreateRequestFooter(frame, L("cancel"), L("select"), cancelRequest, submitRequest)
+    local body = frame:Add("DPanel")
+    body:Dock(FILL)
+    body:DockMargin(0, 12, 0, 0)
+    body.Paint = function() end
+    local card = CreateRequestCard(body, 92)
+    card:Dock(TOP)
+    local label = card:Add("DLabel")
+    label:SetFont("LiliaFont.15")
+    label:SetText(L("select") or "Selection")
+    label:SetTextColor(getRequestPalette().textMuted)
+    local dropdown = card:Add("liaComboBox")
+    AddComboChoices(dropdown, options, istable(defaultValue) and defaultValue[2] or defaultValue)
+    local first = resolveClientRequestOption(options[1])
+    if istable(first) then
+        selectedText, selectedData = tostring(first[1]), first[2]
+    elseif first ~= nil then
+        selectedText = tostring(first)
+    end
+
+    if defaultValue ~= nil then
+        if istable(defaultValue) then
+            selectedText, selectedData = tostring(defaultValue[1]), defaultValue[2]
+        else
+            selectedText = tostring(defaultValue)
+        end
+    end
+
+    dropdown.OnSelect = function(_, _, value, data)
+        selectedText = value
+        selectedData = data
+    end
+
+    card.PerformLayout = function(_, w)
+        label:SetPos(14, 12)
+        label:SetSize(w - 28, 18)
+        dropdown:SetPos(14, 38)
+        dropdown:SetSize(w - 28, 40)
+    end
+
+    frame.OnRemove = function()
+        if finished then return end
+        finished = true
+        if callback then callback(false) end
+    end
+
+    lia.gui.menuRequestDropdown = frame
+    return frame
+end
+
+lia.derma.requestString = function(title, description, callback, defaultValue, maxLength)
+    if IsValid(lia.gui.menuRequestString) then lia.gui.menuRequestString:Remove() end
+    local vendorPanel = lia.gui.vendor
+    local vendorEditor = lia.gui.vendorEditor
+    if IsValid(vendorPanel) then vendorPanel:SetVisible(false) end
+    if IsValid(vendorEditor) then vendorEditor:SetVisible(false) end
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(560, 250)
+    frame:Center()
+    frame:MakePopup()
+    StyleRequestFrame(frame, "INPUT REQUEST", resolveClientRequestText(title, L("enterText")), resolveClientRequestText(description, L("enterValue")))
+    local finished = false
+    local entry
+    local function restoreVendor()
+        if IsValid(vendorPanel) then vendorPanel:SetVisible(true) end
+        if IsValid(vendorEditor) then vendorEditor:SetVisible(true) end
+    end
+
+    local function cancelRequest()
+        if finished then return end
+        finished = true
+        if callback then callback(false) end
+        if IsValid(frame) then frame:Remove() end
+    end
+
+    local function submitRequest()
+        if finished or not IsValid(entry) then return end
+        finished = true
+        if callback then callback(entry:GetValue()) end
+        if IsValid(frame) then frame:Remove() end
+    end
+
+    CreateRequestFooter(frame, L("cancel"), L("submit"), cancelRequest, submitRequest)
+    local body = frame:Add("DPanel")
+    body:Dock(FILL)
+    body:DockMargin(0, 8, 0, 0)
+    body.Paint = function() end
+    local card = CreateRequestCard(body, 72)
+    local label = card:Add("DLabel")
+    label:SetFont("LiliaFont.15")
+    label:SetText(L("value") or "Value")
+    label:SetTextColor(getRequestPalette().textMuted)
+    entry = card:Add("liaEntry")
+    entry:SetFont("LiliaFont.17")
+    if defaultValue ~= nil then entry:SetValue(tostring(defaultValue)) end
+    if maxLength then entry:SetMaxLength(maxLength) end
+    entry.OnEnter = submitRequest
+    card.PerformLayout = function(_, w)
+        label:SetPos(14, 8)
+        label:SetSize(w - 28, 18)
+        entry:SetPos(14, 29)
+        entry:SetSize(w - 28, 36)
+    end
+
+    frame.OnRemove = function()
+        restoreVendor()
+        if finished then return end
+        finished = true
+        if callback then callback(false) end
+    end
+
+    lia.gui.menuRequestString = frame
+    return frame
+end
+
+lia.derma.requestArguments = function(title, argTypes, onSubmit, defaults)
+    defaults = defaults or {}
+    argTypes = istable(argTypes) and argTypes or {}
+    local count = table.Count(argTypes)
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(640, math.Clamp(168 + count * 72, 300, math.floor(ScrH() * 0.72)))
+    frame:Center()
+    frame:MakePopup()
+    StyleRequestFrame(frame, "ARGUMENT REQUEST", resolveClientRequestText(title, L("enterArguments")), "Complete the required fields below.")
+    local finished = false
+    local controls = {}
+    local ordered = {}
+    if #argTypes > 0 and istable(argTypes[1]) then
+        for _, info in ipairs(argTypes) do
+            ordered[#ordered + 1] = {
+                name = info[1],
+                typeInfo = info[2]
+            }
+        end
+    else
+        for name, typeInfo in pairs(argTypes) do
+            ordered[#ordered + 1] = {
+                name = name,
+                typeInfo = typeInfo
+            }
+        end
+
+        table.sort(ordered, function(a, b) return tostring(a.name) < tostring(b.name) end)
+    end
+
+    local submitButton
+    local function validate()
+        if not IsValid(submitButton) then return end
+        local valid = true
+        for _, info in ipairs(controls) do
+            if info.kind == "boolean" then continue end
+            if info.kind == "combo" then
+                local text = select(1, info.control:GetSelected())
+                if not text or text == "" or text == L("select") or text == L("choose") then
+                    valid = false
+                    break
+                end
+            else
+                local value = info.control:GetValue()
+                if value == nil or value == "" then
+                    valid = false
+                    break
+                end
+
+                if info.kind == "number" and tonumber(value) == nil then
+                    valid = false
+                    break
+                end
+            end
+        end
+
+        submitButton:SetEnabled(valid)
+        submitButton:SetMouseInputEnabled(valid)
+        submitButton:SetAlpha(valid and 255 or 110)
+    end
+
+    local function cancelRequest()
+        if finished then return end
+        finished = true
+        if isfunction(onSubmit) then onSubmit(false) end
+        if IsValid(frame) then frame:Remove() end
+    end
+
+    local function submitRequest()
+        if finished then return end
+        local result = {}
+        for _, info in ipairs(controls) do
+            if info.kind == "boolean" then
+                result[info.name] = info.control:GetChecked()
+            elseif info.kind == "combo" then
+                local text, data = info.control:GetSelected()
+                result[info.name] = data ~= nil and data or text
+            else
+                local value = info.control:GetValue()
+                result[info.name] = info.kind == "number" and tonumber(value) or value
+            end
+        end
+
+        finished = true
+        if isfunction(onSubmit) then onSubmit(true, result) end
+        if IsValid(frame) then frame:Remove() end
+    end
+
+    local _, submit = CreateRequestFooter(frame, L("cancel"), L("submit"), cancelRequest, submitRequest)
+    submitButton = submit
+    local scroll = CreateRequestScroll(frame)
+    for _, item in ipairs(ordered) do
+        local name = tostring(item.name or "")
+        if name == "" then continue end
+        local typeInfo = item.typeInfo
+        local fieldType = typeInfo
+        local dataTable
+        local defaultValue
+        if istable(typeInfo) then
+            fieldType = typeInfo[1]
+            dataTable = typeInfo[2]
+            defaultValue = typeInfo[3]
+        end
+
+        fieldType = string.lower(tostring(fieldType or "string"))
+        if defaultValue == nil and defaults[name] ~= nil then defaultValue = defaults[name] end
+        local card = CreateRequestCard(scroll, 66)
+        local label = card:Add("DLabel")
+        label:SetFont("LiliaFont.17")
+        label:SetText(name)
+        label:SetTextColor(getRequestPalette().textSecondary)
+        label:SetContentAlignment(4)
+        local control
+        local kind
+        if fieldType == "boolean" then
+            kind = "boolean"
+            control = card:Add("liaCheckbox")
+            control:SetChecked(defaultValue ~= nil and tobool(defaultValue) or false)
+        elseif fieldType == "table" then
+            kind = "combo"
+            control = card:Add("liaComboBox")
+            AddComboChoices(control, dataTable or {}, defaultValue)
+        elseif fieldType == "player" then
+            kind = "combo"
+            control = card:Add("liaComboBox")
+            local playerOptions = {}
+            for _, client in player.Iterator() do
+                if IsValid(client) then playerOptions[#playerOptions + 1] = {client:Name(), client:SteamID()} end
+            end
+
+            AddComboChoices(control, playerOptions, defaultValue)
+        else
+            if fieldType == "int" or fieldType == "number" then
+                kind = "number"
+            else
+                kind = "string"
+            end
+
+            control = card:Add("liaEntry")
+            control:SetFont("LiliaFont.17")
+            if kind == "number" and control.SetNumeric then control:SetNumeric(true) end
+            if defaultValue ~= nil then control:SetValue(tostring(defaultValue)) end
+        end
+
+        card.PerformLayout = function(_, w, h)
+            local controlWidth = kind == "boolean" and 60 or math.min(290, math.floor(w * 0.48))
+            label:SetPos(14, 0)
+            label:SetSize(math.max(w - controlWidth - 42, 80), h)
+            if kind == "boolean" then
+                control:SetSize(60, 22)
+                control:SetPos(w - 74, math.floor((h - 22) * 0.5))
+            else
+                control:SetSize(controlWidth, 36)
+                control:SetPos(w - controlWidth - 12, math.floor((h - 36) * 0.5))
+            end
+        end
+
+        local info = {
+            name = name,
+            kind = kind,
+            control = control
+        }
+
+        controls[#controls + 1] = info
+        local oldChange = control.OnValueChange
+        control.OnValueChange = function(...)
+            if oldChange then oldChange(...) end
+            validate()
+        end
+
+        local oldText = control.OnTextChanged
+        control.OnTextChanged = function(...)
+            if oldText then oldText(...) end
+            validate()
+        end
+
+        local oldSelect = control.OnSelect
+        control.OnSelect = function(...)
+            if oldSelect then oldSelect(...) end
+            validate()
+        end
+
+        local oldChangeGeneric = control.OnChange
+        control.OnChange = function(...)
+            if oldChangeGeneric then oldChangeGeneric(...) end
+            validate()
+        end
+    end
+
+    validate()
+    frame.OnRemove = function()
+        if finished then return end
+        finished = true
+        if isfunction(onSubmit) then onSubmit(false) end
+    end
+    return frame
+end
+
+lia.derma.requestBinaryQuestion = function(title, question, callback, yesText, noText)
+    if IsValid(lia.gui.menuRequestBinary) then lia.gui.menuRequestBinary:Remove() end
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(500, 190)
+    frame:Center()
+    frame:MakePopup()
+    StyleRequestFrame(frame, "CONFIRMATION", resolveClientRequestText(title, L("question")), resolveClientRequestText(question, L("areYouSure")))
+    local finished = false
+    local function finish(value)
+        if finished then return end
+        finished = true
+        if callback then callback(value) end
+        if IsValid(frame) then frame:Remove() end
+    end
+
+    CreateRequestFooter(frame, resolveClientRequestText(noText, L("no")), resolveClientRequestText(yesText, L("yes")), function() finish(false) end, function() finish(true) end)
+    frame.OnRemove = function()
+        if finished then return end
+        finished = true
+        if callback then callback(false) end
+    end
+
+    lia.gui.menuRequestBinary = frame
+    return frame
+end
+
+lia.derma.requestButtons = function(title, buttons, callback, description)
+    if IsValid(lia.gui.menuRequestButtons) then lia.gui.menuRequestButtons:Remove() end
+    buttons = istable(buttons) and buttons or {}
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(520, math.Clamp(158 + #buttons * 52, 260, math.floor(ScrH() * 0.68)))
+    frame:Center()
+    frame:MakePopup()
+    StyleRequestFrame(frame, "ACTION REQUEST", resolveClientRequestText(title, L("selectOption")), resolveClientRequestText(description, "Choose an action."))
+    local finished = false
+    local buttonPanels = {}
+    local function closeRequest()
+        if finished then return end
+        finished = true
+        if callback then callback(false) end
+        if IsValid(frame) then frame:Remove() end
+    end
+
+    CreateRequestFooter(frame, L("close"), nil, closeRequest, nil)
+    local scroll = CreateRequestScroll(frame)
+    for index, buttonInfo in ipairs(buttons) do
+        local textValue
+        local clickCallback
+        local icon
+        if istable(buttonInfo) then
+            textValue = buttonInfo.text or buttonInfo[1] or tostring(buttonInfo)
+            clickCallback = buttonInfo.callback or buttonInfo[2]
+            icon = buttonInfo.icon or buttonInfo[3]
+        else
+            textValue = tostring(buttonInfo)
+        end
+
+        local buttonText = resolveClientRequestText(textValue, textValue)
+        local button = CreateRequestButton(scroll, buttonText, "secondary", icon)
+        button:Dock(TOP)
+        button:SetTall(44)
+        button:DockMargin(0, 0, 0, 8)
+        button.DoClick = function()
+            if finished then return end
+            local shouldClose = true
+            if isfunction(clickCallback) then
+                shouldClose = clickCallback() ~= false
+            elseif callback then
+                shouldClose = callback(index, buttonText) ~= false
+            end
+
+            if shouldClose then
+                finished = true
+                if IsValid(frame) then frame:Remove() end
+            end
+        end
+
+        buttonPanels[index] = button
+    end
+
+    frame.OnRemove = function()
+        if finished then return end
+        finished = true
+        if callback then callback(false) end
+    end
+
+    lia.gui.menuRequestButtons = frame
+    return frame, buttonPanels
+end
+
+lia.derma.requestPopupQuestion = function(question, buttons)
+    if IsValid(lia.gui.menuRequestPopup) then lia.gui.menuRequestPopup:Remove() end
+    buttons = istable(buttons) and buttons or {}
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(500, math.Clamp(120 + #buttons * 52, 210, math.floor(ScrH() * 0.62)))
+    frame:Center()
+    frame:MakePopup()
+    StyleRequestFrame(frame, "QUESTION", resolveClientRequestText(question, L("areYouSure")), "Select one of the available responses.")
+    local scroll = CreateRequestScroll(frame)
+    for _, buttonInfo in ipairs(buttons) do
+        local textValue
+        local clickCallback
+        if istable(buttonInfo) then
+            textValue = buttonInfo[1] or buttonInfo.text or tostring(buttonInfo)
+            clickCallback = buttonInfo[2] or buttonInfo.callback
+        else
+            textValue = tostring(buttonInfo)
+        end
+
+        local buttonText = resolveClientRequestText(textValue, textValue)
+        local button = CreateRequestButton(scroll, buttonText, "secondary")
+        button:Dock(TOP)
+        button:SetTall(44)
+        button:DockMargin(0, 0, 0, 8)
+        button.DoClick = function()
+            if isfunction(clickCallback) then clickCallback() end
+            if IsValid(frame) then frame:Remove() end
+        end
+    end
+
+    lia.gui.menuRequestPopup = frame
+    return frame
+end
+
 net.Receive("liaOptionsRequest", function()
     local id = net.ReadUInt(32)
     local title = net.ReadString()
@@ -1400,21 +2149,159 @@ local function RemoveNotices(notice)
     end
 end
 
-local function CreateNoticePanel(length, notimer)
-    if not notimer then notimer = false end
-    local notice = vgui.Create("liaNoticePanel")
+local function CreateRequestNotice(length, notimer)
+    local notice = vgui.Create("DPanel")
+    notice:SetSize(0, 0)
     notice.start = CurTime() + 0.25
     notice.endTime = CurTime() + length
+    notice.notimer = notimer or false
     notice.oh = notice:GetTall()
     function notice:Paint(w, h)
-        draw.RoundedBox(4, 0, 0, w, h, Color(35, 35, 35, 200))
+        local palette = getRequestPalette()
+        draw.RoundedBox(9, 4, 5, math.max(w - 8, 0), math.max(h - 3, 0), Color(0, 0, 0, 110))
+        drawRequestPanel(0, 0, w, h, 8, palette.surface, palette.borderStrong)
+        draw.RoundedBoxEx(8, 0, 0, 4, h, palette.accent, true, false, true, false)
         if self.start then
-            local progress = math.TimeFraction(self.start, self.endTime, CurTime()) * w
-            draw.RoundedBox(4, 0, 0, progress, h, lia.config.get("Color"))
+            local fraction = math.Clamp(math.TimeFraction(self.start, self.endTime, CurTime()), 0, 1)
+            local remaining = 1 - fraction
+            local barX = 12
+            local barY = h - 4
+            local barWidth = math.max(w - 24, 0)
+            surface.SetDrawColor(palette.accent.r, palette.accent.g, palette.accent.b, 28)
+            surface.DrawRect(barX, barY, barWidth, 2)
+            surface.SetDrawColor(palette.accent)
+            surface.DrawRect(barX, barY, math.floor(barWidth * remaining), 2)
         end
     end
 
-    if not notimer then timer.Simple(length, function() RemoveNotices(notice) end) end
+    if not notice.notimer then timer.Simple(length, function() if IsValid(notice) then RemoveNotices(notice) end end) end
+    return notice
+end
+
+local function CreateRequestNoticeButton(parent, label, key)
+    local button = parent:Add("DButton")
+    button:SetText("")
+    button:SetCursor("hand")
+    button.hoverFraction = 0
+    button.flashColor = nil
+    function button:Paint(w, h)
+        local palette = getRequestPalette()
+        self.hoverFraction = Lerp(math.Clamp(FrameTime() * 14, 0, 1), self.hoverFraction, self:IsHovered() and 1 or 0)
+        local background
+        if self.flashColor then
+            background = self.flashColor
+        else
+            background = Color(math.Round(Lerp(self.hoverFraction, palette.button.r, palette.buttonHovered.r)), math.Round(Lerp(self.hoverFraction, palette.button.g, palette.buttonHovered.g)), math.Round(Lerp(self.hoverFraction, palette.button.b, palette.buttonHovered.b)), math.Round(Lerp(self.hoverFraction, palette.button.a, palette.buttonHovered.a)))
+        end
+
+        drawRequestPanel(0, 0, w, h, 5, background, Color(palette.accent.r, palette.accent.g, palette.accent.b, math.Round(Lerp(self.hoverFraction, 45, 125))))
+        if self.hoverFraction > 0.01 then
+            surface.SetDrawColor(palette.accent.r, palette.accent.g, palette.accent.b, math.Round(210 * self.hoverFraction))
+            surface.DrawRect(5, h - 2, math.max(w - 10, 0), 2)
+        end
+
+        draw.SimpleText(label, "LiliaFont.17", 12, h * 0.5, palette.textSecondary, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        surface.SetFont("LiliaFont.15")
+        local keyWidth = math.max(surface.GetTextSize(key) + 14, 30)
+        local keyHeight = 22
+        local keyX = w - keyWidth - 8
+        local keyY = math.floor((h - keyHeight) * 0.5)
+        drawRequestPanel(keyX, keyY, keyWidth, keyHeight, 4, palette.keycap, Color(palette.accent.r, palette.accent.g, palette.accent.b, 34))
+        draw.SimpleText(key, "LiliaFont.15", keyX + keyWidth * 0.5, h * 0.5, palette.textMuted, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+    return button
+end
+
+lia.derma.requestBinaryNotice = function(question, option1, option2, manualDismiss, callback)
+    question = resolveClientRequestText(question, L("areYouSure"))
+    option1 = resolveClientRequestText(option1, L("yes"))
+    option2 = resolveClientRequestText(option2, L("no"))
+    surface.SetFont("LiliaFont.19")
+    local questionWidth = surface.GetTextSize(question)
+    local width = math.Clamp(math.max(520, questionWidth + 76), 520, 700)
+    local height = 126
+    local notice = CreateRequestNotice(10, manualDismiss)
+    table.insert(lia.notices, notice)
+    notice.isQuery = true
+    notice:SetWide(width)
+    notice:SetTall(height)
+    notice.oh = height
+    if manualDismiss then notice.start = nil end
+    notice.header = notice:Add("DPanel")
+    notice.header:SetPos(18, 14)
+    notice.header:SetSize(width - 36, 52)
+    notice.header.Paint = function(_, w)
+        local palette = getRequestPalette()
+        draw.SimpleText("BINARY REQUEST", "LiliaFont.15", 0, 0, palette.accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText(fitRequestText(question, "LiliaFont.19", w), "LiliaFont.19", 0, 24, palette.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+    end
+
+    notice.actions = notice:Add("DPanel")
+    notice.actions:SetPos(12, 71)
+    notice.actions:SetSize(width - 24, 44)
+    notice.actions.Paint = function(_, w, h)
+        local palette = getRequestPalette()
+        drawRequestPanel(0, 0, w, h, 7, palette.inset, Color(palette.accent.r, palette.accent.g, palette.accent.b, 26))
+    end
+
+    notice.opt1 = CreateRequestNoticeButton(notice.actions, option1, "F7")
+    notice.opt2 = CreateRequestNoticeButton(notice.actions, option2, "F8")
+    notice.cancelBtn = CreateRequestNoticeButton(notice.actions, L("cancel"), "F9")
+    local gap = 6
+    local padding = 6
+    local availableWidth = notice.actions:GetWide() - padding * 2 - gap * 2
+    local buttonWidth = math.floor(availableWidth / 3)
+    local buttonHeight = notice.actions:GetTall() - padding * 2
+    notice.opt1:SetPos(padding, padding)
+    notice.opt1:SetSize(buttonWidth, buttonHeight)
+    notice.opt2:SetPos(padding + buttonWidth + gap, padding)
+    notice.opt2:SetSize(buttonWidth, buttonHeight)
+    local thirdX = padding + (buttonWidth + gap) * 2
+    notice.cancelBtn:SetPos(thirdX, padding)
+    notice.cancelBtn:SetSize(notice.actions:GetWide() - thirdX - padding, buttonHeight)
+    local function finish(button, success, result)
+        if not notice.respondToKeys then return end
+        notice.respondToKeys = false
+        notice.lastKey = CurTime()
+        button.flashColor = success and Color(43, 112, 81, 255) or Color(117, 48, 57, 255)
+        if callback then callback(result) end
+        timer.Simple(0.28, function()
+            if not IsValid(notice) then return end
+            notice:AlphaTo(0, 0.15, 0, function() if IsValid(notice) then RemoveNotices(notice) end end)
+        end)
+    end
+
+    local function chooseFirst()
+        finish(notice.opt1, true, 0)
+    end
+
+    local function chooseSecond()
+        finish(notice.opt2, true, 1)
+    end
+
+    local function cancel()
+        finish(notice.cancelBtn, false, false)
+    end
+
+    notice.opt1.DoClick = chooseFirst
+    notice.opt2.DoClick = chooseSecond
+    notice.cancelBtn.DoClick = cancel
+    notice.lastKey = CurTime()
+    notice.respondToKeys = true
+    notice:SetTall(0)
+    notice:SetPos(ScrW() * 0.5 - width * 0.5, 10)
+    notice:SizeTo(width, height, 0.2, 0, -1)
+    function notice:Think()
+        self:SetPos(ScrW() * 0.5 - self:GetWide() * 0.5, 10)
+        if not self.respondToKeys or CurTime() - self.lastKey < 0.45 then return end
+        if input.IsKeyDown(KEY_F7) then
+            chooseFirst()
+        elseif input.IsKeyDown(KEY_F8) then
+            chooseSecond()
+        elseif input.IsKeyDown(KEY_F9) then
+            cancel()
+        end
+    end
     return notice
 end
 
@@ -1424,121 +2311,18 @@ net.Receive("liaBinaryQuestionRequest", function()
     local option1Key = net.ReadString()
     local option2Key = net.ReadString()
     local manualDismiss = net.ReadBool()
-    local notice = CreateNoticePanel(10, manualDismiss)
-    table.insert(lia.notices, notice)
-    notice.isQuery = true
-    notice.text:SetText("")
-    notice.text:SetText(L(questionKey))
-    notice:SetPos(ScrW() / 2 - notice:GetWide() / 2, 4)
-    notice:SetTall(36 * 2.3)
-    notice:CalcWidth(120)
-    if manualDismiss then notice.start = nil end
-    notice.opt1 = notice:Add("DButton")
-    notice.opt1:SetAlpha(0)
-    notice.opt2 = notice:Add("DButton")
-    notice.opt2:SetAlpha(0)
-    notice.cancelBtn = notice:Add("DButton")
-    notice.cancelBtn:SetAlpha(0)
-    notice.oh = notice:GetTall()
-    notice:SetTall(0)
-    notice:SizeTo(notice:GetWide(), 36 * 2.3, 0.2, 0, -1, function()
-        notice.text:Center()
-        local function styleOpt(o)
-            o.color = Color(0, 0, 0, 30)
-            AccessorFunc(o, "color", "Color")
-            function o:Paint(w, h)
-                if self.left then
-                    draw.RoundedBoxEx(4, 0, 0, w + 2, h, self.color, false, false, true, false)
-                elseif self.right then
-                    draw.RoundedBoxEx(4, 0, 0, w + 2, h, self.color, false, false, false, true)
-                else
-                    draw.RoundedBox(4, 0, 0, w, h, self.color)
-                end
-            end
+    lia.derma.requestBinaryNotice(L(questionKey), L(option1Key, L("yes")), L(option2Key, L("no")), manualDismiss, function(result)
+        if result == false then
+            net.Start("liaBinaryQuestionRequestCancel")
+            net.WriteUInt(id, 32)
+            net.SendToServer()
+            return
         end
 
-        if notice.opt1 and IsValid(notice.opt1) then
-            notice.opt1:SetAlpha(255)
-            notice.opt1:SetSize(notice:GetWide() / 3 - 5, 25)
-            notice.opt1:SetText(L(option1Key, L("yes")) .. L("keyBind", "F7"))
-            notice.opt1:SetPos(0, notice:GetTall() - notice.opt1:GetTall())
-            notice.opt1:CenterHorizontal(0.166)
-            notice.opt1:SetAlpha(0)
-            notice.opt1:AlphaTo(255, 0.2)
-            notice.opt1:SetTextColor(color_white)
-            notice.opt1.left = true
-            styleOpt(notice.opt1)
-            function notice.opt1:keyThink()
-                if input.IsKeyDown(KEY_F7) and CurTime() - notice.lastKey >= 0.5 then
-                    self:ColorTo(Color(24, 215, 37), 0.2, 0)
-                    notice.respondToKeys = false
-                    net.Start("liaBinaryQuestionRequest")
-                    net.WriteUInt(id, 32)
-                    net.WriteUInt(0, 1)
-                    net.SendToServer()
-                    timer.Simple(1, function() if notice and IsValid(notice) then RemoveNotices(notice) end end)
-                    notice.lastKey = CurTime()
-                end
-            end
-        end
-
-        if notice.opt2 and IsValid(notice.opt2) then
-            notice.opt2:SetAlpha(255)
-            notice.opt2:SetSize(notice:GetWide() / 3 - 5, 25)
-            notice.opt2:SetText(L(option2Key, L("no")) .. L("keyBind", "F8"))
-            notice.opt2:SetPos(0, notice:GetTall() - notice.opt2:GetTall())
-            notice.opt2:CenterHorizontal(0.5)
-            notice.opt2:SetAlpha(0)
-            notice.opt2:AlphaTo(255, 0.2)
-            notice.opt2:SetTextColor(color_white)
-            styleOpt(notice.opt2)
-            function notice.opt2:keyThink()
-                if input.IsKeyDown(KEY_F8) and CurTime() - notice.lastKey >= 0.5 then
-                    self:ColorTo(Color(24, 215, 37), 0.2, 0)
-                    notice.respondToKeys = false
-                    net.Start("liaBinaryQuestionRequest")
-                    net.WriteUInt(id, 32)
-                    net.WriteUInt(1, 1)
-                    net.SendToServer()
-                    timer.Simple(1, function() if notice and IsValid(notice) then RemoveNotices(notice) end end)
-                    notice.lastKey = CurTime()
-                end
-            end
-        end
-
-        if notice.cancelBtn and IsValid(notice.cancelBtn) then
-            notice.cancelBtn:SetAlpha(255)
-            notice.cancelBtn:SetSize(notice:GetWide() / 3 - 5, 25)
-            notice.cancelBtn:SetText(L("cancel") .. L("keyBind", "F9"))
-            notice.cancelBtn:SetPos(0, notice:GetTall() - notice.cancelBtn:GetTall())
-            notice.cancelBtn:CenterHorizontal(0.833)
-            notice.cancelBtn:SetAlpha(0)
-            notice.cancelBtn:AlphaTo(255, 0.2)
-            notice.cancelBtn:SetTextColor(color_white)
-            notice.cancelBtn.right = true
-            styleOpt(notice.cancelBtn)
-            function notice.cancelBtn:keyThink()
-                if input.IsKeyDown(KEY_F9) and CurTime() - notice.lastKey >= 0.5 then
-                    self:ColorTo(Color(215, 24, 37), 0.2, 0)
-                    notice.respondToKeys = false
-                    net.Start("liaBinaryQuestionRequestCancel")
-                    net.WriteUInt(id, 32)
-                    net.SendToServer()
-                    timer.Simple(1, function() if notice and IsValid(notice) then RemoveNotices(notice) end end)
-                    notice.lastKey = CurTime()
-                end
-            end
-        end
-
-        notice.lastKey = CurTime()
-        notice.respondToKeys = true
-        function notice:Think()
-            self:SetPos(ScrW() / 2 - self:GetWide() / 2, 4)
-            if not self.respondToKeys then return end
-            if self.opt1 and IsValid(self.opt1) then self.opt1:keyThink() end
-            if self.opt2 and IsValid(self.opt2) then self.opt2:keyThink() end
-            if self.cancelBtn and IsValid(self.cancelBtn) then self.cancelBtn:keyThink() end
-        end
+        net.Start("liaBinaryQuestionRequest")
+        net.WriteUInt(id, 32)
+        net.WriteUInt(result, 1)
+        net.SendToServer()
     end)
 end)
 
@@ -1682,41 +2466,59 @@ net.Receive("liaNpcDialogNodeResult", function()
     if lia.dialog.vgui.HandleGeneratedDialogResult then lia.dialog.vgui:HandleGeneratedDialogResult(result) end
 end)
 
+lia.derma.requestNPCSelection = function(title, description, options, callback)
+    options = istable(options) and options or {}
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(580, math.Clamp(176 + #options * 54, 300, math.floor(ScrH() * 0.68)))
+    frame:Center()
+    frame:MakePopup()
+    StyleRequestFrame(frame, "NPC REQUEST", resolveClientRequestText(title, L("selectNPCType")), resolveClientRequestText(description, ""))
+    local finished = false
+    local function closeRequest()
+        if finished then return end
+        finished = true
+        if IsValid(frame) then frame:Remove() end
+    end
+
+    CreateRequestFooter(frame, L("cancel"), nil, closeRequest, nil)
+    local scroll = CreateRequestScroll(frame)
+    for _, option in ipairs(options) do
+        local displayName = tostring(option[1] or "Unknown")
+        local uniqueID = tostring(option[2] or "")
+        local button = CreateRequestButton(scroll, displayName, "secondary")
+        button:Dock(TOP)
+        button:SetTall(46)
+        button:DockMargin(0, 0, 0, 8)
+        button.Paint = function(s, w, h)
+            local palette = getRequestPalette()
+            s._liaRequestHover = Lerp(math.Clamp(FrameTime() * 14, 0, 1), s._liaRequestHover, s:IsHovered() and 1 or 0)
+            local background = Color(math.Round(Lerp(s._liaRequestHover, palette.button.r, palette.buttonHovered.r)), math.Round(Lerp(s._liaRequestHover, palette.button.g, palette.buttonHovered.g)), math.Round(Lerp(s._liaRequestHover, palette.button.b, palette.buttonHovered.b)), 246)
+            drawRequestPanel(0, 0, w, h, 6, background, Color(palette.accent.r, palette.accent.g, palette.accent.b, math.Round(Lerp(s._liaRequestHover, 44, 125))))
+            draw.SimpleText(displayName, "LiliaFont.17", 14, h * 0.5 - 6, palette.textSecondary, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            if uniqueID ~= "" then draw.SimpleText(uniqueID, "LiliaFont.14", 14, h * 0.5 + 10, palette.textMuted, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
+            draw.SimpleText(">", "LiliaFont.18", w - 17, h * 0.5, s:IsHovered() and palette.accent or palette.textMuted, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        end
+
+        button.DoClick = function()
+            if finished then return end
+            finished = true
+            if callback then callback(uniqueID, displayName) end
+            if IsValid(frame) then frame:Remove() end
+        end
+    end
+    return frame
+end
+
 net.Receive("liaRequestNPCSelection", function()
     local npcEntity = net.ReadEntity()
     local npcOptions = net.ReadTable()
-    if not IsValid(npcEntity) or not npcOptions then return end
-    local frame = vgui.Create("liaFrame")
-    frame:SetSize(800, 600)
-    frame:Center()
-    frame:MakePopup()
-    frame:SetTitle(L("selectNPCType"))
-    local scroll = vgui.Create("liaScrollPanel", frame)
-    scroll:Dock(FILL)
-    scroll:DockMargin(20, 20, 20, 20)
-    for _, option in ipairs(npcOptions) do
-        local displayName = option[1]
-        local uniqueID = option[2]
-        local button = vgui.Create("liaButton", scroll)
-        button:Dock(TOP)
-        button:SetTall(50)
-        button:DockMargin(0, 0, 0, 10)
-        button:SetText(displayName)
-        button.DoClick = function()
-            net.Start("liaRequestNPCSelection")
-            net.WriteEntity(npcEntity)
-            net.WriteString(uniqueID)
-            net.SendToServer()
-            frame:Close()
-        end
-    end
-
-    local closeBtn = vgui.Create("liaButton", frame)
-    closeBtn:Dock(BOTTOM)
-    closeBtn:SetTall(60)
-    closeBtn:DockMargin(20, 10, 20, 20)
-    closeBtn:SetText(L("cancel"))
-    closeBtn.DoClick = function() frame:Close() end
+    if not IsValid(npcEntity) or not istable(npcOptions) then return end
+    lia.derma.requestNPCSelection(L("selectNPCType"), "Choose the NPC type to use.", npcOptions, function(uniqueID)
+        net.Start("liaRequestNPCSelection")
+        net.WriteEntity(npcEntity)
+        net.WriteString(uniqueID)
+        net.SendToServer()
+    end)
 end)
 
 net.Receive("liaPacSync", function()
@@ -1777,20 +2579,6 @@ net.Receive("liaEmitUrlSound", function()
     else
         ent:EmitSound(soundPath, soundLevel, nil, volume, nil, nil, nil)
     end
-end)
-
-net.Receive("liaNetMessage", function()
-    local name = net.ReadString()
-    local args = net.ReadTable()
-    if lia.net.isCacheHit(name, args) then return end
-    if lia.net.registry[name] then
-        local success, err = pcall(lia.net.registry[name], LocalPlayer(), unpack(args))
-        if not success then lia.error(L("netMessageCallbackError", name, tostring(err))) end
-    else
-        lia.error(L("unregisteredNetMessage", name))
-    end
-
-    lia.net.addToCache(name, args)
 end)
 
 net.Receive("liaAssureClientSideAssets", function()
@@ -1969,15 +2757,6 @@ net.Receive("liaDoorPerm", function()
     end
 end)
 
-net.Receive("liaDoorData", function()
-    local door = net.ReadEntity()
-    local syncData = net.ReadTable()
-    if IsValid(door) and istable(syncData) then
-        lia.doors.stored[door] = syncData
-        hook.Run("DoorDataReceived", door, syncData)
-    end
-end)
-
 net.Receive("liaRemoveFOne", function() if IsValid(lia.gui.menu) then lia.gui.menu:remove() end end)
 local function uiCreate()
     if panel and panel:IsValid() then return end
@@ -2141,8 +2920,7 @@ net.Receive("liaGroupPermChanged", function()
     end
 end)
 
-net.Receive("liaJobNpcCloseDialog", function() if IsValid(lia.dialog.vgui) then lia.dialog.vgui:Remove() end end)
-net.Receive("BodygrouperMenu", function()
+net.Receive("liaBodygrouperMenu", function()
     local client = LocalPlayer()
     if IsValid(lia.gui.bodygroupMenu) then lia.gui.bodygroupMenu:Remove() end
     local entity = net.ReadEntity()
@@ -2151,8 +2929,8 @@ net.Receive("BodygrouperMenu", function()
     lia.gui.bodygroupMenu:SetTarget(target)
 end)
 
-net.Receive("BodygrouperMenuCloseClientside", function() if IsValid(lia.gui.bodygroupMenu) then lia.gui.bodygroupMenu:Remove() end end)
-net.Receive("SeeModelTable", function()
+net.Receive("liaBodygrouperMenuCloseClientside", function() if IsValid(lia.gui.bodygroupMenu) then lia.gui.bodygroupMenu:Remove() end end)
+net.Receive("liaSeeModelTable", function()
     local models = net.ReadTable()
     if not istable(models) or #models == 0 then return end
     local selectedModel = models[1]
@@ -2173,12 +2951,16 @@ net.Receive("SeeModelTable", function()
 
     frame.OnSizeChanged = function(this) positionWardrobeCloseButton(this) end
     positionWardrobeCloseButton(frame)
-    local title = frame:Add("liaHeaderPanel")
+    local title = frame:Add("DPanel")
     title:Dock(TOP)
     title:DockMargin(0, 0, 0, 12)
     title:SetTall(32)
-    title:SetLineColor(lia.color.theme.theme)
-    title:SetLineWidth(2)
+    title.Paint = function(_, w, h)
+        local lineColor = lia.color.theme.theme
+        surface.SetDrawColor(lineColor)
+        surface.DrawRect(4, h - 2, math.max(w - 8, 0), 2)
+    end
+
     local titleLabel = title:Add("DLabel")
     titleLabel:Dock(FILL)
     titleLabel:DockMargin(8, 0, 8, 0)
@@ -2262,11 +3044,11 @@ net.Receive("SeeModelTable", function()
     end
 
     local function previewModel(modelPath)
-        lia.view.begin(frame, {
+        lia.camera.begin(frame, {
             hideEntities = {LocalPlayer()}
         })
 
-        lia.view.setModel(frame, modelPath)
+        lia.camera.setModel(frame, modelPath)
     end
 
     local function setSelectedModel(modelPath)
@@ -2307,16 +3089,16 @@ net.Receive("SeeModelTable", function()
     setSelectedModel(models[1])
     frame.Think = function()
         if input.IsKeyDown(KEY_A) then
-            lia.view.rotate(frame, -50 * FrameTime())
+            lia.camera.rotate(frame, -50 * FrameTime())
         elseif input.IsKeyDown(KEY_D) then
-            lia.view.rotate(frame, 50 * FrameTime())
+            lia.camera.rotate(frame, 50 * FrameTime())
         end
     end
 
-    frame.OnRemove = function() lia.view.close(frame) end
+    frame.OnRemove = function() lia.camera.close(frame) end
     confirmButton.DoClick = function()
         if isstring(selectedModel) and selectedModel ~= "" then
-            net.Start("WardrobeChangeModel")
+            net.Start("liaWardrobeChangeModel")
             net.WriteString(selectedModel)
             net.SendToServer()
             frame:Close()
@@ -2332,4 +3114,10 @@ net.Receive("SeeModelTable", function()
     end)
 end)
 
-netstream.Hook("liaSyncGesture", function(entity, a, b, c) if IsValid(entity) then entity:AnimRestartGesture(a, b, c) end end)
+net.Receive("liaSyncGesture", function()
+    local entity = net.ReadEntity()
+    local a = net.ReadUInt(8)
+    local b = net.ReadUInt(16)
+    local c = net.ReadBool()
+    if IsValid(entity) then entity:AnimRestartGesture(a, b, c) end
+end)

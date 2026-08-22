@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.darkrp.md
-]]
---[[
-    DarkRP
-
-    DarkRP compatibility helpers for Lilia, including spawn position checks, DarkRP-style notifications, currency formatting, entity item generation, command registration adapters, door keyvalue handling, and RPExtraTeams synchronization.
-]]
---[[
-    Overview:
-        The DarkRP compatibility library provides shim functions and tables expected by DarkRP-style addons while routing supported behavior through Lilia systems. It exposes `lia.darkrp` helpers for empty-position checks, text wrapping, notifications, currency formatting, entity item registration, and category compatibility, then maps selected helpers onto the global `DarkRP` table for addon compatibility.
-]]
---[[
     Hooks:
         EntityKeyValue(Entity entity, string key, string value)
 
@@ -45,27 +32,17 @@
         Server
 ]]
 --[[
-    Hooks:
-        InitializedModules()
+    Folder: Developer - Libraries
+    File: lia.darkrp.md
+]]
+--[[
+    DarkRP
 
-    Purpose:
-        Copies Lilia faction indices into `RPExtraTeams` and assigns each copied faction its DarkRP-compatible team index.
-
-    Category:
-        DarkRP
-
-    Example Usage:
-        ```lua
-        hook.Add("InitializedModules", "liaExampleInitializedModules", function()
-            print("[MyModule] handled InitializedModules")
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Shared
+    DarkRP compatibility helpers for Lilia, including spawn position checks, DarkRP-style notifications, currency formatting, entity item generation, command registration adapters, door keyvalue handling, and RPExtraTeams synchronization.
+]]
+--[[
+    Overview:
+        The DarkRP compatibility library provides shim functions and tables expected by DarkRP-style addons while routing supported behavior through Lilia systems. It exposes `lia.darkrp` helpers for empty-position checks, text wrapping, notifications, currency formatting, entity item registration, and category compatibility, then maps selected helpers onto the global `DarkRP` table for addon compatibility.
 ]]
 lia.darkrp = lia.darkrp or {}
 DarkRP = DarkRP or {}

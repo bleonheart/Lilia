@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.camera.md
-]]
---[[
-    Camera
-
-    Camera helpers for Lilia third-person view, realistic first-person view, freelook input, and local-player visibility handling.
-]]
---[[
-    Overview:
-        The camera library centralizes clientside camera behavior under `lia.camera`. It controls when third-person view may override the default view, builds collision-safe third-person camera positions, supports realistic first-person body rendering, applies freelook angle offsets, and hides local head/headwear geometry when needed for first-person body visibility.
-]]
---[[
     Hooks:
         ShouldDisableThirdperson(Player client)
 
@@ -35,34 +22,6 @@
     Returns:
         boolean|nil
             Return true to block third-person view. Return nil or false to allow normal camera checks to continue.
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ShouldUseFreelook(Player client)
-
-    Purpose:
-        Allows plugins or modules to prevent freelook input processing for the local player.
-
-    Category:
-        Camera
-
-    Parameters:
-        client (Player)
-            The local player whose freelook availability is being checked.
-
-    Example Usage:
-        ```lua
-        hook.Add("ShouldUseFreelook", "liaExampleShouldUseFreelook", function(client)
-            return true
-        end)
-        ```
-
-    Returns:
-        boolean|nil
-            Return false to block freelook input. Return nil or true to allow normal freelook checks to continue.
 
     Realm:
         Client
@@ -143,7 +102,241 @@
     Realm:
         Client
 ]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.camera.md
+]]
+--[[
+    Camera
+
+    Camera helpers for Lilia third-person view, realistic first-person view, freelook input, and local-player visibility handling.
+]]
+--[[
+    Overview:
+        The camera library centralizes clientside camera behavior under `lia.camera`. It controls when third-person view may override the default view, builds collision-safe third-person camera positions, supports realistic first-person body rendering, applies freelook angle offsets, and hides local head/headwear geometry when needed for first-person body visibility.
+]]
 lia.camera = lia.camera or {}
+local function cameraPreviewAngle(client)
+    local eyeAngles = IsValid(client) and client:EyeAngles() or angle_zero
+    return Angle(0, eyeAngles.y + 180, 0)
+end
+
+local function cameraGroundPosition(pos, filter)
+    if not isvector(pos) then return pos end
+    local tr = util.TraceLine({
+        start = pos + Vector(0, 0, 64),
+        endpos = pos + Vector(0, 0, -16384),
+        mask = MASK_SOLID,
+        filter = filter
+    })
+    return tr.Hit and tr.HitWorld and not tr.HitSky and tr.HitPos + Vector(0, 0, 2) or pos
+end
+
+local function cameraPreviewPosition(client)
+    if not IsValid(client) then return Vector() end
+    local forward = client:EyeAngles():Forward()
+    forward.z = 0
+    if forward:LengthSqr() <= 0 then
+        forward = Vector(1, 0, 0)
+    else
+        forward:Normalize()
+    end
+
+    local eyePos = client:EyePos()
+    local hull = util.TraceHull({
+        start = eyePos,
+        endpos = eyePos + forward * 96,
+        mins = Vector(-16, -16, 0),
+        maxs = Vector(16, 16, 72),
+        filter = client,
+        mask = MASK_SOLID
+    })
+    return cameraGroundPosition(hull.Hit and hull.HitPos - forward * 28 or client:GetPos() + forward * 85, client)
+end
+
+local function cameraApplyIdle(ent)
+    if not IsValid(ent) then return end
+    local seq = ent:LookupSequence("idle_all_01")
+    if seq <= 0 then seq = ent:SelectWeightedSequence(ACT_IDLE) end
+    if seq <= 0 then seq = ent:LookupSequence("idle_unarmed") end
+    if seq > 0 then
+        ent:ResetSequence(seq)
+        ent:SetCycle(0)
+        return
+    end
+
+    for _, name in ipairs(ent:GetSequenceList()) do
+        local lowered = name:lower()
+        if lowered ~= "idlenoise" and (lowered:find("idle") or lowered:find("fly")) then
+            ent:ResetSequence(name)
+            ent:SetCycle(0)
+            return
+        end
+    end
+end
+
+function lia.camera.shouldHidePlayer(player)
+    local owner = lia.camera.activeOwner
+    local data = IsValid(owner) and owner._liaViewPreview
+    return data and istable(data.hiddenPlayers) and data.hiddenPlayers[player] or false
+end
+
+function lia.camera.close(owner)
+    if not owner then return end
+    local data = owner._liaViewPreview
+    if not data then return end
+    for _, hookName in ipairs({"CalcView", "PostDrawOpaqueRenderables", "PrePlayerDraw", "ShouldDrawLocalPlayer"}) do
+        hook.Remove(hookName, data[hookName == "CalcView" and "calcViewHook" or hookName == "PostDrawOpaqueRenderables" and "renderHook" or hookName == "PrePlayerDraw" and "prePlayerDrawHook" or "shouldDrawLocalPlayerHook"])
+    end
+
+    if IsValid(data.entity) then data.entity:Remove() end
+    for ent, noDraw in pairs(data.hiddenEntities or {}) do
+        if IsValid(ent) then ent:SetNoDraw(noDraw) end
+    end
+
+    for player, state in pairs(data.hiddenPlayerState or {}) do
+        if IsValid(player) then
+            player:SetNoDraw(state.noDraw == true)
+            if state.hadEffect then
+                player:AddEffects(EF_NODRAW)
+            else
+                player:RemoveEffects(EF_NODRAW)
+            end
+        end
+    end
+
+    if lia.camera.activeOwner == owner then lia.camera.activeOwner = nil end
+    owner._liaViewPreview = nil
+end
+
+function lia.camera.begin(owner, config)
+    if not IsValid(owner) then return end
+    if IsValid(lia.camera.activeOwner) and lia.camera.activeOwner ~= owner then lia.camera.close(lia.camera.activeOwner) end
+    lia.camera.close(owner)
+    local data = {
+        config = config or {},
+        calcViewHook = "liaCameraPreviewCalcView" .. tostring(owner),
+        renderHook = "liaCameraPreviewRender" .. tostring(owner),
+        prePlayerDrawHook = "liaCameraPreviewPrePlayerDraw" .. tostring(owner),
+        shouldDrawLocalPlayerHook = "liaCameraPreviewShouldDrawLocalPlayer" .. tostring(owner)
+    }
+
+    owner._liaViewPreview = data
+    lia.camera.activeOwner = owner
+    data.hiddenEntities, data.hiddenPlayers, data.hiddenPlayerState = {}, {}, {}
+    local processed = {}
+    for _, ent in ipairs(istable(data.config.hideEntities) and data.config.hideEntities or {}) do
+        if not processed[ent] then
+            processed[ent] = true
+            if IsValid(ent) then
+                if ent:IsPlayer() then
+                    data.hiddenPlayers[ent] = true
+                    data.hiddenPlayerState[ent] = {
+                        noDraw = ent:GetNoDraw(),
+                        hadEffect = ent:IsEffectActive(EF_NODRAW)
+                    }
+
+                    ent:SetNoDraw(true)
+                    ent:AddEffects(EF_NODRAW)
+                else
+                    data.hiddenEntities[ent] = ent:GetNoDraw()
+                    ent:SetNoDraw(true)
+                end
+            end
+        end
+    end
+
+    hook.Add("PrePlayerDraw", data.prePlayerDrawHook, function(player)
+        local d = IsValid(owner) and owner._liaViewPreview
+        if d and (d.hiddenPlayers[player] or d.hiddenEntities[player] ~= nil) then return true end
+    end)
+
+    hook.Add("ShouldDrawLocalPlayer", data.shouldDrawLocalPlayerHook, function(player)
+        local d = IsValid(owner) and owner._liaViewPreview
+        if d and d.hiddenPlayers[IsValid(player) and player or LocalPlayer()] then return false end
+    end)
+
+    hook.Add("CalcView", data.calcViewHook, function(_, _, _, fov)
+        if not IsValid(owner) then
+            lia.camera.close(owner)
+            return
+        end
+
+        local d, ent = owner._liaViewPreview, owner._liaViewPreview.entity
+        if not IsValid(ent) then return end
+        local center = ent:GetPos() + Vector(0, 0, d.config.heightOffset or 60)
+        local desired = center + ent:GetAngles():Forward() * (d.config.distance or 70)
+        d.currentCamPos = d.currentCamPos and LerpVector(FrameTime() * 5, d.currentCamPos, desired) or desired
+        local target = center - ent:GetAngles():Right() * (d.config.sideOffset or 40)
+        return {
+            origin = d.currentCamPos,
+            angles = (target - d.currentCamPos):Angle(),
+            fov = fov,
+            drawviewer = true
+        }
+    end)
+
+    hook.Add("PostDrawOpaqueRenderables", data.renderHook, function()
+        if not IsValid(owner) then
+            lia.camera.close(owner)
+            return
+        end
+
+        local ent = owner._liaViewPreview.entity
+        if not IsValid(ent) then return end
+        ent:FrameAdvance()
+        render.SuppressEngineLighting(true)
+        render.ResetModelLighting(1, 1, 1)
+        for i = 0, 6 do
+            render.SetModelLighting(i, 1, 1, 1)
+        end
+
+        ent:DrawModel()
+        render.SuppressEngineLighting(false)
+        render.ResetModelLighting(1, 1, 1)
+        for i = 0, 6 do
+            render.SetModelLighting(i, 0, 0, 0)
+        end
+    end)
+end
+
+function lia.camera.setModel(owner, modelPath, options)
+    if not IsValid(owner) then return end
+    local data = owner._liaViewPreview
+    if not data then
+        lia.camera.begin(owner, options)
+        data = owner._liaViewPreview
+    elseif options then
+        data.config = options
+    end
+
+    if IsValid(data.entity) then data.entity:Remove() end
+    data.entity = ClientsideModel(modelPath or "models/error.mdl", RENDERGROUP_OPAQUE)
+    if not IsValid(data.entity) then return end
+    local config = data.config or {}
+    data.entity:SetPos(config.position or cameraPreviewPosition(LocalPlayer()))
+    data.entity:SetAngles(config.angle or cameraPreviewAngle(LocalPlayer()))
+    data.entity:SetSkin(config.skin or 0)
+    if istable(config.bodygroups) then lia.util.applyBodygroups(data.entity, config.bodygroups) end
+    hook.Run("SetupPlayerModel", data.entity)
+    hook.Run("ModifyCharacterModel", data.entity, config.context)
+    cameraApplyIdle(data.entity)
+    data.currentCamPos = nil
+end
+
+function lia.camera.getEntity(owner)
+    local data = IsValid(owner) and owner._liaViewPreview
+    return data and data.entity or nil
+end
+
+function lia.camera.rotate(owner, deltaYaw)
+    local ent = lia.camera.getEntity(owner)
+    if not IsValid(ent) then return end
+    local ang = ent:GetAngles()
+    ang.y = ang.y + deltaYaw
+    ent:SetAngles(ang)
+end
+
 local view, traceData, traceData2, aimOrigin, crouchFactor, ft, curAng
 local clmp = math.Clamp
 crouchFactor = 0
@@ -1462,14 +1655,6 @@ hook.Add("SetupQuickMenu", "liaFreelookSetupQuickMenu", function(menu)
         end
     end, lia.option.get("freelookEnabled", false))
 end)
-
-lia.keybind.add("freelook", {
-    keyBind = KEY_ALT,
-    desc = "@freelookKeybindDesc",
-    category = "Camera",
-    onPress = function() lia.camera.setManualFreelook(true) end,
-    onRelease = function() lia.camera.setManualFreelook(false) end
-})
 
 concommand.Add("+freelook", function() lia.camera.setManualFreelook(true) end)
 concommand.Add("-freelook", function() lia.camera.setManualFreelook(false) end)

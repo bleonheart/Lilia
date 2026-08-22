@@ -244,7 +244,12 @@ end
 function playerMeta:doGesture(a, b, c)
     self:AnimRestartGesture(a, b, c)
     self:AnimRestartGesture(a, b, c)
-    netstream.Start(self:GetPos(), "liaSyncGesture", self, a, b, c)
+    net.Start("liaSyncGesture")
+    net.WriteEntity(self)
+    net.WriteUInt(a, 8)
+    net.WriteUInt(b, 16)
+    net.WriteBool(c)
+    net.SendPVS(self:GetPos())
 end
 
 --[[

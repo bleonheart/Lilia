@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.lang.md
-]]
---[[
-    Language
-
-    Language helpers for loading localization files, registering translation tables, resolving localized strings, and caching formatted localization output.
-]]
---[[
-    Overview:
-        The language library centralizes localization behavior under `lia.lang`. It loads language files from directories, stores normalized language tables, exposes available languages, formats localized strings using the configured active language, resolves string tokens prefixed with `@`, and maintains a bounded cache for repeated localization lookups.
-]]
---[[
     Hooks:
         OnLocalizationLoaded()
 
@@ -33,6 +20,19 @@
 
     Realm:
         Shared
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.lang.md
+]]
+--[[
+    Language
+
+    Language helpers for loading localization files, registering translation tables, resolving localized strings, and caching formatted localization output.
+]]
+--[[
+    Overview:
+        The language library centralizes localization behavior under `lia.lang`. It loads language files from directories, stores normalized language tables, exposes available languages, formats localized strings using the configured active language, resolves string tokens prefixed with `@`, and maintains a bounded cache for repeated localization lookups.
 ]]
 lia.lang = lia.lang or {}
 lia.lang.names = lia.lang.names or {}

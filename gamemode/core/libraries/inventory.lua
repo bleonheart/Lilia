@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.inventory.md
-]]
---[[
-    Inventory
-
-    Inventory helpers for registering inventory types, creating and loading inventory instances, managing persistent storage definitions, and opening inventory panels.
-]]
---[[
-    Overview:
-        The inventory library centralizes shared inventory behavior under `lia.inventory`. It registers inventory type structures, creates inventory objects, loads and deletes server-side inventory records, manages storage and vehicle trunk definitions, handles overflow after size changes, and opens single or dual inventory interfaces on the client.
-]]
---[[
     Hooks:
         CreateInventoryPanel(table inventory, Panel|nil parent)
 
@@ -139,6 +126,19 @@
 
     Realm:
         Client
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.inventory.md
+]]
+--[[
+    Inventory
+
+    Inventory helpers for registering inventory types, creating and loading inventory instances, managing persistent storage definitions, and opening inventory panels.
+]]
+--[[
+    Overview:
+        The inventory library centralizes shared inventory behavior under `lia.inventory`. It registers inventory type structures, creates inventory objects, loads and deletes server-side inventory records, manages storage and vehicle trunk definitions, handles overflow after size changes, and opens single or dual inventory interfaces on the client.
 ]]
 lia.inventory = lia.inventory or {}
 lia.inventory.types = lia.inventory.types or {}

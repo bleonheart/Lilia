@@ -46,6 +46,10 @@ Reference pages for documented Lilia hooks.
     <h3>Attributes</h3>
     <p>This page documents hooks in the attributes category.</p>
   </a>
+  <a href="./bars/" class="card">
+    <h3>Bars</h3>
+    <p>This page documents hooks in the bars category.</p>
+  </a>
   <a href="./camera/" class="card">
     <h3>Camera</h3>
     <p>This page documents hooks in the camera category.</p>
@@ -62,6 +66,10 @@ Reference pages for documented Lilia hooks.
     <h3>Chatbox</h3>
     <p>This page documents hooks in the chatbox category.</p>
   </a>
+  <a href="./classes/" class="card">
+    <h3>Classes</h3>
+    <p>This page documents hooks in the classes category.</p>
+  </a>
   <a href="./color/" class="card">
     <h3>Color</h3>
     <p>This page documents hooks in the color category.</p>
@@ -69,6 +77,10 @@ Reference pages for documented Lilia hooks.
   <a href="./combat/" class="card">
     <h3>Combat</h3>
     <p>This page documents hooks in the combat category.</p>
+  </a>
+  <a href="./commands/" class="card">
+    <h3>Commands</h3>
+    <p>This page documents hooks in the commands category.</p>
   </a>
   <a href="./compatibility/" class="card">
     <h3>Compatibility</h3>
@@ -106,6 +118,14 @@ Reference pages for documented Lilia hooks.
     <h3>Economy</h3>
     <p>This page documents hooks in the economy category.</p>
   </a>
+  <a href="./factions/" class="card">
+    <h3>Factions</h3>
+    <p>This page documents hooks in the factions category.</p>
+  </a>
+  <a href="./fonts/" class="card">
+    <h3>Fonts</h3>
+    <p>This page documents hooks in the fonts category.</p>
+  </a>
   <a href="./hud/" class="card">
     <h3>HUD</h3>
     <p>This page documents hooks in the hud category.</p>
@@ -130,17 +150,33 @@ Reference pages for documented Lilia hooks.
     <h3>Keybinds</h3>
     <p>This page documents hooks in the keybinds category.</p>
   </a>
+  <a href="./languages/" class="card">
+    <h3>Languages</h3>
+    <p>This page documents hooks in the languages category.</p>
+  </a>
   <a href="./loader/" class="card">
     <h3>Loader</h3>
     <p>This page documents hooks in the loader category.</p>
+  </a>
+  <a href="./logging/" class="card">
+    <h3>Logging</h3>
+    <p>This page documents hooks in the logging category.</p>
   </a>
   <a href="./main-menu/" class="card">
     <h3>Main Menu</h3>
     <p>This page documents hooks in the main menu category.</p>
   </a>
+  <a href="./modularity/" class="card">
+    <h3>Modularity</h3>
+    <p>This page documents hooks in the modularity category.</p>
+  </a>
   <a href="./networking/" class="card">
     <h3>Networking</h3>
     <p>This page documents hooks in the networking category.</p>
+  </a>
+  <a href="./notices/" class="card">
+    <h3>Notices</h3>
+    <p>This page documents hooks in the notices category.</p>
   </a>
   <a href="./options/" class="card">
     <h3>Options</h3>
@@ -166,6 +202,14 @@ Reference pages for documented Lilia hooks.
     <h3>Salary</h3>
     <p>This page documents hooks in the salary category.</p>
   </a>
+  <a href="./scoreboard/" class="card">
+    <h3>Scoreboard</h3>
+    <p>This page documents hooks in the scoreboard category.</p>
+  </a>
+  <a href="./sitting/" class="card">
+    <h3>Sitting</h3>
+    <p>This page documents hooks in the sitting category.</p>
+  </a>
   <a href="./spawns/" class="card">
     <h3>Spawns</h3>
     <p>This page documents hooks in the spawns category.</p>
@@ -173,6 +217,10 @@ Reference pages for documented Lilia hooks.
   <a href="./teams/" class="card">
     <h3>Teams</h3>
     <p>This page documents hooks in the teams category.</p>
+  </a>
+  <a href="./temp/" class="card">
+    <h3>temp</h3>
+    <p>This page documents hooks in the temp category.</p>
   </a>
   <a href="./ui/" class="card">
     <h3>UI</h3>
@@ -186,9 +234,9 @@ Reference pages for documented Lilia hooks.
     <h3>Voice</h3>
     <p>This page documents hooks in the voice category.</p>
   </a>
-  <a href="./web-image/" class="card">
-    <h3>Web Image</h3>
-    <p>This page documents hooks in the web image category.</p>
+  <a href="./weapon-selector/" class="card">
+    <h3>Weapon Selector</h3>
+    <p>This page documents hooks in the weapon selector category.</p>
   </a>
   <a href="./web-sound/" class="card">
     <h3>Web Sound</h3>

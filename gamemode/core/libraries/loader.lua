@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.loader.md
-]]
---[[
-    Loader
-
-    Core loading and bootstrap helpers for Lilia files, directories, entities, updates, compatibility, and hot reload flow.
-]]
---[[
-    Overview:
-        The loader library centralizes framework startup behavior under `lia.loader`. It includes Lua files in the correct realm, loads directories of Lua files, registers scripted entities, performs framework and module version checks, initializes modules during startup or reload, and loads compatibility libraries when supported addons are detected.
-]]
---[[
     Hooks:
         SetupDatabase()
 
@@ -74,6 +61,19 @@
 
     Realm:
         Server
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.loader.md
+]]
+--[[
+    Loader
+
+    Core loading and bootstrap helpers for Lilia files, directories, entities, updates, compatibility, and hot reload flow.
+]]
+--[[
+    Overview:
+        The loader library centralizes framework startup behavior under `lia.loader`. It includes Lua files in the correct realm, loads directories of Lua files, registers scripted entities, performs framework and module version checks, initializes modules during startup or reload, and loads compatibility libraries when supported addons are detected.
 ]]
 lia = lia or {
     util = {},
@@ -203,10 +203,6 @@ local FilesToLoad = {
     },
     {
         path = "lilia/gamemode/core/libraries/camera.lua",
-        realm = "client"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/view.lua",
         realm = "client"
     },
     {

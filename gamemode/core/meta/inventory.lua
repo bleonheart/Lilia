@@ -1,4 +1,36 @@
 ﻿--[[
+    Hooks:
+        OnItemAdded(Player|Entity|nil owner, Item item)
+
+    Purpose:
+        Runs after an item has been added to an inventory and replicated so modules can react to the ownership change.
+
+    Category:
+        Inventory
+
+    Parameters:
+        owner (Player|Entity|nil)
+            The owner returned by the item when it is added, when available.
+
+        item (Item)
+            The item instance that was added to the inventory.
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        hook.Add("OnItemAdded", "liaExampleOnItemAdded", function(owner, item)
+            if item then
+                print("Added item:", item:getName())
+            end
+        end)
+        ```
+
+    Realm:
+        Server
+]]
+--[[
     Folder: Developer - Meta Tables
     File: inventory.md
 ]]
@@ -462,38 +494,6 @@ if SERVER then
     Example Usage:
         ```lua
         inventory:addItem(itemInstance)
-        ```
-
-    Realm:
-        Server
-]]
-    --[[
-    Hooks:
-        OnItemAdded(Player|Entity|nil owner, Item item)
-
-    Purpose:
-        Runs after an item has been added to an inventory and replicated so modules can react to the ownership change.
-
-    Category:
-        Inventory
-
-    Parameters:
-        owner (Player|Entity|nil)
-            The owner returned by the item when it is added, when available.
-
-        item (Item)
-            The item instance that was added to the inventory.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("OnItemAdded", "liaExampleOnItemAdded", function(owner, item)
-            if item then
-                print("Added item:", item:getName())
-            end
-        end)
         ```
 
     Realm:

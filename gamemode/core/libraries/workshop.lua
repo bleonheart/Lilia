@@ -14,9 +14,8 @@
 lia.workshop = lia.workshop or {}
 lia.workshop.ids = lia.workshop.ids or {}
 lia.workshop.known = lia.workshop.known or {}
-local ALWAYS_ACTIVE_ID = "3527535922"
 if SERVER then
-    lia.workshop.ids[ALWAYS_ACTIVE_ID] = true
+    lia.workshop.ids["3527535922"] = true
     --[[
     Purpose:
         Registers a Steam Workshop addon ID as required server content.
@@ -132,7 +131,7 @@ if SERVER then
     end)
 else
     lia.workshop.serverIds = lia.workshop.serverIds or {}
-    lia.workshop.serverIds[ALWAYS_ACTIVE_ID] = true
+    lia.workshop.serverIds["3527535922"] = true
     lia.workshop.runtimeMounted = lia.workshop.runtimeMounted or {}
     lia.workshop.runtimeDownloaded = lia.workshop.runtimeDownloaded or {}
     local function formatSize(bytes)

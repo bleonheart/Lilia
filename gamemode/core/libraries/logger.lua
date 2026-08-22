@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.log.md
-]]
---[[
-    Log
-
-    Server log helpers for registering log types, formatting log messages, dispatching log hooks, printing log output, and saving log entries to the database.
-]]
---[[
-    Overview:
-        The log library centralizes server-side logging under `lia.log`. It stores registered log type formatters in `lia.log.types`, resolves localized log messages through those formatters, emits `OnServerLog`, prints formatted log output to the server console, and persists log records to the `logs` database table with timestamp, gamemode, category, message, character ID, and SteamID data when available.
-]]
---[[
     Hooks:
         OnServerLog(Player|nil client, string logType, string logString, string category)
 
@@ -47,6 +34,19 @@
 
     Realm:
         Server
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.log.md
+]]
+--[[
+    Log
+
+    Server log helpers for registering log types, formatting log messages, dispatching log hooks, printing log output, and saving log entries to the database.
+]]
+--[[
+    Overview:
+        The log library centralizes server-side logging under `lia.log`. It stores registered log type formatters in `lia.log.types`, resolves localized log messages through those formatters, emits `OnServerLog`, prints formatted log output to the server console, and persists log records to the `logs` database table with timestamp, gamemode, category, message, character ID, and SteamID data when available.
 ]]
 lia.log = lia.log or {}
 lia.log.types = lia.log.types or {}

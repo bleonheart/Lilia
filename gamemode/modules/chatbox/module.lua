@@ -55,46 +55,6 @@
 ]]
 --[[
     Hooks:
-        ChatParsed(client, chatType, message, anonymous)
-
-    Purpose:
-        Allows code to adjust a parsed chat message before it is dispatched.
-
-    Category:
-        Chatbox
-
-    Parameters:
-        client (Player)
-            The player who sent the message.
-
-        chatType (string)
-            The parsed chat class unique ID.
-
-        message (string)
-            The parsed message text.
-
-        anonymous (boolean)
-            Whether the message is currently treated as anonymous.
-
-    Example Usage:
-        ```lua
-        hook.Add("ChatParsed", "liaExampleChatParsed", function(client, chatType, message, anonymous)
-            if chatType == "ooc" and IsValid(client) then
-                local decorated = string.format("[Dispatch] %s", message)
-                return chatType, decorated, anonymous
-            end
-        end)
-        ```
-
-    Returns:
-        string|nil, string|nil, boolean|nil
-            Return replacement values for the chat type, message, or anonymous state.
-
-    Realm:
-        Shared
-]]
---[[
-    Hooks:
         GetOOCDelay(speaker)
 
     Purpose:
@@ -117,79 +77,6 @@
     Returns:
         number|nil
             Return a replacement OOC delay in seconds.
-
-    Realm:
-        Shared
-]]
---[[
-    Hooks:
-        OnOOCMessageSent(client, message)
-
-    Purpose:
-        Called after an out-of-character message is accepted for sending.
-
-    Category:
-        Chatbox
-
-    Parameters:
-        client (Player)
-            The player who sent the OOC message.
-
-        message (string)
-            The message text that was sent.
-
-    Example Usage:
-        ```lua
-        hook.Add("OnOOCMessageSent", "liaExampleOnOOCMessageSent", function(client, message)
-            if not IsValid(client) or message == "" then return end
-            print(string.format("[MyModule] %s: %s", client:Name(), message))
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Shared
-]]
---[[
-    Hooks:
-        PlayerMessageSend(client, chatType, message, anonymous, receivers)
-
-    Purpose:
-        Allows code to adjust the final chat message text before recipients receive it.
-
-    Category:
-        Chatbox
-
-    Parameters:
-        client (Player)
-            The player who sent the message.
-
-        chatType (string)
-            The chat class unique ID being used.
-
-        message (string)
-            The message text that is about to be sent.
-
-        anonymous (boolean)
-            Whether the message is anonymous.
-
-        receivers (table|nil)
-            The resolved recipient list when available.
-
-    Example Usage:
-        ```lua
-        hook.Add("PlayerMessageSend", "liaExamplePlayerMessageSend", function(client, chatType, message, anonymous, receivers)
-            if chatType == "ooc" and #receivers > 10 then
-                return "[Broadcast] " .. message
-            end
-        end)
-        ```
-
-    Returns:
-        string|nil
-            Return replacement message text to override the final output.
 
     Realm:
         Shared

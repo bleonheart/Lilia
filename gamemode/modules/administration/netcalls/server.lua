@@ -544,11 +544,6 @@ net.Receive("liaRequestToolPermissionTiers", function(_, client)
     sendToolPermissionTiers(client)
 end)
 
-net.Receive("liaRequestNetProfilerSnapshot", function(_, client)
-    if not canViewNetProfiler(client) then return end
-    sendNetProfilerSnapshot(client)
-end)
-
 net.Receive("liaRequestNetProfilerLogs", function(_, client)
     if not canViewNetProfiler(client) then return end
     if (client.liaNextNetProfilerRequest or 0) > CurTime() then return end
@@ -619,74 +614,6 @@ net.Receive("liaResetToolPermissionTiers", function(_, client)
     lia.data.set("toolPermissionTiers", {}, true, true)
     lia.log.add(client, "permissionChanged", "all tool permission tiers reset")
     sendToolPermissionTiers(client)
-end)
-
-net.Receive("liaAdminSetCharProperty", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaAdminSetCharProperty", "hasPrivilege(listCharacters)=", tostring(client:hasPrivilege("listCharacters")), "finalResult=", tostring(client:hasPrivilege("listCharacters")))
-    if not client:hasPrivilege("listCharacters") then return end
-    local charID = net.ReadInt(32)
-    local property = net.ReadString()
-    local value = net.ReadType()
-    local charIDsafe = tonumber(charID)
-    if not charIDsafe then
-        client:notifyErrorLocalized("invalidCharID")
-        return
-    end
-
-    lia.db.query("SELECT name, money, model FROM lia_characters WHERE id = " .. charIDsafe, function(data)
-        if not data or #data == 0 then
-            client:notifyErrorLocalized("characterNotFound")
-            return
-        end
-
-        local charData = data[1]
-        if property == "money" then
-            local moneyValue = tonumber(value) or 0
-            if lia.char.setCharDatabase(charID, "money", moneyValue) then
-                local target = lia.char.getCharacter(charID)
-                if IsValid(target) then
-                    client:notifySuccessLocalized("setMoney", target:Name(), lia.currency.get(moneyValue))
-                else
-                    client:notifySuccessLocalized("offlineCharMoneySet", charID, lia.currency.get(moneyValue))
-                end
-
-                lia.log.add(client, "adminSetCharMoney", charID, moneyValue)
-            else
-                client:notifyErrorLocalized("failedToUpdateChar")
-            end
-        elseif property == "name" then
-            local nameValue = tostring(value)
-            if lia.char.setCharDatabase(charID, "name", nameValue) then
-                local target = lia.char.getCharacter(charID)
-                if IsValid(target) then
-                    client:notifySuccessLocalized("changeName", client:Name(), charData.name, nameValue)
-                else
-                    client:notifySuccessLocalized("offlineCharNameSet", charID, nameValue)
-                end
-
-                lia.log.add(client, "adminSetCharName", charID, nameValue)
-            else
-                client:notifyErrorLocalized("failedToUpdateChar")
-            end
-        elseif property == "model" then
-            local modelValue = tostring(value)
-            if lia.char.setCharDatabase(charID, "model", modelValue) then
-                local target = lia.char.getCharacter(charID)
-                if IsValid(target) then
-                    client:notifySuccessLocalized("changeModelAdmin", client:Name(), target:Name(), modelValue)
-                else
-                    client:notifySuccessLocalized("offlineCharModelSet", charID, modelValue)
-                end
-
-                lia.log.add(client, "adminSetCharModel", charID, modelValue)
-            else
-                client:notifyErrorLocalized("failedToUpdateChar")
-            end
-        else
-            client:notifyErrorLocalized("invalidArg")
-            return
-        end
-    end)
 end)
 
 local function fixupProp(client, ent, mins, maxs)
@@ -902,26 +829,6 @@ net.Receive("liaRemoveFeaturePosition", function(_, client)
     end
 end)
 
-net.Receive("liaRequestAllPks", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestAllPks", "hasPrivilege(manageCharacters)=", tostring(client:hasPrivilege("manageCharacters")), "finalResult=", tostring(client:hasPrivilege("manageCharacters")))
-    if not client:hasPrivilege("manageCharacters") then return end
-    lia.db.query("SELECT * FROM lia_permakills", function(data)
-        net.Start("liaAllPks")
-        net.WriteTable(data or {})
-        net.Send(client)
-    end)
-end)
-
-net.Receive("liaRequestPksCount", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestPksCount", "hasPrivilege(manageCharacters)=", tostring(client:hasPrivilege("manageCharacters")), "finalResult=", tostring(client:hasPrivilege("manageCharacters")))
-    if not client:hasPrivilege("manageCharacters") then return end
-    lia.db.count("permakills"):next(function(count)
-        net.Start("liaPksCount")
-        net.WriteInt(count or 0, 32)
-        net.Send(client)
-    end)
-end)
-
 net.Receive("liaRequestStaffCases", function(_, client)
     local canSeeTickets = client:hasPrivilege("alwaysSeeTickets") or client:isStaffOnDuty()
     local canSeeWarnings = client:hasPrivilege("viewPlayerWarnings")
@@ -1096,12 +1003,6 @@ LIMIT %d OFFSET %d]], safeLimit, safeOffset)
     end)
 end
 
-net.Receive("liaRequestFullCharList", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestFullCharList", "isValidPlayer=", tostring(IsValid(client)), "hasPrivilege(listCharacters)=", tostring(IsValid(client) and client:hasPrivilege("listCharacters") or false), "finalResult=", tostring(IsValid(client) and client:hasPrivilege("listCharacters") or false))
-    if not IsValid(client) or not client:hasPrivilege("listCharacters") then return end
-    buildFullCharListPage(client, 0, 0, 100)
-end)
-
 net.Receive("liaRequestFullCharListPage", function(_, client)
     lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestFullCharListPage", "isValidPlayer=", tostring(IsValid(client)), "hasPrivilege(listCharacters)=", tostring(IsValid(client) and client:hasPrivilege("listCharacters") or false), "finalResult=", tostring(IsValid(client) and client:hasPrivilege("listCharacters") or false))
     if not IsValid(client) or not client:hasPrivilege("listCharacters") then return end
@@ -1109,47 +1010,6 @@ net.Receive("liaRequestFullCharListPage", function(_, client)
     local offset = net.ReadUInt(32)
     local limit = net.ReadUInt(16)
     buildFullCharListPage(client, requestID, offset, limit)
-end)
-
-net.Receive("liaRequestAllFlags", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestAllFlags", "hasPrivilege(manageFlags)=", tostring(client:hasPrivilege("manageFlags")), "finalResult=", tostring(client:hasPrivilege("manageFlags")))
-    if not client:hasPrivilege("manageFlags") then return end
-    lia.db.fieldExists("lia_characters", "charflags"):next(function(exists)
-        if not exists then lia.db.query("ALTER TABLE lia_characters ADD COLUMN charflags VARCHAR(255) DEFAULT ''") end
-        lia.db.query([[SELECT c.id, c.name, c.steamID, COALESCE(c.charflags, '') AS flags
-FROM lia_characters AS c]], function(charData)
-            lia.db.query([[SELECT d.charID, d.value AS flags
-FROM lia_chardata AS d
-WHERE d.key = 'flags']], function(chardata)
-                local chardataFlags = {}
-                for _, row in ipairs(chardata or {}) do
-                    if row.value and row.value ~= "" then
-                        local ok, decoded = pcall(pon.decode, row.value)
-                        if ok and decoded then chardataFlags[row.charID] = decoded[1] or "" end
-                    end
-                end
-
-                local processedData = {}
-                for _, row in ipairs(charData or {}) do
-                    local char = lia.char.loaded[row.id]
-                    local flags = row.flags or ""
-                    if flags == "" and chardataFlags[row.id] then flags = chardataFlags[row.id] end
-                    if char then
-                        local memoryFlags = char:getFlags() or ""
-                        if memoryFlags ~= "" then flags = memoryFlags end
-                    end
-
-                    processedData[#processedData + 1] = {
-                        name = row.name or "",
-                        steamID = row.steamID or "",
-                        flags = flags,
-                    }
-                end
-
-                lia.net.writeBigTable(client, "liaAllFlags", processedData)
-            end)
-        end)
-    end)
 end)
 
 net.Receive("liaModifyFlags", function(_, client)
@@ -1304,35 +1164,6 @@ local function buildSummary()
     end)
     return d
 end
-
-net.Receive("liaRequestStaffSummary", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestStaffSummary", "hasPrivilege(viewStaffManagement)=", tostring(client:hasPrivilege("viewStaffManagement")), "finalResult=", tostring(client:hasPrivilege("viewStaffManagement")))
-    if not client:hasPrivilege("viewStaffManagement") then return end
-    buildSummary():next(function(data) lia.net.writeBigTable(client, "liaStaffSummary", data) end)
-end)
-
-net.Receive("liaRequestPlayers", function(_, client)
-    if not client:hasPrivilege("canAccessPlayerList") then return end
-    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local query = [[
-SELECT steamName, steamID, userGroup, firstJoin, lastOnline, totalOnlineTime,
-    (SELECT COUNT(*) FROM lia_characters WHERE steamID = lia_players.steamID AND schema = %s) AS characterCount,
-    (SELECT COUNT(*) FROM lia_warnings WHERE warnedSteamID = lia_players.steamID) AS warnings,
-    (SELECT COUNT(*) FROM lia_ticketclaims WHERE requesterSteamID = lia_players.steamID) AS ticketsRequested,
-    (SELECT COUNT(*) FROM lia_ticketclaims WHERE adminSteamID = lia_players.steamID) AS ticketsClaimed
-FROM lia_players
-]]
-    query = string.format(query, lia.db.convertDataType(gamemode))
-    lia.db.query(query, function(data)
-        data = data or {}
-        for _, row in ipairs(data) do
-            local ply = player.GetBySteamID(tostring(row.steamID))
-            if IsValid(ply) then row.totalOnlineTime = ply:getPlayTime() end
-        end
-
-        lia.net.writeBigTable(client, "liaAllPlayers", data)
-    end)
-end)
 
 local protectedPlayerEntityClasses = {
     viewmodel = true,

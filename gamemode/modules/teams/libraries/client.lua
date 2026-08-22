@@ -39,8 +39,6 @@ local rosterCopyIcon = Material("icon16/page_copy.png", "smooth")
 local rosterProfileIcon = Material("icon16/world.png", "smooth")
 local rosterNoteIcon = Material("icon16/note_edit.png", "smooth")
 local rosterKickIcon = Material("icon16/user_delete.png", "smooth")
-
--- roster colors are read directly from lia.color.theme
 local function drawRosterPanel(x, y, w, h, radius, color, outline)
     if lia.derma and lia.derma.rect then
         lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -323,7 +321,7 @@ function MODULE:CreateMenuButtons(tabs)
     if #joinable >= 1 then
         tabs["classes"] = {
             name = "classes",
-            icon = "icon16/group.png",
+            icon = "classes.png",
             func = function(panel) panel:Add("liaClasses") end
         }
     end
@@ -335,7 +333,7 @@ function MODULE:CreateMenuButtons(tabs)
     if character:hasFlags("F") then
         tabs["factionRoster"] = {
             name = "factionRoster",
-            icon = "icon16/group_go.png",
+            icon = "factionmanagement.png",
             func = function(panel)
                 panel:Clear()
                 panel:DockPadding(6, 6, 6, 6)
@@ -446,7 +444,7 @@ local function UpdateFactionRosterUI(panel, data)
     header.Paint = function(_, panelW)
         local accent, textColor = lia.color.theme.accent, lia.color.theme.text
         if not isManagement then
-            draw.SimpleText("Faction Roster", "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            draw.SimpleText(L("factionRoster"), "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             draw.SimpleText("Browse and inspect faction members.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         else
             draw.SimpleText("Browse and inspect faction members by faction.", "LiliaFont.17", 8, 18, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
@@ -834,7 +832,7 @@ function MODULE:PopulateAdminTabs(pages)
     if canListCharacters then
         table.insert(pages, {
             name = "@factionManagement",
-            icon = "icon16/group.png",
+            icon = "factionmanagement.png",
             drawFunc = function(panel)
                 if not panel.factionManagementInitialized then
                     panel.factionManagementInitialized = true

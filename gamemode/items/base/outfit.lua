@@ -1,5 +1,4 @@
-﻿ITEM.name = "outfit"
---[[
+﻿--[[
     Hooks:
         CanOutfitChangeModel(Item item)
 
@@ -29,6 +28,7 @@
     Realm:
         Server
 ]]
+ITEM.name = "outfit"
 ITEM.desc = "outfitDesc"
 ITEM.category = "outfit"
 ITEM.model = "models/props_c17/BriefCase001a.mdl"

@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.net.md
-]]
---[[
-    Net
-
-    Networking helpers for Lilia networked variables, chunked table transfer, lightweight send caching, and network traffic profiling.
-]]
---[[
-    Overview:
-        The net library centralizes shared networking helpers under `lia.net`. It provides cache markers for repeated message work, sends and receives large compressed tables in chunks, manages global networked variables, synchronizes networked data on player join or entity cleanup, and wraps Garry's Mod net functions with optional profiling output.
-]]
---[[
     Hooks:
         NetVarChanged(Entity|nil entity, string key, any oldValue, any newValue)
 
@@ -43,6 +30,19 @@
 
     Realm:
         Server
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.net.md
+]]
+--[[
+    Net
+
+    Networking helpers for Lilia networked variables, chunked table transfer, lightweight send caching, and network traffic profiling.
+]]
+--[[
+    Overview:
+        The net library centralizes shared networking helpers under `lia.net`. It provides cache markers for repeated message work, sends and receives large compressed tables in chunks, manages global networked variables, synchronizes networked data on player join or entity cleanup, and wraps Garry's Mod net functions with optional profiling output.
 ]]
 lia.net = lia.net or {}
 lia.NetProfiler = lia.NetProfiler or false

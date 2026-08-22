@@ -1,21 +1,4 @@
 ﻿local currentCategoryData = {}
-local categoryIcons = {
-    combat = "icon16/brick.png",
-    connections = "icon16/connect.png",
-    factions = "icon16/group.png",
-    admin = "icon16/shield.png",
-    character = "icon16/user.png",
-    world = "icon16/world.png",
-    chat = "icon16/comments.png",
-    cheating = "icon16/eye.png",
-    permissions = "icon16/lock.png",
-    money = "icon16/money.png",
-    vjbase = "icon16/script_code.png",
-    items = "icon16/package.png",
-    tools = "icon16/wrench.png",
-    inventory = "icon16/briefcase.png"
-}
-
 local categoryDescriptions = {
     combat = "Review combat events and damage activity.",
     connections = "Review player connection and disconnection activity.",
@@ -36,7 +19,6 @@ local categoryDescriptions = {
 local function normalizeCategory(category)
     return tostring(category or ""):lower():gsub("[^%w]", "")
 end
-
 
 local function drawPanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -66,10 +48,6 @@ end
 
 local function getCategoryDescription(category)
     return categoryDescriptions[normalizeCategory(category)] or "Review recorded activity for this category."
-end
-
-local function getCategoryIcon(category)
-    return Material(categoryIcons[normalizeCategory(category)] or "icon16/page_white_text.png", "smooth")
 end
 
 local function styleScrollBar(scrollPanel)
@@ -360,7 +338,6 @@ function MODULE:CreateMenuButtons(tabs)
     if canSeeLogs then
         tabs["@logs"] = {
             name = "@logs",
-            icon = "icon16/book_open.png",
             func = openLogsPanel
         }
     end
@@ -465,7 +442,6 @@ function MODULE:CreateLogsUI(panel, categories)
         button:DockMargin(0, 0, 0, 5)
         button:SetText("")
         button.category = category
-        button.icon = getCategoryIcon(category)
         button.Paint = function(s, w, h)
             local accent = lia.color.theme.accent
             local active = panel.activeLogsCategory == s.category
@@ -477,8 +453,7 @@ function MODULE:CreateLogsUI(panel, categories)
                 surface.DrawRect(0, 5, 3, h - 10)
             end
 
-            drawIcon(s.icon, 14, math.floor((h - 20) * 0.5), 20, active and Color(242, 248, 248) or Color(170, 192, 192))
-            draw.SimpleText(getCategoryLabel(s.category), "LiliaFont.17", 48, h * 0.5, active and Color(242, 248, 248) or Color(195, 211, 211), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText(getCategoryLabel(s.category), "LiliaFont.17", 14, h * 0.5, active and Color(242, 248, 248) or Color(195, 211, 211), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end
 
         button.DoClick = function() panel:SelectLogsCategory(category) end

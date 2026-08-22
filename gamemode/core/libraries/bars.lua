@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.bar.md
-]]
---[[
-    Bar
-
-    HUD bar helpers for registering, retrieving, removing, drawing, and displaying temporary action progress bars.
-]]
---[[
-    Overview:
-        The bar library centralizes clientside HUD bar behavior under `lia.bar`. It manages registered status bars, smooths value changes over time, controls visibility through options and hooks, draws bar panels, and provides a temporary action progress bar panel for timed clientside actions.
-]]
---[[
     Hooks:
         ShouldHideBars()
 
@@ -65,6 +52,19 @@
 
     Realm:
         Client
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.bar.md
+]]
+--[[
+    Bar
+
+    HUD bar helpers for registering, retrieving, removing, drawing, and displaying temporary action progress bars.
+]]
+--[[
+    Overview:
+        The bar library centralizes clientside HUD bar behavior under `lia.bar`. It manages registered status bars, smooths value changes over time, controls visibility through options and hooks, draws bar panels, and provides a temporary action progress bar panel for timed clientside actions.
 ]]
 lia.bar = lia.bar or {}
 lia.bar.delta = lia.bar.delta or {}

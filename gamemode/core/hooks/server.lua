@@ -1524,6 +1524,71 @@
     Realm:
         Server
 ]]
+--[[
+    Hooks:
+        PlayerShouldPermaKill(Player client, Entity inflictor, Entity attacker)
+
+    Purpose:
+        Determines whether a player death caused by another player should permanently kill the victim's character.
+
+    Category:
+        Character
+
+    Parameters:
+        client (Player)
+            The player who died.
+
+        inflictor (Entity)
+            The inflictor responsible for the death.
+
+        attacker (Entity)
+            The attacker responsible for the death.
+
+    Returns:
+        boolean|nil
+            Return true to permanently kill the victim's character. Returning nil or false allows the default death flow to continue without a perma-kill.
+
+    Example Usage:
+        ```lua
+        hook.Add("PlayerShouldPermaKill", "liaExamplePlayerShouldPermaKill", function(client, inflictor, attacker)
+            if IsValid(attacker) and attacker:IsPlayer() and attacker:isStaffOnDuty() then
+                return true
+            end
+        end)
+        ```
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        PlayerLiliaDataLoaded(Player client)
+
+    Purpose:
+        Runs after a player's stored Lilia data finishes loading so modules can continue initialization work that depends on that data.
+
+    Category:
+        Character
+
+    Parameters:
+        client (Player)
+            The player whose Lilia data has just finished loading.
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        hook.Add("PlayerLiliaDataLoaded", "liaExamplePlayerLiliaDataLoaded", function(client)
+            if IsValid(client) then
+                print("Loaded Lilia data for", client:Nick())
+            end
+        end)
+        ```
+
+    Realm:
+        Server
+]]
 local GM = GM or GAMEMODE
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
@@ -1638,42 +1703,6 @@ local function CacheVoiceHearing()
     end
 end
 
---[[
-    Hooks:
-        PlayerShouldPermaKill(Player client, Entity inflictor, Entity attacker)
-
-    Purpose:
-        Determines whether a player death caused by another player should permanently kill the victim's character.
-
-    Category:
-        Character
-
-    Parameters:
-        client (Player)
-            The player who died.
-
-        inflictor (Entity)
-            The inflictor responsible for the death.
-
-        attacker (Entity)
-            The attacker responsible for the death.
-
-    Returns:
-        boolean|nil
-            Return true to permanently kill the victim's character. Returning nil or false allows the default death flow to continue without a perma-kill.
-
-    Example Usage:
-        ```lua
-        hook.Add("PlayerShouldPermaKill", "liaExamplePlayerShouldPermaKill", function(client, inflictor, attacker)
-            if IsValid(attacker) and attacker:IsPlayer() and attacker:isStaffOnDuty() then
-                return true
-            end
-        end)
-        ```
-
-    Realm:
-        Server
-]]
 function GM:PlayerDeath(client, inflictor, attacker)
     if lia.config.get("DeathSoundEnabled") then
         local deathSound = hook.Run("GetPlayerDeathSound", client, client:isFemale())
@@ -2222,35 +2251,6 @@ function GM:PlayerDisconnected(client)
     end
 end
 
---[[
-    Hooks:
-        PlayerLiliaDataLoaded(Player client)
-
-    Purpose:
-        Runs after a player's stored Lilia data finishes loading so modules can continue initialization work that depends on that data.
-
-    Category:
-        Character
-
-    Parameters:
-        client (Player)
-            The player whose Lilia data has just finished loading.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("PlayerLiliaDataLoaded", "liaExamplePlayerLiliaDataLoaded", function(client)
-            if IsValid(client) then
-                print("Loaded Lilia data for", client:Nick())
-            end
-        end)
-        ```
-
-    Realm:
-        Server
-]]
 function GM:PlayerInitialSpawn(client)
     if client:IsBot() then
         hook.Run("SetupBotPlayer", client)

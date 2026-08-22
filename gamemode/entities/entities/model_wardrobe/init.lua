@@ -47,7 +47,7 @@ function ENT:Use(client)
         return
     end
 
-    net.Start("SeeModelTable")
+    net.Start("liaSeeModelTable")
     net.WriteTable(models)
     net.Send(client)
 end

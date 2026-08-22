@@ -1,32 +1,4 @@
-﻿local PANEL = {}
-local renderedIcons = {}
-local function renderNewIcon(panel, itemTable)
-    if itemTable.iconCam and (not renderedIcons[string.lower(itemTable.model)] or itemTable.forceRender) then
-        local iconCam = itemTable.iconCam
-        iconCam = {
-            cam_pos = iconCam.pos,
-            cam_ang = iconCam.ang,
-            cam_fov = iconCam.fov
-        }
-
-        renderedIcons[string.lower(itemTable.model)] = true
-        panel.Icon:RebuildSpawnIconEx(iconCam)
-        itemTable.forceRender = nil
-    end
-end
-
-local function drawIcon(mat, _, x, y)
-    surface.SetDrawColor(color_white)
-    if isstring(mat) then mat = Material(mat) end
-    surface.SetMaterial(mat)
-    surface.DrawTexturedRect(0, 0, x, y)
-end
-
-function PANEL:getItem()
-    return self.itemTable
-end
-
---[[
+﻿--[[
     Hooks:
         ItemPaintOver(Panel panel, Item|nil itemTable, number w, number h)
 
@@ -101,6 +73,34 @@ end
     Realm:
         Client
 ]]
+local PANEL = {}
+local renderedIcons = {}
+local function renderNewIcon(panel, itemTable)
+    if itemTable.iconCam and (not renderedIcons[string.lower(itemTable.model)] or itemTable.forceRender) then
+        local iconCam = itemTable.iconCam
+        iconCam = {
+            cam_pos = iconCam.pos,
+            cam_ang = iconCam.ang,
+            cam_fov = iconCam.fov
+        }
+
+        renderedIcons[string.lower(itemTable.model)] = true
+        panel.Icon:RebuildSpawnIconEx(iconCam)
+        itemTable.forceRender = nil
+    end
+end
+
+local function drawIcon(mat, _, x, y)
+    surface.SetDrawColor(color_white)
+    if isstring(mat) then mat = Material(mat) end
+    surface.SetMaterial(mat)
+    surface.DrawTexturedRect(0, 0, x, y)
+end
+
+function PANEL:getItem()
+    return self.itemTable
+end
+
 function PANEL:Init()
     self:Droppable("inv")
     self:SetSize(64, 64)

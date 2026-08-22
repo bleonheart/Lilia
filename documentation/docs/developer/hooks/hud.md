@@ -72,7 +72,7 @@ This page documents hooks in the hud category.
 ---
 
 <details class="realm-client" id="function-displayplayerhudinformation">
-<summary><span class="summary-main"><a id="DisplayPlayerHUDInformation"></a>DisplayPlayerHUDInformation(client, hudInfos)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L654" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="DisplayPlayerHUDInformation"></a>DisplayPlayerHUDInformation(client, hudInfos)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L618" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="displayplayerhudinformation"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -115,7 +115,7 @@ This page documents hooks in the hud category.
 ---
 
 <details class="realm-client" id="function-drawcharinfo">
-<summary><span class="summary-main"><a id="DrawCharInfo"></a>DrawCharInfo(c, character, info)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L585" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="DrawCharInfo"></a>DrawCharInfo(c, character, info)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L549" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="drawcharinfo"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -153,7 +153,7 @@ This page documents hooks in the hud category.
 ---
 
 <details class="realm-client" id="function-drawentityinfo">
-<summary><span class="summary-main"><a id="DrawEntityInfo"></a>DrawEntityInfo(e, a, pos)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L618" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="DrawEntityInfo"></a>DrawEntityInfo(e, a, pos)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L582" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="drawentityinfo"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -287,7 +287,7 @@ This page documents hooks in the hud category.
 ---
 
 <details class="realm-client" id="function-liliamodelpanelpostdrawmodel">
-<summary><span class="summary-main"><a id="LiliaModelPanelPostDrawModel"></a>LiliaModelPanelPostDrawModel(panel, ent)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/panels/modelpanel.lua#L29" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="LiliaModelPanelPostDrawModel"></a>LiliaModelPanelPostDrawModel(panel, ent)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/panels/model.lua#L28" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liliamodelpanelpostdrawmodel"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -326,7 +326,7 @@ This page documents hooks in the hud category.
 ---
 
 <details class="realm-client" id="function-onmodelpanelsetup">
-<summary><span class="summary-main"><a id="OnModelPanelSetup"></a>OnModelPanelSetup(panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/panels/modelpanel.lua#L2" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnModelPanelSetup"></a>OnModelPanelSetup(panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/panels/model.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onmodelpanelsetup"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

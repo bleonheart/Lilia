@@ -1,21 +1,114 @@
-﻿local MODULE = MODULE
-function MODULE:OnPlayerJoinClass(client, class, oldClass)
-    local info = lia.class.list[class]
-    local info2 = lia.class.list[oldClass]
-    if info then
-        if info.OnSet then info:OnSet(client) end
-        if oldClass ~= class and info.OnTransferred then info:OnTransferred(client, oldClass) end
-    else
-        lia.error(L("invalidClassError", tostring(class)))
-    end
+﻿--[[
+    Hooks:
+        GetNPCRelations(client, relations)
 
-    if info2 and info2.OnLeave then info2:OnLeave(client) end
-    net.Start("liaClassUpdate")
-    net.WriteEntity(client)
-    net.Broadcast()
-    self:UpdateNPCRelations(client)
-end
+    Purpose:
+        Allows serverside code to replace the NPC disposition map resolved from a player's faction and class.
 
+    Category:
+        Teams
+
+    Parameters:
+        client (Player)
+            The player whose NPC relationships are being resolved.
+
+        relations (table|nil)
+            The merged faction and class relation map keyed by NPC class, or nil when neither defines relations.
+
+    Example Usage:
+        ```lua
+        hook.Add("GetNPCRelations", "liaExampleGetNPCRelations", function(client, relations)
+            relations = table.Copy(relations or {})
+            if IsValid(client) and client:IsAdmin() then relations["npc_combine_s"] = D_LI end
+            return relations
+        end)
+        ```
+
+    Returns:
+        table|nil
+            Return a replacement NPC-class-to-disposition map. Returning nil preserves the merged faction and class relations.
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        TrackFactionTransfer(character, oldFaction, newFaction, actor, reason)
+
+    Purpose:
+        Records an online character's faction join date, transfer history, and time spent in the previous faction.
+
+    Category:
+        Teams
+
+    Parameters:
+        character (Character)
+            The online character being transferred.
+
+        oldFaction (number|string|table)
+            The character's previous faction index, unique ID, or faction data.
+
+        newFaction (number|string|table)
+            The destination faction index, unique ID, or faction data.
+
+        actor (Player)
+            The player responsible for the transfer, when available.
+
+        reason (string)
+            The machine-readable reason stored in the transfer history.
+
+    Example Usage:
+        ```lua
+        hook.Add("TrackFactionTransfer", "liaExampleTrackFactionTransfer", function(character, oldFaction, newFaction, actor, reason)
+            print(character:getID(), oldFaction, newFaction, IsValid(actor) and actor:Name(), reason)
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        TrackOfflineFactionTransfer(characterID, oldFaction, newFaction, actor, reason)
+
+    Purpose:
+        Records faction join and transfer history for a character that is not currently online.
+
+    Category:
+        Teams
+
+    Parameters:
+        characterID (number)
+            The database ID of the offline character being transferred.
+
+        oldFaction (number|string|table)
+            The character's previous faction index, unique ID, or faction data.
+
+        newFaction (number|string|table)
+            The destination faction index, unique ID, or faction data.
+
+        actor (Player)
+            The player responsible for the transfer, when available.
+
+        reason (string)
+            The machine-readable reason stored in the transfer history.
+
+    Example Usage:
+        ```lua
+        hook.Add("TrackOfflineFactionTransfer", "liaExampleTrackOfflineFactionTransfer", function(characterID, oldFaction, newFaction, actor, reason)
+            print("Offline faction transfer", characterID, oldFaction, newFaction, reason)
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
 --[[
     Hooks:
         OnPlayerJoinClass(Player client, number class, number|nil oldClass)
@@ -51,6 +144,93 @@ end
     Realm:
         Server
 ]]
+--[[
+    Hooks:
+        CanAccessFactionRoster(Player client, string|number|table factionUniqueID)
+
+    Purpose:
+        Controls whether a player can view a faction roster and member details.
+
+    Category:
+        Teams
+
+    Parameters:
+        client (Player)
+            The player requesting roster access.
+
+        factionUniqueID (string|number|table)
+            The target faction identifier or faction data.
+
+    Returns:
+        boolean|nil
+            Return true to allow access or false to deny it. Returning nil allows the default Lilia permission check to run.
+
+    Example Usage:
+        ```lua
+        hook.Add("CanAccessFactionRoster", "liaExampleCanAccessFactionRoster", function(client, factionUniqueID)
+            if IsValid(client) and client:IsSuperAdmin() then
+                return true
+            end
+        end)
+        ```
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        CanEditFactionNotes(Player client, string|number|table factionUniqueID)
+
+    Purpose:
+        Controls whether a player can edit faction notes for a faction member.
+
+    Category:
+        Teams
+
+    Parameters:
+        client (Player)
+            The player attempting to edit notes.
+
+        factionUniqueID (string|number|table)
+            The target faction identifier or faction data.
+
+    Returns:
+        boolean|nil
+            Return true to allow editing or false to deny it. Returning nil allows the default Lilia permission check to run.
+
+    Example Usage:
+        ```lua
+        hook.Add("CanEditFactionNotes", "liaExampleCanEditFactionNotes", function(client, factionUniqueID)
+            if IsValid(client) and client:hasPrivilege("canManageFactions") then
+                return true
+            end
+        end)
+        ```
+
+    Realm:
+        Server
+]]
+local MODULE = MODULE
+local updateNPCRelations
+local flushFactionPlaytime
+local ensureFactionTracking
+function MODULE:OnPlayerJoinClass(client, class, oldClass)
+    local info = lia.class.list[class]
+    local info2 = lia.class.list[oldClass]
+    if info then
+        if info.OnSet then info:OnSet(client) end
+        if oldClass ~= class and info.OnTransferred then info:OnTransferred(client, oldClass) end
+    else
+        lia.error(L("invalidClassError", tostring(class)))
+    end
+
+    if info2 and info2.OnLeave then info2:OnLeave(client) end
+    net.Start("liaClassUpdate")
+    net.WriteEntity(client)
+    net.Broadcast()
+    updateNPCRelations(client)
+end
+
 function MODULE:OnTransferred(client)
     local char = client:getChar()
     if char then
@@ -82,11 +262,11 @@ function MODULE:OnCharCreated(_, character)
         character:setClass(0)
     end
 
-    self:EnsureFactionTracking(character, character:getPlayer(), "created")
+    ensureFactionTracking(character, character:getPlayer(), "created")
 end
 
 function MODULE:PlayerLoadedChar(client, character)
-    self:EnsureFactionTracking(character, client, "loaded")
+    ensureFactionTracking(character, client, "loaded")
     if character:getData("factionKickWarn") then
         client:notifyWarningLocalized("kickedFromFaction")
         hook.Run("OnTransferred", client)
@@ -119,7 +299,7 @@ function MODULE:PlayerLoadedChar(client, character)
 end
 
 function MODULE:CharPreSave(character)
-    self:FlushFactionPlaytime(character)
+    flushFactionPlaytime(character)
 end
 
 local function getNormalizedNPCClass(entity)
@@ -210,7 +390,7 @@ local function applyNPCRelation(entity, client)
     end
 end
 
-function MODULE:UpdateNPCRelations(client)
+updateNPCRelations = function(client)
     if not IsValid(client) or not client:getChar() then return end
     debugNPCRelations("Refreshing NPC relations", "player=", tostring(client:Name()))
     for _, entity in ents.Iterator() do
@@ -225,7 +405,7 @@ local function applyAttributes(client, attr)
     client:SetViewOffset(offset)
     client:SetViewOffsetDucked(offsetDuck)
     client:SetModelScale(1)
-    MODULE:UpdateNPCRelations(client)
+    updateNPCRelations(client)
     if attr.scale and attr.scale ~= 1 then
         client:SetViewOffset(offset * attr.scale)
         client:SetViewOffsetDucked(offsetDuck * attr.scale)
@@ -282,17 +462,17 @@ function MODULE:OnEntityCreated(entity)
 end
 
 function MODULE:PlayerSpawn(client)
-    self:UpdateNPCRelations(client)
+    updateNPCRelations(client)
 end
 
 function MODULE:OnCharVarChanged(character, key, oldValue, newValue)
     if key ~= "faction" or oldValue == nil or oldValue == 0 then return end
     local client = character:getPlayer()
-    if IsValid(client) then self:UpdateNPCRelations(client) end
+    if IsValid(client) then updateNPCRelations(client) end
 end
 
 function MODULE:OnPlayerSwitchClass(client)
-    self:UpdateNPCRelations(client)
+    updateNPCRelations(client)
 end
 
 function MODULE:PostPlayerLoadout(client)
@@ -409,7 +589,7 @@ local function decodeTrackedFactionRow(value)
     return decoded[1]
 end
 
-function MODULE:CanAccessFactionRoster(client, factionUniqueID)
+local function hasFactionRosterAccess(client, factionUniqueID)
     if not IsValid(client) then return false end
     if client:hasPrivilege("listCharacters") or client:hasPrivilege("canManageFactions") then return true end
     local character = client:getChar()
@@ -417,11 +597,15 @@ function MODULE:CanAccessFactionRoster(client, factionUniqueID)
     return getFactionUniqueID(character:getFaction()) == getFactionUniqueID(factionUniqueID)
 end
 
-function MODULE:CanEditFactionNotes(client, factionUniqueID)
-    return self:CanAccessFactionRoster(client, factionUniqueID)
+function MODULE:CanAccessFactionRoster(client, factionUniqueID)
+    return hasFactionRosterAccess(client, factionUniqueID)
 end
 
-function MODULE:FlushFactionPlaytime(character, now)
+function MODULE:CanEditFactionNotes(client, factionUniqueID)
+    return hasFactionRosterAccess(client, factionUniqueID)
+end
+
+flushFactionPlaytime = function(character, now)
     if not character then return 0 end
     now = tonumber(now) or os.time()
     local factionUniqueID = getFactionUniqueID(character:getFaction())
@@ -440,7 +624,7 @@ function MODULE:FlushFactionPlaytime(character, now)
     return elapsed
 end
 
-function MODULE:EnsureFactionTracking(character, actor, reason)
+ensureFactionTracking = function(character, actor, reason)
     if not character then return end
     local factionUniqueID = getFactionUniqueID(character:getFaction())
     if not factionUniqueID then return end
@@ -472,12 +656,12 @@ function MODULE:TrackFactionTransfer(character, oldFactionValue, newFactionValue
     local oldFactionUniqueID = getFactionUniqueID(oldFactionValue)
     local newFactionUniqueID = getFactionUniqueID(newFactionValue)
     if oldFactionUniqueID == newFactionUniqueID and newFactionUniqueID then
-        self:EnsureFactionTracking(character, actor, reason)
+        ensureFactionTracking(character, actor, reason)
         return
     end
 
     local now = os.time()
-    if oldFactionUniqueID then self:FlushFactionPlaytime(character, now) end
+    if oldFactionUniqueID then flushFactionPlaytime(character, now) end
     local joinDates = character:getData("factionJoinDates", {})
     if not istable(joinDates) then joinDates = {} end
     if newFactionUniqueID then joinDates[newFactionUniqueID] = now end
@@ -519,7 +703,7 @@ function MODULE:TrackOfflineFactionTransfer(charID, oldFactionValue, newFactionV
     lia.char.setCharDatabase(charID, "factionTransferHistory", history)
 end
 
-function MODULE:BuildFactionMembersPayload(client, factionUniqueID, callback)
+local function buildFactionMembersPayload(client, factionUniqueID, callback)
     local faction = lia.faction.get(factionUniqueID)
     if not faction then
         if callback then
@@ -591,11 +775,11 @@ function MODULE:BuildFactionMembersPayload(client, factionUniqueID, callback)
     end)
 end
 
-function MODULE:SendFactionMembers(client, factionUniqueID)
-    self:BuildFactionMembersPayload(client, factionUniqueID, function(payload) lia.net.writeBigTable(client, "liaFactionMembers", payload) end)
+local function sendFactionMembers(client, factionUniqueID)
+    buildFactionMembersPayload(client, factionUniqueID, function(payload) lia.net.writeBigTable(client, "liaFactionMembers", payload) end)
 end
 
-function MODULE:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID, callback)
+local function buildFactionMemberDetailsPayload(client, factionUniqueID, charID, callback)
     local faction = lia.faction.get(factionUniqueID)
     charID = tonumber(charID)
     if not faction or not charID then
@@ -699,6 +883,76 @@ function MODULE:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID
     end)
 end
 
-function MODULE:SendFactionMemberDetails(client, factionUniqueID, charID)
-    self:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID, function(payload) lia.net.writeBigTable(client, "liaFactionMemberDetails", payload) end)
+local function sendFactionMemberDetails(client, factionUniqueID, charID)
+    buildFactionMemberDetailsPayload(client, factionUniqueID, charID, function(payload) lia.net.writeBigTable(client, "liaFactionMemberDetails", payload) end)
 end
+
+net.Receive("liaRequestFactionMembers", function(_, client)
+    local factionUniqueID = net.ReadString()
+    if not factionUniqueID or factionUniqueID == "" then return end
+    local access = hook.Run("CanAccessFactionRoster", client, factionUniqueID)
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestFactionMembers", "hasFactionRosterAccess=", tostring(access))
+    if access == false then return end
+    sendFactionMembers(client, factionUniqueID)
+end)
+
+net.Receive("liaRequestFactionMemberDetails", function(_, client)
+    local factionUniqueID = net.ReadString()
+    local charID = net.ReadUInt(32)
+    if not factionUniqueID or factionUniqueID == "" or not charID or charID == 0 then return end
+    if hook.Run("CanAccessFactionRoster", client, factionUniqueID) == false then return end
+    sendFactionMemberDetails(client, factionUniqueID, charID)
+end)
+
+net.Receive("liaSaveFactionNote", function(_, client)
+    local charID = tonumber(net.ReadUInt(32))
+    local factionUniqueID = net.ReadString()
+    local noteText = string.Trim(net.ReadString() or "")
+    if not charID or not factionUniqueID or factionUniqueID == "" then return end
+    if hook.Run("CanEditFactionNotes", client, factionUniqueID) == false then return end
+    if #noteText > 4096 then noteText = noteText:sub(1, 4096) end
+    local faction = lia.faction.get(factionUniqueID)
+    if not faction then return end
+    local loadedCharacter = lia.char.loaded[charID]
+    local function saveNote()
+        local noteData = noteText ~= "" and {
+            text = noteText,
+            updatedAt = os.time(),
+            updatedBy = client:Name(),
+            updatedBySteamID = client:SteamID()
+        } or nil
+
+        if loadedCharacter then
+            local notesByFaction = loadedCharacter:getData("factionNotes", {})
+            if not istable(notesByFaction) then notesByFaction = {} end
+            notesByFaction[factionUniqueID] = noteData
+            if noteData == nil and table.IsEmpty(notesByFaction) then
+                loadedCharacter:setData("factionNotes", nil)
+            else
+                loadedCharacter:setData("factionNotes", notesByFaction)
+            end
+        else
+            local notesByFaction = lia.char.getCharData(charID, "factionNotes")
+            if not istable(notesByFaction) then notesByFaction = {} end
+            notesByFaction[factionUniqueID] = noteData
+            if noteData == nil and table.IsEmpty(notesByFaction) then
+                lia.char.setCharDatabase(charID, "factionNotes", nil)
+            else
+                lia.char.setCharDatabase(charID, "factionNotes", notesByFaction)
+            end
+        end
+
+        sendFactionMemberDetails(client, factionUniqueID, charID)
+    end
+
+    if loadedCharacter then
+        if loadedCharacter:getFaction() ~= faction.index then return end
+        saveNote()
+        return
+    end
+
+    lia.db.query("SELECT faction FROM lia_characters WHERE id = " .. charID, function(data)
+        if not data or not data[1] or data[1].faction ~= faction.uniqueID then return end
+        saveNote()
+    end)
+end)

@@ -1,4 +1,17 @@
 ﻿lia.vendor = lia.vendor or {}
+--[[
+    Folder: Developer - Libraries
+    File: lia.vendor.md
+]]
+--[[
+    Vendor
+
+    Vendor helpers for registering presets, storing vendor properties, synchronizing changes, and reading vendor data.
+]]
+--[[
+    Overview:
+        The vendor library centralizes shared vendor state under `lia.vendor`. It stores default vendor values, manages preset definitions, exposes helpers for vendor entity properties, synchronizes changed properties to clients, and gathers complete vendor data snapshots.
+]]
 lia.vendor.stored = lia.vendor.stored or {}
 lia.vendor.editor = lia.vendor.editor or {}
 lia.vendor.presets = lia.vendor.presets or {}
@@ -239,6 +252,17 @@ else
     addEditor("animation", function(animation) net.WriteString(animation or "") end)
 end
 
+--[[
+    Purpose:
+        Registers or replaces a named vendor preset, keeping only valid Lilia item IDs.
+    Parameters:
+        name (string)
+            The preset name. It is stored in lowercase.
+        items (table)
+            Item definitions keyed by Lilia item unique ID.
+    Realm:
+        Shared
+]]
 function lia.vendor.addPreset(name, items)
     assert(isstring(name), L("vendorPresetNameString"))
     assert(istable(items), L("vendorPresetItemsTable"))
@@ -250,10 +274,36 @@ function lia.vendor.addPreset(name, items)
     lia.vendor.presets[string.lower(name)] = validItems
 end
 
+--[[
+    Purpose:
+        Returns a previously registered vendor preset.
+    Parameters:
+        name (string)
+            The preset name to look up.
+    Returns:
+        table|nil
+            The preset data, or nil when no preset is registered under that name.
+    Realm:
+        Shared
+]]
 function lia.vendor.getPreset(name)
     return lia.vendor.presets[string.lower(name)]
 end
 
+--[[
+    Purpose:
+        Returns a vendor property override or its configured default value.
+    Parameters:
+        entity (Entity)
+            The vendor entity whose property should be read.
+        property (string)
+            The vendor property key.
+    Returns:
+        any
+            The stored property value or its default value.
+    Realm:
+        Shared
+]]
 function lia.vendor.getVendorProperty(entity, property)
     if not IsValid(entity) then return lia.vendor.defaults[property] end
     local cached = lia.vendor.stored[entity]
@@ -261,6 +311,19 @@ function lia.vendor.getVendorProperty(entity, property)
     return lia.vendor.defaults[property]
 end
 
+--[[
+    Purpose:
+        Sets or clears a vendor property override and synchronizes it from the server when needed.
+    Parameters:
+        entity (Entity)
+            The vendor entity whose property should be changed.
+        property (string)
+            The vendor property key.
+        value (any)
+            The new property value. Default values clear the stored override.
+    Realm:
+        Shared
+]]
 function lia.vendor.setVendorProperty(entity, property, value)
     if not IsValid(entity) then return end
     local defaultValue = lia.vendor.defaults[property]
@@ -282,6 +345,21 @@ function lia.vendor.setVendorProperty(entity, property, value)
     if SERVER then lia.vendor.syncVendorProperty(entity, property, value, isDefault) end
 end
 
+--[[
+    Purpose:
+        Broadcasts a vendor property update to all clients.
+    Parameters:
+        entity (Entity)
+            The vendor entity whose property changed.
+        property (string)
+            The property key being synchronized.
+        value (any)
+            The updated property value.
+        isDefault (boolean)
+            Whether the property should be reset to its default value.
+    Realm:
+        Server
+]]
 function lia.vendor.syncVendorProperty(entity, property, value, isDefault)
     if not SERVER then return end
     net.Start("liaVendorPropertySync")
@@ -297,6 +375,18 @@ function lia.vendor.syncVendorProperty(entity, property, value, isDefault)
     net.Broadcast()
 end
 
+--[[
+    Purpose:
+        Builds a snapshot containing every vendor property and its resolved value.
+    Parameters:
+        entity (Entity)
+            The vendor entity to inspect.
+    Returns:
+        table
+            A table containing all vendor properties. Invalid entities return an empty table.
+    Realm:
+        Shared
+]]
 function lia.vendor.getAllVendorData(entity)
     if not IsValid(entity) then return {} end
     local data = {}

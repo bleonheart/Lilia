@@ -123,45 +123,13 @@
     Realm:
         Server
 ]]
---[[
-    Hooks:
-        VerifyCheats()
-
-    Purpose:
-        Runs the clientside anti-cheat verification checks and reports suspicious results back to the server.
-
-    Category:
-        Protection
-
-    Parameters:
-        None
-
-    Example Usage:
-        ```lua
-        hook.Add("VerifyCheats", "liaExampleVerifyCheats", function()
-            print("[MyModule] handled VerifyCheats")
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
 MODULE.name = "@protection"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "@anticheatDescription"
-MODULE.NetworkStrings = {"liaVerifyCheats"}
 MODULE.Privileges = {
     ["canSeeAltingNotifications"] = {
         Name = "@canSeeAltingNotifications",
-        MinAccess = "admin",
-        Category = "@exploiting",
-    },
-    ["teleportToEntity"] = {
-        Name = "@teleportToEntity",
         MinAccess = "admin",
         Category = "@exploiting",
     },

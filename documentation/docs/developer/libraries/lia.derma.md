@@ -34,9 +34,8 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 
 ---
 
-
 <details class="realm-client" id="function-liadermarequestcolorpicker">
-<summary><span class="summary-main"><a id="lia.derma.requestColorPicker"></a>lia.derma.requestColorPicker(func, colorStandard)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L762" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.requestColorPicker"></a>lia.derma.requestColorPicker(func, colorStandard)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L90" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermarequestcolorpicker"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -73,7 +72,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermaradialmenu">
-<summary><span class="summary-main"><a id="lia.derma.radialMenu"></a>lia.derma.radialMenu(options)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L946" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.radialMenu"></a>lia.derma.radialMenu(options)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L274" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermaradialmenu"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -107,7 +106,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermarequestplayerselector">
-<summary><span class="summary-main"><a id="lia.derma.requestPlayerSelector"></a>lia.derma.requestPlayerSelector(doClick)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L976" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.requestPlayerSelector"></a>lia.derma.requestPlayerSelector(doClick)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L304" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermarequestplayerselector"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -143,7 +142,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadraw">
-<summary><span class="summary-main"><a id="lia.derma.draw"></a>lia.derma.draw(radius, x, y, w, h, col, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1303" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.draw"></a>lia.derma.draw(radius, x, y, w, h, col, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L631" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadraw"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -183,7 +182,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawoutlined">
-<summary><span class="summary-main"><a id="lia.derma.drawOutlined"></a>lia.derma.drawOutlined(radius, x, y, w, h, col, thickness, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1341" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawOutlined"></a>lia.derma.drawOutlined(radius, x, y, w, h, col, thickness, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L669" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawoutlined"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -224,7 +223,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawtexture">
-<summary><span class="summary-main"><a id="lia.derma.drawTexture"></a>lia.derma.drawTexture(radius, x, y, w, h, col, texture, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1379" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawTexture"></a>lia.derma.drawTexture(radius, x, y, w, h, col, texture, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L707" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawtexture"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -265,7 +264,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawmaterial">
-<summary><span class="summary-main"><a id="lia.derma.drawMaterial"></a>lia.derma.drawMaterial(radius, x, y, w, h, col, mat, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1417" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawMaterial"></a>lia.derma.drawMaterial(radius, x, y, w, h, col, mat, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L745" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawmaterial"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -306,7 +305,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawcircle">
-<summary><span class="summary-main"><a id="lia.derma.drawCircle"></a>lia.derma.drawCircle(x, y, radius, col, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1450" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawCircle"></a>lia.derma.drawCircle(x, y, radius, col, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L778" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawcircle"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -344,7 +343,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawcircleoutlined">
-<summary><span class="summary-main"><a id="lia.derma.drawCircleOutlined"></a>lia.derma.drawCircleOutlined(x, y, radius, col, thickness, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1484" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawCircleOutlined"></a>lia.derma.drawCircleOutlined(x, y, radius, col, thickness, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L812" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawcircleoutlined"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -383,7 +382,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawcircletexture">
-<summary><span class="summary-main"><a id="lia.derma.drawCircleTexture"></a>lia.derma.drawCircleTexture(x, y, radius, col, texture, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1518" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawCircleTexture"></a>lia.derma.drawCircleTexture(x, y, radius, col, texture, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L846" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawcircletexture"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -422,7 +421,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawcirclematerial">
-<summary><span class="summary-main"><a id="lia.derma.drawCircleMaterial"></a>lia.derma.drawCircleMaterial(x, y, radius, col, mat, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1552" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawCircleMaterial"></a>lia.derma.drawCircleMaterial(x, y, radius, col, mat, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L880" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawcirclematerial"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -461,7 +460,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawblur">
-<summary><span class="summary-main"><a id="lia.derma.drawBlur"></a>lia.derma.drawBlur(x, y, w, h, flags, tl, Top, Top, tr, Top, Top, bl, Bottom, Bottom, br, Bottom, Bottom, thickness)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1612" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawBlur"></a>lia.derma.drawBlur(x, y, w, h, flags, tl, Top, Top, tr, Top, Top, bl, Bottom, Bottom, br, Bottom, Bottom, thickness)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L940" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawblur"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -512,7 +511,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawshadowsex">
-<summary><span class="summary-main"><a id="lia.derma.drawShadowsEx"></a>lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, Top, Top, tr, Top, Top, bl, Bottom, Bottom, br, Bottom, Bottom, spread, intensity, thickness)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1696" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawShadowsEx"></a>lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, Top, Top, tr, Top, Top, bl, Bottom, Bottom, br, Bottom, Bottom, spread, intensity, thickness)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1024" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawshadowsex"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -566,7 +565,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawshadows">
-<summary><span class="summary-main"><a id="lia.derma.drawShadows"></a>lia.derma.drawShadows(radius, x, y, w, h, col, spread, intensity, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1750" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawShadows"></a>lia.derma.drawShadows(radius, x, y, w, h, col, spread, intensity, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1078" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawshadows"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -608,7 +607,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawshadowsoutlined">
-<summary><span class="summary-main"><a id="lia.derma.drawShadowsOutlined"></a>lia.derma.drawShadowsOutlined(radius, x, y, w, h, col, thickness, spread, intensity, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1792" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawShadowsOutlined"></a>lia.derma.drawShadowsOutlined(radius, x, y, w, h, col, thickness, spread, intensity, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1120" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawshadowsoutlined"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -651,7 +650,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermarect">
-<summary><span class="summary-main"><a id="lia.derma.rect"></a>lia.derma.rect(x, y, w, h)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1997" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.rect"></a>lia.derma.rect(x, y, w, h)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1325" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermarect"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -688,7 +687,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermacircle">
-<summary><span class="summary-main"><a id="lia.derma.circle"></a>lia.derma.circle(x, y, r)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2025" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.circle"></a>lia.derma.circle(x, y, r)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1353" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermacircle"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -724,7 +723,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermasetflag">
-<summary><span class="summary-main"><a id="lia.derma.setFlag"></a>lia.derma.setFlag(flags, flag, bool)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2062" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.setFlag"></a>lia.derma.setFlag(flags, flag, bool)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1390" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermasetflag"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -760,7 +759,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermasetdefaultshape">
-<summary><span class="summary-main"><a id="lia.derma.setDefaultShape"></a>lia.derma.setDefaultShape(shape)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2091" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.setDefaultShape"></a>lia.derma.setDefaultShape(shape)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1419" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermasetdefaultshape"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -794,7 +793,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermashadowtext">
-<summary><span class="summary-main"><a id="lia.derma.shadowText"></a>lia.derma.shadowText(text, font, x, y, colortext, colorshadow, dist, xalign, yalign)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2132" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.shadowText"></a>lia.derma.shadowText(text, font, x, y, colortext, colorshadow, dist, xalign, yalign)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1460" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermashadowtext"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -836,7 +835,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawtextoutlined">
-<summary><span class="summary-main"><a id="lia.derma.drawTextOutlined"></a>lia.derma.drawTextOutlined(text, font, x, y, colour, xalign, outlinewidth, outlinecolour)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2179" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawTextOutlined"></a>lia.derma.drawTextOutlined(text, font, x, y, colour, xalign, outlinewidth, outlinecolour)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1507" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawtextoutlined"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -877,7 +876,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawtip">
-<summary><span class="summary-main"><a id="lia.derma.drawTip"></a>lia.derma.drawTip(x, y, w, h, text, font, textCol, outlineCol)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2224" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawTip"></a>lia.derma.drawTip(x, y, w, h, text, font, textCol, outlineCol)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1552" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawtip"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -918,7 +917,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawtext">
-<summary><span class="summary-main"><a id="lia.derma.drawText"></a>lia.derma.drawText(text, x, y, color, alignX, alignY, font, alpha)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2298" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawText"></a>lia.derma.drawText(text, x, y, color, alignX, alignY, font, alpha)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1626" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawtext"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -959,7 +958,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawboxwithtext">
-<summary><span class="summary-main"><a id="lia.derma.drawBoxWithText"></a>lia.derma.drawBoxWithText(text, x, y, options)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2375" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawBoxWithText"></a>lia.derma.drawBoxWithText(text, x, y, options)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1703" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawboxwithtext"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1007,7 +1006,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawsurfacetexture">
-<summary><span class="summary-main"><a id="lia.derma.drawSurfaceTexture"></a>lia.derma.drawSurfaceTexture(material, color, x, y, w, h)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2988" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawSurfaceTexture"></a>lia.derma.drawSurfaceTexture(material, color, x, y, w, h)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2316" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawsurfacetexture"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1046,7 +1045,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermaskinfunc">
-<summary><span class="summary-main"><a id="lia.derma.skinFunc"></a>lia.derma.skinFunc(name, panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3023" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.skinFunc"></a>lia.derma.skinFunc(name, panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2351" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermaskinfunc"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1081,7 +1080,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermaapproachexp">
-<summary><span class="summary-main"><a id="lia.derma.approachExp"></a>lia.derma.approachExp(current, target, speed, dt)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3057" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.approachExp"></a>lia.derma.approachExp(current, target, speed, dt)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2385" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermaapproachexp"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1118,7 +1117,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermaeaseoutcubic">
-<summary><span class="summary-main"><a id="lia.derma.easeOutCubic"></a>lia.derma.easeOutCubic(t)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3082" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.easeOutCubic"></a>lia.derma.easeOutCubic(t)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2410" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermaeaseoutcubic"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1152,7 +1151,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermaeaseinoutcubic">
-<summary><span class="summary-main"><a id="lia.derma.easeInOutCubic"></a>lia.derma.easeInOutCubic(t)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3106" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.easeInOutCubic"></a>lia.derma.easeInOutCubic(t)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2434" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermaeaseinoutcubic"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1186,7 +1185,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermaanimateappearance">
-<summary><span class="summary-main"><a id="lia.derma.animateAppearance"></a>lia.derma.animateAppearance(panel, targetWidth, targetHeight, duration, alphaDuration, callback, scaleFactor)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3146" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.animateAppearance"></a>lia.derma.animateAppearance(panel, targetWidth, targetHeight, duration, alphaDuration, callback, scaleFactor)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2474" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermaanimateappearance"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1226,7 +1225,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermaclampmenuposition">
-<summary><span class="summary-main"><a id="lia.derma.clampMenuPosition"></a>lia.derma.clampMenuPosition(panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3210" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.clampMenuPosition"></a>lia.derma.clampMenuPosition(panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2538" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermaclampmenuposition"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1260,7 +1259,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawgradient">
-<summary><span class="summary-main"><a id="lia.derma.drawGradient"></a>lia.derma.drawGradient(x, y, w, h, direction, colorShadow, radius, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3264" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawGradient"></a>lia.derma.drawGradient(x, y, w, h, direction, colorShadow, radius, flags)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2592" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawgradient"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1301,7 +1300,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermawraptext">
-<summary><span class="summary-main"><a id="lia.derma.wrapText"></a>lia.derma.wrapText(text, width, font)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3294" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.wrapText"></a>lia.derma.wrapText(text, width, font)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2622" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermawraptext"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1337,7 +1336,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawblur">
-<summary><span class="summary-main"><a id="lia.derma.drawBlur"></a>lia.derma.drawBlur(panel, amount, passes, alpha)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3350" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawBlur"></a>lia.derma.drawBlur(panel, amount, passes, alpha)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2678" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawblur"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1376,7 +1375,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawblackblur">
-<summary><span class="summary-main"><a id="lia.derma.drawBlackBlur"></a>lia.derma.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3394" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawBlackBlur"></a>lia.derma.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2722" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawblackblur"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1416,7 +1415,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawblurat">
-<summary><span class="summary-main"><a id="lia.derma.drawBlurAt"></a>lia.derma.drawBlurAt(x, y, w, h, amount, passes, alpha)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3451" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawBlurAt"></a>lia.derma.drawBlurAt(x, y, w, h, amount, passes, alpha)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2779" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawblurat"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1456,7 +1455,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermarequestarguments">
-<summary><span class="summary-main"><a id="lia.derma.requestArguments"></a>lia.derma.requestArguments(title, argTypes, onSubmit, defaults)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3492" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.requestArguments"></a>lia.derma.requestArguments(title, argTypes, onSubmit, defaults)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L2820" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermarequestarguments"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1493,7 +1492,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermacreatetableui">
-<summary><span class="summary-main"><a id="lia.derma.createTableUI"></a>lia.derma.createTableUI(title, columns, data, options, charID)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3772" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.createTableUI"></a>lia.derma.createTableUI(title, columns, data, options, charID)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3100" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermacreatetableui"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1531,7 +1530,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermaopenoptionsmenu">
-<summary><span class="summary-main"><a id="lia.derma.openOptionsMenu"></a>lia.derma.openOptionsMenu(title, options)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3952" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.openOptionsMenu"></a>lia.derma.openOptionsMenu(title, options)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3280" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermaopenoptionsmenu"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1566,7 +1565,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawenttext">
-<summary><span class="summary-main"><a id="lia.derma.drawEntText"></a>lia.derma.drawEntText(ent, text, posY, alphaOverride)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L4254" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawEntText"></a>lia.derma.drawEntText(ent, text, posY, alphaOverride)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3582" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawenttext"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1603,7 +1602,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermarequestdropdown">
-<summary><span class="summary-main"><a id="lia.derma.requestDropdown"></a>lia.derma.requestDropdown(title, options, callback, defaultValue)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L4362" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.requestDropdown"></a>lia.derma.requestDropdown(title, options, callback, defaultValue)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3690" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermarequestdropdown"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1640,7 +1639,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermarequeststring">
-<summary><span class="summary-main"><a id="lia.derma.requestString"></a>lia.derma.requestString(title, description, callback, defaultValue, maxLength)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L4490" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.requestString"></a>lia.derma.requestString(title, description, callback, defaultValue, maxLength)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3818" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermarequeststring"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1678,7 +1677,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermarequestoptions">
-<summary><span class="summary-main"><a id="lia.derma.requestOptions"></a>lia.derma.requestOptions(title, subTitle, options, callback, onCancel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L4578" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.requestOptions"></a>lia.derma.requestOptions(title, subTitle, options, callback, onCancel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3906" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermarequestoptions"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1716,7 +1715,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermarequestbinaryquestion">
-<summary><span class="summary-main"><a id="lia.derma.requestBinaryQuestion"></a>lia.derma.requestBinaryQuestion(title, question, callback, yesText, noText)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L4741" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.requestBinaryQuestion"></a>lia.derma.requestBinaryQuestion(title, question, callback, yesText, noText)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L4069" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermarequestbinaryquestion"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1754,7 +1753,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermarequestbuttons">
-<summary><span class="summary-main"><a id="lia.derma.requestButtons"></a>lia.derma.requestButtons(title, buttons, callback, description)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L4814" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.requestButtons"></a>lia.derma.requestButtons(title, buttons, callback, description)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L4142" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermarequestbuttons"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1791,7 +1790,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermarequestpopupquestion">
-<summary><span class="summary-main"><a id="lia.derma.requestPopupQuestion"></a>lia.derma.requestPopupQuestion(question, buttons)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L4913" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.requestPopupQuestion"></a>lia.derma.requestPopupQuestion(question, buttons)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L4241" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermarequestpopupquestion"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1816,7 +1815,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-<pre><code class="language-lua">  lia.derma.requestPopupQuestion(L("continue"), {{L("yes"), function() end}, L("no")})
+<pre><code class="language-lua">  lia.derma.requestPopupQuestion("Continue", {{"Yes", function() end}, "No"})
 </code></pre>
 </div>
 
@@ -1833,7 +1832,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-interactionmenuclosed">
-<summary><span class="summary-main"><a id="InteractionMenuClosed"></a>InteractionMenuClosed()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L39" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="InteractionMenuClosed"></a>InteractionMenuClosed()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L26" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="interactionmenuclosed"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1864,7 +1863,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-interactionmenuopened">
-<summary><span class="summary-main"><a id="InteractionMenuOpened"></a>InteractionMenuOpened(panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L14" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="InteractionMenuOpened"></a>InteractionMenuOpened(panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="interactionmenuopened"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.websound.md
-]]
---[[
-    WebSound
-
-    Web sound helpers for registering, downloading, caching, and playing remote audio through Lilia.
-]]
---[[
-    Overview:
-        The web sound library centralizes clientside handling for remote sound assets under `lia.websound`. It validates HTTP and HTTPS URLs, downloads supported audio files into `data/lilia/websounds/`, reuses valid cached files, maps URLs to local cache names, and wraps Garry's Mod sound playback helpers so registered or remote web sounds can be played through local cached files when possible.
-]]
---[[
     Hooks:
         WebSoundDownloaded(string name, string path)
 
@@ -37,6 +24,19 @@
 
     Realm:
         Client
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.websound.md
+]]
+--[[
+    WebSound
+
+    Web sound helpers for registering, downloading, caching, and playing remote audio through Lilia.
+]]
+--[[
+    Overview:
+        The web sound library centralizes clientside handling for remote sound assets under `lia.websound`. It validates HTTP and HTTPS URLs, downloads supported audio files into `data/lilia/websounds/`, reuses valid cached files, maps URLs to local cache names, and wraps Garry's Mod sound playback helpers so registered or remote web sounds can be played through local cached files when possible.
 ]]
 lia.websound = lia.websound or {}
 lia.websound.stored = lia.websound.stored or {}

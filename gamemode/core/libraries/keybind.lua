@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.keybind.md
-]]
---[[
-    Keybind
-
-    Keybind helpers for Lilia action registration, configurable key assignment, keybind persistence, reserved-key handling, and keybind configuration UI integration.
-]]
---[[
-    Overview:
-        The keybind library centralizes shared and clientside keybind behavior under `lia.keybind`. It registers named actions with press and release callbacks, supports default and saved key codes, localizes action descriptions and categories, detects reserved Garry's Mod bind keys, saves and loads client keybind choices, and adds the keybind editor to the configuration menu.
-]]
---[[
     Hooks:
         AddReservedKeybinds(table reserved)
 
@@ -90,6 +77,19 @@
 
     Realm:
         Client
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.keybind.md
+]]
+--[[
+    Keybind
+
+    Keybind helpers for Lilia action registration, configurable key assignment, keybind persistence, reserved-key handling, and keybind configuration UI integration.
+]]
+--[[
+    Overview:
+        The keybind library centralizes shared and clientside keybind behavior under `lia.keybind`. It registers named actions with press and release callbacks, supports default and saved key codes, localizes action descriptions and categories, detects reserved Garry's Mod bind keys, saves and loads client keybind choices, and adds the keybind editor to the configuration menu.
 ]]
 lia.keybind = lia.keybind or {}
 lia.keybind.stored = lia.keybind.stored or {}
@@ -1409,6 +1409,36 @@ lia.keybind.add("quickTakeItem", {
             if item and item.functions and item.functions.take then item:interact("take", client, entity) end
         end
     end
+})
+
+lia.keybind.add("interactionMenu", {
+    keyBind = KEY_TAB,
+    desc = "@interactionMenuDesc",
+    category = "@core",
+    onPress = function()
+        net.Start("liaRequestInteractOptions")
+        net.WriteString("interaction")
+        net.SendToServer()
+    end,
+})
+
+lia.keybind.add("personalActions", {
+    keyBind = KEY_G,
+    desc = "@personalActionsDesc",
+    category = "@core",
+    onPress = function()
+        net.Start("liaRequestInteractOptions")
+        net.WriteString("action")
+        net.SendToServer()
+    end,
+})
+
+lia.keybind.add("freelook", {
+    keyBind = KEY_ALT,
+    desc = "@freelookKeybindDesc",
+    category = "Camera",
+    onPress = function() lia.camera.setManualFreelook(true) end,
+    onRelease = function() lia.camera.setManualFreelook(false) end
 })
 
 lia.keybind.add("convertEntity", {

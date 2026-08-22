@@ -181,128 +181,6 @@ net.Receive("liaManagesitrooms", function()
     end
 end)
 
-net.Receive("liaAllPks", function()
-    local cases = net.ReadTable() or {}
-    if MODULE and isfunction(MODULE.HandleStaffCasesPayload) and MODULE:HandleStaffCasesPayload("pks", cases) then return end
-    if not IsValid(panelRef) then return end
-    panelRef:Clear()
-    panelRef:DockPadding(6, 6, 6, 6)
-    panelRef.Paint = function() end
-    local search = panelRef:Add("liaEntry")
-    search:Dock(TOP)
-    search:DockMargin(0, 20, 0, 15)
-    search:SetTall(30)
-    search:SetFont("LiliaFont.17")
-    search:SetPlaceholderText(L("search"))
-    search:SetTextColor(Color(200, 200, 200))
-    local list = panelRef:Add("liaTable")
-    list:Dock(FILL)
-    panelRef.searchEntry = search
-    panelRef.list = list
-    panelRef:InvalidateLayout(true)
-    panelRef:SizeToChildren(false, true)
-    local columns = {
-        {
-            name = L("timestamp"),
-            field = "timestamp"
-        },
-        {
-            name = L("character"),
-            field = "character"
-        },
-        {
-            name = L("submitter"),
-            field = "submitter"
-        },
-        {
-            name = L("evidence"),
-            field = "evidence"
-        }
-    }
-
-    for _, col in ipairs(columns) do
-        list:AddColumn(col.name)
-    end
-
-    local function populate(filter)
-        list:Clear()
-        filter = string.lower(filter or "")
-        for _, c in ipairs(cases) do
-            local charInfo = string.format("%s (%s, %s)", c.player or L("na"), c.steamID or L("na"), c.charID or L("na"))
-            local submitInfo = string.format("%s (%s)", c.submitterName or L("na"), c.submitterSteamID or L("na"))
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S", tonumber(c.timestamp) or 0)
-            local lineData = {timestamp, charInfo, submitInfo, c.evidence or ""}
-            local searchStr = table.concat(lineData, " ") .. " " .. (c.reason or "")
-            if filter == "" or searchStr:lower():find(filter, 1, true) then
-                lineData.steamID = c.steamID or ""
-                lineData.reason = c.reason or ""
-                lineData.evidence = c.evidence or ""
-                lineData.submitter = c.submitterName or ""
-                lineData.submitterSteamID = c.submitterSteamID or ""
-                lineData.charID = c.charID
-                list:AddLine(unpack(lineData))
-            end
-        end
-
-        list:ForceCommit()
-        list:InvalidateLayout(true)
-        if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
-    end
-
-    list:AddMenuOption(L("copySubmitter"), function(rowData) if rowData.submitter and rowData.submitterSteamID then SetClipboardText(string.format("%s (%s)", rowData.submitter, rowData.submitterSteamID)) end end, "icon16/page_copy.png")
-    list:AddMenuOption(L("copyReason"), function(rowData) if rowData.reason then SetClipboardText(rowData.reason) end end, "icon16/page_copy.png")
-    list:AddMenuOption(L("copyEvidence"), function(rowData) if rowData.evidence then SetClipboardText(rowData.evidence) end end, "icon16/page_copy.png")
-    list:AddMenuOption(L("copySteamID"), function(rowData) if rowData.steamID then SetClipboardText(rowData.steamID) end end, "icon16/page_copy.png")
-    list:AddMenuOption(L("viewEvidence"), function(rowData) if rowData.evidence and rowData.evidence:match("^https?://") then gui.OpenURL(rowData.evidence) end end, "icon16/world.png")
-    list:AddMenuOption(L("banCharacter"), function(rowData)
-        if not rowData.charID then return end
-        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
-        if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charban") then LocalPlayer():ConCommand('say "/charban ' .. rowData.charID .. '"') end
-    end, "icon16/cancel.png")
-
-    list:AddMenuOption(L("wipeCharacter"), function(rowData)
-        if not rowData.charID then return end
-        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
-        if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipe") then LocalPlayer():ConCommand('say "/charwipe ' .. rowData.charID .. '"') end
-    end, "icon16/user_delete.png")
-
-    list:AddMenuOption(L("unbanCharacter"), function(rowData)
-        if not rowData.charID then return end
-        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
-        if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunban") then LocalPlayer():ConCommand('say "/charunban ' .. rowData.charID .. '"') end
-    end, "icon16/accept.png")
-
-    list:AddMenuOption(L("banCharacterOffline"), function(rowData)
-        if not rowData.charID then return end
-        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
-        if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charbanoffline") then LocalPlayer():ConCommand('say "/charbanoffline ' .. rowData.charID .. '"') end
-    end, "icon16/cancel.png")
-
-    list:AddMenuOption(L("wipeCharacterOffline"), function(rowData)
-        if not rowData.charID then return end
-        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
-        if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipeoffline") then LocalPlayer():ConCommand('say "/charwipeoffline ' .. rowData.charID .. '"') end
-    end, "icon16/user_delete.png")
-
-    list:AddMenuOption(L("unbanCharacterOffline"), function(rowData)
-        if not rowData.charID then return end
-        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
-        if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then LocalPlayer():ConCommand('say "/charunbanoffline ' .. rowData.charID .. '"') end
-    end, "icon16/accept.png")
-
-    search.OnTextChanged = function(_, value) populate(value or "") end
-    populate("")
-end)
-
-lia.net.readBigTable("liaMapEntities", function(entities)
-    local adminModule = lia.module.get("administration")
-    if not adminModule then return end
-    adminModule.playerEntityData = istable(entities) and entities or {}
-    if isfunction(adminModule.ReconcilePlayerEntityWaypoints) then adminModule:ReconcilePlayerEntityWaypoints(adminModule:BuildPlayerEntityData(adminModule.playerEntityData)) end
-    local panel = adminModule.playerEntityPanel
-    if IsValid(panel) and isfunction(panel.SetEntities) then panel:SetEntities(adminModule.playerEntityData) end
-end)
-
 lia.net.readBigTable("liaStaffCasesSnapshot", function(payload)
     payload = payload or {}
     local adminModule = lia.module.get("administration")
@@ -317,7 +195,6 @@ lia.net.readBigTable("liaStaffCasesSnapshot", function(payload)
     if IsValid(panel) and isfunction(panel.RefreshData) then panel:RefreshData() end
 end)
 
-net.Receive("liaCharDeleted", function() if IsValid(panelRef) and isfunction(panelRef.buildSheets) and MODULE and isfunction(MODULE.startFullCharListRequest) then MODULE:startFullCharListRequest(panelRef) end end)
 net.Receive("liaOnlineStaffData", function()
     local staffData = net.ReadTable() or {}
     hook.Run("OnlineStaffDataReceived", staffData)

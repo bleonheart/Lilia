@@ -1,5 +1,4 @@
-﻿local PANEL = {}
---[[
+﻿--[[
     Hooks:
         OnModelPanelSetup(Panel panel)
 
@@ -58,6 +57,7 @@
     Realm:
         Client
 ]]
+local PANEL = {}
 function PANEL:Init()
     self.brightness = 1
     self:SetCursor("none")

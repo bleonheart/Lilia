@@ -1,5 +1,4 @@
-local PANEL = {}
-
+﻿local PANEL = {}
 local function themeColor(key, fallback)
     local theme = lia.color and lia.color.theme or {}
     local value = theme[key]
@@ -148,7 +147,6 @@ function PANEL:addAttributes()
     self.pointsLabel:SetFont("LiliaFont.16")
     self.pointsLabel:SetTextColor(themeColor("accent", themeColor("theme", color_white)))
     self.pointsLabel:SetContentAlignment(6)
-
     self.attribsPanel = self:Add("liaCharacterAttribs")
     self.attribsPanel:Dock(TOP)
     self.attribsPanel:DockMargin(0, 0, 0, 8)
@@ -314,6 +312,7 @@ function PANEL:onDisplay()
         self.factionCombo:ChooseOptionData(factionID)
         self._suppressFactionSelect = false
     end
+
     if IsValid(self.nameEntry) then self.nameEntry:SetValue(self:getContext("name", self.nameEntry:GetValue() or "")) end
     if IsValid(self.descEntry) then self.descEntry:SetValue(self:getContext("desc", self.descEntry:GetValue() or "")) end
     if IsValid(self.attribsPanel) then

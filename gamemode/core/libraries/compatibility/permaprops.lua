@@ -1,7 +1,4 @@
-﻿local spawnedPositions = {}
-local radiusSqr = 16
-local lastSaver
---[[
+﻿--[[
     Hooks:
         CanPersistEntity(Entity entity)
 
@@ -31,6 +28,9 @@ local lastSaver
     Realm:
         Server
 ]]
+local spawnedPositions = {}
+local radiusSqr = 16
+local lastSaver
 hook.Add("CanTool", "liaPermaProps", function(ply, trace, tool)
     local entity = trace.Entity
     if not IsValid(entity) then return end

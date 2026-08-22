@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.module.md
-]]
---[[
-    Module
-
-    Module loading helpers for Lilia schemas, modules, submodules, dependencies, permissions, and module-provided assets.
-]]
---[[
-    Overview:
-        The module library centralizes module discovery and loading under `lia.module`. It prepares the active `MODULE` or `SCHEMA` table, includes each module core file, registers privileges and dependencies, loads supported module folders and files, attaches module functions as hooks, initializes schema modules and overrides, and exposes lookup helpers for loaded modules.
-]]
---[[
     Hooks:
         DoModuleIncludes(string path, table module)
 
@@ -77,6 +64,19 @@
 
     Realm:
         Shared
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.module.md
+]]
+--[[
+    Module
+
+    Module loading helpers for Lilia schemas, modules, submodules, dependencies, permissions, and module-provided assets.
+]]
+--[[
+    Overview:
+        The module library centralizes module discovery and loading under `lia.module`. It prepares the active `MODULE` or `SCHEMA` table, includes each module core file, registers privileges and dependencies, loads supported module folders and files, attaches module functions as hooks, initializes schema modules and overrides, and exposes lookup helpers for loaded modules.
 ]]
 lia.module = lia.module or {}
 lia.module.list = lia.module.list or {}

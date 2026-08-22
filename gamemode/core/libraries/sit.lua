@@ -1,32 +1,86 @@
+﻿--[[
+    Hooks:
+        ShouldAllowSit(client, position, pitch, entity)
+    Purpose:
+        Allows code to approve or deny sitting at a traced position and optionally choose the seated facing direction.
+    Category:
+        Sitting
+    Parameters:
+        client (Player)
+            The player attempting to sit.
+        position (Vector)
+            The traced world position where the player is attempting to sit.
+        pitch (number)
+            The pitch of the traced surface in degrees.
+        entity (Entity)
+            The world or entity under the traced position.
+    Example Usage:
+        ```lua
+        hook.Add("ShouldAllowSit", "liaExampleShouldAllowSit", function(client, position, pitch, entity)
+            if IsValid(entity) and entity:GetClass() == "prop_physics" then
+                return true, 90
+            end
+        end)
+        ```
+    Returns:
+        boolean|nil, number|nil
+            Return true or false to override the normal sit check. The optional second value is the seated yaw in degrees.
+    Realm:
+        Shared
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.sit.md
+]]
+--[[
+    Sit
+
+    Adds player sitting with position validation, safe facing directions, and invisible seats.
+]]
+--[[
+    Overview:
+        The sit library adds player sitting under `lia.sit`. It validates surface positions and facing rotations, finds safe seating directions, supports the `ShouldAllowSit` hook, and creates invisible vehicle seats that can be attached to world entities.
+]]
 lia.sit = lia.sit or {}
-lia.sit.config = lia.sit.config or {}
-lia.sit.cooldown = lia.sit.cooldown or {}
-lia.sit.config.MaxDistance = 10000
-lia.sit.config.MaxPitch = 10
-lia.sit.config.CircleBuffer = 15
-lia.sit.config.MaxIdealLeaveDistance = 50000
-lia.sit.config.ButtonsToSit = {KEY_LALT, KEY_E}
-function lia.sit.checkValidRotation(pos, surfaceAng, rotation)
+--[[
+    Purpose:
+        Checks whether a seated player can face a specific yaw without intersecting nearby geometry.
+    Parameters:
+        position (Vector)
+            The world position where the player will sit.
+        surfaceAngle (Angle)
+            The angle of the surface under the sitting position.
+        rotation (number)
+            The proposed seated yaw in degrees.
+    Returns:
+        boolean
+            Whether the proposed seated rotation has enough clearance.
+    Realm:
+        Shared
+]]
+function lia.sit.isValidSittingRotation(position, surfaceAngle, rotation)
     if not isnumber(rotation) then return false end
     local rad = math.rad(rotation)
     local dir = Vector(math.cos(rad), math.sin(rad), 0)
     local players = player.GetAll()
     local verticalTrace = util.TraceLine({
-        start = pos - dir * 19.5 + surfaceAng:Forward() * 5,
-        endpos = pos - dir * 19.5 + surfaceAng:Forward() * -160,
+        start = position - dir * 19.5 + surfaceAngle:Forward() * 5,
+        endpos = position - dir * 19.5 + surfaceAngle:Forward() * -160,
         filter = players
     })
 
     local horizontalTrace = util.TraceLine({
-        start = pos + Vector(0, 0, 5),
-        endpos = pos + Vector(0, 0, 5) - dir * 1600,
+        start = position + Vector(0, 0, 5),
+        endpos = position + Vector(0, 0, 5) - dir * 1600,
         filter = players
     })
     return horizontalTrace.StartPos:Distance(horizontalTrace.HitPos) > 20 and verticalTrace.StartPos:Distance(verticalTrace.HitPos) > 14
 end
 
+-- Legacy alias kept for compatibility with existing client-side code.
+lia.sit.checkValidRotation = lia.sit.isValidSittingRotation
 if SERVER then
-    util.AddNetworkString("lia.sit.sitFacing")
+    lia.sit.cooldown = lia.sit.cooldown or {}
     local pitchOffset = Angle(270, 0, 0)
     local optimalOffset = Vector(0, 0, 5)
     local optimalOffsetHeight = Vector(0, 0, -20)
@@ -40,21 +94,33 @@ if SERVER then
         local pos = eyeTrace.HitPos
         local ent = eyeTrace.Entity
         local pitch = (eyeTrace.HitNormal:Angle() - pitchOffset).pitch
-        local canSit, optimalRotation = lia.sit.canSitHere(ply, pos, pitch, ent)
+        local canSit, optimalRotation = lia.sit.canPlayerSitAt(ply, pos, pitch, ent)
         if not canSit then return end
-        lia.sit.sit(ply, pos, ent:IsWorld() and NULL or ent, optimalRotation, pitch)
+        lia.sit.placePlayerInSeat(ply, pos, ent:IsWorld() and NULL or ent, optimalRotation, pitch)
     end)
 
-    function lia.sit.optimalRotation(pos)
+    --[[
+        Purpose:
+            Finds the safest available yaw for placing a sitting player at a position.
+        Parameters:
+            position (Vector)
+                The world position where the player will sit.
+        Returns:
+            number|false
+                The recommended seated yaw in degrees, or false when no valid direction is available.
+        Realm:
+            Server
+    ]]
+    function lia.sit.findBestSittingRotation(position)
         local allPly = player.GetAll()
         local furthest
         for i = 0, 360, 45 do
             local rad = math.rad(i)
             local dir = Vector(math.cos(rad), math.sin(rad), 0)
-            local startPos = pos + dir * lia.sit.config.CircleBuffer + optimalOffset
+            local startPos = position + dir * 15 + optimalOffset
             local trace = util.QuickTrace(startPos, optimalOffsetHeight, allPly)
             if trace.Hit then continue end
-            local traceToStart = util.QuickTrace(startPos + (-optimalOffset * 1.2), dir * -lia.sit.config.CircleBuffer, allPly)
+            local traceToStart = util.QuickTrace(startPos + (-optimalOffset * 1.2), dir * -15, allPly)
             traceToStart.rotation = i
             if not furthest then
                 furthest = traceToStart
@@ -68,28 +134,65 @@ if SERVER then
         return furthest.rotation
     end
 
-    function lia.sit.canSitHere(ply, pos, pitch, ent)
-        if ply:GetPos():DistToSqr(pos) > lia.sit.config.MaxDistance then return false end
-        if ent:IsPlayer() then return false end
-        if pitch > lia.sit.config.MaxPitch then return false end
-        if pitch < -lia.sit.config.MaxPitch then return false end
-        local canSit, sitRotation = hook.Run("ShouldAllowSit", ply, pos, pitch, ent)
-        if not (canSit == nil) then return canSit, sitRotation or lia.sit.optimalRotation(pos) or 0 end
-        local rotation = lia.sit.optimalRotation(pos)
+    --[[
+        Purpose:
+            Checks whether a player can sit at a position and returns a suitable seated yaw.
+        Parameters:
+            player (Player)
+                The player attempting to sit.
+            position (Vector)
+                The world position where the player wants to sit.
+            pitch (number)
+                The pitch of the surface in degrees.
+            entity (Entity)
+                The world or entity under the position.
+        Returns:
+            boolean, number|nil
+                Whether sitting is allowed and, when allowed, the recommended seated yaw in degrees.
+        Realm:
+            Server
+    ]]
+    function lia.sit.canPlayerSitAt(player, position, pitch, entity)
+        if player:GetPos():DistToSqr(position) > 10000 then return false end
+        if entity:IsPlayer() then return false end
+        if pitch > 10 then return false end
+        if pitch < -10 then return false end
+        local canSit, sitRotation = hook.Run("ShouldAllowSit", player, position, pitch, entity)
+        if not (canSit == nil) then return canSit, sitRotation or lia.sit.findBestSittingRotation(position) or 0 end
+        local rotation = lia.sit.findBestSittingRotation(position)
         if not rotation then return false end
         return true, rotation
     end
 
-    function lia.sit.sit(ply, pos, ent, rotation, pitch, manualFacing)
+    --[[
+        Purpose:
+            Creates an invisible seat and places a player in it at the requested position and rotation.
+        Parameters:
+            player (Player)
+                The player to place in the seat.
+            position (Vector)
+                The world position where the player will sit.
+            entity (Entity)
+                An optional entity to parent the seat to, or NULL for a world position.
+            rotation (number)
+                The seated yaw in degrees.
+            pitch (number)
+                The seated pitch in degrees.
+            manualFacing (boolean)
+                Whether the supplied rotation is a manually selected facing direction.
+        Realm:
+            Server
+    ]]
+    function lia.sit.placePlayerInSeat(player, position, entity, rotation, pitch, manualFacing)
         local chair = ents.Create("prop_vehicle_prisoner_pod")
         chair.liaSit = true
-        if IsValid(ent) and not ent:IsWorld() then
-            chair:SetParent(ent)
-            ply:DropObject()
+        if IsValid(entity) and not entity:IsWorld() then
+            chair:SetParent(entity)
+            player:DropObject()
         end
 
         chair:SetModel("models/nova/airboat_seat.mdl")
-        chair:SetPos(pos - optimalOffset)
+        chair:SetPos(position - optimalOffset)
         local chairYaw = manualFacing and rotation + 90 or rotation - 90
         local ang = Angle(0, chairYaw, 0)
         ang:RotateAroundAxis(ang:Forward(), pitch)
@@ -99,7 +202,7 @@ if SERVER then
         chair:Activate()
         chair:SetVehicleClass("Seat_Airboat")
         chair:SetNotSolid(true)
-        ent.liaSitChair = chair
+        entity.liaSitChair = chair
         chair:CallOnRemove("UnTie", function(entChair)
             local parent = entChair:GetParent()
             if IsValid(parent) then parent.liaSitChair = nil end
@@ -121,17 +224,21 @@ if SERVER then
         chair.m_tblToolsAllowed = {}
         chair.customCheck = function() return false end
         chair:SetCollisionGroup(COLLISION_GROUP_WORLD)
-        ply:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-        chair.SIMPIdealLeaveSpace = ply:GetPos()
-        ply:EnterVehicle(chair)
+        player:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+        chair.SIMPIdealLeaveSpace = player:GetPos()
+        player:EnterVehicle(chair)
         if manualFacing then
-            ply:SetEyeAngles(Angle(0, rotation, 0))
+            player:SetEyeAngles(Angle(0, rotation, 0))
         else
-            ply:SetEyeAngles(Angle(0, 90, 0))
+            player:SetEyeAngles(Angle(0, 90, 0))
         end
     end
 
-    net.Receive("lia.sit.sitFacing", function(_, ply)
+    -- Legacy aliases kept for compatibility with existing modules and schemas.
+    lia.sit.optimalRotation = lia.sit.findBestSittingRotation
+    lia.sit.canSitHere = lia.sit.canPlayerSitAt
+    lia.sit.sit = lia.sit.placePlayerInSeat
+    net.Receive("liaSitSitFacing", function(_, ply)
         local curTime = CurTime()
         local steamID = ply:SteamID64()
         if not lia.sit.cooldown[steamID] then lia.sit.cooldown[steamID] = 0 end
@@ -154,10 +261,10 @@ if SERVER then
         local pos = eyeTrace.HitPos
         local ent = eyeTrace.Entity
         local pitch = (eyeTrace.HitNormal:Angle() - pitchOffset).pitch
-        if ply:GetPos():DistToSqr(pos) > lia.sit.config.MaxDistance then return end
+        if ply:GetPos():DistToSqr(pos) > 10000 then return end
         if IsValid(ent) and ent:IsPlayer() then return end
-        if pitch > lia.sit.config.MaxPitch then return end
-        if pitch < -lia.sit.config.MaxPitch then return end
+        if pitch > 10 then return end
+        if pitch < -10 then return end
         local canSit, sitRotation = hook.Run("ShouldAllowSit", ply, pos, pitch, ent)
         if canSit == false then return end
         local rotation = math.NormalizeAngle(wantedRotation)
@@ -165,11 +272,11 @@ if SERVER then
         if isnumber(sitRotation) then
             rotation = sitRotation
             manualFacing = false
-        elseif not lia.sit.checkValidRotation(pos, eyeTrace.HitNormal:Angle(), rotation) then
+        elseif not lia.sit.isValidSittingRotation(pos, eyeTrace.HitNormal:Angle(), rotation) then
             return
         end
 
-        lia.sit.sit(ply, pos, IsValid(ent) and not ent:IsWorld() and ent or NULL, rotation, pitch, manualFacing)
+        lia.sit.placePlayerInSeat(ply, pos, IsValid(ent) and not ent:IsWorld() and ent or NULL, rotation, pitch, manualFacing)
     end)
 
     hook.Add("PlayerLeaveVehicle", "lia.sit.remove", function(ply, chair)
@@ -177,7 +284,7 @@ if SERVER then
         if not chair.liaSit then return end
         local idealLeaveSpace = chair.SIMPIdealLeaveSpace
         chair:Remove()
-        if idealLeaveSpace:DistToSqr(chair:GetPos()) < lia.sit.config.MaxIdealLeaveDistance then ply:SetPos(idealLeaveSpace) end
+        if idealLeaveSpace:DistToSqr(chair:GetPos()) < 50000 then ply:SetPos(idealLeaveSpace) end
     end)
 
     hook.Add("PlayerDisconnected", "lia.sit.remove", function(ply)
@@ -203,7 +310,6 @@ if SERVER then
 
     hook.Add("PhysgunPickup", "lia.sit.antiAbuse", function(ply, trEnt) if IsValid(trEnt) and IsValid(trEnt.liaSitChair) then return false end end)
 else
-    local tag = "lia.sit."
     local arrow = Material("widgets/arrow.png")
     local white = Color(255, 255, 255, 255)
     local red = Color(255, 0, 0, 255)
@@ -218,12 +324,12 @@ else
     end
 
     local function GetTriggerButton()
-        local buttons = lia.sit.config.ButtonsToSit
+        local buttons = {KEY_LALT, KEY_E}
         return buttons[#buttons]
     end
 
     local function AreModifierButtonsDown()
-        local buttons = lia.sit.config.ButtonsToSit
+        local buttons = {KEY_LALT, KEY_E}
         if #buttons < 2 then return true end
         for i = 1, #buttons - 1 do
             if not input.IsButtonDown(buttons[i]) then return false end
@@ -232,14 +338,14 @@ else
     end
 
     local function RemovePreview()
-        hook.Remove("PostDrawOpaqueRenderables", tag .. "PostDrawOpaqueRenderables")
+        hook.Remove("PostDrawOpaqueRenderables", "lia.sit.PostDrawOpaqueRenderables")
     end
 
     local function StartSit(trace)
         local wantedRotation
         local start = CurTime()
         local ply = LocalPlayer()
-        hook.Add("PostDrawOpaqueRenderables", tag .. "PostDrawOpaqueRenderables", function()
+        hook.Add("PostDrawOpaqueRenderables", "lia.sit.PostDrawOpaqueRenderables", function()
             if CurTime() - start <= 0.25 then return end
             if not CanUseSit(ply) then
                 wantedRotation = nil
@@ -256,7 +362,7 @@ else
             local posOnPlane = WorldToLocal(vec, Angle(0, 90, 0), trace.HitPos, Angle(0, 0, 0))
             local testVec = posOnPlane:GetNormal() * traceScaled
             local currentAng = (trace.HitPos - vec):Angle()
-            local goodSit = lia.sit.checkValidRotation(trace.HitPos, trace.HitNormal:Angle(), currentAng.y)
+            local goodSit = lia.sit.isValidSittingRotation(trace.HitPos, trace.HitNormal:Angle(), currentAng.y)
             if goodSit then
                 wantedRotation = currentAng.y
             else
@@ -281,7 +387,7 @@ else
             local traceDirection = trace.HitPos - trace.StartPos
             if traceDirection:LengthSqr() <= 0 then return end
             traceDirection:Normalize()
-            net.Start("lia.sit.sitFacing")
+            net.Start("liaSitSitFacing")
             net.WriteFloat(wantedRotation)
             net.WriteVector(traceDirection)
             net.SendToServer()

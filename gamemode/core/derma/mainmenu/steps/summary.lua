@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Hooks:
         GetCharacterCreationSummary(Player client, table context, table summary, Panel panel)
 
@@ -76,13 +76,11 @@
 ]]
 local PANEL = {}
 function PANEL:Init()
-    self.title = self:Add("liaHeaderPanel")
+    self.title = self:Add("DPanel")
     self.title:Dock(TOP)
     self.title:DockMargin(0, 0, 0, 4)
     self.title:SetTall(32)
-    local accentColor = lia.color.theme.accent or lia.color.theme.theme or lia.color.theme.maincolor or color_white
-    self.title:SetLineColor(accentColor)
-    self.title:SetLineWidth(0)
+    self.title.Paint = function(_, w, h) end
     local lbl = self.title:Add("DLabel")
     lbl:SetFont("LiliaFont.18")
     lbl:SetText(tostring(L("summary")))
@@ -217,12 +215,15 @@ function PANEL:getSummary(context)
 end
 
 function PANEL:addEntry(entry)
-    local header = self.list:Add("liaHeaderPanel")
+    local header = self.list:Add("DPanel")
     header:Dock(TOP)
     header:DockMargin(0, 0, 0, 12)
     local accentColor = lia.color.theme.accent or lia.color.theme.theme or lia.color.theme.maincolor or color_white
-    header:SetLineColor(accentColor)
-    header:SetLineWidth(2)
+    header.Paint = function(_, w, h)
+        surface.SetDrawColor(accentColor)
+        surface.DrawRect(4, h - 2, math.max(w - 8, 0), 2)
+    end
+
     header:DockPadding(10, 10, 10, 12)
     local title = header:Add("DLabel")
     title:SetFont("LiliaFont.16")

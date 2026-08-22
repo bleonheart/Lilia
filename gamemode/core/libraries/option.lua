@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.option.md
-]]
---[[
-    Option
-
-    Option helpers for Lilia user settings, including registration, lookup, localization, persistence, and configuration menu display.
-]]
---[[
-    Overview:
-        The option library centralizes user-facing settings under `lia.option`. It stores registered option metadata and values, infers option types from defaults, localizes labels, descriptions, categories, and selectable values, persists option values to `data/lilia/options.json`, and builds the configuration menu page used to edit registered options.
-]]
---[[
     Hooks:
         OptionAdded(string key, table option)
 
@@ -118,6 +105,19 @@
 
     Realm:
         Shared
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.option.md
+]]
+--[[
+    Option
+
+    Option helpers for Lilia user settings, including registration, lookup, localization, persistence, and configuration menu display.
+]]
+--[[
+    Overview:
+        The option library centralizes user-facing settings under `lia.option`. It stores registered option metadata and values, infers option types from defaults, localizes labels, descriptions, categories, and selectable values, persists option values to `data/lilia/options.json`, and builds the configuration menu page used to edit registered options.
 ]]
 lia.option = lia.option or {}
 lia.option.stored = lia.option.stored or {}

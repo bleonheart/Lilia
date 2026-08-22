@@ -1,5 +1,4 @@
-﻿local GM = GM or GAMEMODE
---[[
+﻿--[[
     Hooks:
         PlayerModelChanged(Player client, string newVar)
 
@@ -31,6 +30,37 @@
     Realm:
         Shared
 ]]
+--[[
+    Hooks:
+        GetModelGender(string model)
+
+    Purpose:
+        Allows schemas or modules to override the gender classification used for model-dependent helpers such as voice and appearance checks.
+
+    Category:
+        Character
+
+    Parameters:
+        model (string)
+            The model path being classified.
+
+    Returns:
+        string|nil
+            Return `female` or `male` to override the detected gender. Returning nil allows the default model-name checks to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("GetModelGender", "liaExampleGetModelGender", function(model)
+            if isstring(model) and model:find("custom_female", 1, true) then
+                return "female"
+            end
+        end)
+        ```
+
+    Realm:
+        Shared
+]]
+local GM = GM or GAMEMODE
 function GM:OnCharVarChanged(character, varName, oldVar, newVar)
     local client = character:getPlayer()
     if varName == "model" then hook.Run("PlayerModelChanged", client, newVar) end
@@ -81,36 +111,6 @@ function GM:PreGamemodeLoaded()
     hook.Remove("PostDrawEffects", "RenderWidgets")
 end
 
---[[
-    Hooks:
-        GetModelGender(string model)
-
-    Purpose:
-        Allows schemas or modules to override the gender classification used for model-dependent helpers such as voice and appearance checks.
-
-    Category:
-        Character
-
-    Parameters:
-        model (string)
-            The model path being classified.
-
-    Returns:
-        string|nil
-            Return `female` or `male` to override the detected gender. Returning nil allows the default model-name checks to continue.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetModelGender", "liaExampleGetModelGender", function(model)
-            if isstring(model) and model:find("custom_female", 1, true) then
-                return "female"
-            end
-        end)
-        ```
-
-    Realm:
-        Shared
-]]
 function GM:GetModelGender(model)
     local isFemale = model:find("alyx") or model:find("mossman") or model:find("female")
     return isFemale and "female" or "male"

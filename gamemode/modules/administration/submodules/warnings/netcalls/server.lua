@@ -39,36 +39,3 @@ net.Receive("liaRequestRemoveWarning", function(_, client)
         end)
     end)
 end)
-
-net.Receive("liaRequestAllWarnings", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestAllWarnings", "hasPrivilege(viewPlayerWarnings)=", tostring(client:hasPrivilege("viewPlayerWarnings")), "finalResult=", tostring(client:hasPrivilege("viewPlayerWarnings")))
-    if not client:hasPrivilege("viewPlayerWarnings") then return end
-    lia.db.select({"id", "charID", "timestamp", "warned", "warnedSteamID", "warner", "warnerSteamID", "message", "severity"}, "warnings"):next(function(res)
-        net.Start("liaAllWarnings")
-        net.WriteTable(res.results or {})
-        net.Send(client)
-    end)
-end)
-
-net.Receive("liaRequestWarningsCount", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestWarningsCount", "hasPrivilege(viewPlayerWarnings)=", tostring(client:hasPrivilege("viewPlayerWarnings")), "finalResult=", tostring(client:hasPrivilege("viewPlayerWarnings")))
-    if not client:hasPrivilege("viewPlayerWarnings") then return end
-    lia.db.count("warnings"):next(function(count)
-        net.Start("liaWarningsCount")
-        net.WriteInt(count or 0, 32)
-        net.Send(client)
-    end)
-end)
-
-net.Receive("liaRequestPlayerWarnings", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestPlayerWarnings", "hasPrivilege(viewPlayerWarnings)=", tostring(client:hasPrivilege("viewPlayerWarnings")), "finalResult=", tostring(client:hasPrivilege("viewPlayerWarnings")))
-    if not client:hasPrivilege("viewPlayerWarnings") then return end
-    local charID = net.ReadString()
-    if not charID or charID == "" then return end
-    MODULE:GetWarnings(charID):next(function(warnings)
-        net.Start("liaPlayerWarnings")
-        net.WriteString(charID)
-        net.WriteTable(warnings or {})
-        net.Send(client)
-    end)
-end)

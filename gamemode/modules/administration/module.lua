@@ -1,35 +1,5 @@
 ﻿--[[
     Hooks:
-        CharListColumns(columns)
-
-    Purpose:
-        Allows code to add extra columns to the administration character list.
-
-    Category:
-        Administration
-
-    Parameters:
-        columns (table)
-            The mutable list of character list column definitions.
-
-    Example Usage:
-        ```lua
-        hook.Add("CharListColumns", "liaExampleCharListColumns", function(columns)
-            columns[#columns + 1] = {
-                name = "SteamID",
-                field = "steamID"
-            }
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
         CharListEntry(entry, row)
 
     Purpose:
@@ -90,36 +60,6 @@
 
     Realm:
         Client
-]]
---[[
-    Hooks:
-        OnAdminSystemLoaded(groups, privileges)
-
-    Purpose:
-        Called after the administration system finishes loading usergroups and privileges.
-
-    Category:
-        Administration
-
-    Parameters:
-        groups (table)
-            The registered administration groups.
-
-        privileges (table)
-            The registered privilege definitions.
-
-    Example Usage:
-        ```lua
-        hook.Add("OnAdminSystemLoaded", "liaExampleOnAdminSystemLoaded", function(groups, privileges)
-            print("[MyModule] handled OnAdminSystemLoaded")
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Server
 ]]
 --[[
     Hooks:
@@ -499,7 +439,7 @@ MODULE.Name = "@categoryAdministration"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "@administrationToolsDescription"
-MODULE.NetworkStrings = {"liaAdminSetCharProperty", "liaAllFlags", "liaAllPks", "liaAllPlayers", "liaFeaturePositions", "liaFeaturePositionsRequest", "liaFullCharList", "liaFullCharListPage", "liaManagesitroomsAction", "liaMapEntities", "liaMapEntityAction", "liaModifyCharacterFlags", "liaNetProfilerLogs", "liaNetProfilerSnapshot", "liaOnlineStaffData", "liaPksCount", "liaRequestAllFlags", "liaRequestFullCharList", "liaRequestFullCharListPage", "liaRequestMapEntities", "liaRequestNetProfilerLogs", "liaRequestNetProfilerSnapshot", "liaRequestPksCount", "liaRequestPlayers", "liaRequestStaffCases", "liaRequestStaffSummary", "liaRequestToolPermissionTiers", "liaRequestStaffCharacterConfiguration", "liaSetFeaturePosition", "liaSetStaffCharacterFlag", "liaSetStaffCharacterPermission", "liaSetToolPermissionTier", "liaSetToolPermissionTiersBatch", "liaResetStaffCharacterConfiguration", "liaResetToolPermissionTiers", "liaSpawnMenuGiveItem", "liaSpawnMenuSpawnItem", "liaStaffCasesSnapshot", "liaStaffCharacterConfiguration", "liaStaffSummary", "liaToolPermissionTiers",}
+MODULE.NetworkStrings = {"liaFeaturePositions", "liaFeaturePositionsRequest", "liaFullCharListPage", "liaManagesitroomsAction", "liaMapEntities", "liaMapEntityAction", "liaModifyCharacterFlags", "liaNetProfilerLogs", "liaNetProfilerSnapshot", "liaOnlineStaffData", "liaRequestFullCharListPage", "liaRequestMapEntities", "liaRequestNetProfilerLogs", "liaRequestStaffCases", "liaRequestToolPermissionTiers", "liaRequestStaffCharacterConfiguration", "liaSetFeaturePosition", "liaSetStaffCharacterFlag", "liaSetStaffCharacterPermission", "liaSetToolPermissionTier", "liaSetToolPermissionTiersBatch", "liaResetStaffCharacterConfiguration", "liaResetToolPermissionTiers", "liaSpawnMenuGiveItem", "liaSpawnMenuSpawnItem", "liaStaffCasesSnapshot", "liaStaffCharacterConfiguration", "liaToolPermissionTiers",}
 MODULE.Privileges = {
     ["ManageWeaponOverrides"] = {
         Name = "@ManageWeaponOverrides",
@@ -563,20 +503,20 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
         Category = "@categoryServer",
     },
-    ["canAccessPlayerList"] = {
-        Name = "@canAccessPlayerList",
+    ["canAccessScoreboardAdminOptions"] = {
+        Name = "@canAccessScoreboardAdminOptions",
         MinAccess = "admin",
-        Category = "@players",
+        Category = "@userInterface",
+    },
+    ["canAccessScoreboardInfoOutOfStaff"] = {
+        Name = "@canAccessScoreboardInfoOutOfStaff",
+        MinAccess = "admin",
+        Category = "@userInterface",
     },
     ["listCharacters"] = {
         Name = "@listCharacters",
         MinAccess = "admin",
         Category = "@character",
-    },
-    ["canAccessFlagManagement"] = {
-        Name = "@canAccessFlagManagement",
-        MinAccess = "superadmin",
-        Category = "@flags",
     },
     ["createStaffCharacter"] = {
         Name = "@createStaffCharacter",
@@ -603,11 +543,6 @@ MODULE.Privileges = {
         MinAccess = "admin",
         Category = "@categoryStaffManagement",
     },
-    ["manageAttributes"] = {
-        Name = "@manageAttributes",
-        MinAccess = "admin",
-        Category = "@categoryStaffManagement",
-    },
     ["manageCharacterInformation"] = {
         Name = "@manageCharacterInformation",
         MinAccess = "admin",
@@ -615,11 +550,6 @@ MODULE.Privileges = {
     },
     ["manageCharacters"] = {
         Name = "@manageCharacters",
-        MinAccess = "admin",
-        Category = "@categoryStaffManagement",
-    },
-    ["manageClasses"] = {
-        Name = "@manageClasses",
         MinAccess = "admin",
         Category = "@categoryStaffManagement",
     },
@@ -642,11 +572,6 @@ MODULE.Privileges = {
         Name = "@manageTransfers",
         MinAccess = "admin",
         Category = "@categoryStaffManagement",
-    },
-    ["receiveCheaterNotifications"] = {
-        Name = "@receiveCheaterNotifications",
-        MinAccess = "admin",
-        Category = "@exploiting",
     },
     ["viewEntityTab"] = {
         Name = "@viewEntityTab",
@@ -683,11 +608,6 @@ MODULE.Privileges = {
         MinAccess = "admin",
         Category = "@categoryStaffPhysgun",
     },
-    ["canAccessItemInformations"] = {
-        Name = "@canAccessItemInformations",
-        MinAccess = "superadmin",
-        Category = "@categoryStaffItems",
-    },
     ["physgunPickupRestrictedEntities"] = {
         Name = "@physgunPickupRestrictedEntities",
         MinAccess = "superadmin",
@@ -713,10 +633,25 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
         Category = "@categoryStaffMovement",
     },
+    ["noDeathCooldown"] = {
+        Name = "@noDeathCooldown",
+        MinAccess = "superadmin",
+        Category = "@categoryStaffMovement",
+    },
     ["noClipESPOffsetStaff"] = {
         Name = "@noClipESPOffsetStaff",
         MinAccess = "superadmin",
         Category = "@userInterface",
+    },
+    ["salaryBonus"] = {
+        Name = "@salaryBonus",
+        MinAccess = "admin",
+        Category = "@character",
+    },
+    ["canUsePAC3"] = {
+        Name = "@canUsePAC3",
+        MinAccess = "admin",
+        Category = "@compatibility",
     },
     ["canPropertyWorldEntities"] = {
         Name = "@canPropertyWorldEntities",
@@ -730,11 +665,6 @@ MODULE.Privileges = {
     },
     ["canSpawnSWEPs"] = {
         Name = "@canSpawnSWEPs",
-        MinAccess = "superadmin",
-        Category = "@spawnPermissions",
-    },
-    ["canEditWeapons"] = {
-        Name = "@canEditWeapons",
         MinAccess = "superadmin",
         Category = "@spawnPermissions",
     },
@@ -793,58 +723,8 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
         Category = "@categoryStaffTools",
     },
-    ["command_ban"] = {
-        Name = "@commandBan",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_kick"] = {
-        Name = "@commandKick",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_kill"] = {
-        Name = "@commandKill",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_freeze"] = {
-        Name = "@commandFreeze",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_unfreeze"] = {
-        Name = "@commandUnfreeze",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_slay"] = {
-        Name = "@commandSlay",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_respawn"] = {
-        Name = "@commandRespawn",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
     ["command_blind"] = {
         Name = "@commandBlind",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_unblind"] = {
-        Name = "@commandUnblind",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_gag"] = {
-        Name = "@commandGag",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_ungag"] = {
-        Name = "@commandUngag",
         MinAccess = "admin",
         Category = "@commands",
     },
@@ -853,68 +733,8 @@ MODULE.Privileges = {
         MinAccess = "admin",
         Category = "@commands",
     },
-    ["command_unmute"] = {
-        Name = "@commandUnmute",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_bring"] = {
-        Name = "@commandBring",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
     ["command_goto"] = {
         Name = "@commandGoto",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_return"] = {
-        Name = "@commandReturn",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_jail"] = {
-        Name = "@commandJail",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_unjail"] = {
-        Name = "@commandUnjail",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_cloak"] = {
-        Name = "@commandCloak",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_uncloak"] = {
-        Name = "@commandUncloak",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_god"] = {
-        Name = "@commandGod",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_ungod"] = {
-        Name = "@commandUngod",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_ignite"] = {
-        Name = "@commandIgnite",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_extinguish"] = {
-        Name = "@commandExtinguish",
-        MinAccess = "admin",
-        Category = "@commands",
-    },
-    ["command_strip"] = {
-        Name = "@commandStrip",
         MinAccess = "admin",
         Category = "@commands",
     },

@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.dialog.md
-]]
---[[
-    Dialog
-
-    Dialog helpers for Lilia NPC conversations, generated dialog trees, NPC configuration menus, and client synchronization.
-]]
---[[
-    Overview:
-        The dialog library centralizes NPC dialog registration, generated dialog tree storage, faction-gated dialog nodes, NPC customization workflows, and clientside dialog configuration interfaces under `lia.dialog`.
-]]
---[[
     Hooks:
         OnNPCTypeSet(Player client, Entity npc, string npcID, table data)
 
@@ -44,6 +31,19 @@
 
     Realm:
         Server
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.dialog.md
+]]
+--[[
+    Dialog
+
+    Dialog helpers for Lilia NPC conversations, generated dialog trees, NPC configuration menus, and client synchronization.
+]]
+--[[
+    Overview:
+        The dialog library centralizes NPC dialog registration, generated dialog tree storage, faction-gated dialog nodes, NPC customization workflows, and clientside dialog configuration interfaces under `lia.dialog`.
 ]]
 lia.dialog = lia.dialog or {}
 lia.dialog.stored = lia.dialog.stored or {}
@@ -1463,7 +1463,6 @@ else
         local hasAnimations = false
         local animationCombo
         local selectedAnimation = "auto"
-
         local function saveAppearance()
             if not IsValid(npc) or not IsValid(nameEntry) or not IsValid(modelEntry) then return end
             local customData = {
@@ -1529,9 +1528,7 @@ else
         nameEntry:SetTall(25)
         nameEntry:SetValue(existingData.name or "NPC")
         nameEntry:DockMargin(0, 0, 0, 10)
-        nameEntry.action = function()
-            if IsValid(npc) then saveAppearance() end
-        end
+        nameEntry.action = function() if IsValid(npc) then saveAppearance() end end
         local modelLabel = vgui.Create("DLabel", scroll)
         modelLabel:Dock(TOP)
         modelLabel:SetText(L("modelPathLabel"))
@@ -1733,10 +1730,12 @@ else
                     lia.dialog.submitConfiguration("dialog_type", npc, {
                         dialogType = selectedType
                     })
+
                     currentType = selectedType
                     currentUsesGeneratedDialog = selectedType == lia.dialog.generatedDialogSelectionID
                 end
             end
+
             local customDialogBtn = vgui.Create("liaButton", scroll)
             customDialogBtn:Dock(TOP)
             customDialogBtn:SetTall(35)

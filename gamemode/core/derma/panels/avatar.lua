@@ -1,4 +1,4 @@
-local function drawcirclepoly(w, h)
+﻿local function drawcirclepoly(w, h)
     local poly = {}
     local x, y = w / 2, h / 2
     for angle = 1, 360 do

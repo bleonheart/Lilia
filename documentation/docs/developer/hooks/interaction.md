@@ -72,7 +72,7 @@ This page documents hooks in the interaction category.
 ---
 
 <details class="realm-server" id="function-canplayerknock">
-<summary><span class="summary-main"><a id="CanPlayerKnock"></a>CanPlayerKnock(client, door)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/entities/weapons/lia_hands/shared.lua#L3" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="CanPlayerKnock"></a>CanPlayerKnock(client, door)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/entities/weapons/lia_hands/shared.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="canplayerknock"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

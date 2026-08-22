@@ -305,34 +305,6 @@
 ]]
 --[[
     Hooks:
-        SyncCharList(client)
-
-    Purpose:
-        Sends the current character list to a client that is viewing character selection.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The player who should receive the synchronized character list.
-
-    Example Usage:
-        ```lua
-        hook.Add("SyncCharList", "liaExampleSyncCharList", function(client)
-            if not IsValid(client) then return end
-            print(string.format("[MyModule] handled SyncCharList for %s", client:Name()))
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
         LiliaLoaded()
 
     Purpose:
@@ -642,7 +614,7 @@ else
     function MODULE:CreateMenuButtons(tabs)
         tabs["characters"] = {
             name = "characters",
-            icon = "icon16/user.png",
+            icon = "characterlist.png",
             func = function()
                 if isInThirdPerson() then
                     lia.option.set("thirdPersonEnabled", false)

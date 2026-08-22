@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local optionHeight = 36
 local edgePadding = 8
 local maxMenuHeight = 380

@@ -33,43 +33,6 @@
 ]]
 --[[
     Hooks:
-        OnServerLog(Player client, string logType, string logString, string category)
-
-    Purpose:
-        Called whenever a server log entry is created through lia.log.add.
-
-    Category:
-        Administration - Logs
-
-    Parameters:
-        client (Player)
-            The player associated with the log entry. May be invalid or nil for console/system logs.
-
-        logType (string)
-            The internal log type identifier used to generate the log message.
-
-        logString (string)
-            The final formatted log message.
-
-        category (string)
-            The translated category name assigned to the log entry.
-
-    Example Usage:
-        ```lua
-        hook.Add("OnServerLog", "liaExampleOnServerLog", function(client, logType, logString, category)
-            if not IsValid(client) or logString == "" then return end
-            print(string.format("[MyModule] %s: %s", client:Name(), logString))
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
         CanPlayerSeeLogs(Player client)
 
     Purpose:

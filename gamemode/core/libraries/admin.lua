@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: admin.lua
-]]
---[[
-    Admin
-
-    Shared administration helpers for usergroup management, privilege registration, permission checks, CAMI synchronization, and admin UI support.
-]]
---[[
-    Overview:
-        This module powers Lilia's admin permission system under `lia.admin`. It manages built-in and custom usergroups, resolves privilege inheritance, integrates with CAMI, synchronizes permission data to clients, provides usergroup editing UI, and executes or routes admin commands depending on realm.
-]]
---[[
     Hooks:
         GetUsergroupIcon(string groupName, table|nil groupData, string|Player groupOrPlayer)
 
@@ -132,6 +119,19 @@
 
     Realm:
         Client
+]]
+--[[
+    Folder: Developer - Libraries
+    File: admin.lua
+]]
+--[[
+    Admin
+
+    Shared administration helpers for usergroup management, privilege registration, permission checks, CAMI synchronization, and admin UI support.
+]]
+--[[
+    Overview:
+        This module powers Lilia's admin permission system under `lia.admin`. It manages built-in and custom usergroups, resolves privilege inheritance, integrates with CAMI, synchronizes permission data to clients, provides usergroup editing UI, and executes or routes admin commands depending on realm.
 ]]
 lia.admin = lia.admin or {}
 lia.admin.groups = lia.admin.groups or {}
@@ -3851,7 +3851,7 @@ else
         if not permission then return end
         pages[#pages + 1] = {
             name = "userGroups",
-            icon = "icon16/group.png",
+            icon = "permissions.png",
             drawFunc = function(parent)
                 lia.debug("[Permissions UI]", "Opening usergroups page", "localPlayer=", tostring(IsValid(LocalPlayer()) and LocalPlayer():Nick() or "unknown"), "localPlayerUserGroup=", tostring(IsValid(LocalPlayer()) and LocalPlayer():GetUserGroup() or "unknown"))
                 lia.gui.usergroups = parent

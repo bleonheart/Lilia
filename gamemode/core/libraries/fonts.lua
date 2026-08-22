@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.font.md
-]]
---[[
-    Font
-
-    Font registration and loading helpers for Lilia UI and HUD text.
-]]
---[[
-    Overview:
-        The font library centralizes registered font definitions under `lia.font`. It registers default Montserrat faces, creates configurable Lilia UI and HUD font aliases, exposes available font faces for configuration, reloads stored fonts on the client, and lazily creates missing `surface.SetFont` font variants when they are first requested.
-]]
---[[
     Hooks:
         PostLoadFonts(string mainFont, string fontName)
 
@@ -57,6 +44,19 @@
 
     Realm:
         Client
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.font.md
+]]
+--[[
+    Font
+
+    Font registration and loading helpers for Lilia UI and HUD text.
+]]
+--[[
+    Overview:
+        The font library centralizes registered font definitions under `lia.font`. It registers default Montserrat faces, creates configurable Lilia UI and HUD font aliases, exposes available font faces for configuration, reloads stored fonts on the client, and lazily creates missing `surface.SetFont` font variants when they are first requested.
 ]]
 lia.font = lia.font or {}
 lia.font.stored = lia.font.stored or {}

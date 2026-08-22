@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.derma.md
-]]
---[[
-    Derma
-
-    Clientside Derma helpers for Lilia menu creation, request dialogs, rounded drawing, blur, shadows, text rendering, and UI animation.
-]]
---[[
-    Overview:
-        The derma library centralizes reusable clientside interface helpers under `lia.derma`. It provides menu builders, request windows, player selectors, table displays, rounded primitive rendering, blur and shadow drawing, text helpers, entity label rendering, and small animation/math utilities used by Lilia panels.
-]]
---[[
     Hooks:
         InteractionMenuOpened(Panel panel)
 
@@ -56,6 +43,19 @@
     Realm:
         Client
 ]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.derma.md
+]]
+--[[
+    Derma
+
+    Clientside Derma helpers for Lilia menu creation, request dialogs, rounded drawing, blur, shadows, text rendering, and UI animation.
+]]
+--[[
+    Overview:
+        The derma library centralizes reusable clientside interface helpers under `lia.derma`. It provides menu builders, request windows, player selectors, table displays, rounded primitive rendering, blur and shadow drawing, text helpers, entity label rendering, and small animation/math utilities used by Lilia panels.
+]]
 lia.derma = lia.derma or {}
 local color_disconnect = Color(210, 65, 65)
 local color_bot = Color(70, 150, 220)
@@ -63,7 +63,6 @@ local color_online = Color(120, 180, 70)
 local color_close = Color(210, 65, 65)
 local color_accept = Color(44, 124, 62)
 local color_target = Color(255, 255, 255, 200)
-
 --[[
     Purpose:
         Opens a color picker window with saturation/value and hue controls, then passes the chosen color to a callback or passes false when cancelled.
@@ -4233,7 +4232,7 @@ end
 
     Example Usage:
         ```lua
-        lia.derma.requestPopupQuestion(L("continue"), {{L("yes"), function() end}, L("no")})
+        lia.derma.requestPopupQuestion("Continue", {{"Yes", function() end}, "No"})
         ```
 
     Realm:

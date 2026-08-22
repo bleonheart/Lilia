@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.config.md
-]]
---[[
-    Configuration
-
-    Configuration helpers for registering, retrieving, localizing, synchronizing, saving, and editing Lilia configuration values.
-]]
---[[
-    Overview:
-        The configuration library centralizes runtime settings under `lia.config`. It stores registered configuration definitions, preserves defaults, localizes names, descriptions, categories, and selectable options, coerces networked values into the expected types, synchronizes changed server values to clients, persists non-default values, and builds the client configuration menu.
-]]
---[[
     Hooks:
         InitializedConfig()
 
@@ -219,6 +206,19 @@
 
     Realm:
         Client
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.config.md
+]]
+--[[
+    Configuration
+
+    Configuration helpers for registering, retrieving, localizing, synchronizing, saving, and editing Lilia configuration values.
+]]
+--[[
+    Overview:
+        The configuration library centralizes runtime settings under `lia.config`. It stores registered configuration definitions, preserves defaults, localizes names, descriptions, categories, and selectable options, coerces networked values into the expected types, synchronizes changed server values to clients, persists non-default values, and builds the client configuration menu.
 ]]
 lia.config = lia.config or {}
 lia.config.stored = lia.config.stored or {}

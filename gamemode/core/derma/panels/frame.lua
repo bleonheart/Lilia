@@ -52,10 +52,7 @@ function PANEL:Init()
 
     self.cls = vgui.Create("Button", self)
     self.cls:SetText("")
-    self.cls.Paint = function(_, w, h)
-        draw.SimpleText("X", "LiliaFont.18", w * 0.5, h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    end
-
+    self.cls.Paint = function(_, w, h) draw.SimpleText("X", "LiliaFont.18", w * 0.5, h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
     self.cls.DoClick = function()
         lia.websound.playButtonSound()
         if self.deleteOnClose then

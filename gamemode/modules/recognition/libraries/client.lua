@@ -31,13 +31,6 @@
     Realm:
         Client
 ]]
-local ChatIsRecognized = {
-    ic = true,
-    y = true,
-    w = true,
-    me = true,
-}
-
 --[[
     Hooks:
         GetDisplayedDescription(Player client, boolean isHUD)
@@ -71,6 +64,13 @@ local ChatIsRecognized = {
     Realm:
         Client
 ]]
+local ChatIsRecognized = {
+    ic = true,
+    y = true,
+    w = true,
+    me = true,
+}
+
 function MODULE:GetDisplayedDescription(client, isHUD)
     local lp = LocalPlayer()
     if not IsValid(client) or not IsValid(lp) then return L("unknown") end

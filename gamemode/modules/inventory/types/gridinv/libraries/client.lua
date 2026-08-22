@@ -96,7 +96,7 @@ local function createInventoryPreview(parentPanel, mainPanel)
     local previewHeight = math.max(parentPanel:GetTall(), mainPanel:GetTall())
     preview:SetSize(previewWidth, previewHeight)
     preview.Paint = function(_, w, h)
-    local accent = lia.color.theme.accent
+        local accent = lia.color.theme.accent
         drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
     end
 
@@ -240,7 +240,7 @@ hook.Add("CreateMenuButtons", "liaInventory", function(tabs)
     installMenuBagRedirect()
     tabs["inv"] = {
         name = "inv",
-        icon = "icon16/box.png",
+        icon = "inventory.png",
         shouldShow = function() return hook.Run("CanPlayerViewInventory") ~= false end,
         func = function(parentPanel)
             installMenuBagRedirect()

@@ -316,47 +316,4 @@ end
 
 function MODULE:PlayerInitialSpawn(client)
     if not client:getChar() then return end
-    client.VerifyCheatsPending = true
-    local timerName = "liaVerifyCheats:" .. client:SteamID64()
-    client.VerifyCheatsTimer = timerName
-    net.Start("liaVerifyCheats")
-    net.Send(client)
-    timer.Create(timerName, 10, 1, function()
-        if IsValid(client) and client.VerifyCheatsPending then
-            lia.log.add(client, "hackAttempt", "VerifyCheatsTimeout")
-            hook.Run("PlayerCheatDetected", client)
-            if IsValid(client) then
-                lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID())
-                client:notifyErrorLocalized("caughtCheating")
-                for _, p in player.Iterator() do
-                    local isStaffOnDuty = p:isStaffOnDuty()
-                    local hasReceiveCheaterNotifications = p:hasPrivilege("receiveCheaterNotifications")
-                    local permission = isStaffOnDuty or hasReceiveCheaterNotifications
-                    lia.debug("[Permissions]", "Permission Check for protection cheat recipient", "targetPlayer=", tostring(p:Name()), "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(receiveCheaterNotifications)=", tostring(hasReceiveCheaterNotifications), "finalResult=", tostring(permission))
-                    if permission then p:notifyWarningLocalized("cheaterDetectedStaff", client:Name(), client:SteamID()) end
-                end
-
-                if client:getChar() then
-                    local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-                    local severity = "High"
-                    hook.Run("AddWarning", client:getChar():getID(), client:Nick(), client:SteamID(), timestamp, L("cheaterWarningReason"), "System", "SYSTEM", severity)
-                    local message = L("staffLogCheaterFlagged", client:Name(), client:getChar():getID(), client:SteamID64(), severity)
-                    StaffAddTextShadowed(Color(255, 0, 0), "CHEAT", Color(255, 255, 255), message, function(staff)
-                        local permission = staff:hasPrivilege("receiveCheaterNotifications")
-                        lia.debug("[Permissions]", "Permission Check for protection StaffAddTextShadowed recipient", "targetPlayer=", tostring(staff:Name()), "hasPrivilege(receiveCheaterNotifications)=", tostring(permission), "finalResult=", tostring(permission))
-                        return permission
-                    end)
-                end
-            end
-
-            hook.Run("OnCheaterCaught", client)
-        end
-    end)
-end
-
-function MODULE:PlayerDisconnected(client)
-    if client.VerifyCheatsTimer then
-        timer.Remove(client.VerifyCheatsTimer)
-        client.VerifyCheatsTimer = nil
-    end
 end

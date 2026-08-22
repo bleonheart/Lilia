@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.char.md
-]]
---[[
-    Character
-
-    Character helpers for Lilia character creation, lookup, loading, caching, variable registration, persistence, and cleanup.
-]]
---[[
-    Overview:
-        The character library centralizes shared character state under `lia.char`. It stores registered character variables, tracks loaded characters, resolves characters by ID or owner, creates character objects, registers character variable accessors, restores persistent data from the database, and unloads or deletes characters when needed.
-]]
---[[
     Hooks:
         GetDefaultCharName(Player client, any faction, table data)
 
@@ -349,6 +336,19 @@
 
     Realm:
         Server
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.char.md
+]]
+--[[
+    Character
+
+    Character helpers for Lilia character creation, lookup, loading, caching, variable registration, persistence, and cleanup.
+]]
+--[[
+    Overview:
+        The character library centralizes shared character state under `lia.char`. It stores registered character variables, tracks loaded characters, resolves characters by ID or owner, creates character objects, registers character variable accessors, restores persistent data from the database, and unloads or deletes characters when needed.
 ]]
 lia.char = lia.char or {}
 lia.char.vars = lia.char.vars or {}

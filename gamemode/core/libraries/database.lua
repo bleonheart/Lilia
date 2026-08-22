@@ -1,17 +1,4 @@
 ﻿--[[
-    Folder: Developer - Libraries
-    File: lia.database.md
-]]
---[[
-    Database
-
-    Database helpers for Lilia storage module setup, schema creation, SQL value conversion, table queries, migrations, transactions, and snapshot import/export.
-]]
---[[
-    Overview:
-        The database library centralizes server-side persistence under `lia.db`. It initializes the active storage module, queues queries until the database is connected, creates core Lilia tables, adds missing character and warning fields, provides convenience helpers for selecting, inserting, updating, deleting, counting, and checking records, and supports administrative schema and snapshot utilities.
-]]
---[[
     Hooks:
         OnDatabaseLoaded()
 
@@ -52,6 +39,19 @@
 
     Realm:
         Server
+]]
+--[[
+    Folder: Developer - Libraries
+    File: lia.database.md
+]]
+--[[
+    Database
+
+    Database helpers for Lilia storage module setup, schema creation, SQL value conversion, table queries, migrations, transactions, and snapshot import/export.
+]]
+--[[
+    Overview:
+        The database library centralizes server-side persistence under `lia.db`. It initializes the active storage module, queues queries until the database is connected, creates core Lilia tables, adds missing character and warning fields, provides convenience helpers for selecting, inserting, updating, deleting, counting, and checking records, and supports administrative schema and snapshot utilities.
 ]]
 lia.db = lia.db or {}
 lia.db.queryQueue = lia.db.queue or {}

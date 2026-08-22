@@ -932,7 +932,7 @@ This module powers Lilia's admin permission system under `lia.admin`. It manages
 ---
 
 <details class="realm-client" id="function-adminprivilegesupdated">
-<summary><span class="summary-main"><a id="AdminPrivilegesUpdated"></a>AdminPrivilegesUpdated()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/admin.lua#L108" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="AdminPrivilegesUpdated"></a>AdminPrivilegesUpdated()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/admin.lua#L95" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="adminprivilegesupdated"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -965,7 +965,7 @@ This module powers Lilia's admin permission system under `lia.admin`. It manages
 ---
 
 <details class="realm-shared" id="function-getusergroupicon">
-<summary><span class="summary-main"><a id="GetUsergroupIcon"></a>GetUsergroupIcon(groupName, groupData, groupOrPlayer)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/admin.lua#L14" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetUsergroupIcon"></a>GetUsergroupIcon(groupName, groupData, groupOrPlayer)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/admin.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getusergroupicon"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1008,7 +1008,7 @@ This module powers Lilia's admin permission system under `lia.admin`. It manages
 ---
 
 <details class="realm-shared" id="function-onadminsystemloaded">
-<summary><span class="summary-main"><a id="OnAdminSystemLoaded"></a>OnAdminSystemLoaded(groups, privileges)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/admin.lua#L48" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnAdminSystemLoaded"></a>OnAdminSystemLoaded(groups, privileges)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/admin.lua#L35" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onadminsystemloaded"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1045,7 +1045,7 @@ This module powers Lilia's admin permission system under `lia.admin`. It manages
 ---
 
 <details class="realm-client" id="function-populateadmintabs">
-<summary><span class="summary-main"><a id="PopulateAdminTabs"></a>PopulateAdminTabs(pages)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/admin.lua#L78" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="PopulateAdminTabs"></a>PopulateAdminTabs(pages)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/admin.lua#L65" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="populateadmintabs"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

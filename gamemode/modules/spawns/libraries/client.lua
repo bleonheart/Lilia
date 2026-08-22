@@ -1,4 +1,43 @@
-﻿local ceil, clamp = math.ceil, math.Clamp
+﻿--[[
+    Hooks:
+        GetRespawnScreenCause(client, timeLeft, baseTime, lastDeath)
+
+    Purpose:
+        Allows clientside code to replace the cause-of-death text shown on the respawn screen.
+
+    Category:
+        Spawns
+
+    Parameters:
+        client (Player)
+            The local player whose respawn screen is being drawn.
+
+        timeLeft (number)
+            The remaining time before normal respawning becomes available.
+
+        baseTime (number)
+            The configured base respawn delay.
+
+        lastDeath (number)
+            The Unix timestamp recorded for the player's last death.
+
+    Example Usage:
+        ```lua
+        hook.Add("GetRespawnScreenCause", "liaExampleGetRespawnScreenCause", function(client, timeLeft, baseTime, lastDeath)
+            if IsValid(client) and client:WaterLevel() >= 3 then
+                return "Lost beneath the surface"
+            end
+        end)
+        ```
+
+    Returns:
+        string|nil
+            Return non-empty replacement text. Returning nil or an empty string uses the default environmental-death text.
+
+    Realm:
+        Client
+]]
+local ceil, clamp = math.ceil, math.Clamp
 local fade, shadowFade = 0, 0
 local hideKey = false
 local fastFade = false
