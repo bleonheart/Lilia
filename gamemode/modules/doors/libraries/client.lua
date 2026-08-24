@@ -379,7 +379,7 @@ function MODULE:HUDPaint()
     local displayData = buildDoorDisplayData(entity)
     if not displayData then return end
     if displayData.disabled then
-        lia.util.drawEntText(entity, L("doorDisabled"), 0, 255)
+        lia.util.drawEntityInfo(entity, {{text = L("doorDisabled"), posY = 0}}, 255)
         return
     end
 

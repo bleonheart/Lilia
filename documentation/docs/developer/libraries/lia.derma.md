@@ -96,7 +96,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-<pre><code class="language-lua">  local radial = lia.derma.radialMenu(options)
+<pre><code class="language-lua">  local radial = vgui.Create("liaRadialPanel")
 </code></pre>
 </div>
 
@@ -1565,7 +1565,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 ---
 
 <details class="realm-client" id="function-liadermadrawenttext">
-<summary><span class="summary-main"><a id="lia.derma.drawEntText"></a>lia.derma.drawEntText(ent, text, posY, alphaOverride)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3582" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.derma.drawFloatingText"></a>lia.derma.drawFloatingText(ent, text, posY, alphaOverride)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L3582" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liadermadrawenttext"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1592,7 +1592,7 @@ The derma library centralizes reusable clientside interface helpers under `lia.d
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-<pre><code class="language-lua">  lia.derma.drawEntText(entity, L("vendor"), 0)
+<pre><code class="language-lua">  lia.derma.drawFloatingText(entity, L("vendor"), 0)
 </code></pre>
 </div>
 

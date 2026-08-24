@@ -1,4 +1,52 @@
-﻿local PANEL = {}
+﻿--[[
+    Hooks:
+
+        ChatAddText(string markup, ...)
+
+    Purpose:
+
+        Allows modules to modify or prepend markup to a chat message before the
+        original chat arguments are converted into markup and displayed.
+
+        The hook is called whenever text is added to the custom chat box. The
+        first argument contains the markup generated so far, while all remaining
+        arguments are the original values supplied to the chat message.
+
+        Returning a string replaces the current markup. Returning nil leaves the
+        existing markup unchanged.
+
+    Category:
+
+        Chat
+
+    Parameters:
+
+        markup (string)
+            The markup string generated for the message so far.
+
+        ... (any)
+            The original chat message arguments. These may include strings,
+            colors, players, materials, or other values supported by the chat
+            renderer.
+
+    Returns:
+
+        string|nil
+            The modified markup string, or nil to keep the existing markup.
+
+    Example Usage:
+
+        ```lua
+        hook.Add("ChatAddText", "liaExampleChatAddText", function(markup, ...)
+            return markup .. "<color=255,200,100>[Chat] </color>"
+        end)
+        ```
+
+    Realm:
+
+        Client
+]]
+local PANEL = {}
 local function paintChatMarkupText(chatbox, text, font, x, y, color, halign, valign, alpha)
     alpha = alpha or color.a or 255
     surface.SetFont(font)

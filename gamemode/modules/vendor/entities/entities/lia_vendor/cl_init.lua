@@ -20,13 +20,17 @@ function ENT:Think()
     return true
 end
 
-function ENT:onDrawEntityInfo(alpha)
-    local name = lia.vendor.getVendorProperty(self, "name")
-    if not lia.vendor.stored[self] or not lia.vendor.stored[self]["name"] then
-        net.Start("liaVendorRequestData")
-        net.WriteEntity(self)
-        net.SendToServer()
-    end
-
-    lia.util.drawEntText(self, name, 0, alpha)
-end
+ENT.DrawInfo = {
+    {
+        text = function(ent)
+            local name = lia.vendor.getVendorProperty(ent, "name")
+            if not lia.vendor.stored[ent] or not lia.vendor.stored[ent]["name"] then
+                net.Start("liaVendorRequestData")
+                net.WriteEntity(ent)
+                net.SendToServer()
+            end
+            return name
+        end,
+        posY = 0
+    }
+}

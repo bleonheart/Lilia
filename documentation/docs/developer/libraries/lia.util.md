@@ -1305,7 +1305,7 @@ The utility library centralizes common helpers under `lia.util`. Shared helpers 
 ---
 
 <details class="realm-client" id="function-liautildrawenttext">
-<summary><span class="summary-main"><a id="lia.util.drawEntText"></a>lia.util.drawEntText(ent, text, posY, alphaOverride)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/util.lua#L1819" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.util.drawEntityInfo"></a>lia.util.drawEntityInfo(ent, drawInfo, alphaOverride)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/util.lua#L1819" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liautildrawenttext"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1332,7 +1332,7 @@ The utility library centralizes common helpers under `lia.util`. Shared helpers 
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-<pre><code class="language-lua">  lia.util.drawEntText(entity, "Open", 0, 255)
+<pre><code class="language-lua">  lia.util.drawEntityInfo(entity, {{text = "Open", posY = 0}}, 255)
 </code></pre>
 </div>
 

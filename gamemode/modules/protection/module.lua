@@ -67,62 +67,6 @@
     Realm:
         Shared
 ]]
---[[
-    Hooks:
-        OnCheaterCaught(client)
-
-    Purpose:
-        Called after the anti-cheat timeout flow identifies a player as cheating.
-
-    Category:
-        Protection
-
-    Parameters:
-        client (Player)
-            The player flagged by the anti-cheat flow.
-
-    Example Usage:
-        ```lua
-        hook.Add("OnCheaterCaught", "liaExampleOnCheaterCaught", function(client)
-            if not IsValid(client) then return end
-            print(string.format("[MyModule] handled OnCheaterCaught for %s", client:Name()))
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        PlayerCheatDetected(client)
-
-    Purpose:
-        Called when the anti-cheat system detects or flags suspicious cheating behavior for a player.
-
-    Category:
-        Protection
-
-    Parameters:
-        client (Player)
-            The player detected by the anti-cheat system.
-
-    Example Usage:
-        ```lua
-        hook.Add("PlayerCheatDetected", "liaExamplePlayerCheatDetected", function(client)
-            if not IsValid(client) then return end
-            print(string.format("[MyModule] handled PlayerCheatDetected for %s", client:Name()))
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Server
-]]
 MODULE.name = "@protection"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"

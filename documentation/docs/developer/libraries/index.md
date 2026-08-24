@@ -200,7 +200,7 @@ Reference pages for documented Lilia libraries and module library helpers.
   </a>
   <a href="./lia.sit/" class="card">
     <h3>Sit</h3>
-    <p>This page documents the functions and methods in the Lilia library.</p>
+    <p>Adds player sitting with position validation, safe facing directions, and invisible seats.</p>
   </a>
   <a href="./lia.time/" class="card">
     <h3>Time</h3>
@@ -212,7 +212,7 @@ Reference pages for documented Lilia libraries and module library helpers.
   </a>
   <a href="./lia.vendor/" class="card">
     <h3>Vendor</h3>
-    <p>Vendor helpers for shared preset registration, per-entity vendor property storage, synchronization, and vendor data snapshots.</p>
+    <p>Vendor helpers for registering presets, storing vendor properties, synchronizing changes, and reading vendor data.</p>
   </a>
   <a href="./lia.view/" class="card">
     <h3>View</h3>

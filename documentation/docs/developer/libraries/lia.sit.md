@@ -29,13 +29,13 @@ Adds player sitting with position validation, safe facing directions, and invisi
 
 <h3 style="margin-bottom: 5px;">Overview</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-The sit library adds player sitting under <code>lia.sit</code>. It validates surface positions and facing rotations, finds safe seating directions, supports the <code>ShouldAllowSit</code> hook, and creates invisible vehicle seats that can be attached to world entities.
+The sit library adds player sitting under `lia.sit`. It validates surface positions and facing rotations, finds safe seating directions, supports the `ShouldAllowSit` hook, and creates invisible vehicle seats that can be attached to world entities.
 </div>
 
 ---
 
 <details class="realm-shared" id="function-liasitisvalidsittingrotation">
-<summary><span class="summary-main"><a id="lia.sit.isValidSittingRotation"></a>lia.sit.isValidSittingRotation(position, surfaceAngle, rotation)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/sit.lua#L48" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.sit.isValidSittingRotation"></a>lia.sit.isValidSittingRotation(position, surfaceAngle, rotation)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/sit.lua#L61" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liasitisvalidsittingrotation"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -65,7 +65,7 @@ The sit library adds player sitting under <code>lia.sit</code>. It validates sur
 ---
 
 <details class="realm-server" id="function-liasitfindbestsittingrotation">
-<summary><span class="summary-main"><a id="lia.sit.findBestSittingRotation"></a>lia.sit.findBestSittingRotation(position)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/sit.lua#L102" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.sit.findBestSittingRotation"></a>lia.sit.findBestSittingRotation(position)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/sit.lua#L114" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liasitfindbestsittingrotation"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -93,7 +93,7 @@ The sit library adds player sitting under <code>lia.sit</code>. It validates sur
 ---
 
 <details class="realm-server" id="function-liasitcanplayersitat">
-<summary><span class="summary-main"><a id="lia.sit.canPlayerSitAt"></a>lia.sit.canPlayerSitAt(player, position, pitch, entity)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/sit.lua#L143" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.sit.canPlayerSitAt"></a>lia.sit.canPlayerSitAt(player, position, pitch, entity)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/sit.lua#L155" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liasitcanplayersitat"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -124,7 +124,7 @@ The sit library adds player sitting under <code>lia.sit</code>. It validates sur
 ---
 
 <details class="realm-server" id="function-liasitplaceplayerinseat">
-<summary><span class="summary-main"><a id="lia.sit.placePlayerInSeat"></a>lia.sit.placePlayerInSeat(player, position, entity, rotation, pitch, manualFacing)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/sit.lua#L174" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.sit.placePlayerInSeat"></a>lia.sit.placePlayerInSeat(player, position, entity, rotation, pitch, manualFacing)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/sit.lua#L186" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liasitplaceplayerinseat"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

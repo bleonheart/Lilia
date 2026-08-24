@@ -386,10 +386,6 @@ else
         for _, v in ipairs(events) do
             local eventObject = pac.CreateEvent(v.name, v.args)
             eventObject.Think = v.func
-            --[[
-                Realm:
-                    Shared
-            ]]
             function eventObject:IsAvailable()
                 return v.available()
             end

@@ -77,7 +77,6 @@ function lia.sit.isValidSittingRotation(position, surfaceAngle, rotation)
     return horizontalTrace.StartPos:Distance(horizontalTrace.HitPos) > 20 and verticalTrace.StartPos:Distance(verticalTrace.HitPos) > 14
 end
 
--- Legacy alias kept for compatibility with existing client-side code.
 lia.sit.checkValidRotation = lia.sit.isValidSittingRotation
 if SERVER then
     lia.sit.cooldown = lia.sit.cooldown or {}
@@ -234,7 +233,6 @@ if SERVER then
         end
     end
 
-    -- Legacy aliases kept for compatibility with existing modules and schemas.
     lia.sit.optimalRotation = lia.sit.findBestSittingRotation
     lia.sit.canSitHere = lia.sit.canPlayerSitAt
     lia.sit.sit = lia.sit.placePlayerInSeat

@@ -2,7 +2,7 @@
     self:DrawModel()
 end
 
-function ENT:onDrawEntityInfo(alpha)
-    lia.util.drawEntText(self, L("liaAmmoBoxName"), 0, alpha)
-    lia.util.drawEntText(self, L("liaAmmoBoxDesc"), 40, alpha)
-end
+ENT.DrawInfo = {
+    {text = function(ent) return L("liaAmmoBoxName") end, posY = 0},
+    {text = function(ent) return L("liaAmmoBoxDesc") end, posY = 40}
+}

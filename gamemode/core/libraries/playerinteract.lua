@@ -539,7 +539,7 @@ else
 
         if #entries == 0 then return end
         local categorized = lia.playerinteract.getCategorizedOptions(entries)
-        local radial = lia.derma.radialMenu()
+        local radial = vgui.Create("liaRadialPanel")
         local categories = {}
         radial:SetCenterText(titleText or (isInteraction and L("playerInteractions") or L("actionsMenu")), L("selectOption"))
         for _, entry in ipairs(categorized) do

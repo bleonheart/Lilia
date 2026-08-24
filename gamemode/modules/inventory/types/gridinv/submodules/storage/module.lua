@@ -127,42 +127,6 @@
 ]]
 --[[
     Hooks:
-        StorageCanTransferItem(client, storage, item)
-
-    Purpose:
-        Determines whether a player may transfer a specific item through a storage interaction.
-
-    Category:
-        Inventory
-
-    Parameters:
-        client (Player)
-            The player attempting the transfer.
-
-        storage (Entity)
-            The storage entity involved in the transfer.
-
-        item (table)
-            The item being moved.
-
-    Example Usage:
-        ```lua
-        hook.Add("StorageCanTransferItem", "liaExampleStorageCanTransferItem", function(client, storage, item)
-            if IsValid(client) and client:IsAdmin() then
-                return true
-            end
-        end)
-        ```
-
-    Returns:
-        boolean|nil
-            Return false to block the item transfer.
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
         StorageEntityRemoved(entity, inventory)
 
     Purpose:

@@ -9,10 +9,10 @@
   - **Meta Functions:** 0
 
 ### Hooks Documentation
-- **Missing Hooks:** 1 (used but undocumented)
-- **Unused Hooks:** 3 (documented but unused)
+- **Missing Hooks:** 0 (used but undocumented)
+- **Unused Hooks:** 0 (documented but unused)
 - **Total Documented Hooks:** 450
-- **Total Registered Hooks:** 448
+- **Total Registered Hooks:** 447
 
 ### Localization Analysis
 - **Undefined Calls:** 1 unique
@@ -85,12 +85,12 @@ Total: 1 functions
 ## Hooks Documentation Analysis
 
 ### Summary
-- **Missing Hooks:** 1 (used in code but not documented)
+- **Missing Hooks:** 0 (used in code but not documented)
 - **Documented Hooks:** 450
-- **Registered Hooks:** 448
+- **Registered Hooks:** 447
 - **Method Hooks:** 20 (`function GM:HookName(...)`, `function MODULE:HookName(...)`, `function SCHEMA:HookName(...)`)
-- **Standard Hooks:** 428 (`hook.Add(...)`, `hook.Run(...)`, `hook.Call(...)`)
-- **Unused Hooks:** 3 (documented but not registered)
+- **Standard Hooks:** 427 (`hook.Add(...)`, `hook.Run(...)`, `hook.Call(...)`)
+- **Unused Hooks:** 0 (documented but not registered)
 
 ### Method-Style Hooks:
 These hooks are defined as `function GM:HookName(...)`, `function MODULE:HookName(...)`, or `function SCHEMA:HookName(...)`.
@@ -655,9 +655,6 @@ These entries show hooks registered outside libraries and outside external modul
   - meta `character` [standard] in `core/meta/character.lua`
 - `CharRestored`
   - other [method] in `modules/inventory/types/gridinv/libraries/server.lua`
-- `ChatAddText`
-  - other [method] in `modules/chatbox/libraries/client.lua`
-  - core `derma` [standard] in `core/derma/panels/chatbox.lua`
 - `ChatboxPanelCreated`
   - other [standard] in `modules/chatbox/libraries/client.lua`
   - core `netcalls` [standard] in `core/netcalls/client.lua`
@@ -1473,16 +1470,6 @@ These entries show hooks registered outside libraries and outside external modul
 - `WeaponSelectSound`
   - core `derma` [standard] in `core/derma/panels/weaponselector.lua`
 
-### Missing Hook Documentation:
-These hooks are registered in code but missing from documentation:
-- `ChatAddText(text, ...)`
-
-### Unused Hook Documentation:
-These hooks are documented but not registered in code:
-- `OnCheaterCaught()`
-- `PlayerCheatDetected()`
-- `StorageCanTransferItem()`
-
 ## Localization Analysis
 
 - **Unique Keys:** 3932
@@ -1618,9 +1605,9 @@ None
 
 ### Summary
 - **Registered Panels:** 54
-- **Referenced Panels:** 59
+- **Referenced Panels:** 84
 - **Module Panels Outside derma:** 2
-- **Registered But Unused:** 19
+- **Registered But Unused:** 1
 
 ### Module Panels Outside derma
 
@@ -1633,25 +1620,7 @@ None
 
 | Panel | Module | Location |
 |---|---|---|
-| `CircularAvatar` | `framework` | `core/derma/panels/avatar.lua:69` |
-| `liaCharacterCreation` | `framework` | `core/derma/mainmenu/creation.lua:433` |
-| `liaClasses` | `framework` | `core/derma/panels/f1menu.lua:1617` |
 | `liaHorizontalScroll` | `framework` | `core/derma/panels/horizontal_scroll.lua:70` |
-| `liaHorizontalScrollBar` | `framework` | `core/derma/panels/horizontal_scroll.lua:128` |
-| `liaMarkupPanel` | `framework` | `core/libraries/thirdparty/cl_markup.lua:540` |
-| `liaModelPanel` | `framework` | `core/derma/panels/model.lua:92` |
-| `liaSlider` | `framework` | `core/derma/panels/slider.lua:179` |
-| `liaSpawnIcon` | `framework` | `core/derma/panels/spawnicon.lua:117` |
-| `liaStandaloneInventoryMenu` | `framework` | `core/libraries/keybind.lua:916` |
-| `liaTable` | `framework` | `core/derma/panels/table.lua:633` |
-| `liaTabs` | `framework` | `core/derma/panels/tabs.lua:421` |
-| `liaVoicePanel` | `framework` | `core/derma/panels/voice.lua:149` |
-| `liaGridInventoryMenu` | `gridinv` | `modules/inventory/types/gridinv/derma/cl_grid_inventory.lua:656` |
-| `liaGridInventoryPanel` | `gridinv` | `modules/inventory/types/gridinv/derma/cl_grid_inventory_panel.lua:532` |
-| `liaGridInvItem` | `gridinv` | `modules/inventory/types/gridinv/derma/cl_grid_inventory_item.lua:176` |
-| `liaVendorEditorItemRow` | `vendor` | `modules/vendor/derma/client.lua:1618` |
-| `liaVendorItem` | `vendor` | `modules/vendor/derma/client.lua:739` |
-| `liaListInventoryPanel` | `weightinv` | `modules/inventory/types/weightinv/derma/cl_list_inventory_panel.lua:169` |
 
 ---
 
@@ -1659,7 +1628,7 @@ None
 
 ### Summary
 - **Net Handlers Outside netcalls:** 11
-- **UI / Derma Code Outside derma:** 9
+- **UI / Derma Code Outside derma:** 14
 
 ### Net Handlers Outside netcalls
 
@@ -1681,15 +1650,20 @@ None
 
 | Module | Location | Expected Folder | Reason |
 |---|---|---|---|
-| `administration` | `modules/administration/libraries/client.lua:4487` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
+| `administration` | `modules/administration/libraries/client.lua:25` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
 | `administration` | `modules/administration/libraries/shared.lua:381` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
 | `administration` | `modules/administration/netcalls/client.lua:99` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
 | `adminstick` | `modules/administration/submodules/adminstick/entities/weapons/lia_adminstick/cl_init.lua:240` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\administration\submodules\adminstick\derma` | Module UI-heavy code is outside the derma folder |
 | `adminstick` | `modules/administration/submodules/adminstick/libraries/client.lua:470` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\administration\submodules\adminstick\derma` | Module UI-heavy code is outside the derma folder |
 | `adminstick` | `modules/administration/submodules/adminstick/libraries/client.lua:1551` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\administration\submodules\adminstick\derma` | Module Derma code is outside the derma folder |
 | `adminstick` | `modules/administration/submodules/adminstick/libraries/client.lua:2658` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\administration\submodules\adminstick\derma` | Module Derma code is outside the derma folder |
+| `chatbox` | `modules/chatbox/libraries/client.lua:18` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\chatbox\derma` | Module UI-heavy code is outside the derma folder |
+| `gridinv` | `modules/inventory/types/gridinv/libraries/client.lua:94` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\inventory\types\gridinv\derma` | Module UI-heavy code is outside the derma folder |
+| `logs` | `modules/administration/submodules/logs/libraries/client.lua:71` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\administration\submodules\logs\derma` | Module UI-heavy code is outside the derma folder |
 | `storage` | `modules/inventory/types/gridinv/submodules/storage/libraries/client.lua:89` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\inventory\types\gridinv\submodules\storage\derma` | Module UI-heavy code is outside the derma folder |
+| `teams` | `modules/teams/libraries/client.lua:226` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\teams\derma` | Module UI-heavy code is outside the derma folder |
 | `tickets` | `modules/administration/submodules/tickets/libraries/client.lua:41` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\administration\submodules\tickets\derma` | Module UI-heavy code is outside the derma folder |
+| `weightinv` | `modules/inventory/types/weightinv/libraries/client.lua:50` | `D:\GMOD\Server\garrysmod\gamemodes\lilia\gamemode\modules\inventory\types\weightinv\derma` | Module UI-heavy code is outside the derma folder |
 
 ---
 

@@ -62,7 +62,7 @@ function ENT:onDrawEntityInfo(alpha)
 
     hook.Run("DrawItemEntityInfo", self, item, infoTable, alpha)
     for i, info in ipairs(infoTable) do
-        lia.util.drawEntText(self, info.text, (i - 1) * 50, alpha)
+        lia.util.drawEntityInfo(self, {{text = info.text, posY = info.posY or (i - 1) * 50}}, alpha)
     end
 
     item.data, item.entity = oldD, oldE
