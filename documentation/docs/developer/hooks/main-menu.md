@@ -108,7 +108,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-charmenuclosed">
-<summary><span class="summary-main"><a id="CharMenuClosed"></a>CharMenuClosed()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/character.lua#L329" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="CharMenuClosed"></a>CharMenuClosed()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_character.lua#L329" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="charmenuclosed"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -139,7 +139,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-charmenuopened">
-<summary><span class="summary-main"><a id="CharMenuOpened"></a>CharMenuOpened(self)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/character.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="CharMenuOpened"></a>CharMenuOpened(self)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_character.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="charmenuopened"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -216,7 +216,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-configurecharactercreationsteps">
-<summary><span class="summary-main"><a id="ConfigureCharacterCreationSteps"></a>ConfigureCharacterCreationSteps(self)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/creation.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="ConfigureCharacterCreationSteps"></a>ConfigureCharacterCreationSteps(self)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_creation.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="configurecharactercreationsteps"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -329,7 +329,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-filtercharmodels">
-<summary><span class="summary-main"><a id="FilterCharModels"></a>FilterCharModels(client, faction, data, index)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/steps/model.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="FilterCharModels"></a>FilterCharModels(client, faction, data, index)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/steps/cl_model.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="filtercharmodels"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -373,7 +373,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-getcharactercreatebuttontooltip">
-<summary><span class="summary-main"><a id="GetCharacterCreateButtonTooltip"></a>GetCharacterCreateButtonTooltip(client, currentChars, maxChars)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/character.lua#L28" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetCharacterCreateButtonTooltip"></a>GetCharacterCreateButtonTooltip(client, currentChars, maxChars)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_character.lua#L28" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getcharactercreatebuttontooltip"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -418,7 +418,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-getcharactercreationsummary">
-<summary><span class="summary-main"><a id="GetCharacterCreationSummary"></a>GetCharacterCreationSummary(client, context, summary, panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/steps/summary.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetCharacterCreationSummary"></a>GetCharacterCreationSummary(client, context, summary, panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/steps/cl_summary.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getcharactercreationsummary"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -462,7 +462,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-getcharacterdisconnectbuttontooltip">
-<summary><span class="summary-main"><a id="GetCharacterDisconnectButtonTooltip"></a>GetCharacterDisconnectButtonTooltip(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/character.lua#L243" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetCharacterDisconnectButtonTooltip"></a>GetCharacterDisconnectButtonTooltip(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_character.lua#L243" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getcharacterdisconnectbuttontooltip"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -503,7 +503,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-getcharacterdiscordbuttontooltip">
-<summary><span class="summary-main"><a id="GetCharacterDiscordButtonTooltip"></a>GetCharacterDiscordButtonTooltip(client, discordURL)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/character.lua#L153" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetCharacterDiscordButtonTooltip"></a>GetCharacterDiscordButtonTooltip(client, discordURL)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_character.lua#L153" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getcharacterdiscordbuttontooltip"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -545,7 +545,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-getcharacterloadbuttontooltip">
-<summary><span class="summary-main"><a id="GetCharacterLoadButtonTooltip"></a>GetCharacterLoadButtonTooltip(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/character.lua#L64" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetCharacterLoadButtonTooltip"></a>GetCharacterLoadButtonTooltip(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_character.lua#L64" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getcharacterloadbuttontooltip"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -586,7 +586,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-getcharacterloadmainbuttontooltip">
-<summary><span class="summary-main"><a id="GetCharacterLoadMainButtonTooltip"></a>GetCharacterLoadMainButtonTooltip(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/character.lua#L92" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetCharacterLoadMainButtonTooltip"></a>GetCharacterLoadMainButtonTooltip(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_character.lua#L92" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getcharacterloadmainbuttontooltip"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -627,7 +627,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-getcharactermountbuttontooltip">
-<summary><span class="summary-main"><a id="GetCharacterMountButtonTooltip"></a>GetCharacterMountButtonTooltip(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/character.lua#L215" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetCharacterMountButtonTooltip"></a>GetCharacterMountButtonTooltip(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_character.lua#L215" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getcharactermountbuttontooltip"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -668,7 +668,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-getcharacterreturnbuttontooltip">
-<summary><span class="summary-main"><a id="GetCharacterReturnButtonTooltip"></a>GetCharacterReturnButtonTooltip(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/character.lua#L271" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetCharacterReturnButtonTooltip"></a>GetCharacterReturnButtonTooltip(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_character.lua#L271" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getcharacterreturnbuttontooltip"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -709,7 +709,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-getcharacterstaffbuttontooltip">
-<summary><span class="summary-main"><a id="GetCharacterStaffButtonTooltip"></a>GetCharacterStaffButtonTooltip(client, hasStaffChar)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/character.lua#L120" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetCharacterStaffButtonTooltip"></a>GetCharacterStaffButtonTooltip(client, hasStaffChar)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_character.lua#L120" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getcharacterstaffbuttontooltip"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -753,7 +753,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-getcharacterworkshopbuttontooltip">
-<summary><span class="summary-main"><a id="GetCharacterWorkshopButtonTooltip"></a>GetCharacterWorkshopButtonTooltip(client, workshopURL)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/character.lua#L184" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetCharacterWorkshopButtonTooltip"></a>GetCharacterWorkshopButtonTooltip(client, workshopURL)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_character.lua#L184" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getcharacterworkshopbuttontooltip"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1055,7 +1055,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-loadmainmenuinformation">
-<summary><span class="summary-main"><a id="LoadMainMenuInformation"></a>LoadMainMenuInformation(info, character)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/character.lua#L299" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="LoadMainMenuInformation"></a>LoadMainMenuInformation(info, character)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_character.lua#L299" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="loadmainmenuinformation"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1092,7 +1092,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-modifycharactercreationsummary">
-<summary><span class="summary-main"><a id="ModifyCharacterCreationSummary"></a>ModifyCharacterCreationSummary(client, context, summary, panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/steps/summary.lua#L38" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="ModifyCharacterCreationSummary"></a>ModifyCharacterCreationSummary(client, context, summary, panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/steps/cl_summary.lua#L38" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="modifycharactercreationsummary"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1134,7 +1134,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-oncharactercreationmodeliconset">
-<summary><span class="summary-main"><a id="OnCharacterCreationModelIconSet"></a>OnCharacterCreationModelIconSet(icon, model, skin, bodyGroups)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/steps/model.lua#L38" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnCharacterCreationModelIconSet"></a>OnCharacterCreationModelIconSet(icon, model, skin, bodyGroups)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/steps/cl_model.lua#L38" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="oncharactercreationmodeliconset"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1312,7 +1312,7 @@ This page documents hooks in the main menu category.
 ---
 
 <details class="realm-client" id="function-shouldmenubuttonshow">
-<summary><span class="summary-main"><a id="ShouldMenuButtonShow"></a>ShouldMenuButtonShow(buttonID)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/mainmenu/creation.lua#L28" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="ShouldMenuButtonShow"></a>ShouldMenuButtonShow(buttonID)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/mainmenu/derma/cl_creation.lua#L28" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="shouldmenubuttonshow"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

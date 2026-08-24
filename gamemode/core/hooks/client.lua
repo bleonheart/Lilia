@@ -1056,7 +1056,10 @@ local function RenderEntities()
                         local p = toScreen(ent:LocalToWorld(ent:OBBCenter()))
                         hook.Run("DrawEntityInfo", netPlayer, a, p)
                     elseif ent.DrawInfo then
-                        lia.util.drawEntityInfo(ent, ent.DrawInfo, a)
+                        for _, info in ipairs(ent.DrawInfo) do
+                            local text = isfunction(info.text) and info.text(ent) or info.text
+                            lia.util.drawEntText(ent, text, info.posY, a)
+                        end
                     elseif ent.onDrawEntityInfo then
                         ent.onDrawEntityInfo(ent, a)
                     else

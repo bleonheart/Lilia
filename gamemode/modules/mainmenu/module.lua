@@ -487,19 +487,8 @@ else
     function MODULE:ChooseCharacter(id)
         assert(isnumber(id), L("idMustBeNumber"))
         local d = deferred.new()
-        net.Receive("liaCharChoose", function()
-            local message = net.ReadString()
-            if message == "" then
-                d:resolve()
-                lia.char.getCharacter(id, nil, function(character)
-                    local client = LocalPlayer()
-                    if IsValid(client) then client:SetNoDraw(false) end
-                    hook.Run("CharLoaded", character)
-                end)
-            else
-                d:reject(message)
-            end
-        end)
+        self.CharacterChoiceRequests = self.CharacterChoiceRequests or {}
+        self.CharacterChoiceRequests[#self.CharacterChoiceRequests + 1] = {id = id, deferred = d}
 
         net.Start("liaCharChoose")
         net.WriteUInt(id, 32)
@@ -530,15 +519,8 @@ else
             payload[key] = value
         end
 
-        net.Receive("liaCharCreate", function()
-            local id = net.ReadUInt(32)
-            local reason = net.ReadString()
-            if id > 0 then
-                d:resolve(id)
-            else
-                d:reject(reason)
-            end
-        end)
+        self.CharacterCreationRequests = self.CharacterCreationRequests or {}
+        self.CharacterCreationRequests[#self.CharacterCreationRequests + 1] = d
 
         net.Start("liaCharCreate")
         net.WriteUInt(table.Count(payload), 32)

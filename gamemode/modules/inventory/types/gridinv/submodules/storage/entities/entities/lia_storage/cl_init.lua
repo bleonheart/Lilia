@@ -10,6 +10,6 @@ function ENT:onDrawEntityInfo(alpha)
     local def = self:getStorageInfo()
     if def and def.desc then
         local descText = def.desc
-        lia.util.drawEntityInfo(self, {{text = descText, posY = 50}}, alpha)
+        lia.util.drawEntText(self, descText, 50, alpha)
     end
 end

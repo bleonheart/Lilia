@@ -1660,7 +1660,7 @@ local function getWardrobeModelsForCharacter(character)
 end
 
 local function canAccessWardrobe(client)
-    for _, wardrobe in ipairs(ents.FindByClass("model_wardrobe")) do
+    for _, wardrobe in ipairs(ents.FindByClass("lia_model_wardrobe")) do
         if IsValid(wardrobe) and wardrobe:GetPos():Distance(client:GetPos()) <= 128 then return true end
     end
     return client:hasPrivilege("manageBodygroups")

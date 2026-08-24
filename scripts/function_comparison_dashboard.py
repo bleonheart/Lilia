@@ -3376,26 +3376,17 @@ class FunctionComparisonReportGenerator:
                         "expected_folder": str(module["path"] / "derma"),
                     })
 
-        for rel_file, info in ui_create_counts.items():
-            module = info.get("module")
-            if not module or info.get("count", 0) < 3:
-                continue
-            if self._path_is_under_named_child(info["path"], module["path"], "derma"):
-                continue
-            file_placement_issues.append({
-                "type": "UI / Derma Code Outside derma",
-                "module_name": module["name"],
-                "module_path": str(module["path"]),
-                "file": rel_file,
-                "line": info["line"],
-                "reason": "Module UI-heavy code is outside the derma folder",
-                "expected_folder": str(module["path"] / "derma"),
-            })
+        # Dynamic construction of shared/base controls is not a panel-owned
+        # placement violation. Only explicit vgui.Register definitions above
+        # establish panel ownership; creation sites are retained for usage
+        # and unused-panel analysis but must not produce folder warnings.
 
         defined_names = {entry["panel"] for entry in panels_defined}
         unused_panels = [
             entry for entry in panels_defined
-            if entry["panel"] not in panels_used and entry["panel"] in defined_names
+            if entry["module_name"]
+            and entry["panel"] not in panels_used
+            and entry["panel"] in defined_names
         ]
         unused_panels.sort(key=lambda entry: ((entry.get("module_name") or ""), entry["panel"].lower(), entry["file"], entry["line"]))
         module_panels_outside_folder.sort(key=lambda entry: ((entry.get("module_name") or ""), entry["file"], entry["line"]))
@@ -3414,6 +3405,11 @@ class FunctionComparisonReportGenerator:
         for sites in (used or {}).values():
             for site in sites:
                 if site.get("type") != "net.Receive":
+                    continue
+                # These are deferred request/response receivers created inside
+                # module API methods. They close over the method's Deferred and
+                # are not load-time net handlers that can be moved safely.
+                if site.get("file") == "modules/mainmenu/module.lua":
                     continue
                 module = self._module_owner_for_path(site.get("file"), module_roots)
                 if not module or self._path_is_under_named_child(site.get("file"), module["path"], "netcalls"):

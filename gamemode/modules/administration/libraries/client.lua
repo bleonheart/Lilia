@@ -39,6 +39,7 @@
 local MODULE = MODULE
 local flagsData
 local charListRequestID = 0
+MODULE.charListRequestID = charListRequestID
 local CHAR_LIST_PAGE_SIZE = 100
 local function requestFullCharListPage(panel, offset)
     if not IsValid(panel) then return end
@@ -52,6 +53,7 @@ end
 local function startFullCharListRequest(panel)
     if not IsValid(panel) then return end
     charListRequestID = (charListRequestID + 1) % 65535
+    MODULE.charListRequestID = charListRequestID
     panel.charListRequestID = charListRequestID
     panel.charListLoadedCount = 0
     panel.charListTotalCount = 0
@@ -68,7 +70,6 @@ local function startFullCharListRequest(panel)
     requestFullCharListPage(panel, 0)
 end
 
-net.Receive("liaCharDeleted", function() if IsValid(panelRef) and isfunction(panelRef.buildSheets) then startFullCharListRequest(panelRef) end end)
 function MODULE:ShowPlayerOptions(target, options)
     local client = LocalPlayer()
     if not IsValid(client) or not IsValid(target) then return end
@@ -4687,12 +4688,6 @@ lia.net.readBigTable("liaNetProfilerLogs", function(payload)
     if isfunction(panel.ApplyNetLogs) then panel:ApplyNetLogs(payload) end
 end)
 
-net.Receive("liaNetProfilerSnapshot", function()
-    local panel = MODULE.netProfilerPanel
-    if not IsValid(panel) then return end
-    local snapshot = net.ReadTable()
-    if isfunction(panel.RenderNetProfilerSnapshot) then panel:RenderNetProfilerSnapshot(snapshot) end
-end)
 
 lia.net.readBigTable("liaFullCharListPage", function(data)
     if not IsValid(panelRef) or not data or not isfunction(panelRef.buildSheets) then return end
@@ -5083,6 +5078,7 @@ local toolPermissionTierData = {
     tools = {},
     tiers = {}
 }
+MODULE.toolPermissionTierData = toolPermissionTierData
 
 local toolPermissionTierRefresh
 local toolPermissionLegacyDisabled = {
@@ -5184,14 +5180,6 @@ local function paintToolPermissionPanel(w, h, background, border, radius)
     if border then lia.derma.rect(0, 0, w, h):Rad(radius or 6):Color(border):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
 end
 
-net.Receive("liaToolPermissionTiers", function()
-    toolPermissionTierData = net.ReadTable() or {
-        tools = {},
-        tiers = {}
-    }
-
-    if toolPermissionTierRefresh then toolPermissionTierRefresh() end
-end)
 
 local staffCharacterConfiguration = {
     permissions = {},
@@ -5199,33 +5187,13 @@ local staffCharacterConfiguration = {
     privileges = {},
     flagDefinitions = {}
 }
+MODULE.staffCharacterConfiguration = staffCharacterConfiguration
 
 local staffCharacterConfigurationRefresh
+MODULE.staffCharacterConfigurationRefresh = nil
 local staffCharacterConfigurationPending = 0
 local staffCharacterConfigurationOperations = {}
-net.Receive("liaStaffCharacterConfiguration", function()
-    staffCharacterConfiguration = net.ReadTable() or staffCharacterConfiguration
-    staffCharacterConfiguration.permissions = staffCharacterConfiguration.permissions or {}
-    staffCharacterConfiguration.flags = staffCharacterConfiguration.flags or {}
-    staffCharacterConfiguration.privileges = staffCharacterConfiguration.privileges or {}
-    staffCharacterConfiguration.flagDefinitions = staffCharacterConfiguration.flagDefinitions or {}
-    if #staffCharacterConfigurationOperations > 0 then table.remove(staffCharacterConfigurationOperations, 1) end
-    for _, operation in ipairs(staffCharacterConfigurationOperations) do
-        if operation.kind == "permission" then
-            staffCharacterConfiguration.permissions[operation.id] = operation.enabled and true or nil
-        elseif operation.kind == "flag" then
-            staffCharacterConfiguration.flags[operation.id] = operation.enabled and true or nil
-        elseif operation.kind == "reset" then
-            staffCharacterConfiguration.permissions = {}
-            staffCharacterConfiguration.flags = {}
-        end
-    end
-
-    staffCharacterConfigurationPending = #staffCharacterConfigurationOperations
-    lia.staffCharacterPermissions = staffCharacterConfiguration.permissions or {}
-    lia.staffCharacterFlags = staffCharacterConfiguration.flags or {}
-    if staffCharacterConfigurationRefresh then staffCharacterConfigurationRefresh(true) end
-end)
+MODULE.staffCharacterConfigurationOperations = staffCharacterConfigurationOperations
 
 local function staffConfigurationPanel(parent, title, subtitle)
     local panel = parent:Add("DPanel")
@@ -5730,6 +5698,7 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
             end
 
             staffCharacterConfigurationRefresh = refresh
+            MODULE.staffCharacterConfigurationRefresh = refresh
             local oldOnRemove = panel.OnRemove
             panel.OnRemove = function(self)
                 if oldOnRemove then oldOnRemove(self) end
@@ -6333,6 +6302,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
             end
 
             toolPermissionTierRefresh = refreshData
+            MODULE.toolPermissionTierRefresh = refreshData
             allTools = getToolPermissionMetadata()
             local initialIds = {}
             for _, toolData in ipairs(allTools) do

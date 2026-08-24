@@ -35,7 +35,7 @@ The vendor library centralizes shared vendor state under `lia.vendor`. It stores
 ---
 
 <details class="realm-shared" id="function-liavendoraddpreset">
-<summary><span class="summary-main"><a id="lia.vendor.addPreset"></a>lia.vendor.addPreset(name, items)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/vendor.lua#L266" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.vendor.addPreset"></a>lia.vendor.addPreset(name, items)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/vendor/libraries/shared.lua#L266" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liavendoraddpreset"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -59,7 +59,7 @@ The vendor library centralizes shared vendor state under `lia.vendor`. It stores
 ---
 
 <details class="realm-shared" id="function-liavendorgetpreset">
-<summary><span class="summary-main"><a id="lia.vendor.getPreset"></a>lia.vendor.getPreset(name)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/vendor.lua#L289" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.vendor.getPreset"></a>lia.vendor.getPreset(name)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/vendor/libraries/shared.lua#L289" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liavendorgetpreset"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -87,7 +87,7 @@ The vendor library centralizes shared vendor state under `lia.vendor`. It stores
 ---
 
 <details class="realm-shared" id="function-liavendorgetvendorproperty">
-<summary><span class="summary-main"><a id="lia.vendor.getVendorProperty"></a>lia.vendor.getVendorProperty(entity, property)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/vendor.lua#L307" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.vendor.getVendorProperty"></a>lia.vendor.getVendorProperty(entity, property)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/vendor/libraries/shared.lua#L307" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liavendorgetvendorproperty"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -116,7 +116,7 @@ The vendor library centralizes shared vendor state under `lia.vendor`. It stores
 ---
 
 <details class="realm-shared" id="function-liavendorsetvendorproperty">
-<summary><span class="summary-main"><a id="lia.vendor.setVendorProperty"></a>lia.vendor.setVendorProperty(entity, property, value)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/vendor.lua#L327" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.vendor.setVendorProperty"></a>lia.vendor.setVendorProperty(entity, property, value)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/vendor/libraries/shared.lua#L327" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liavendorsetvendorproperty"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -141,7 +141,7 @@ The vendor library centralizes shared vendor state under `lia.vendor`. It stores
 ---
 
 <details class="realm-server" id="function-liavendorsyncvendorproperty">
-<summary><span class="summary-main"><a id="lia.vendor.syncVendorProperty"></a>lia.vendor.syncVendorProperty(entity, property, value, isDefault)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/vendor.lua#L363" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.vendor.syncVendorProperty"></a>lia.vendor.syncVendorProperty(entity, property, value, isDefault)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/vendor/libraries/shared.lua#L363" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liavendorsyncvendorproperty"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -167,7 +167,7 @@ The vendor library centralizes shared vendor state under `lia.vendor`. It stores
 ---
 
 <details class="realm-shared" id="function-liavendorgetallvendordata">
-<summary><span class="summary-main"><a id="lia.vendor.getAllVendorData"></a>lia.vendor.getAllVendorData(entity)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/vendor.lua#L390" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="lia.vendor.getAllVendorData"></a>lia.vendor.getAllVendorData(entity)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/vendor/libraries/shared.lua#L390" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liavendorgetallvendordata"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

@@ -10,6 +10,38 @@
     end
 end)
 
+net.Receive("liaCharChoose", function()
+    local mainMenu = lia.module.get("mainmenu")
+    local requests = mainMenu and mainMenu.CharacterChoiceRequests
+    local request = requests and table.remove(requests, 1)
+    if not request then return end
+    local message = net.ReadString()
+    if message == "" then
+        request.deferred:resolve()
+        lia.char.getCharacter(request.id, nil, function(character)
+            local client = LocalPlayer()
+            if IsValid(client) then client:SetNoDraw(false) end
+            hook.Run("CharLoaded", character)
+        end)
+    else
+        request.deferred:reject(message)
+    end
+end)
+
+net.Receive("liaCharCreate", function()
+    local mainMenu = lia.module.get("mainmenu")
+    local requests = mainMenu and mainMenu.CharacterCreationRequests
+    local deferredRequest = requests and table.remove(requests, 1)
+    if not deferredRequest then return end
+    local id = net.ReadUInt(32)
+    local reason = net.ReadString()
+    if id > 0 then
+        deferredRequest:resolve(id)
+    else
+        deferredRequest:reject(reason)
+    end
+end)
+
 net.Receive("liaStaffDiscordPrompt", function()
     lia.derma.requestString(L("staffCharacterSetup"), L("discordUsernamePrompt"), function(discord)
         if discord and discord:Trim() ~= "" then

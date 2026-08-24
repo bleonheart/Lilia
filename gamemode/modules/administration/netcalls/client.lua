@@ -200,3 +200,70 @@ net.Receive("liaOnlineStaffData", function()
     hook.Run("OnlineStaffDataReceived", staffData)
 end)
 
+net.Receive("liaCharDeleted", function()
+    if not (IsValid(panelRef) and isfunction(panelRef.buildSheets)) then return end
+    MODULE.charListRequestID = ((MODULE.charListRequestID or 0) + 1) % 65535
+    panelRef.charListRequestID = MODULE.charListRequestID
+    panelRef.charListLoadedCount = 0
+    panelRef.charListTotalCount = 0
+    panelRef.charListBuilt = false
+    panelRef:Clear()
+    panelRef:DockPadding(16, 16, 16, 16)
+    panelRef.Paint = nil
+    local loading = panelRef:Add("DLabel")
+    loading:Dock(FILL)
+    loading:SetFont("LiliaFont.20")
+    loading:SetText("Loading character records...")
+    loading:SetTextColor(Color(180, 190, 190))
+    loading:SetContentAlignment(5)
+    net.Start("liaRequestFullCharListPage")
+    net.WriteUInt(panelRef.charListRequestID, 16)
+    net.WriteUInt(0, 32)
+    net.WriteUInt(100, 16)
+    net.SendToServer()
+end)
+
+net.Receive("liaNetProfilerSnapshot", function()
+    local panel = MODULE.netProfilerPanel
+    if not IsValid(panel) then return end
+    local snapshot = net.ReadTable()
+    if isfunction(panel.RenderNetProfilerSnapshot) then panel:RenderNetProfilerSnapshot(snapshot) end
+end)
+
+net.Receive("liaToolPermissionTiers", function()
+    local data = net.ReadTable() or {tools = {}, tiers = {}}
+    MODULE.toolPermissionTierData = MODULE.toolPermissionTierData or {tools = {}, tiers = {}}
+    MODULE.toolPermissionTierData.tools = data.tools or {}
+    MODULE.toolPermissionTierData.tiers = data.tiers or {}
+    if MODULE.toolPermissionTierRefresh then MODULE.toolPermissionTierRefresh() end
+end)
+
+net.Receive("liaStaffCharacterConfiguration", function()
+    local config = MODULE.staffCharacterConfiguration or {}
+    local incoming = net.ReadTable()
+    if incoming then
+        for key in pairs(config) do config[key] = nil end
+        for key, value in pairs(incoming) do config[key] = value end
+    end
+    config.permissions = config.permissions or {}
+    config.flags = config.flags or {}
+    config.privileges = config.privileges or {}
+    config.flagDefinitions = config.flagDefinitions or {}
+    local operations = MODULE.staffCharacterConfigurationOperations or {}
+    if #operations > 0 then table.remove(operations, 1) end
+    for _, operation in ipairs(operations) do
+        if operation.kind == "permission" then
+            config.permissions[operation.id] = operation.enabled and true or nil
+        elseif operation.kind == "flag" then
+            config.flags[operation.id] = operation.enabled and true or nil
+        elseif operation.kind == "reset" then
+            config.permissions = {}
+            config.flags = {}
+        end
+    end
+    MODULE.staffCharacterConfiguration = config
+    lia.staffCharacterPermissions = config.permissions
+    lia.staffCharacterFlags = config.flags
+    if MODULE.staffCharacterConfigurationRefresh then MODULE.staffCharacterConfigurationRefresh(true) end
+end)
+
