@@ -1,4 +1,4 @@
--- Relocated command registrations.
+﻿-- Relocated command registrations.
 local function getDoorByMapID(doorID)
     doorID = math.floor(tonumber(doorID) or 0)
     if doorID <= 0 then return end
@@ -26,10 +26,10 @@ local function resolveDoorCommandTarget(client, arguments, minimumArgumentCount)
 end
 
 lia.command.add("doorsell", {
-    desc = "@doorsellDesc",
+    desc = "Sell a door you own and receive a refund based on the door's price.",
     adminOnly = false,
     AdminStick = {
-        Name = "@adminStickDoorSellName",
+        Name = "Sell Door",
         ButtonText = "Sell This Door",
         Category = "doorActions",
         TargetClass = "door",
@@ -43,26 +43,26 @@ lia.command.add("doorsell", {
                     local price = math.Round((doorData.price or 0) * lia.config.get("DoorSellRatio", 0.5))
                     door:removeDoorAccessData()
                     client:getChar():giveMoney(price)
-                    client:notifyMoneyLocalized("doorSold", lia.currency.get(price))
+                    client:notifyMoney(string.format("You have sold this door for %s.", lia.currency.get(price)))
                     hook.Run("OnPlayerPurchaseDoor", client, door, false)
                     lia.log.add(client, "doorsell", price)
                 else
-                    client:notifyErrorLocalized("doorNotOwner")
+                    client:notifyError("You do not own this door.")
                 end
             else
-                client:notifyErrorLocalized("doorNotValid")
+                client:notifyError("You are not looking at a valid door.")
             end
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
 lia.command.add("admindoorsell", {
-    desc = "@admindoorsellDesc",
+    desc = "Admin command to sell a door on behalf of its owner and refund the owner.",
     adminOnly = true,
     AdminStick = {
-        Name = "@adminStickAdminDoorSellName",
+        Name = "Admin Sell Door",
         ButtonText = "Force Sell This Door",
         Category = "doorActions",
         TargetClass = "door",
@@ -77,27 +77,73 @@ lia.command.add("admindoorsell", {
                     local price = math.Round((doorData.price or 0) * lia.config.get("DoorSellRatio", 0.5))
                     door:removeDoorAccessData()
                     owner:getChar():giveMoney(price)
-                    owner:notifyMoneyLocalized("doorSold", lia.currency.get(price))
-                    client:notifyMoneyLocalized("doorSold", lia.currency.get(price))
+                    owner:notifyMoney(string.format("You have sold this door for %s.", lia.currency.get(price)))
+                    client:notifyMoney(string.format("You have sold this door for %s.", lia.currency.get(price)))
                     hook.Run("OnPlayerPurchaseDoor", owner, door, false)
                     lia.log.add(client, "admindoorsell", owner:Name(), price)
                 else
-                    client:notifyErrorLocalized("doorNotOwner")
+                    client:notifyError("You do not own this door.")
                 end
             else
-                client:notifyErrorLocalized("doorNotValid")
+                client:notifyError("You are not looking at a valid door.")
             end
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
+lia.command.add("admindoorsetowner", {
+    desc = "Permanently assign a door to a player's SteamID.",
+    arguments = {
+        {
+            name = "steamID",
+            type = "string"
+        }
+    },
+    adminOnly = true,
+    onRun = function(client, arguments)
+        local door, argumentIndex = resolveDoorCommandTarget(client, arguments, 1)
+        local steamID = arguments[argumentIndex]
+        if not door then return client:notifyError("You are not looking at a valid door.") end
+        if not steamID or not steamID:match("^STEAM_%d:%d:%d+$") then return client:notifyError("Enter a valid SteamID (STEAM_0:0:123).") end
+        local data = lia.doors.getData(door)
+        data.ownerSteamID = steamID
+        data.noSell = true
+        lia.doors.setData(door, data)
+        local target = lia.util.getBySteamID(steamID)
+        if IsValid(target) then
+            door:SetDTEntity(0, target)
+            door.liaAccess = door.liaAccess or {}
+            door.liaAccess[target] = DOOR_OWNER
+        end
+
+        lia.module.get("doors"):SaveData()
+        lia.log.add(client, "doorPermanentOwner", door, steamID)
+        client:notifySuccess("Permanent door ownership assigned to " .. steamID .. ".")
+    end
+})
+
+lia.command.add("admindoorsremoveowner", {
+    desc = "Remove a door's permanent owner.",
+    adminOnly = true,
+    onRun = function(client, arguments)
+        local door = resolveDoorCommandTarget(client, arguments, 0)
+        if not door then return client:notifyError("You are not looking at a valid door.") end
+        local data = lia.doors.getData(door)
+        data.ownerSteamID = ""
+        if IsValid(door:GetDTEntity(0)) then door:removeDoorAccessData() end
+        lia.doors.setData(door, data)
+        lia.module.get("doors"):SaveData()
+        client:notifySuccess("Permanent door ownership removed.")
+    end
+})
+
 lia.command.add("doortogglelock", {
-    desc = "@doortogglelockDesc",
+    desc = "Toggle a door's lock state between locked and unlocked.",
     adminOnly = true,
     AdminStick = {
-        Name = "@adminStickToggleDoorLockName",
+        Name = "Toggle Door State",
         ButtonText = "Toggle Door Lock",
         Category = "doorActions",
         TargetClass = "door",
@@ -114,13 +160,13 @@ lia.command.add("doortogglelock", {
                     door:EmitSound("doors/door_latch3.wav")
                     doorData.locked = true
                     lia.doors.setCachedData(door, doorData)
-                    lia.log.add(client, "toggleLock", door, L("locked"))
+                    lia.log.add(client, "toggleLock", door, "Locked")
                 else
                     door:Fire("unlock")
                     door:EmitSound("doors/door_latch1.wav")
                     doorData.locked = false
                     lia.doors.setCachedData(door, doorData)
-                    lia.log.add(client, "toggleLock", door, L("unlocked"))
+                    lia.log.add(client, "toggleLock", door, "unlocked")
                 end
 
                 local partner = door:getDoorPartner()
@@ -137,19 +183,19 @@ lia.command.add("doortogglelock", {
                     end
                 end
             else
-                client:notifyErrorLocalized("doorNotValid")
+                client:notifyError("You are not looking at a valid door.")
             end
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
 lia.command.add("doorbuy", {
-    desc = "@doorbuyDesc",
+    desc = "Purchase a door if it is available and you can afford it.",
     adminOnly = false,
     AdminStick = {
-        Name = "@buyDoor",
+        Name = "Buy Door",
         ButtonText = "Buy This Door",
         Category = "doorActions",
         TargetClass = "door",
@@ -161,9 +207,9 @@ lia.command.add("doorbuy", {
             if not doorData.disabled then
                 local factions = doorData.factions
                 local classes = doorData.classes
-                if doorData.noSell or (factions and #factions > 0) or (classes and #classes > 0) then return client:notifyErrorLocalized("doorNotAllowedToOwn") end
+                if doorData.noSell or (factions and #factions > 0) or (classes and #classes > 0) then return client:notifyError("You are not allowed to own this door.") end
                 if IsValid(door:GetDTEntity(0)) then
-                    client:notifyInfoLocalized("doorOwnedBy", door:GetDTEntity(0):Name())
+                    client:notifyInfo(string.format("This door is owned by %s.", door:GetDTEntity(0):Name()))
                     return false
                 end
 
@@ -175,26 +221,26 @@ lia.command.add("doorbuy", {
                     }
 
                     client:getChar():takeMoney(price)
-                    client:notifySuccessLocalized("doorPurchased", lia.currency.get(price))
+                    client:notifySuccess(string.format("You have purchased this door for %s.", lia.currency.get(price)))
                     hook.Run("OnPlayerPurchaseDoor", client, door, true)
                     lia.log.add(client, "buydoor", price)
                 else
-                    client:notifyErrorLocalized("doorCanNotAfford")
+                    client:notifyError("You cannot afford this door.")
                 end
             else
-                client:notifyErrorLocalized("doorNotValid")
+                client:notifyError("You are not looking at a valid door.")
             end
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
 lia.command.add("doortoggleownable", {
-    desc = "@doortoggleownableDesc",
+    desc = "Toggle whether a door can be owned by players.",
     adminOnly = true,
     AdminStick = {
-        Name = "@adminStickToggleDoorOwnableName",
+        Name = "Toggle Door Ownable",
         ButtonText = "Toggle Door Ownable",
         Category = "doorSettings",
         TargetClass = "door",
@@ -211,7 +257,7 @@ lia.command.add("doortoggleownable", {
                 local isUnownable = doorData.noSell or false
                 local newState = not isUnownable
                 if newState and (hasFactions or hasClasses) then
-                    client:notifyErrorLocalized("doorIsNotOwnable")
+                    client:notifyError("This door cannot be owned.")
                     return false
                 end
 
@@ -219,22 +265,22 @@ lia.command.add("doortoggleownable", {
                 lia.doors.setData(door, doorData)
                 lia.log.add(client, "doorToggleOwnable", door, newState)
                 hook.Run("DoorOwnableToggled", client, door, newState)
-                client:notifySuccessLocalized(newState and "doorMadeUnownable" or "doorMadeOwnable")
+                client:notifySuccess(newState and "This door is now unownable." or "This door is now ownable.")
                 lia.module.get("doors"):SaveData()
             else
-                client:notifyErrorLocalized("doorNotValid")
+                client:notifyError("You are not looking at a valid door.")
             end
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
 lia.command.add("doorresetdata", {
-    desc = "@doorresetdataDesc",
+    desc = "Reset door data to default settings.",
     adminOnly = true,
     AdminStick = {
-        Name = "@adminStickResetDoorDataName",
+        Name = "Reset Door Data",
         ButtonText = "Reset Door Data",
         Category = "doorMaintenance",
         TargetClass = "door",
@@ -255,19 +301,19 @@ lia.command.add("doorresetdata", {
             }
 
             lia.doors.setData(door, doorData)
-            client:notifySuccessLocalized("doorResetData")
+            client:notifySuccess("The door data has been reset.")
             lia.module.get("doors"):SaveData()
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
 lia.command.add("doortoggleenabled", {
-    desc = "@doortoggleenabledDesc",
+    desc = "Toggle door enabled state (active/inactive).",
     adminOnly = true,
     AdminStick = {
-        Name = "@adminStickToggleDoorEnabledName",
+        Name = "Toggle Door Enabled",
         ButtonText = "Toggle Door Enabled",
         Category = "doorSettings",
         TargetClass = "door",
@@ -282,19 +328,19 @@ lia.command.add("doortoggleenabled", {
             lia.doors.setData(door, doorData)
             lia.log.add(client, newState and "doorDisable" or "doorEnable", door)
             hook.Run("DoorEnabledToggled", client, door, newState)
-            client:notifySuccessLocalized(newState and "doorSetDisabled" or "doorSetNotDisabled")
-            lia.module.get("doors").list["doors"]:SaveData()
+            client:notifySuccess(newState and "This door is now disabled." or "This door is no longer disabled.")
+            lia.module.get("doors"):SaveData()
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
 lia.command.add("doortogglehidden", {
-    desc = "@doortogglehiddenDesc",
+    desc = "Toggle the hidden state of a door.",
     adminOnly = true,
     AdminStick = {
-        Name = "@adminStickToggleDoorHiddenName",
+        Name = "Toggle Door Hidden",
         ButtonText = "Toggle Door Hidden",
         Category = "doorSettings",
         TargetClass = "door",
@@ -309,16 +355,16 @@ lia.command.add("doortogglehidden", {
             lia.doors.setData(door, doorData)
             lia.log.add(client, "doorSetHidden", door, newState)
             hook.Run("DoorHiddenToggled", client, door, newState)
-            client:notifySuccessLocalized(newState and "doorSetHidden" or "doorSetNotHidden")
+            client:notifySuccess(newState and "This door is now hidden." or "This door is no longer hidden.")
             lia.module.get("doors"):SaveData()
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
 lia.command.add("doorsetprice", {
-    desc = "@doorsetpriceDesc",
+    desc = "Set the price for a door.",
     arguments = {
         {
             name = "price",
@@ -327,7 +373,7 @@ lia.command.add("doorsetprice", {
     },
     adminOnly = true,
     AdminStick = {
-        Name = "@adminStickSetDoorPriceName",
+        Name = "Set Door Price",
         ButtonText = "Set Door Price",
         Category = "doorSettings",
         TargetClass = "door",
@@ -337,25 +383,25 @@ lia.command.add("doorsetprice", {
         if door then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
-                if not arguments[argumentIndex] or not tonumber(arguments[argumentIndex]) then return client:notifyErrorLocalized("invalidClass") end
+                if not arguments[argumentIndex] or not tonumber(arguments[argumentIndex]) then return client:notifyError("The specified class is not valid.") end
                 local price = math.Clamp(math.floor(tonumber(arguments[argumentIndex])), 0, 1000000)
                 doorData.price = price
                 lia.doors.setData(door, doorData)
                 lia.log.add(client, "doorSetPrice", door, price)
                 hook.Run("DoorPriceSet", client, door, price)
-                client:notifySuccessLocalized("doorSetPrice", lia.currency.get(price))
+                client:notifySuccess(string.format("You have set this door's price to %s.", lia.currency.get(price)))
                 lia.module.get("doors"):SaveData()
             else
-                client:notifyErrorLocalized("doorNotValid")
+                client:notifyError("You are not looking at a valid door.")
             end
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
 lia.command.add("doorsettitle", {
-    desc = "@doorsettitleDesc",
+    desc = "Set the title for a door.",
     arguments = {
         {
             name = "title",
@@ -364,7 +410,7 @@ lia.command.add("doorsettitle", {
     },
     adminOnly = true,
     AdminStick = {
-        Name = "@doorsettitle",
+        Name = "Set Door Title",
         ButtonText = "Set Door Title",
         Category = "doorSettings",
         TargetClass = "door",
@@ -375,30 +421,30 @@ lia.command.add("doorsettitle", {
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
                 local name = table.concat(arguments, " ", argumentIndex)
-                if not name:find("%S") then return client:notifyErrorLocalized("invalidClass") end
+                if not name:find("%S") then return client:notifyError("The specified class is not valid.") end
                 if door:checkDoorAccess(client, DOOR_TENANT) or client:isStaff() then
                     doorData.name = name
                     lia.doors.setData(door, doorData)
                     hook.Run("DoorTitleSet", client, door, name)
                     lia.log.add(client, "doorSetTitle", door, name)
-                    client:notifySuccessLocalized("doorTitleSet", name)
+                    client:notifySuccess(string.format("Door title set to '%s'.", name))
                 else
-                    client:notifyErrorLocalized("doorNotOwner")
+                    client:notifyError("You do not own this door.")
                 end
             else
-                client:notifyErrorLocalized("doorNotValid")
+                client:notifyError("You are not looking at a valid door.")
             end
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
 lia.command.add("savedoors", {
-    desc = "@savedoorsDesc",
+    desc = "Save door data persistently.",
     adminOnly = true,
     AdminStick = {
-        Name = "@adminStickSaveDoorsName",
+        Name = "Save Doors",
         ButtonText = "Save Door Data",
         Category = "doorMaintenance",
         TargetClass = "door",
@@ -406,15 +452,15 @@ lia.command.add("savedoors", {
     onRun = function(client)
         lia.module.get("doors"):SaveData()
         lia.log.add(client, "doorSaveData")
-        client:notifySuccessLocalized("doorsSaved")
+        client:notifySuccess("Saved Doors!")
     end
 })
 
 lia.command.add("doorinfo", {
-    desc = "@doorinfoDesc",
+    desc = "Display information about the targeted door.",
     adminOnly = true,
     AdminStick = {
-        Name = "@adminStickDoorInfoName",
+        Name = "Get Door Information",
         ButtonText = "View Door Info",
         Category = "doorInformation",
         TargetClass = "door",
@@ -444,36 +490,36 @@ lia.command.add("doorinfo", {
             local hidden = doorData.hidden or false
             local infoData = {
                 {
-                    property = L("disabled"),
+                    property = "Disabled",
                     value = tostring(disabled)
                 },
                 {
-                    property = L("name"),
-                    value = tostring(doorData.name or L("doorTitle"))
+                    property = "Name",
+                    value = tostring(doorData.name or "Unowned Door")
                 },
                 {
-                    property = L("price"),
+                    property = "Price",
                     value = lia.currency.get(price)
                 },
                 {
-                    property = L("doorInfoNoSell"),
+                    property = "No Sell",
                     value = tostring(noSell)
                 },
                 {
-                    property = L("factions"),
-                    value = tostring(not table.IsEmpty(factionNames) and table.concat(factionNames, ", ") or L("none"))
+                    property = "Factions",
+                    value = tostring(not table.IsEmpty(factionNames) and table.concat(factionNames, ", ") or "None")
                 },
                 {
-                    property = L("classes"),
-                    value = tostring(not table.IsEmpty(classNames) and table.concat(classNames, ", ") or L("none"))
+                    property = "Classes",
+                    value = tostring(not table.IsEmpty(classNames) and table.concat(classNames, ", ") or "None")
                 },
                 {
-                    property = L("doorInfoHidden"),
+                    property = "Hidden",
                     value = tostring(hidden)
                 }
             }
 
-            lia.util.sendTableUI(client, L("door") .. " " .. L("information"), {
+            lia.util.sendTableUI(client, "Door" .. " " .. "Information", {
                 {
                     name = "doorInfoProperty",
                     field = "property"
@@ -484,16 +530,16 @@ lia.command.add("doorinfo", {
                 }
             }, infoData)
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
 lia.command.add("doorsampledata", {
-    desc = "@doorsampledataDesc",
+    desc = "Add sample information to a door using common door variables.",
     adminOnly = true,
     AdminStick = {
-        Name = "@adminStickDoorSampleName",
+        Name = "Add Sample Data",
         ButtonText = "Copy Door Settings",
         Category = "doorMaintenance",
         TargetClass = "door",
@@ -503,7 +549,7 @@ lia.command.add("doorsampledata", {
         if door then
             local doorData = lia.doors.getData(door)
             local sampleData = {
-                name = L("sampleDoorName", door:MapCreationID() or L("unknown")),
+                name = string.format("Sample Door %s", door:MapCreationID() or "Unknown"),
                 price = 1000,
                 locked = false,
                 disabled = false,
@@ -518,10 +564,10 @@ lia.command.add("doorsampledata", {
             end
 
             lia.doors.setData(door, doorData)
-            client:notifyLocalized("doorSampleDataApplied")
+            client:notify("Door sample data applied successfully!")
             lia.log.add(client, "doorSampleData", door)
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
@@ -600,7 +646,7 @@ lia.command.add("doorrandominfo", {
 })
 
 lia.command.add("dooraddfaction", {
-    desc = "@dooraddfactionDesc",
+    desc = "Add a faction restriction to a door, allowing only specific factions to access it.",
     arguments = {
         {
             name = "faction",
@@ -620,7 +666,7 @@ lia.command.add("dooraddfaction", {
                     if factionIndex then
                         faction = lia.faction.indices[factionIndex]
                         if not faction then
-                            client:notifyErrorLocalized("invalidFaction")
+                            client:notifyError("The specified faction is not valid.")
                             return
                         end
                     else
@@ -641,29 +687,29 @@ lia.command.add("dooraddfaction", {
                     doorData.noSell = true
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorSetFaction", door, faction.name)
-                    client:notifySuccessLocalized("doorSetFaction", faction.name)
+                    client:notifySuccess(string.format("This door now belongs to the '%s' faction.", faction.name))
                 elseif arguments[argumentIndex] then
-                    client:notifyErrorLocalized("invalidFaction")
+                    client:notifyError("The specified faction is not valid.")
                 else
                     doorData.factions = {}
                     door.liaFactions = nil
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorRemoveFaction", door, "all")
-                    client:notifySuccessLocalized("doorRemoveFaction")
+                    client:notifySuccess("This door no longer belongs to any faction.")
                 end
 
                 lia.module.get("doors"):SaveData()
             else
-                client:notifyErrorLocalized("doorNotValid")
+                client:notifyError("You are not looking at a valid door.")
             end
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
 lia.command.add("doorremovefaction", {
-    desc = "@doorremovefactionDesc",
+    desc = "Remove a faction restriction from a door, or clear all restrictions.",
     arguments = {
         {
             name = "faction",
@@ -683,7 +729,7 @@ lia.command.add("doorremovefaction", {
                     if factionIndex then
                         faction = lia.faction.indices[factionIndex]
                         if not faction then
-                            client:notifyErrorLocalized("invalidFaction")
+                            client:notifyError("The specified faction is not valid.")
                             return
                         end
                     else
@@ -703,29 +749,29 @@ lia.command.add("doorremovefaction", {
                     door.liaFactions = facs
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorRemoveFaction", door, faction.name)
-                    client:notifySuccessLocalized("doorRemoveFactionSpecific", faction.name)
+                    client:notifySuccess(string.format("This door no longer belongs to the '%s' faction.", faction.name))
                 elseif arguments[argumentIndex] then
-                    client:notifyErrorLocalized("invalidFaction")
+                    client:notifyError("The specified faction is not valid.")
                 else
                     doorData.factions = {}
                     door.liaFactions = nil
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorRemoveFaction", door, "all")
-                    client:notifySuccessLocalized("doorRemoveFaction")
+                    client:notifySuccess("This door no longer belongs to any faction.")
                 end
 
                 lia.module.get("doors"):SaveData()
             else
-                client:notifyErrorLocalized("doorNotValid")
+                client:notifyError("You are not looking at a valid door.")
             end
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
 
 lia.command.add("doorsetclass", {
-    desc = "@doorsetclassDesc",
+    desc = "Set a class (job) restriction for a door.",
     arguments = {
         {
             name = "class",
@@ -747,7 +793,7 @@ lia.command.add("doorsetclass", {
                         if classData then
                             class = classIndex
                         else
-                            client:notifyErrorLocalized("invalidClass")
+                            client:notifyError("The specified class is not valid.")
                             return
                         end
                     else
@@ -773,30 +819,30 @@ lia.command.add("doorsetclass", {
                     doorData.noSell = true
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorSetClass", door, classData.name)
-                    client:notifySuccessLocalized("doorSetClass", classData.name)
+                    client:notifySuccess(string.format("This door now belongs to the '%s' class.", classData.name))
                 elseif arguments[argumentIndex] then
-                    client:notifyErrorLocalized("invalidClass")
+                    client:notifyError("The specified class is not valid.")
                 else
                     doorData.classes = {}
                     door.liaClasses = nil
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorRemoveClass", door)
-                    client:notifySuccessLocalized("doorRemoveClass")
+                    client:notifySuccess("This door no longer belongs to any class.")
                 end
 
                 lia.module.get("doors"):SaveData()
             else
-                client:notifyErrorLocalized("doorNotValid")
+                client:notifyError("You are not looking at a valid door.")
             end
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end,
     alias = {"jobdoor"}
 })
 
 lia.command.add("doorremoveclass", {
-    desc = "@doorremoveclassDesc",
+    desc = "Remove a class (job) restriction from a door.",
     arguments = {
         {
             name = "class",
@@ -818,7 +864,7 @@ lia.command.add("doorremoveclass", {
                         if classData then
                             class = classIndex
                         else
-                            client:notifyErrorLocalized("invalidClass")
+                            client:notifyError("The specified class is not valid.")
                             return
                         end
                     else
@@ -844,26 +890,26 @@ lia.command.add("doorremoveclass", {
                         door.liaClasses = classes
                         lia.doors.setData(door, doorData)
                         lia.log.add(client, "doorRemoveClassSpecific", door, classData.name)
-                        client:notifySuccessLocalized("doorRemoveClassSpecific", classData.name)
+                        client:notifySuccess(string.format("The '%s' class has been removed from this door.", classData.name))
                     else
-                        client:notifyErrorLocalized("doorClassNotAssigned", classData.name)
+                        client:notifyError(string.format("The '%s' class is not assigned to this door.", classData.name))
                     end
                 elseif arguments[argumentIndex] then
-                    client:notifyErrorLocalized("invalidClass")
+                    client:notifyError("The specified class is not valid.")
                 else
                     doorData.classes = {}
                     door.liaClasses = nil
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorRemoveClass", door)
-                    client:notifySuccessLocalized("doorRemoveClass")
+                    client:notifySuccess("This door no longer belongs to any class.")
                 end
 
                 lia.module.get("doors"):SaveData()
             else
-                client:notifyErrorLocalized("doorNotValid")
+                client:notifyError("You are not looking at a valid door.")
             end
         else
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
         end
     end
 })
@@ -883,7 +929,7 @@ lia.command.add("doorcopyfactions", {
         if not door then return end
         local doorData = lia.doors.getData(door)
         if doorData.disabled then
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
             return
         end
 
@@ -892,7 +938,7 @@ lia.command.add("doorcopyfactions", {
             values = cloneDoorRestrictionList(doorData.factions)
         }
 
-        client:notifySuccessLocalized("doorFactionsCopied", #(client.liaCopiedDoorFactions.values or {}))
+        client:notifySuccess(string.format("Copied %s faction restriction(s) from this door.", #(client.liaCopiedDoorFactions.values or {})))
     end
 })
 
@@ -903,13 +949,13 @@ lia.command.add("doorpastefactions", {
         if not door then return end
         local doorData = lia.doors.getData(door)
         if doorData.disabled then
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
             return
         end
 
         local copiedData = client.liaCopiedDoorFactions
         if not copiedData or not copiedData.hasData then
-            client:notifyErrorLocalized("doorNoCopiedFactions")
+            client:notifyError("You have no copied door faction restrictions to paste.")
             return
         end
 
@@ -919,7 +965,7 @@ lia.command.add("doorpastefactions", {
         if #factions > 0 then doorData.noSell = true end
         lia.doors.setData(door, doorData)
         lia.module.get("doors"):SaveData()
-        client:notifySuccessLocalized("doorFactionsPasted", #factions)
+        client:notifySuccess(string.format("Pasted %s faction restriction(s) onto this door.", #factions))
     end
 })
 
@@ -930,7 +976,7 @@ lia.command.add("doorcopyclasses", {
         if not door then return end
         local doorData = lia.doors.getData(door)
         if doorData.disabled then
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
             return
         end
 
@@ -939,7 +985,7 @@ lia.command.add("doorcopyclasses", {
             values = cloneDoorRestrictionList(doorData.classes)
         }
 
-        client:notifySuccessLocalized("doorClassesCopied", #(client.liaCopiedDoorClasses.values or {}))
+        client:notifySuccess(string.format("Copied %s class restriction(s) from this door.", #(client.liaCopiedDoorClasses.values or {})))
     end
 })
 
@@ -950,13 +996,13 @@ lia.command.add("doorpasteclasses", {
         if not door then return end
         local doorData = lia.doors.getData(door)
         if doorData.disabled then
-            client:notifyErrorLocalized("doorNotValid")
+            client:notifyError("You are not looking at a valid door.")
             return
         end
 
         local copiedData = client.liaCopiedDoorClasses
         if not copiedData or not copiedData.hasData then
-            client:notifyErrorLocalized("doorNoCopiedClasses")
+            client:notifyError("You have no copied door class restrictions to paste.")
             return
         end
 
@@ -966,12 +1012,12 @@ lia.command.add("doorpasteclasses", {
         if #classes > 0 then doorData.noSell = true end
         lia.doors.setData(door, doorData)
         lia.module.get("doors"):SaveData()
-        client:notifySuccessLocalized("doorClassesPasted", #classes)
+        client:notifySuccess(string.format("Pasted %s class restriction(s) onto this door.", #classes))
     end
 })
 
 lia.command.add("togglealldoors", {
-    desc = "@togglealldoorsDesc",
+    desc = "Toggle the enabled state for all doors in the map.",
     adminOnly = true,
     onRun = function(client)
         local toggleToDisable = false
@@ -996,14 +1042,14 @@ lia.command.add("togglealldoors", {
             end
         end
 
-        client:notifySuccessLocalized(toggleToDisable and "doorDisableAll" or "doorEnableAll", count)
+        client:notifySuccess(toggleToDisable and "All doors have been disabled." or "Enable All Doors")
         lia.log.add(client, toggleToDisable and "doorDisableAll" or "doorEnableAll", count)
         lia.module.get("doors"):SaveData()
     end
 })
 
 lia.command.add("doorid", {
-    desc = "@doorIDDesc",
+    desc = "Set the door ID for identification purposes.",
     adminOnly = true,
     onRun = function(client, arguments)
         local door = resolveDoorCommandTarget(client, arguments, 0)
@@ -1011,19 +1057,19 @@ lia.command.add("doorid", {
             local mapID = door:MapCreationID()
             if mapID and mapID > 0 then
                 local pos = door:GetPos()
-                client:notifyInfoLocalized("doorID" .. " " .. mapID .. " | " .. L("position") .. ": " .. string.format("%.0f, %.0f, %.0f", pos.x, pos.y, pos.z))
+                client:notifyInfo("Door ID" .. " " .. mapID .. " | " .. "Position" .. ": " .. string.format("%.0f, %.0f, %.0f", pos.x, pos.y, pos.z))
                 lia.log.add(client, "doorID", door, mapID)
             else
-                client:notifyErrorLocalized("doorNoValidMapID")
+                client:notifyError("No valid map ID found for this door.")
             end
         else
-            client:notifyErrorLocalized("doorMustBeLookingAt")
+            client:notifyError("You must be looking at a door.")
         end
     end
 })
 
 lia.command.add("listdoorids", {
-    desc = "@listDoorIDsDesc",
+    desc = "List every door on the current map with its map ID, position, and model.",
     adminOnly = true,
     onRun = function(client)
         local doorData = {}
@@ -1035,14 +1081,14 @@ lia.command.add("listdoorids", {
                     table.insert(doorData, {
                         id = mapID,
                         position = string.format("%.0f, %.0f, %.0f", pos.x, pos.y, pos.z),
-                        model = door:GetModel() or L("unknown")
+                        model = door:GetModel() or "Unknown"
                     })
                 end
             end
         end
 
         if #doorData == 0 then
-            client:notifyInfoLocalized("doorNoDoorsFound")
+            client:notifyInfo("No doors found.")
             return
         end
 
@@ -1050,21 +1096,20 @@ lia.command.add("listdoorids", {
         local doorList = {}
         for _, data in ipairs(doorData) do
             table.insert(doorList, {
-                property = L("doorID") .. data.id,
-                value = L("position") .. ": " .. data.position .. L("modelLabel") .. data.model
+                property = "Door ID" .. data.id,
+                value = "Position" .. ": " .. data.position .. "Model Label" .. data.model
             })
         end
 
-        lia.util.sendTableUI(client, L("doorIDsOnMap", game.GetMap()), {
+        lia.util.sendTableUI(client, string.format("Door IDs on map %s", game.GetMap()), {
             {
-                name = L("doorID"),
+                name = "Door ID",
                 field = "property"
             },
             {
-                name = L("detailsColumn"),
+                name = "Details Column",
                 field = "value"
             }
         }, doorList)
     end
 })
-

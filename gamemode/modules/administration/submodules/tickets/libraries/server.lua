@@ -1,10 +1,9 @@
 ﻿local MODULE = MODULE
 MODULE.ActiveTickets = MODULE.ActiveTickets or {}
-
 function MODULE:PlayerSay(client, text)
     if text and string.sub(text, 1, 1) == "@" then
         local message = string.sub(text, 2)
-        ClientAddText(client, Color(70, 0, 130), L("you"), Color(151, 211, 255), " " .. L("ticketMessageToAdmins") .. ": ", Color(0, 255, 0), message)
+        ClientAddText(client, Color(70, 0, 130), "You", Color(151, 211, 255), " " .. "to admins" .. ": ", Color(0, 255, 0), message)
         MODULE:SendPopup(client, message)
         return ""
     end

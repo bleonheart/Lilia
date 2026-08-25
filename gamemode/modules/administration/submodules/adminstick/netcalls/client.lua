@@ -1,5 +1,4 @@
-local MODULE = MODULE
-
+﻿local MODULE = MODULE
 net.Receive("liaAdminStickPlayerState", function()
     local target = net.ReadEntity()
     local state = net.ReadTable() or {}

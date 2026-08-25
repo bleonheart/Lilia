@@ -1,42 +1,4 @@
-﻿--[[
-    Hooks:
-        ShowPlayerOptions(Player target, table options)
-
-    Purpose:
-        Allows modules to append clickable player actions to the scoreboard options menu for a target player.
-
-    Category:
-        Administration
-
-    Parameters:
-        target (Player)
-            The player whose options menu is being built.
-
-        options (table)
-            The mutable array of option tables consumed by the scoreboard UI.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("ShowPlayerOptions", "liaExampleShowPlayerOptions", function(target, options)
-            if target:getChar() then
-                options[#options + 1] = {
-                    name = "Print Name",
-                    image = "icon16/information.png",
-                    func = function()
-                        print(target:getChar():getName())
-                    end
-                }
-            end
-        end)
-        ```
-
-    Realm:
-        Client
-]]
-local MODULE = MODULE
+﻿local MODULE = MODULE
 local flagsData
 local charListRequestID = 0
 MODULE.charListRequestID = charListRequestID
@@ -82,31 +44,31 @@ function MODULE:ShowPlayerOptions(target, options)
     if not permission then return end
     local orderedOptions = {}
     table.insert(orderedOptions, {
-        name = L("nameCopyFormat", target:Name()),
+        name = string.format("Name: %s (copy)", target:Name()),
         image = "icon16/page_copy.png",
         func = function()
-            client:notifySuccessLocalized("copiedToClipboard", target:Name(), L("name"))
+            client:notifySuccess(string.format("Copied %s's %s to Clipboard", target:Name(), "Name"))
             SetClipboardText(target:Name())
         end
     })
 
-    local charID = target:getChar() and target:getChar():getID() or L("na")
+    local charID = target:getChar() and target:getChar():getID() or "N/A"
     table.insert(orderedOptions, {
-        name = L("charIDCopyFormat", charID),
+        name = string.format("CharID: %s (copy)", charID),
         image = "icon16/page_copy.png",
         func = function()
             if target:getChar() then
-                client:notifySuccessLocalized("copiedCharID", target:getChar():getID())
+                client:notifySuccess(string.format("Copied CharID: %s to Clipboard", target:getChar():getID()))
                 SetClipboardText(target:getChar():getID())
             end
         end
     })
 
     table.insert(orderedOptions, {
-        name = L("steamIDCopyFormat", target:SteamID()),
+        name = string.format("SteamID: %s (copy)", target:SteamID()),
         image = "icon16/page_copy.png",
         func = function()
-            client:notifySuccessLocalized("copiedToClipboard", target:Name(), L("steamID"))
+            client:notifySuccess(string.format("Copied %s's %s to Clipboard", target:Name(), "SteamID"))
             SetClipboardText(target:SteamID())
         end
     })
@@ -114,7 +76,7 @@ function MODULE:ShowPlayerOptions(target, options)
     local isBlinded = timer.Exists("liaBlind" .. target:SteamID())
     if not isBlinded then
         table.insert(orderedOptions, {
-            name = L("blind"),
+            name = "Blind",
             image = "icon16/eye.png",
             func = function() lia.admin.execCommand("blind", target) end
         })
@@ -122,7 +84,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if not target:IsFrozen() then
         table.insert(orderedOptions, {
-            name = L("freeze"),
+            name = "Freeze",
             image = "icon16/lock.png",
             func = function() lia.admin.execCommand("freeze", target) end
         })
@@ -130,7 +92,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if not target:getLiliaData("liaGagged", false) then
         table.insert(orderedOptions, {
-            name = L("gag"),
+            name = "Gag",
             image = "icon16/sound_mute.png",
             func = function() lia.admin.execCommand("gag", target) end
         })
@@ -138,7 +100,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if not target:IsOnFire() then
         table.insert(orderedOptions, {
-            name = L("ignite"),
+            name = "Ignite",
             image = "icon16/fire.png",
             func = function() lia.admin.execCommand("ignite", target) end
         })
@@ -146,7 +108,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if not target:isLocked() then
         table.insert(orderedOptions, {
-            name = L("jail"),
+            name = "Jail",
             image = "icon16/lock.png",
             func = function() lia.admin.execCommand("jail", target) end
         })
@@ -154,45 +116,45 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if not (target:getChar() and target:getLiliaData("liaMuted", false)) then
         table.insert(orderedOptions, {
-            name = L("mute"),
+            name = "Mute",
             image = "icon16/sound_delete.png",
             func = function() lia.admin.execCommand("mute", target) end
         })
     end
 
     table.insert(orderedOptions, {
-        name = L("slay"),
+        name = "Slay",
         image = "icon16/bomb.png",
         func = function() lia.admin.execCommand("slay", target) end
     })
 
     table.insert(orderedOptions, {
-        name = L("bring"),
+        name = "Bring",
         image = "icon16/arrow_down.png",
         func = function() lia.admin.execCommand("bring", target) end
     })
 
     table.insert(orderedOptions, {
-        name = L("goTo"),
+        name = "Goto",
         image = "icon16/arrow_right.png",
         func = function() lia.admin.execCommand("goto", target) end
     })
 
     table.insert(orderedOptions, {
-        name = L("respawn"),
+        name = "Respawn",
         image = "icon16/arrow_refresh.png",
         func = function() lia.admin.execCommand("respawn", target) end
     })
 
     table.insert(orderedOptions, {
-        name = L("returnText"),
+        name = "Return",
         image = "icon16/arrow_redo.png",
         func = function() lia.admin.execCommand("return", target) end
     })
 
     if isBlinded then
         table.insert(orderedOptions, {
-            name = L("unblind"),
+            name = "Unblind",
             image = "icon16/eye.png",
             func = function() lia.admin.execCommand("unblind", target) end
         })
@@ -200,7 +162,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if target:getLiliaData("liaGagged", false) then
         table.insert(orderedOptions, {
-            name = L("ungag"),
+            name = "Ungag",
             image = "icon16/sound_low.png",
             func = function() lia.admin.execCommand("ungag", target) end
         })
@@ -208,7 +170,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if target:IsFrozen() then
         table.insert(orderedOptions, {
-            name = L("unfreeze"),
+            name = "Unfreeze",
             image = "icon16/accept.png",
             func = function() lia.admin.execCommand("unfreeze", target) end
         })
@@ -216,7 +178,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if target:getChar() and target:getLiliaData("liaMuted", false) then
         table.insert(orderedOptions, {
-            name = L("unmute"),
+            name = "Unmute",
             image = "icon16/sound_add.png",
             func = function() lia.admin.execCommand("unmute", target) end
         })
@@ -224,7 +186,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if target:IsOnFire() then
         table.insert(orderedOptions, {
-            name = L("extinguish"),
+            name = "Extinguish",
             image = "icon16/fire_delete.png",
             func = function() lia.admin.execCommand("extinguish", target) end
         })
@@ -232,7 +194,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if target:isLocked() then
         table.insert(orderedOptions, {
-            name = L("unjail"),
+            name = "Unjail",
             image = "icon16/lock_open.png",
             func = function() lia.admin.execCommand("unjail", target) end
         })
@@ -250,7 +212,7 @@ local function OpenFlagsPanel(panel, data)
     if not data or #data == 0 then
         local noDataLabel = panel:Add("DLabel")
         noDataLabel:Dock(FILL)
-        noDataLabel:SetText(L("flagsNoPlayersOnlineHelp"))
+        noDataLabel:SetText("No players with characters are currently online.\\n\\nPlayers must be online with a loaded character to appear in this list.\\n\\nYou can manage flags for offline characters using console commands:\\n? /flaggive <player> <flags>\\n? /flagtake <player> <flags>")
         noDataLabel:SetFont("LiliaFont.17")
         noDataLabel:SetTextColor(Color(150, 150, 150))
         noDataLabel:SetContentAlignment(5)
@@ -263,7 +225,7 @@ local function OpenFlagsPanel(panel, data)
     search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
     search:SetFont("LiliaFont.17")
-    search:SetPlaceholderText(L("search"))
+    search:SetPlaceholderText("Search...")
     search:SetTextColor(Color(200, 200, 200))
     local list = panel:Add("liaTable")
     list:Dock(FILL)
@@ -274,15 +236,15 @@ local function OpenFlagsPanel(panel, data)
     panel:SizeToChildren(false, true)
     local columns = {
         {
-            name = L("name"),
+            name = "Name",
             field = "name"
         },
         {
-            name = L("steamID"),
+            name = "SteamID",
             field = "steamID"
         },
         {
-            name = L("charFlagsTitle"),
+            name = "Character Flags",
             field = "flags"
         },
     }
@@ -291,10 +253,10 @@ local function OpenFlagsPanel(panel, data)
         list:AddColumn(col.name)
     end
 
-    list:AddMenuOption(L("copyRow"), function(rowData)
+    list:AddMenuOption("Copy Row", function(rowData)
         local rowString = ""
         for i, column in ipairs(columns) do
-            local header = column.name or L("columnWithNumber", i)
+            local header = column.name or string.format("Column %s", i)
             local value = tostring(rowData[i] or "")
             rowString = rowString .. header .. " " .. value .. " | "
         end
@@ -302,10 +264,10 @@ local function OpenFlagsPanel(panel, data)
         SetClipboardText(string.sub(rowString, 1, -4))
     end, "icon16/page_copy.png")
 
-    list:AddMenuOption(L("modifyCharFlags"), function(rowData)
+    list:AddMenuOption("Modify Character Flags", function(rowData)
         local steamID = rowData[2] or ""
         local currentFlags = rowData[3] or ""
-        LocalPlayer():requestString("@modifyCharFlags", "@modifyFlagsDesc", function(text)
+        LocalPlayer():requestString("Modify Character Flags", "Set the flags for this player.", function(text)
             if text == false then return end
             text = string.gsub(text or "", "%s", "")
             net.Start("liaModifyFlags")
@@ -356,7 +318,7 @@ local function OpenFlagsPanel(panel, data)
 
     search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
-    list:AddMenuOption(L("noOptionsAvailable"), function() end)
+    list:AddMenuOption("No options available", function() end)
 end
 
 local CASE_MODE_ALL = "all"
@@ -373,13 +335,13 @@ local STAFF_CASES_ACCENTS = {
 
 local function staffCasesFormatTime(value)
     local timestamp = tonumber(value) or 0
-    if timestamp <= 0 then return L("unknown") end
+    if timestamp <= 0 then return "Unknown" end
     return os.date("%Y-%m-%d %H:%M:%S", timestamp)
 end
 
 local function staffCasesText(value, fallback)
     value = tostring(value or "")
-    if value == "" then return fallback or L("na") end
+    if value == "" then return fallback or "N/A" end
     return value
 end
 
@@ -438,7 +400,7 @@ local function getStaffCasesPermissions(client)
     }
 end
 
-local function openStaffCases(self, panel)
+local function openStaffCases(self, panel, initialMode)
     if not IsValid(panel) then return end
     self.staffCasesPayload = self.staffCasesPayload or {
         tickets = {},
@@ -465,7 +427,7 @@ local function openStaffCases(self, panel)
     panel.Paint = nil
     panel.casePermissions = permissions
     panel.caseState = {
-        mode = CASE_MODE_ALL,
+        mode = initialMode or CASE_MODE_ALL,
         status = "all",
         search = "",
         selectedID = nil,
@@ -496,7 +458,7 @@ local function openStaffCases(self, panel)
 
     local function relativeTime(value)
         local timestamp = tonumber(value) or 0
-        if timestamp <= 0 then return L("unknown") end
+        if timestamp <= 0 then return "Unknown" end
         local delta = math.max(os.time() - timestamp, 0)
         if delta < 60 then return "Now" end
         if delta < 3600 then return math.floor(delta / 60) .. "m ago" end
@@ -626,25 +588,25 @@ local function openStaffCases(self, panel)
             {
                 id = CASE_MODE_ALL,
                 label = "All",
-                access = true,
+                access = not initialMode,
                 width = 72
             },
             {
                 id = CASE_MODE_TICKETS,
                 label = "Tickets",
-                access = permissions.tickets,
+                access = permissions.tickets and (not initialMode or initialMode == CASE_MODE_TICKETS),
                 width = 92
             },
             {
                 id = CASE_MODE_WARNINGS,
                 label = "Warnings",
-                access = permissions.warnings,
+                access = permissions.warnings and (not initialMode or initialMode == CASE_MODE_WARNINGS),
                 width = 100
             },
             {
                 id = CASE_MODE_PKS,
                 label = "PK Cases",
-                access = permissions.pks,
+                access = not initialMode and permissions.pks,
                 width = 94
             }
         }
@@ -951,7 +913,7 @@ local function openStaffCases(self, panel)
                 net.Start("liaTicketSystemClaim")
                 net.WriteEntity(targetPlayer)
                 net.SendToServer()
-            end, not caseData.live or caseData.claimed or caseData.isSelfTarget or not IsValid(targetPlayer), caseData.isSelfTarget and L("ticketActionSelf") or nil, true)
+            end, not caseData.live or caseData.claimed or caseData.isSelfTarget or not IsValid(targetPlayer), caseData.isSelfTarget and "You cannot perform this action on your own ticket." or nil, true)
 
             addAction("Close Case", "icon16/cancel.png", function()
                 if not IsValid(targetPlayer) then return end
@@ -997,7 +959,7 @@ local function openStaffCases(self, panel)
     function panel:OpenCaseMenu(caseData)
         if not caseData then return end
         local menu = DermaMenu()
-        menu:AddOption(L("copySteamID"), function() if caseData.steamID and caseData.steamID ~= "" then SetClipboardText(caseData.steamID) end end, "icon16/page_copy.png")
+        menu:AddOption("Copy Steam ID", function() if caseData.steamID and caseData.steamID ~= "" then SetClipboardText(caseData.steamID) end end, "icon16/page_copy.png")
         for _, action in ipairs(self:GetCaseActions(caseData)) do
             if not action.disabled then menu:AddOption(action.label, action.callback, action.icon) end
         end
@@ -1100,7 +1062,7 @@ local function openStaffCases(self, panel)
 
         addInfoRow(details, "Target", function() return caseData.targetName end)
         addInfoRow(details, "Staff / Submitter", function() return caseData.staffDisplay end)
-        if caseData.caseType == "pk" then addInfoRow(details, "Character ID", function() return tostring(caseData.charID or L("na")) end) end
+        if caseData.caseType == "pk" then addInfoRow(details, "Character ID", function() return tostring(caseData.charID or "N/A") end) end
         local description = makeSection(detail, caseData.caseType == "pk" and "Reason / Evidence" or "Description", 126)
         local descriptionLabel = description:Add("DLabel")
         descriptionLabel:Dock(FILL)
@@ -1318,7 +1280,7 @@ end
 
 local function getPlayerEntityOwnerLabel(data)
     local name = tostring(data.ownerCharacter or "")
-    if name == "" then name = tostring(data.ownerName or L("unknown")) end
+    if name == "" then name = tostring(data.ownerName or "Unknown") end
     local group = tostring(data.ownerUserGroup or "")
     if group == "" or group == "user" then return name end
     group = group:gsub("_", " "):gsub("(%a)([%w']*)", function(first, rest) return string.upper(first) .. string.lower(rest) end)
@@ -1330,7 +1292,7 @@ local function getPlayerEntityDisplayName(data)
     if name ~= "" then return name end
     local class = tostring(data.class or "")
     if class ~= "" then return class end
-    return L("unknown")
+    return "Unknown"
 end
 
 local function getPlayerEntityStatus(data)
@@ -3787,7 +3749,7 @@ function MODULE:PopulateAdminTabs(pages)
     local canListCharacters = client:hasPrivilege("listCharacters")
     if canListCharacters then
         table.insert(pages, {
-            name = "@characterList",
+            name = "Character List",
             icon = "characterlist.png",
             drawFunc = function(panel)
                 panelRef = panel
@@ -3853,7 +3815,7 @@ function MODULE:PopulateAdminTabs(pages)
                     end
 
                     local function getCharacterName(row)
-                        return tostring(getValue(row, "Name", "name", L("name")) or L("unknown"))
+                        return tostring(getValue(row, "Name", "name", "Name") or "Unknown")
                     end
 
                     local function getCharacterDescription(row)
@@ -3861,11 +3823,11 @@ function MODULE:PopulateAdminTabs(pages)
                     end
 
                     local function getCharacterFaction(row)
-                        return tostring(getValue(row, "Faction", "faction", L("faction")) or L("unknown"))
+                        return tostring(getValue(row, "Faction", "faction", "Faction") or "Unknown")
                     end
 
                     local function getCharacterClass(row)
-                        return tostring(getValue(row, "Class", "class", L("class")) or "")
+                        return tostring(getValue(row, "Class", "class", "Class") or "")
                     end
 
                     local function getCharacterPlayTime(row)
@@ -3877,13 +3839,13 @@ function MODULE:PopulateAdminTabs(pages)
                     end
 
                     local function getCharacterMoney(row)
-                        local amount = tonumber(getValue(row, "Money", "money", L("money"))) or 0
+                        local amount = tonumber(getValue(row, "Money", "money", "Money")) or 0
                         return lia.currency.get(amount)
                     end
 
                     local function getCharacterLastUsed(row)
                         local value = getValue(row, "LastUsed", "lastUsed", "LastJoinTime", "lastJoinTime")
-                        if value == nil or tostring(value) == "" then return L("unknown") end
+                        if value == nil or tostring(value) == "" then return "Unknown" end
                         return tostring(value)
                     end
 
@@ -3900,7 +3862,7 @@ function MODULE:PopulateAdminTabs(pages)
                             local name = character.SteamName or character.steamName or character.OwnerName or character.ownerName or character.PlayerName or character.playerName
                             if name and tostring(name) ~= "" then return tostring(name) end
                         end
-                        return L("unknown")
+                        return "Unknown"
                     end
 
                     local function sortAccounts()
@@ -3943,7 +3905,7 @@ function MODULE:PopulateAdminTabs(pages)
                             end
                         end
 
-                        if account.steamName == L("unknown") then account.steamName = resolveSteamName(steamID, account.characters) end
+                        if account.steamName == "Unknown" then account.steamName = resolveSteamName(steamID, account.characters) end
                         sortCharacters(account.characters)
                     end
 
@@ -4110,26 +4072,26 @@ function MODULE:PopulateAdminTabs(pages)
                     local function openCharacterActions(row, account)
                         if not row or not account then return end
                         local menu = DermaMenu()
-                        menu:AddOption(L("copySteamID"), function() SetClipboardText(account.steamID) end, "icon16/page_copy.png")
-                        menu:AddOption(L("copyRow"), function() copyCharacterSummary(row, account) end, "icon16/page_copy.png")
+                        menu:AddOption("Copy Steam ID", function() SetClipboardText(account.steamID) end, "icon16/page_copy.png")
+                        menu:AddOption("Copy Row", function() copyCharacterSummary(row, account) end, "icon16/page_copy.png")
                         local owner = lia.util.getBySteamID(account.steamID)
                         local banned = isCharacterBanned(row)
                         if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipe") then
-                            menu:AddOption(L("wipeCharacter"), function() runCharacterCommand("charwipe", row) end, "icon16/user_delete.png")
+                            menu:AddOption("Wipe Character", function() runCharacterCommand("charwipe", row) end, "icon16/user_delete.png")
                         elseif not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipeoffline") then
-                            menu:AddOption(L("wipeCharacterOffline"), function() runCharacterCommand("charwipeoffline", row) end, "icon16/user_delete.png")
+                            menu:AddOption("Wipe Character (Offline)", function() runCharacterCommand("charwipeoffline", row) end, "icon16/user_delete.png")
                         end
 
                         if not banned then
                             if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charban") then
-                                menu:AddOption(L("banCharacter"), function() runCharacterCommand("charban", row) end, "icon16/cancel.png")
+                                menu:AddOption("Ban Character", function() runCharacterCommand("charban", row) end, "icon16/cancel.png")
                             elseif not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charbanoffline") then
-                                menu:AddOption(L("banCharacterOffline"), function() runCharacterCommand("charbanoffline", row) end, "icon16/cancel.png")
+                                menu:AddOption("Ban Character (Offline)", function() runCharacterCommand("charbanoffline", row) end, "icon16/cancel.png")
                             end
                         elseif IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunban") then
-                            menu:AddOption(L("unbanCharacter"), function() runCharacterCommand("charunban", row) end, "icon16/accept.png")
+                            menu:AddOption("Unban Character", function() runCharacterCommand("charunban", row) end, "icon16/accept.png")
                         elseif not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then
-                            menu:AddOption(L("unbanCharacterOffline"), function() runCharacterCommand("charunbanoffline", row) end, "icon16/accept.png")
+                            menu:AddOption("Unban Character (Offline)", function() runCharacterCommand("charunbanoffline", row) end, "icon16/accept.png")
                         end
 
                         menu:Open()
@@ -4174,25 +4136,25 @@ function MODULE:PopulateAdminTabs(pages)
                         createInfoRow(stats, "Playtime", function() return getCharacterPlayTime(row) end)
                         createInfoRow(stats, "Last Used", function() return getCharacterLastUsed(row) end)
                         createInfoRow(stats, "Money", function() return getCharacterMoney(row) end)
-                        createInfoRow(stats, "Banned", function() return isCharacterBanned(row) and L("yes") or L("no") end, function() return isCharacterBanned(row) and badColor or goodColor end)
-                        createInfoRow(stats, "Description", function() return getCharacterDescription(row) ~= "" and getCharacterDescription(row) or L("none") end)
+                        createInfoRow(stats, "Banned", function() return isCharacterBanned(row) and "Yes" or "No" end, function() return isCharacterBanned(row) and badColor or goodColor end)
+                        createInfoRow(stats, "Description", function() return getCharacterDescription(row) ~= "" and getCharacterDescription(row) or "None" end)
                         createLinkRow(stats, "Warnings", function() return lia.command.hasAccess(LocalPlayer(), "viewwarns") and "View History" or "Unavailable" end, function() staffCasesCommand("viewwarns", account.steamID) end, function() return lia.command.hasAccess(LocalPlayer(), "viewwarns") end)
                         createLinkRow(stats, "Tickets", function() return lia.command.hasAccess(LocalPlayer(), "viewtickets") and "View Requests" or "Unavailable" end, function() staffCasesCommand("viewtickets", account.steamID) end, function() return lia.command.hasAccess(LocalPlayer(), "viewtickets") end)
                         if LocalPlayer():hasPrivilege("manageFlags") then
-                            local flagSection = createSection(detailPanel, string.upper(L("charFlagsTitle")), 112)
-                            createInfoRow(flagSection, "Current Flags", function() return row.Flags ~= "" and row.Flags or L("none") end, function() return row.Flags ~= "" and accent or mutedTextColor end)
+                            local flagSection = createSection(detailPanel, string.upper("Character Flags"), 112)
+                            createInfoRow(flagSection, "Current Flags", function() return row.Flags ~= "" and row.Flags or "None" end, function() return row.Flags ~= "" and accent or mutedTextColor end)
                             local editFlags = flagSection:Add("DButton")
                             editFlags:Dock(BOTTOM)
                             editFlags:SetTall(36)
                             editFlags:SetText("")
                             editFlags.Paint = function(button, w, h)
                                 drawPanel(0, 0, w, h, 5, button:IsHovered() and panelColorHovered or panelColorSoft, Color(accent.r, accent.g, accent.b, button:IsHovered() and 115 or 70))
-                                draw.SimpleText(string.upper(L("modifyCharFlags")), "LiliaFont.15", w * 0.5, h * 0.5, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                                draw.SimpleText(string.upper("Modify Character Flags"), "LiliaFont.15", w * 0.5, h * 0.5, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                             end
 
                             editFlags.DoClick = function()
                                 lia.websound.playButtonSound()
-                                LocalPlayer():requestString("@modifyCharFlags", "@modifyFlagsDesc", function(value)
+                                LocalPlayer():requestString("Modify Character Flags", "Set the flags for this player.", function(value)
                                     if value == false then return end
                                     local flags = sanitizeCharacterFlags(value)
                                     net.Start("liaModifyCharacterFlags")
@@ -4365,7 +4327,7 @@ function MODULE:PopulateAdminTabs(pages)
 
                     local populateAccounts
                     local function requestSteamName(account)
-                        if account.nameRequested or account.steamName ~= L("unknown") then return end
+                        if account.nameRequested or account.steamName ~= "Unknown" then return end
                         account.nameRequested = true
                         local steamID64 = account.steamID
                         if not string.match(steamID64, "^%d+$") then steamID64 = util.SteamIDTo64(account.steamID) end
@@ -4401,7 +4363,7 @@ function MODULE:PopulateAdminTabs(pages)
                                         surface.DrawRect(0, 7, 3, h - 14)
                                     end
 
-                                    draw.SimpleText(account.steamName or L("unknown"), "LiliaFont.17", 14, 12, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                                    draw.SimpleText(account.steamName or "Unknown", "LiliaFont.17", 14, 12, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                                     draw.SimpleText(account.steamID, "LiliaFont.13", 14, 39, mutedTextColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                                     draw.SimpleText(tostring(#account.characters), "LiliaFont.18", w - 14, 14, selected and accent or textColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
                                     draw.SimpleText(#account.characters == 1 and "Character" or "Characters", "LiliaFont.12", w - 14, 41, selected and accent or mutedTextColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
@@ -4489,11 +4451,19 @@ function MODULE:PopulateAdminTabs(pages)
     end
 
     local casePermissions = getStaffCasesPermissions(client)
-    if casePermissions.any then
+    if casePermissions.warnings then
         table.insert(pages, {
-            name = "Staff Cases",
-            icon = "staffcases.png",
-            drawFunc = function(panel) openStaffCases(self, panel) end
+            name = "Warnings",
+            icon = "warning.png",
+            drawFunc = function(panel) openStaffCases(self, panel, CASE_MODE_WARNINGS) end
+        })
+    end
+
+    if casePermissions.tickets then
+        table.insert(pages, {
+            name = "Tickets",
+            icon = "ticket.png",
+            drawFunc = function(panel) openStaffCases(self, panel, CASE_MODE_TICKETS) end
         })
     end
 end
@@ -4510,7 +4480,7 @@ end
 
 local function getInventoryItemCategory(itemData)
     local category = itemData and isfunction(itemData.getCategory) and itemData:getCategory() or nil
-    return category or itemData and itemData.category or lia.lang.resolveToken("@misc")
+    return category or itemData and itemData.category or "Miscellaneous"
 end
 
 local function getInventoryItemRarity(itemData)
@@ -4579,7 +4549,7 @@ spawnmenu.AddContentType("inventoryitem", function(container, data)
         net.WriteString(data.id)
         net.WriteString(LocalPlayer():SteamID())
         net.SendToServer()
-        LocalPlayer():notifySuccess(L("itemGivenToSelf"))
+        LocalPlayer():notifySuccess("Item given to yourself successfully.")
         lia.websound.playButtonSound("outlands-rp/ui/ui_return.wav")
     end
 
@@ -4605,8 +4575,8 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
     end
 
     for category, itemList in SortedPairs(categorized) do
-        if category ~= L("unsorted") or #itemList > 0 then
-            local node = tree:AddNode(category == L("unsorted") and L("unsorted") or category, "icon16/picture.png")
+        if category ~= "Unsorted" or #itemList > 0 then
+            local node = tree:AddNode(category == "Unsorted" and "Unsorted" or category, "icon16/picture.png")
             node.DoPopulate = function(btn)
                 if btn.PropPanel then return end
                 btn.PropPanel = vgui.Create("ContentContainer", pnlContent)
@@ -4666,13 +4636,13 @@ search.AddProvider(function(str)
     return results
 end, "inventoryitems")
 
-spawnmenu.AddCreationTab(L("inventoryItems"), function()
+spawnmenu.AddCreationTab("Inventory Items", function()
     local client = LocalPlayer()
     local canUseItemSpawner = IsValid(client) and client.hasPrivilege and client:hasPrivilege("canUseItemSpawner") or false
     if not IsValid(client) or not client.hasPrivilege or not canUseItemSpawner then
         local pnl = vgui.Create("DPanel")
         pnl:Dock(FILL)
-        pnl.Paint = function(_, w, h) draw.SimpleText(L("noItemSpawnerPermission"), "DermaDefault", w / 2, h / 2, Color(255, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+        pnl.Paint = function(_, w, h) draw.SimpleText("You don't have permission to use this.", "DermaDefault", w / 2, h / 2, Color(255, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
         return pnl
     else
         local ctrl = vgui.Create("SpawnmenuContentPanel")
@@ -4687,7 +4657,6 @@ lia.net.readBigTable("liaNetProfilerLogs", function(payload)
     if not IsValid(panel) then return end
     if isfunction(panel.ApplyNetLogs) then panel:ApplyNetLogs(payload) end
 end)
-
 
 lia.net.readBigTable("liaFullCharListPage", function(data)
     if not IsValid(panelRef) or not data or not isfunction(panelRef.buildSheets) then return end
@@ -4782,13 +4751,13 @@ function MODULE:HUDPaint()
                 if isvector(pos) then
                     local screenPos = (pos + Vector(0, 0, 16)):ToScreen()
                     if screenPos.visible then
-                        local label = entry.label ~= "" and entry.label or L("position")
+                        local label = entry.label ~= "" and entry.label or "Position"
                         if typeInfo.id == "faction_spawn_adder" then
-                            label = L("spawnForFactionFormat", label)
+                            label = string.format("Spawn For Faction '%s'", label)
                         elseif typeInfo.id == "class_spawn_adder" then
-                            label = L("spawnForClassFormat", label)
+                            label = string.format("Spawn For Class '%s'", label)
                         elseif typeInfo.id == "sit_room" then
-                            label = L("sitRoomLabelFormat", label)
+                            label = string.format("Sit Room %s", label)
                         end
 
                         lia.util.drawESPStyledText(label, screenPos.x, screenPos.y, col, hudFontLarge, 1)
@@ -4818,25 +4787,25 @@ function MODULE:HUDPaint()
             baseColor = hookResult.baseColor
             customRender = hookResult.customRender
         elseif ent:IsPlayer() and lia.option.get("espPlayers", false) then
-            kind = L("players")
+            kind = "Players"
             subLabel = ent:Name():gsub("#", "\226\128\139#")
             label = subLabel
             baseColor = lia.option.get("espPlayersColor")
         elseif ent.isItem and ent:isItem() and lia.option.get("espItems", false) then
-            kind = L("items")
+            kind = "Items"
             local item = ent:getItemTable()
-            label = item and item:getName() or L("unknown")
+            label = item and item:getName() or "Unknown"
             baseColor = lia.option.get("espItemsColor")
         elseif lia.option.get("espEntities", false) and ent:GetClass():StartWith("lia_") then
             if lia.dialog.isDialogNPCEntity(ent) then
                 local uniqueID = ent:getNetVar("uniqueID", "")
                 if uniqueID ~= "" then
                     kind = "npcs"
-                    label = ent:getNetVar("NPCName", L("unconfiguredNPC"))
+                    label = ent:getNetVar("NPCName", "Unconfigured NPC")
                     baseColor = lia.option.get("espEntitiesColor")
                 end
             else
-                kind = L("entities")
+                kind = "Entities"
                 label = ent.PrintName or ent:GetClass()
                 baseColor = lia.option.get("espEntitiesColor")
             end
@@ -4844,11 +4813,11 @@ function MODULE:HUDPaint()
             local doorData = lia.doors.getData(ent)
             local isConfigured = doorData and ((doorData.factions and #doorData.factions > 0) or (doorData.classes and #doorData.classes > 0) or (doorData.name and doorData.name ~= "") or (doorData.title and doorData.title ~= "") or (doorData.price or 0) > 0 or doorData.locked or doorData.disabled or doorData.hidden or doorData.noSell)
             if lia.option.get("espUnconfiguredDoors", false) and not isConfigured then
-                kind = L("doorUnconfigured")
+                kind = "Unconfigured Door"
                 label = kind
                 baseColor = lia.option.get("espUnconfiguredDoorsColor")
             elseif lia.option.get("espConfiguredDoors", false) and isConfigured then
-                kind = L("doorConfigured")
+                kind = "Configured Door"
                 label = kind
                 baseColor = lia.option.get("espConfiguredDoorsColor")
             end
@@ -4913,39 +4882,39 @@ end
 
 local function DisplayPositionToolHUD(client, hudInfos, weapon)
     local typeInfo = weapon.GetPositionToolMode and weapon:GetPositionToolMode()
-    AddAdminStickToolHUD(hudInfos, L("worldConfigurationMode"), {
+    AddAdminStickToolHUD(hudInfos, "World Configuration", {
         {
-            label = L("adminStickHUDMode"),
-            value = typeInfo and typeInfo.name or L("unknown")
+            label = "Mode",
+            value = typeInfo and typeInfo.name or "Unknown"
         },
         {
-            section = L("adminStickHUDControls")
+            section = "Controls"
         },
         {
-            label = L("adminStickHUDLeftClick"),
-            value = L("positionToolInstructionSetAim"):gsub("^.-:%s*", "")
+            label = "Left Click",
+            value = ("Left Click: Set position at aim"):gsub("^.-:%s*", "")
         },
         {
-            label = L("adminStickHUDRightClick"),
-            value = L("positionToolInstructionUseCurrentPosition"):gsub("^.-:%s*", "")
+            label = "Right Click",
+            value = ("Right Click: Use current position"):gsub("^.-:%s*", "")
         },
         {
             label = "Shift + Reload",
-            value = L("positionToolInstructionCycleMode"):gsub("^.-:%s*", "")
+            value = ("Shift + Reload: Cycle position type"):gsub("^.-:%s*", "")
         },
         {
             label = "Shift + E",
-            value = L("positionToolInstructionOpenRemovalMenu"):gsub("^.-:%s*", "")
+            value = ("Shift + E: Open removal menu"):gsub("^.-:%s*", "")
         },
         {
-            label = L("adminStickHUDReload"),
-            value = L("adminStickInstructionSwitchMode"):gsub("^.-:%s*", "")
+            label = "Reload",
+            value = ("Reload: Switch tool section"):gsub("^.-:%s*", "")
         }
     })
 end
 
 local function DisplayDistanceToolHUD(client, hudInfos, weapon)
-    local instructions = {L("distanceToolSetPoint"), L("distanceToolClearPoints"), L("distanceToolMeasureCurrent")}
+    local instructions = {"Left Click: Set point", "Right Click: Clear points", "Reload: Measure current"}
     table.insert(hudInfos, {
         text = instructions,
         font = "LiliaHUDFont.18",
@@ -5017,7 +4986,7 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
         })
     else
         table.insert(hudInfos, {
-            text = L("distanceMeasureClickToSetStart"),
+            text = "Click to set start point",
             font = "LiliaHUDFont.16",
             color = Color(180, 180, 180),
             position = {
@@ -5078,8 +5047,8 @@ local toolPermissionTierData = {
     tools = {},
     tiers = {}
 }
-MODULE.toolPermissionTierData = toolPermissionTierData
 
+MODULE.toolPermissionTierData = toolPermissionTierData
 local toolPermissionTierRefresh
 local toolPermissionLegacyDisabled = {
     rope = true,
@@ -5180,21 +5149,19 @@ local function paintToolPermissionPanel(w, h, background, border, radius)
     if border then lia.derma.rect(0, 0, w, h):Rad(radius or 6):Color(border):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
 end
 
-
 local staffCharacterConfiguration = {
     permissions = {},
     flags = {},
     privileges = {},
     flagDefinitions = {}
 }
-MODULE.staffCharacterConfiguration = staffCharacterConfiguration
 
+MODULE.staffCharacterConfiguration = staffCharacterConfiguration
 local staffCharacterConfigurationRefresh
 MODULE.staffCharacterConfigurationRefresh = nil
 local staffCharacterConfigurationPending = 0
 local staffCharacterConfigurationOperations = {}
 MODULE.staffCharacterConfigurationOperations = staffCharacterConfigurationOperations
-
 local function staffConfigurationPanel(parent, title, subtitle)
     local panel = parent:Add("DPanel")
     panel:Dock(TOP)
@@ -5504,25 +5471,25 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                 end
 
                 local category = lia.admin.privilegeCategories and lia.admin.privilegeCategories[permissionID]
-                if category and category ~= "" then return tostring(lia.lang.resolveToken(category)) end
+                if category and category ~= "" then return tostring(category) end
                 for _, module in pairs(lia.module.list or {}) do
                     if istable(module.Privileges) and istable(module.Privileges[permissionID]) then
                         local privilege = module.Privileges[permissionID]
-                        return tostring(lia.lang.resolveToken(privilege.Category or module.name or "@unassigned"))
+                        return tostring(privilege.Category or module.name or "Unassigned")
                     end
                 end
 
                 if CAMI then
                     local privilege = CAMI.GetPrivilege(permissionID)
-                    if privilege and privilege.Category then return tostring(lia.lang.resolveToken(privilege.Category)) end
+                    if privilege and privilege.Category then return tostring(privilege.Category) end
                 end
-                return tostring(lia.lang.resolveToken("@unassigned"))
+                return tostring("Unassigned")
             end
 
             local function resolvePrivilegeDescription(permissionID, name)
                 local rawDescription = lia.admin.privilegeDescriptions and lia.admin.privilegeDescriptions[permissionID] or nil
                 if rawDescription ~= nil then
-                    local description = string.Trim(tostring(lia.lang.resolveToken(rawDescription) or ""))
+                    local description = string.Trim(tostring(rawDescription or ""))
                     if description ~= "" and description ~= permissionID then return description end
                 end
 
@@ -5530,7 +5497,7 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                     local privilege = istable(module.Privileges) and module.Privileges[permissionID] or nil
                     local description = privilege and (privilege.Description or privilege.Desc or privilege.description or privilege.desc or privilege.Help or privilege.help or privilege.Tooltip or privilege.tooltip) or nil
                     if description ~= nil then
-                        description = string.Trim(tostring(lia.lang.resolveToken(description) or ""))
+                        description = string.Trim(tostring(description or ""))
                         if description ~= "" and description ~= permissionID then return description end
                     end
                 end
@@ -5708,6 +5675,229 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
             refresh(false)
             net.Start("liaRequestStaffCharacterConfiguration")
             net.SendToServer()
+        end
+    }
+end)
+
+hook.Add("PopulateAdminTabs", "liaDoorManagement", function(pages)
+    local client = LocalPlayer()
+    if not IsValid(client) or not client:hasPrivilege("manageDoors") then return end
+    pages[#pages + 1] = {
+        name = "Doors",
+        icon = "door_open.png",
+        drawFunc = function(panel)
+            panel:Clear()
+            panel:DockPadding(12, 12, 12, 12)
+            local selected
+            local list = panel:Add("DListView")
+            list:Dock(LEFT)
+            list:SetWide(math.max(300, ScrW() * 0.28))
+            list:AddColumn("ID"):SetFixedWidth(55)
+            list:AddColumn("Door")
+            list:AddColumn("State"):SetFixedWidth(85)
+            local detail = panel:Add("DPanel")
+            detail:Dock(FILL)
+            detail:DockMargin(12, 0, 0, 0)
+            detail:DockPadding(12, 12, 12, 12)
+            detail.Paint = function(_, w, h) draw.RoundedBox(6, 0, 0, w, h, Color(5, 20, 25, 235)) end
+            local title = detail:Add("DLabel")
+            title:Dock(TOP)
+            title:SetTall(32)
+            title:SetFont("LiliaFont.20")
+            title:SetTextColor(lia.color.theme.accent)
+            title:SetText("Select a door")
+            local info = detail:Add("DLabel")
+            info:Dock(TOP)
+            info:SetTall(125)
+            info:SetFont("LiliaFont.16")
+            info:SetTextColor(Color(210, 220, 220))
+            info:SetWrap(true)
+            local actions = detail:Add("DPanel")
+            actions:Dock(TOP)
+            actions:SetTall(330)
+            actions.Paint = nil
+            local function command(name, ...)
+                if not selected then return end
+                lia.command.send(name, selected.id, ...)
+            end
+
+            local function addButton(label, fn, x, y, w)
+                local b = actions:Add("liaButton")
+                b:SetText(label)
+                b:SetPos(x, y)
+                b:SetSize(w or 190, 34)
+                b.DoClick = function() fn() end
+                return b
+            end
+
+            local function prompt(label, commandName)
+                if not selected then return end
+                client:requestString(label, label, function(value) if value ~= false and string.Trim(value or "") ~= "" then command(commandName, value) end end)
+            end
+
+            addButton("Toggle Lock", function() command("doortogglelock") end, 0, 0)
+            addButton("Toggle Enabled", function() command("doortoggleenabled") end, 200, 0)
+            addButton("Toggle Ownable", function() command("doortoggleownable") end, 0, 42)
+            addButton("Toggle Hidden", function() command("doortogglehidden") end, 200, 42)
+            addButton("Set Price", function() prompt("Door price", "doorsetprice") end, 0, 84)
+            addButton("Set Title", function() prompt("Door title", "doorsettitle") end, 200, 84)
+            addButton("Assign Permanent Owner", function() prompt("Owner SteamID", "admindoorsetowner") end, 0, 126, 260)
+            addButton("Remove Permanent Owner", function() command("admindoorsremoveowner") end, 270, 126, 220)
+            addButton("Reset Door Data", function() command("doorresetdata") end, 0, 168)
+            addButton("Save Door Data", function() lia.command.send("savedoors") end, 200, 168)
+            addButton("Add Faction Restriction", function() prompt("Faction unique ID or name (blank clears)", "dooraddfaction") end, 0, 210, 220)
+            addButton("Add Class Restriction", function() prompt("Class unique ID or name (blank clears)", "doorsetclass") end, 230, 210, 220)
+            addButton("Remove Faction", function() prompt("Faction to remove (blank clears)", "doorremovefaction") end, 0, 252, 220)
+            addButton("Remove Class", function() prompt("Class to remove (blank clears)", "doorremoveclass") end, 230, 252, 220)
+            addButton("Admin Sell Door", function() command("admindoorsell") end, 0, 294)
+            addButton("Door Information", function() command("doorinfo") end, 200, 294)
+            local allDoors = panel:Add("DPanel")
+            allDoors:Dock(BOTTOM)
+            allDoors:SetTall(42)
+            allDoors.Paint = nil
+            local disableAll = allDoors:Add("liaButton")
+            disableAll:Dock(LEFT)
+            disableAll:SetWide(220)
+            disableAll:SetText("Disable / Enable All Doors")
+            disableAll.DoClick = function() lia.command.send("togglealldoors") end
+            local function updateDoor()
+                if not selected then
+                    title:SetText("Select a door")
+                    info:SetText("")
+                    return
+                end
+
+                local data = selected.data
+                local owner = IsValid(selected.entity:GetDTEntity(0)) and selected.entity:GetDTEntity(0):Nick() or data.ownerSteamID
+                title:SetText((data.name ~= "" and data.name or "Door") .. " (#" .. selected.id .. ")")
+                info:SetText(string.format("Position: %s\nOwner: %s\nPrice: %s\nEnabled: %s\nOwnable: %s\nHidden: %s\nFactions: %s\nClasses: %s", tostring(selected.entity:GetPos()), owner ~= "" and owner or "None", tostring(data.price or 0), data.disabled and "No" or "Yes", data.noSell and "No" or "Yes", data.hidden and "Yes" or "No", table.concat(data.factions or {}, ", ") ~= "" and table.concat(data.factions or {}, ", ") or "None", table.concat(data.classes or {}, ", ") ~= "" and table.concat(data.classes or {}, ", ") or "None"))
+            end
+
+            list.OnRowSelected = function(_, _, row)
+                selected = row.door
+                updateDoor()
+            end
+
+            local function populate()
+                list:Clear()
+                local rows = {}
+                for _, entity in ents.Iterator() do
+                    if IsValid(entity) and entity:isDoor() and entity:MapCreationID() > 0 then rows[#rows + 1] = entity end
+                end
+
+                table.sort(rows, function(a, b) return a:MapCreationID() < b:MapCreationID() end)
+                for _, entity in ipairs(rows) do
+                    local data = lia.doors.getData(entity)
+                    local row = list:AddLine(entity:MapCreationID(), data.name ~= "" and data.name or "Unnamed", data.disabled and "Disabled" or "Enabled")
+                    row.door = {
+                        entity = entity,
+                        data = data,
+                        id = entity:MapCreationID()
+                    }
+                end
+            end
+
+            populate()
+        end
+    }
+end)
+
+hook.Add("PopulateAdminTabs", "liaVendorManagement", function(pages)
+    local client = LocalPlayer()
+    if not IsValid(client) or not client:hasPrivilege("canEditVendors") then return end
+    pages[#pages + 1] = {
+        name = "Vendors",
+        icon = "user_suit.png",
+        drawFunc = function(panel)
+            panel:Clear()
+            panel:DockPadding(12, 12, 12, 12)
+            local selected
+            local list = panel:Add("DListView")
+            list:Dock(LEFT)
+            list:SetWide(math.max(380, ScrW() * 0.34))
+            list:AddColumn("Vendor")
+            list:AddColumn("Model")
+            list:AddColumn("Items"):SetFixedWidth(58)
+            local detail = panel:Add("DPanel")
+            detail:Dock(FILL)
+            detail:DockMargin(12, 0, 0, 0)
+            detail:DockPadding(14, 14, 14, 14)
+            detail.Paint = function(_, w, h) draw.RoundedBox(6, 0, 0, w, h, Color(5, 20, 25, 235)) end
+            local heading = detail:Add("DLabel")
+            heading:Dock(TOP)
+            heading:SetTall(34)
+            heading:SetFont("LiliaFont.20")
+            heading:SetTextColor(lia.color.theme.accent)
+            heading:SetText("Select a vendor")
+            local info = detail:Add("DLabel")
+            info:Dock(TOP)
+            info:SetTall(112)
+            info:SetFont("LiliaFont.16")
+            info:SetTextColor(Color(210, 220, 220))
+            info:SetWrap(true)
+            local actions = detail:Add("DPanel")
+            actions:Dock(TOP)
+            actions:SetTall(180)
+            actions.Paint = nil
+            local function sendAction(action)
+                if not selected then return end
+                net.Start("liaVendorAdminAction")
+                net.WriteString(action)
+                net.WriteEntity(selected)
+                net.SendToServer()
+            end
+
+            local function addButton(label, callback, x, y, width)
+                local button = actions:Add("liaButton")
+                button:SetText(label)
+                button:SetPos(x, y)
+                button:SetSize(width or 190, 36)
+                button.DoClick = callback
+                return button
+            end
+
+            addButton("Open Vendor Editor", function()
+                if not selected then return end
+                net.Start("liaVendorAdminOpen")
+                net.WriteEntity(selected)
+                net.SendToServer()
+            end, 0, 0, 240)
+
+            addButton("Restock Selected", function() sendAction("restock") end, 250, 0, 190)
+            addButton("Remove Vendor", function()
+                if not selected then return end
+                Derma_Query("Remove this vendor permanently?", "Remove Vendor", "Remove", function() sendAction("remove") end, "Cancel")
+            end, 0, 48, 240)
+
+            addButton("Restock All Vendors", function() lia.command.send("restockallvendors") end, 250, 48, 190)
+            local function updateDetails()
+                if not IsValid(selected) then
+                    heading:SetText("Select a vendor")
+                    info:SetText("")
+                    return
+                end
+
+                local itemCount = table.Count(selected.items or {})
+                local name = lia.vendor.getVendorProperty(selected, "name") or "Unnamed Vendor"
+                local stock = lia.vendor.getVendorProperty(selected, "stockEnabled") and "Enabled" or "Disabled"
+                heading:SetText(name)
+                info:SetText(string.format("Class: %s\nModel: %s\nPosition: %s\nItems: %d\nStock: %s\nFactions: %d\nClasses: %d", selected:GetClass(), selected:GetModel(), tostring(selected:GetPos()), itemCount, stock, table.Count(selected.factions or {}), table.Count(selected.classes or {})))
+            end
+
+            list.OnRowSelected = function(_, _, row)
+                selected = row.vendor
+                updateDetails()
+            end
+
+            local vendors = ents.FindByClass("lia_vendor")
+            table.sort(vendors, function(a, b) return (a:EntIndex() or 0) < (b:EntIndex() or 0) end)
+            for _, vendor in ipairs(vendors) do
+                if IsValid(vendor) then
+                    local name = lia.vendor.getVendorProperty(vendor, "name") or "Unnamed Vendor"
+                    local row = list:AddLine(name, vendor:GetModel(), table.Count(vendor.items or {}))
+                    row.vendor = vendor
+                end
+            end
         end
     }
 end)

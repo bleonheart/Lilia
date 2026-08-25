@@ -669,14 +669,14 @@ net.Receive("liaSpawnMenuSpawnItem", function(_, client)
             ent:SetCreator(client)
         end
 
-        undo.Create(L("item"))
+        undo.Create("Item")
         undo.SetPlayer(client)
         undo.AddEntity(ent)
         local name = lia.item.list[id] and lia.item.list[id].name or id
-        undo.SetCustomUndoText(L("spawnUndoText", name))
-        undo.Finish(L("spawnUndoName", name))
+        undo.SetCustomUndoText(string.format("Undone %s", name))
+        undo.Finish(string.format("Item (%s)", name))
         lia.log.add(client, "spawnItem", name, "SpawnMenuSpawnItem")
-        client:notifySuccessLocalized("logItemSpawned", name)
+        client:notifySuccess(string.format("Item '%s' spawned in the world.", name))
     end, angle_zero, {})
 end)
 
@@ -704,9 +704,9 @@ net.Receive("liaManagesitroomsAction", function(_, client)
         if targetPos then
             client.previousSitroomPos = client:GetPos()
             client:SetPos(targetPos)
-            client:notifySuccessLocalized("sitroomTeleport", name)
+            client:notifySuccess(string.format("You have been teleported to Administration Room: %s.", name))
             lia.log.add(client, "sendToSitRoom", client:Name(), name)
-            local message = L("staffLogTeleportedToSitRoom", client:Name(), client:SteamID64(), name)
+            local message = string.format("%s (Steam64ID: %s) teleported to sit room \\\"%s\\\".", client:Name(), client:SteamID64(), name)
             StaffAddTextShadowed(Color(123, 104, 238), "SIT", Color(255, 255, 255), message)
         end
     elseif action == 2 then
@@ -715,15 +715,15 @@ net.Receive("liaManagesitroomsAction", function(_, client)
             rooms[newName] = rooms[name]
             rooms[name] = nil
             lia.data.set("sitrooms", rooms)
-            client:notifySuccessLocalized("sitroomRenamed")
-            lia.log.add(client, "sitRoomRenamed", L("sitroomRenamedDetail", name, newName), L("logRenamedSitroom"))
+            client:notifySuccess("Administration Room renamed successfully.")
+            lia.log.add(client, "sitRoomRenamed", string.format("Old: %s | New: %s", name, newName), "Renamed administration room")
         end
     elseif action == 3 then
         if rooms[name] then
             rooms[name] = client:GetPos()
             lia.data.set("sitrooms", rooms)
-            client:notifySuccessLocalized("sitroomRepositioned")
-            lia.log.add(client, "sitRoomRepositioned", L("sitroomRepositionedDetail", name, tostring(client:GetPos())), L("logRepositionedSitroom"))
+            client:notifySuccess("Administration Room repositioned successfully.")
+            lia.log.add(client, "sitRoomRepositioned", string.format("Name: %s | New Position: %s", name, tostring(client:GetPos())), "Repositioned administration room")
         end
     end
 end)
@@ -968,7 +968,7 @@ LIMIT %d OFFSET %d]], safeLimit, safeOffset)
                     Desc = row.desc,
                     Faction = row.faction,
                     SteamID = steamID,
-                    LastUsed = stored and L("onlineNow") or row.lastJoinTime,
+                    LastUsed = stored and "Online now" or row.lastJoinTime,
                     Banned = isBanned,
                     PlayTime = playTime,
                     Money = tonumber(row.money) or 0,
@@ -1023,20 +1023,20 @@ net.Receive("liaModifyFlags", function(_, client)
         local char = target:getChar()
         if not char then return end
         char:setFlags(flags)
-        client:notifySuccessLocalized("flagSet", client:Name(), target:Name(), flags)
+        client:notifySuccess(string.format("%s has set %s's flags to '%s'.", client:Name(), target:Name(), flags))
         return
     end
 
     lia.db.query("SELECT id, name FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steamID) .. " LIMIT 1", function(data)
         if not data or not data[1] then
-            client:notifyLocalized("playerNotFound")
+            client:notify("Player not found.")
             return
         end
 
         local charID = data[1].id
         local charName = data[1].name
         lia.char.setCharDatabase(charID, "flags", flags)
-        client:notifySuccessLocalized("flagSet", client:Name(), charName, flags)
+        client:notifySuccess(string.format("%s has set %s's flags to '%s'.", client:Name(), charName, flags))
     end)
 end)
 
@@ -1046,25 +1046,25 @@ net.Receive("liaModifyCharacterFlags", function(_, client)
     local charID = tonumber(net.ReadUInt(32))
     local flags = string.gsub(net.ReadString() or "", "%s", "")
     if not charID or charID <= 0 then
-        client:notifyErrorLocalized("charIDMustBeNumber")
+        client:notifyError("charID must be a number")
         return
     end
 
     local loadedChar = lia.char.loaded[charID]
     if loadedChar then
         loadedChar:setFlags(flags)
-        client:notifySuccessLocalized("flagSet", client:Name(), loadedChar:getName(), flags)
+        client:notifySuccess(string.format("%s has set %s's flags to '%s'.", client:Name(), loadedChar:getName(), flags))
         return
     end
 
     lia.db.query("SELECT name FROM lia_characters WHERE id = " .. lia.db.convertDataType(charID) .. " LIMIT 1", function(data)
         if not data or not data[1] then
-            client:notifyLocalized("playerNotFound")
+            client:notify("Player not found.")
             return
         end
 
         lia.char.setCharDatabase(charID, "flags", flags)
-        client:notifySuccessLocalized("flagSet", client:Name(), data[1].name or tostring(charID), flags)
+        client:notifySuccess(string.format("%s has set %s's flags to '%s'.", client:Name(), data[1].name or tostring(charID), flags))
     end)
 end)
 
@@ -1502,4 +1502,150 @@ net.Receive("liaRequestOnlineStaffData", function(_, client)
         net.WriteTable(data)
         net.Send(client)
     end)
+end)
+net.Receive("liaBodygrouperMenuClose", function(_, client)
+    for _, v in pairs(ents.FindByClass("lia_bodygrouper")) do
+        if v:HasUser(client) then v:RemoveUser(client) end
+    end
+end)
+
+local function CanAccessBodygrouper(client)
+    for _, v in pairs(ents.FindByClass("lia_bodygrouper")) do
+        if v:GetPos():Distance(client:GetPos()) <= 128 then return true end
+    end
+
+    local hasPrivilege = client:hasPrivilege("manageBodygroups")
+    lia.debug("[Permissions]", "Permission Check for function CanAccessBodygrouper", "hasNearbyBodygrouper=", tostring(false), "hasPrivilege(manageBodygroups)=", tostring(hasPrivilege), "finalResult=", tostring(hasPrivilege))
+    return hasPrivilege
+end
+
+net.Receive("liaBodygrouperMenu", function(_, client)
+    local target = net.ReadEntity()
+    local skn = net.ReadUInt(10)
+    local groups = net.ReadTable()
+    local closetuser = false
+    if not IsValid(target) then return end
+    if target ~= client then
+        local hasManageBodygroups = client:hasPrivilege("manageBodygroups")
+        local hasChangeBodygroups = client:hasPrivilege("changeBodygroups")
+        local permission = hasManageBodygroups or hasChangeBodygroups
+        lia.debug("[Permissions]", "Permission Check for net.Receive liaBodygrouperMenu target-other", "hasPrivilege(manageBodygroups)=", tostring(hasManageBodygroups), "hasPrivilege(changeBodygroups)=", tostring(hasChangeBodygroups), "finalResult=", tostring(permission))
+        if not permission then
+            client:notify("No Access")
+            return
+        end
+    else
+        local canAccessBodygrouper = CanAccessBodygrouper(client)
+        lia.debug("[Permissions]", "Permission Check for net.Receive liaBodygrouperMenu self-target", "CanAccessBodygrouper=", tostring(canAccessBodygrouper), "finalResult=", tostring(canAccessBodygrouper))
+        if not canAccessBodygrouper then
+            client:notify("No Access")
+            return
+        end
+
+        closetuser = true
+    end
+
+    if target:SkinCount() and skn > target:SkinCount() then
+        client:notify("Invalid skin selection.")
+        return
+    end
+
+    if target:GetNumBodyGroups() and target:GetNumBodyGroups() > 0 then
+        for k, v in pairs(groups) do
+            if v > target:GetBodygroupCount(k) then
+                client:notify("Invalid bodygroup selection. This often means the model isn't loaded in the server.")
+                return
+            end
+        end
+    end
+
+    local character = target:getChar()
+    if not character then return end
+    target:SetSkin(skn)
+    character:setSkin(skn)
+    for k, v in pairs(groups) do
+        target:SetBodygroup(k, v)
+    end
+
+    character:setBodygroups(groups)
+    if target == client then
+        target:notify(string.format("You changed %s bodygroups.", "your"))
+    else
+        client:notify(string.format("You changed %s bodygroups.", target:Name() .. "'s"))
+        target:notify(string.format("%s changed your bodygroups.", client:Name()))
+    end
+
+    net.Start("liaBodygrouperMenuCloseClientside")
+    net.Send(client)
+    if closetuser then
+        for _, v in pairs(ents.FindByClass("lia_bodygrouper")) do
+            if v:HasUser(target) then v:RemoveUser(target) end
+        end
+    end
+end)
+
+local function appendWardrobeModels(models, seen, source)
+    if not istable(source) then return end
+    for modelKey, modelData in pairs(source) do
+        local parsed = lia.faction.getModelData(modelKey, modelData)
+        if parsed and lia.faction.isModelUsable(parsed.model) then
+            local lowered = string.lower(parsed.model)
+            if not seen[lowered] then
+                seen[lowered] = true
+                models[#models + 1] = parsed.model
+            end
+        elseif istable(modelData) then
+            appendWardrobeModels(models, seen, modelData)
+        end
+    end
+end
+
+local function getWardrobeModelsForCharacter(character)
+    local models = {}
+    local seen = {}
+    if not character then return models end
+    if lia.config.get("WardrobeEnableFactionModels", true) then
+        local factionData = lia.faction.indices[character:getFaction()]
+        appendWardrobeModels(models, seen, factionData and factionData.models)
+    end
+
+    if lia.config.get("WardrobeEnableClassModels", true) then
+        local classData = lia.class.list[character:getClass()]
+        appendWardrobeModels(models, seen, classData and classData.models)
+    end
+    return models
+end
+
+local function canAccessWardrobe(client)
+    for _, wardrobe in ipairs(ents.FindByClass("lia_model_wardrobe")) do
+        if IsValid(wardrobe) and wardrobe:GetPos():Distance(client:GetPos()) <= 128 then return true end
+    end
+    return client:hasPrivilege("manageBodygroups")
+end
+net.Receive("liaWardrobeChangeModel", function(_, client)
+    local character = client:getChar()
+    if not character then return end
+    if not canAccessWardrobe(client) then
+        client:notify("No Access")
+        return
+    end
+
+    local newModel = net.ReadString()
+    if not lia.faction.isModelUsable(newModel) then
+        client:notify("That model isn't allowed.")
+        return
+    end
+
+    local validModels = getWardrobeModelsForCharacter(character)
+    for _, modelPath in ipairs(validModels) do
+        if string.lower(modelPath) == string.lower(newModel) then
+            character:setModel(modelPath)
+            client:SetModel(modelPath)
+            client:SetupHands()
+            client:notify("Your model has been updated.")
+            return
+        end
+    end
+
+    client:notify("That model isn't allowed.")
 end)

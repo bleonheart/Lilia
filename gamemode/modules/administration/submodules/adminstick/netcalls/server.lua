@@ -1,4 +1,4 @@
-local function canManageAdminStickPlayer(client)
+﻿local function canManageAdminStickPlayer(client)
     if not IsValid(client) then return false end
     return client:hasPrivilege("manageWhitelists") or client:hasPrivilege("manageTransfers")
 end

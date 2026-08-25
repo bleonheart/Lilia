@@ -1,77 +1,4 @@
-﻿--[[
-    Hooks:
-        FilterCharModels(Player client, table faction, any data, any index)
-
-    Purpose:
-        Allows code to filter which faction model choices appear in the default character creation model step.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The local player viewing character creation.
-
-        faction (table)
-            The faction table associated with the current creation selection.
-
-        data (any)
-            The raw model choice data entry before it is displayed.
-
-        index (any)
-            The model choice key used to identify the entry in creation context.
-
-    Example Usage:
-        ```lua
-        hook.Add("FilterCharModels", "liaExampleFilterCharModels", function(client, faction, data, index)
-            if index == "restricted_model" then return false end
-        end)
-        ```
-
-    Returns:
-        boolean|nil
-            Return false to hide the model entry. Return nil or true to keep it available.
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        OnCharacterCreationModelIconSet(SpawnIcon icon, string model, number skin, string bodyGroups)
-
-    Purpose:
-        Runs after a creation-model spawnicon has been configured so modules can further customize the preview icon.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        icon (SpawnIcon)
-            The spawnicon panel representing the selectable character model.
-
-        model (string)
-            The resolved model path assigned to the icon.
-
-        skin (number)
-            The skin index assigned to the icon preview.
-
-        bodyGroups (string)
-            The encoded bodygroup string passed to `SpawnIcon:SetModel`.
-
-    Example Usage:
-        ```lua
-        hook.Add("OnCharacterCreationModelIconSet", "liaExampleOnCharacterCreationModelIconSet", function(icon, model, skin, bodyGroups)
-            icon:SetTooltip(model)
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:getCreationModelSource()
     local factionIndex = self:getContext("faction")
     if not factionIndex then return end
@@ -103,7 +30,7 @@ function PANEL:Init()
     self.content:Dock(TOP)
     self.content:SetTall(0)
     self.content:SetPaintBackground(false)
-    self.title = self:addLabel(L("selectModel"), self.content)
+    self.title = self:addLabel("Select a model", self.content)
     self.customPanel = self.content:Add("DPanel")
     self.customPanel:Dock(NODOCK)
     self.customPanel:SetVisible(false)
@@ -207,7 +134,7 @@ function PANEL:addLabel(text, parent)
     label:DockMargin(2, 0, 2, 12)
     label:SetTall(24)
     label:SetFont("LiliaFont.18")
-    label:SetText(L(text))
+    label:SetText(text)
     label:SetTextColor(lia.color.theme.text or color_white)
     label:SetContentAlignment(4)
     label.label = label
@@ -221,7 +148,7 @@ function PANEL:addEntryHeader(text, parent)
     label:DockMargin(0, 8, 0, 8)
     label:SetTall(22)
     label:SetFont("LiliaFont.18")
-    label:SetText(L(text))
+    label:SetText(text)
     label:SetTextColor(lia.color.theme.text or color_white)
     label:SetContentAlignment(4)
     label.label = label

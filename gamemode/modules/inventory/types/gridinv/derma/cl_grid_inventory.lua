@@ -87,7 +87,7 @@ function FRAME:updateRestoreButton()
     local data = char and char:getData("overflowItems")
     if data and data.items and #data.items > 0 then
         local size = data.size or {}
-        self.restoreBtn:SetText(L("moveItemsBack", size[1] or 0, size[2] or 0))
+        self.restoreBtn:SetText(string.format("Move %s/%s items back", size[1] or 0, size[2] or 0))
         self.restoreBtn:SetVisible(true)
         self:SetTall(self.baseHeight + self.restoreBtn:GetTall() + 4)
     else
@@ -390,7 +390,7 @@ function MENU:openMultiActionMenu(actionKey, action, item)
                 onRun = option
             }
 
-            menu:AddOption(L(optionKey), buildActionInvoker(self, actionKey, action, item, subOption, optionKey), "icon16/brick.png")
+            menu:AddOption(optionKey, buildActionInvoker(self, actionKey, action, item, subOption, optionKey), "icon16/brick.png")
         elseif istable(option) then
             local canRun = not isfunction(option[2]) or option[2](item, LocalPlayer())
             if canRun then
@@ -400,7 +400,7 @@ function MENU:openMultiActionMenu(actionKey, action, item)
                     icon = option.icon
                 }
 
-                menu:AddOption(L(subOption.name), buildActionInvoker(self, actionKey, action, item, subOption, optionKey), subOption.icon or "icon16/brick.png")
+                menu:AddOption(subOption.name, buildActionInvoker(self, actionKey, action, item, subOption, optionKey), subOption.icon or "icon16/brick.png")
             end
         end
     end
@@ -417,7 +417,7 @@ function MENU:openItemActionMenu(item)
     for _, actionInfo in ipairs(actions) do
         local actionKey = actionInfo.key
         local action = actionInfo.action
-        local label = L(action.name or actionKey)
+        local label = action.name or actionKey
         local isMulti = action.isMulti or action.multiOptions and (istable(action.multiOptions) or isfunction(action.multiOptions))
         local callback = isMulti and function() self:openMultiActionMenu(actionKey, action, item) end or buildActionInvoker(self, actionKey, action, item)
         menu:AddOption(label, callback, action.icon or "icon16/brick.png")
@@ -450,7 +450,7 @@ function MENU:rebuildActionButtons()
     for index, actionInfo in ipairs(ordered) do
         local actionKey = actionInfo.key
         local action = actionInfo.action
-        local label = L(action.name or actionKey)
+        local label = action.name or actionKey
         local isMulti = action.isMulti or action.multiOptions and (istable(action.multiOptions) or isfunction(action.multiOptions))
         local callback = isMulti and function() self:openMultiActionMenu(actionKey, action, item) end or buildActionInvoker(self, actionKey, action, item)
         self:addFooterAction(label, callback, index == 1)

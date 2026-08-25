@@ -1,33 +1,4 @@
-﻿--[[
-    Hooks:
-        SetupQuickMenu(Panel menu)
-
-    Purpose:
-        Allows modules to populate the quick settings menu before it is sized and shown.
-
-    Category:
-        UI
-
-    Parameters:
-        menu (Panel)
-            The quick menu panel instance that exposes helper methods like `addButton`, `addCheck`, and `addSpacer`.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("SetupQuickMenu", "liaExampleSetupQuickMenu", function(menu)
-            menu:addButton("Example Action", function()
-                LocalPlayer():ChatPrint("Example clicked.")
-            end, "Runs an example quick action.")
-        end)
-        ```
-
-    Realm:
-        Client
-]]
-local quickPaletteDefaults = {
+﻿local quickPaletteDefaults = {
     background = Color(4, 13, 17, 250),
     header = Color(5, 18, 23, 248),
     panel = Color(9, 24, 29, 242),
@@ -132,7 +103,7 @@ end
 
 local function quickLocalized(value)
     if not value or value == "" then return value end
-    local localized = L(value)
+    local localized = value
     if localized and localized ~= "" then return localized end
     return value
 end
@@ -186,7 +157,7 @@ function QuickPanel:Init()
     if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end
     lia.gui.quick = self
     refreshQuickPalette()
-    self:SetSkin(lia.config.get("DermaSkin", L("liliaSkin")))
+    self:SetSkin(lia.config.get("DermaSkin", "Lilia Skin"))
     self:SetTitle("")
     self:SetAlphaBackground(false)
     self:SetDraggable(false)

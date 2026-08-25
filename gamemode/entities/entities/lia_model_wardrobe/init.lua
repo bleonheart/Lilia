@@ -43,7 +43,7 @@ function ENT:Use(client)
     end
 
     if #models == 0 then
-        client:notifyLocalized("wardrobeNoModels")
+        client:notify("There are no models available for your faction & class.")
         return
     end
 

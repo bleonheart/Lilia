@@ -33,7 +33,7 @@ function PANEL:Init()
     if IsValid(lia.dialog.historyFrame) then lia.dialog.historyFrame:Remove() end
     if IsValid(lia.dialog.backdrop) then lia.dialog.backdrop:Remove() end
     lia.dialog.vgui = self
-    self.npcDisplayName = L("dialog")
+    self.npcDisplayName = "Dialog"
     self.lastResponseText = ""
     self.pendingResponse = false
     self.hasHistoryMessage = false
@@ -93,7 +93,7 @@ function PANEL:Init()
     self.historyHeader:SetTall(58)
     self.historyHeader.Paint = function(_, w, h)
         local accent = lia.color.theme.accent
-        draw.SimpleText(string.upper(L("history")), "LiliaFont.18", 18, 20, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(string.upper("History"), "LiliaFont.18", 18, 20, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 78)
         surface.DrawRect(16, h - 1, w - 32, 1)
     end
@@ -111,7 +111,7 @@ function PANEL:Init()
     self.header:SetTall(58)
     self.header.Paint = function(_, w, h)
         local accent = lia.color.theme.accent
-        draw.SimpleText(string.upper(tostring(self.npcDisplayName or L("dialog"))), "LiliaFont.18", 18, 20, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(string.upper(tostring(self.npcDisplayName or "Dialog")), "LiliaFont.18", 18, 20, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 78)
         surface.DrawRect(16, h - 1, w - 32, 1)
     end
@@ -235,7 +235,7 @@ function PANEL:SetDialogText(text)
 end
 
 function PANEL:SetDialogTitle(title)
-    self.npcDisplayName = title or L("dialog")
+    self.npcDisplayName = title or "Dialog"
     if IsValid(self.header) then self.header:InvalidateLayout(true) end
 end
 
@@ -263,7 +263,7 @@ end
 
 function PANEL:AppendDialogLine(text, isPlayer, skipResponseUpdate)
     if not text or text == "" or not IsValid(self.dialogHistoryList) then return end
-    local speaker = isPlayer and L("you") or self.npcDisplayName or L("dialog")
+    local speaker = isPlayer and "You" or self.npcDisplayName or "Dialog"
     local accent = lia.color.theme.accent
     local isFirstMessage = not self.hasHistoryMessage
     self.hasHistoryMessage = true
@@ -499,7 +499,7 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
 
     if not skipBackButton and #self.conversationStack > 0 then
         table.insert(validOptions, {
-            label = L("back"),
+            label = "Back",
             info = {
                 Response = "",
                 isAutoBack = true
@@ -514,12 +514,12 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         local bIsAdmin = labelB:find("^%[admin%]") or labelB:find("^%[admin%]:")
         if aIsAdmin and not bIsAdmin then return true end
         if bIsAdmin and not aIsAdmin then return false end
-        local aIsBack = a.info.isAutoBack and labelMatches(a.label, "back", L("back"), "return", L("returnText"))
-        local bIsBack = b.info.isAutoBack and labelMatches(b.label, "back", L("back"), "return", L("returnText"))
+        local aIsBack = a.info.isAutoBack and labelMatches(a.label, "back", "Back", "return", "Return")
+        local bIsBack = b.info.isAutoBack and labelMatches(b.label, "back", "Back", "return", "Return")
         if aIsBack and not bIsBack then return true end
         if bIsBack and not aIsBack then return false end
-        local aIsGoodbye = a.info.closeDialog or labelMatches(a.label, "goodbye", "bye", "farewell", "close", L("close"))
-        local bIsGoodbye = b.info.closeDialog or labelMatches(b.label, "goodbye", "bye", "farewell", "close", L("close"))
+        local aIsGoodbye = a.info.closeDialog or labelMatches(a.label, "goodbye", "bye", "farewell", "close", "Close")
+        local bIsGoodbye = b.info.closeDialog or labelMatches(b.label, "goodbye", "bye", "farewell", "close", "Close")
         if aIsGoodbye and not bIsGoodbye then return false end
         if bIsGoodbye and not aIsGoodbye then return true end
         return labelA < labelB
@@ -563,8 +563,8 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
                 return
             end
 
-            local isGoodbye = info.closeDialog or labelMatches(label, "goodbye", "bye", "farewell", "close", L("close"))
-            local isBack = labelMatches(label, "back", L("back"), "return", L("returnText"))
+            local isGoodbye = info.closeDialog or labelMatches(label, "goodbye", "bye", "farewell", "close", "Close")
+            local isBack = labelMatches(label, "back", "Back", "return", "Return")
             if isBack and info.isAutoBack then
                 self:AppendDialogLine(label, true)
                 if #self.conversationStack > 0 then

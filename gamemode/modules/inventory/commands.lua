@@ -1,8 +1,7 @@
-
--- Inventory command registrations.
+﻿-- Inventory command registrations.
 lia.command.add("returnitems", {
     superAdminOnly = true,
-    desc = "@returnItemsDesc",
+    desc = "Returns items lost on death to the specified player, if any.",
     arguments = {
         {
             name = "name",
@@ -10,20 +9,20 @@ lia.command.add("returnitems", {
         },
     },
     AdminStick = {
-        Name = "@returnItems",
+        Name = "Return Items",
         ButtonText = "Return Lost Items",
         Category = "Inventory",
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyErrorLocalized("targetNotFound")
+            client:notifyError("Target not found")
             return
         end
 
         if lia.config.get("LoseItemsonDeathHuman", false) or lia.config.get("LoseItemsonDeathNPC", false) then
             if not target.LostItems or table.IsEmpty(target.LostItems) then
-                client:notifyInfoLocalized("returnItemsTargetNoItems")
+                client:notifyInfo("The target hasn't lost any items or they've already been returned.")
                 return
             end
 
@@ -36,26 +35,26 @@ lia.command.add("returnitems", {
             end
 
             target.LostItems = nil
-            target:notifySuccessLocalized("returnItemsReturnedToPlayer")
-            client:notifySuccessLocalized("returnItemsAdminConfirmed")
+            target:notifySuccess("Your items have been returned.")
+            client:notifySuccess("Returned the items.")
             lia.log.add(client, "returnItems", target:Name())
         else
-            client:notifyInfoLocalized("returnItemsNotEnabled")
+            client:notifyInfo("Item loss on death is not enabled!")
         end
     end
 })
 
 lia.command.add("returnallitems", {
     superAdminOnly = true,
-    desc = "@returnAllItemsDesc",
+    desc = "Returns items lost on death to all players who have lost items.",
     AdminStick = {
-        Name = "@returnAllItems",
+        Name = "Return All Items",
         ButtonText = "Return All Lost Items",
         Category = "Inventory",
     },
     onRun = function(client)
         if not lia.config.get("LoseItemsonDeathHuman", false) and not lia.config.get("LoseItemsonDeathNPC", false) then
-            client:notifyInfoLocalized("returnItemsNotEnabled")
+            client:notifyInfo("Item loss on death is not enabled!")
             return
         end
 
@@ -74,16 +73,16 @@ lia.command.add("returnallitems", {
             end
 
             target.LostItems = nil
-            target:notifySuccessLocalized("returnItemsReturnedToPlayer")
+            target:notifySuccess("Your items have been returned.")
             returnedCount = returnedCount + 1
             totalItems = totalItems + playerItemCount
             lia.log.add(client, "returnItems", target:Name())
         end
 
         if returnedCount > 0 then
-            client:notifySuccessLocalized("returnAllItemsAdminConfirmed", returnedCount, totalItems)
+            client:notifySuccess(string.format("Returned items to %d players (%d total items).", returnedCount, totalItems))
         else
-            client:notifyInfoLocalized("returnAllItemsNoItemsFound")
+            client:notifyInfo("No players have lost items to return.")
         end
     end
 })
@@ -106,7 +105,6 @@ local function GetTicketsByRequester(steamID)
     end)
 end
 
-
 -- Server console inventory commands.
 concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
     if IsValid(client) then return end
@@ -126,7 +124,7 @@ concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
     lia.db.select({"id", "name"}, "characters", "steamID = " .. lia.db.convertDataType(steamID)):next(function(res)
         local characters = res.results or {}
         if not characters or #characters == 0 then
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("noCharactersFoundForSteamID", steamID) .. "\n")
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("No characters found for SteamID: %s", steamID) .. "\n")
             return
         end
 
@@ -146,12 +144,12 @@ concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
                 if character then
                     character:setData("invSizeOverride", sizeOverride)
                     if not hasNotifiedPlayer then
-                        ClientAddTextShadowed(ply, Color(255, 0, 0), "INVENTORY", Color(255, 255, 255), " " .. L("inventorySizeChangedSwapCharacters", width, height))
+                        ClientAddTextShadowed(ply, Color(255, 0, 0), "INVENTORY", Color(255, 255, 255), " " .. string.format("Your inventory size has been changed to %sx%s. Please swap characters for the change to take effect.", width, height))
                         hasNotifiedPlayer = true
                     end
 
                     if not hasNotifiedStaff then
-                        local staffMessage = L("staffLogInventorySizeSet", width, height, ply:Name(), ply:SteamID64())
+                        local staffMessage = string.format("Inventory size set to %sx%s for %s (Steam64ID: %s).", width, height, ply:Name(), ply:SteamID64())
                         StaffAddTextShadowed(Color(199, 21, 133), "INVENTORY", Color(255, 255, 255), staffMessage)
                         hasNotifiedStaff = true
                     end
@@ -208,4 +206,3 @@ concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
         end)
     end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n") end)
 end)
-

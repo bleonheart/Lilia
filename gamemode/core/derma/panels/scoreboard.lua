@@ -1,262 +1,4 @@
-﻿--[[
-    Hooks:
-        CanPlayerOpenScoreboard(client)
-
-    Purpose:
-        Determines whether the local player may open the Lilia scoreboard.
-
-    Category:
-        Scoreboard
-
-    Parameters:
-        client (Player)
-            The local player attempting to open the scoreboard.
-
-    Example Usage:
-        ```lua
-        hook.Add("CanPlayerOpenScoreboard", "liaExampleCanPlayerOpenScoreboard", function(client)
-            if IsValid(client) and not client:Alive() then return false end
-        end)
-        ```
-
-    Returns:
-        boolean|nil
-            Return false to prevent the scoreboard from opening. Returning nil allows it.
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ModifyScoreboardModel(model, client)
-
-    Purpose:
-        Allows clientside code to customize the model entity displayed in a scoreboard row after its appearance is applied.
-
-    Category:
-        Scoreboard
-
-    Parameters:
-        model (Entity)
-            The clientside model entity rendered by the row's model panel.
-
-        client (Player)
-            The player represented by the scoreboard row.
-
-    Example Usage:
-        ```lua
-        hook.Add("ModifyScoreboardModel", "liaExampleModifyScoreboardModel", function(model, client)
-            if IsValid(model) and IsValid(client) and client:IsAdmin() then
-                model:SetColor(Color(255, 220, 120))
-            end
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ScoreboardClosed(scoreboard)
-
-    Purpose:
-        Called when the Lilia scoreboard is hidden or removed.
-
-    Category:
-        Scoreboard
-
-    Parameters:
-        scoreboard (Panel)
-            The scoreboard panel being closed.
-
-    Example Usage:
-        ```lua
-        hook.Add("ScoreboardClosed", "liaExampleScoreboardClosed", function(scoreboard)
-            print("Scoreboard closed", scoreboard)
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ScoreboardOpened(scoreboard)
-
-    Purpose:
-        Called when the Lilia scoreboard is created or made visible again.
-
-    Category:
-        Scoreboard
-
-    Parameters:
-        scoreboard (Panel)
-            The scoreboard panel that was opened.
-
-    Example Usage:
-        ```lua
-        hook.Add("ScoreboardOpened", "liaExampleScoreboardOpened", function(scoreboard)
-            if IsValid(scoreboard) then scoreboard.nextUpdate = 0 end
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ScoreboardRowCreated(row, client)
-
-    Purpose:
-        Called after a scoreboard row has been created and initialized for a player.
-
-    Category:
-        Scoreboard
-
-    Parameters:
-        row (Panel)
-            The newly created scoreboard row panel.
-
-        client (Player)
-            The player represented by the row.
-
-    Example Usage:
-        ```lua
-        hook.Add("ScoreboardRowCreated", "liaExampleScoreboardRowCreated", function(row, client)
-            if IsValid(row) and IsValid(client) then row:SetTooltip(client:SteamID()) end
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ScoreboardRowRemoved(row, client)
-
-    Purpose:
-        Called immediately before a scoreboard row is removed because its player or character is no longer valid.
-
-    Category:
-        Scoreboard
-
-    Parameters:
-        row (Panel)
-            The scoreboard row that is about to be removed.
-
-        client (Player)
-            The player previously represented by the row. The player may already be invalid.
-
-    Example Usage:
-        ```lua
-        hook.Add("ScoreboardRowRemoved", "liaExampleScoreboardRowRemoved", function(row, client)
-            print("Removing scoreboard row", row, client)
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ShouldShowClassOnScoreboard(class)
-
-    Purpose:
-        Determines whether a registered class receives a visible section on the scoreboard.
-
-    Category:
-        Scoreboard
-
-    Parameters:
-        class (table)
-            The registered class data being evaluated.
-
-    Example Usage:
-        ```lua
-        hook.Add("ShouldShowClassOnScoreboard", "liaExampleShouldShowClassOnScoreboard", function(class)
-            if class.uniqueID == "observer" then return false end
-        end)
-        ```
-
-    Returns:
-        boolean|nil
-            Return false to hide the class section. Returning nil allows the default behavior.
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ShouldShowFactionOnScoreboard(client)
-
-    Purpose:
-        Determines whether a player's faction and its player row may appear on the scoreboard.
-
-    Category:
-        Scoreboard
-
-    Parameters:
-        client (Player)
-            The player whose faction is being evaluated.
-
-    Example Usage:
-        ```lua
-        hook.Add("ShouldShowFactionOnScoreboard", "liaExampleShouldShowFactionOnScoreboard", function(client)
-            if IsValid(client) and client:Team() == FACTION_STAFF then return false end
-        end)
-        ```
-
-    Returns:
-        boolean|nil
-            Return false to exclude the player's faction row from the scoreboard. Returning nil allows it.
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ShouldShowPlayerOnScoreboard(client)
-
-    Purpose:
-        Determines whether an individual player may appear on the scoreboard.
-
-    Category:
-        Scoreboard
-
-    Parameters:
-        client (Player)
-            The player being evaluated for display.
-
-    Example Usage:
-        ```lua
-        hook.Add("ShouldShowPlayerOnScoreboard", "liaExampleShouldShowPlayerOnScoreboard", function(client)
-            if IsValid(client) and client:GetNWBool("HideFromScoreboard") then return false end
-        end)
-        ```
-
-    Returns:
-        boolean|nil
-            Return false to hide the player from the scoreboard. Returning nil allows the default behavior.
-
-    Realm:
-        Client
-]]
-local PANEL = {}
+﻿local PANEL = {}
 local frameColor = Color(4, 14, 19, 248)
 local headerColor = Color(5, 18, 24, 252)
 local panelColor = Color(6, 21, 28, 246)
@@ -340,7 +82,7 @@ local function getPlayerRankText(ply, char)
         end
     end
 
-    if rank == "" then rank = L("none") end
+    if rank == "" then rank = "None" end
     return rank
 end
 
@@ -484,8 +226,8 @@ function PANEL:Init()
     for _, factionInfo in ipairs(sortedFactions) do
         local facID, facData = factionInfo.id, factionInfo.data
         local facColor = team.GetColor(facID)
-        local factionTitle = string.upper(L(facData.name))
-        local factionSubtitle = facData.scoreboardSubtitle and L(facData.scoreboardSubtitle) or ""
+        local factionTitle = string.upper(facData.name)
+        local factionSubtitle = facData.scoreboardSubtitle and facData.scoreboardSubtitle or ""
         local facCat = layout:Add("DCollapsibleCategory")
         facCat:SetLabel("")
         facCat:SetExpanded(true)
@@ -618,7 +360,7 @@ function PANEL:Init()
                             textX = textX + 30
                         end
 
-                        draw.SimpleText(string.upper(L(clsData.name)), "LiliaFont.15b", textX, centerY, tintColor(mutedTextColor, headerClassColor, 0.45, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(string.upper(clsData.name), "LiliaFont.15b", textX, centerY, tintColor(mutedTextColor, headerClassColor, 0.45, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                         local count = IsValid(list) and list:ChildCount() or 0
                         draw.SimpleText(count == 1 and "1 PLAYER" or count .. " PLAYERS", "LiliaFont.16", w - 14, centerY, mutedTextColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
                     end
@@ -633,7 +375,7 @@ function PANEL:Init()
                     classLabel:SetFont("LiliaFont.15b")
                     classLabel:SetTextColor(color_white)
                     classLabel:SetExpensiveShadow(1, Color(0, 0, 0, 170))
-                    classLabel:SetText(string.upper(L(clsData.name)))
+                    classLabel:SetText(string.upper(clsData.name))
                     classLabel:SizeToContents()
                     classLabel:SetMouseInputEnabled(false)
                     classLabel:SetVisible(false)
@@ -765,7 +507,7 @@ function PANEL:addPlayer(ply, parent)
     slot.model:setHidden(slot.lastHidden)
     local initialOpts = {}
     hook.Run("ShowPlayerOptions", ply, initialOpts)
-    if #initialOpts > 0 then slot.model:SetTooltip(L("sbOptions")) end
+    if #initialOpts > 0 then slot.model:SetTooltip("Scoreboard Options.") end
     slot.model.DoClick = function()
         local opts = {}
         hook.Run("ShowPlayerOptions", ply, opts)
@@ -774,7 +516,7 @@ function PANEL:addPlayer(ply, parent)
         frame:SetSize(360, 450)
         frame:Center()
         frame:MakePopup()
-        frame:SetTitle(L("sbOptions"))
+        frame:SetTitle("Scoreboard Options.")
         frame:LiteMode()
         self.playerOptionFrames[#self.playerOptionFrames + 1] = frame
         frame.OnRemove = function()
@@ -806,7 +548,7 @@ function PANEL:addPlayer(ply, parent)
                     surface.DrawTexturedRect(8, (h - 16) * 0.5, 16, 16)
                 end
 
-                draw.SimpleText(L(option.name), "LiliaFont.17", 32, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(option.name, "LiliaFont.17", 32, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             end
 
             button.DoClick = function()

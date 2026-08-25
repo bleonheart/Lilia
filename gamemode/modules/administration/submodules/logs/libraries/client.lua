@@ -35,7 +35,7 @@ end
 local function getCategoryLabel(category)
     local label = tostring(category or "")
     if label == "" then return "Logs" end
-    local localized = L(label)
+    local localized = label
     if isstring(localized) and localized ~= "" and localized ~= label then return localized end
     return label
 end
@@ -96,8 +96,8 @@ end
 
 local function openRowMenu(log)
     local menu = DermaMenu()
-    if log.steamID and log.steamID ~= "" then menu:AddOption(L("copySteamID"), function() SetClipboardText(tostring(log.steamID)) end):SetIcon("icon16/page_copy.png") end
-    menu:AddOption(L("copyLogMessage"), function() SetClipboardText(tostring(log.message or "")) end):SetIcon("icon16/page_copy.png")
+    if log.steamID and log.steamID ~= "" then menu:AddOption("Copy Steam ID", function() SetClipboardText(tostring(log.steamID)) end):SetIcon("icon16/page_copy.png") end
+    menu:AddOption("Copy Log Message", function() SetClipboardText(tostring(log.message or "")) end):SetIcon("icon16/page_copy.png")
     menu:Open()
 end
 
@@ -135,7 +135,7 @@ local function createLogTable(parent, categoryData)
         surface.DrawRect(0, h - 1, w, 1)
     end
 
-    local columnNames = {L("timestamp"), L("message"), L("steamID")}
+    local columnNames = {"Timestamp", "Message", "SteamID"}
     for _, name in ipairs(columnNames) do
         local cell = createCell(header, "LiliaFont.17", Color(225, 236, 236))
         cell:SetText(name)
@@ -191,7 +191,7 @@ local function createLogTable(parent, categoryData)
         empty:SetFont("LiliaFont.18")
         empty:SetTextColor(Color(145, 165, 165))
         empty:SetContentAlignment(5)
-        empty:SetText(L("noLogsAvailable"))
+        empty:SetText("No logs available.")
     end
     return tablePanel
 end
@@ -216,7 +216,7 @@ local function renderLoading(panel, category)
     loading:SetFont("LiliaFont.20")
     loading:SetTextColor(Color(150, 170, 170))
     loading:SetContentAlignment(5)
-    loading:SetText(L("loading"))
+    loading:SetText("Loading...")
     panel.loadingLabel = loading
 end
 
@@ -263,7 +263,7 @@ local function renderCategory(panel, category)
     searchBox:SetFont("LiliaFont.17")
     searchBox:SetTextColor(Color(225, 236, 236))
     searchBox:SetCursorColor(lia.color.theme.accent)
-    searchBox:SetPlaceholderText(L("searchLogs"))
+    searchBox:SetPlaceholderText("Search logs...")
     searchBox:SetPaintBackground(false)
     searchBox:SetPaintBackground(false)
     searchBox:SetPaintBorderEnabled(false)
@@ -281,7 +281,7 @@ local function renderCategory(panel, category)
         local disabled = categoryData.currentPage <= 1
         local background = s:IsHovered() and not disabled and Color(accent.r, accent.g, accent.b, 16) or Color(4, 17, 21, 225)
         drawPanel(0, 6, w, h - 12, 5, background, Color(accent.r, accent.g, accent.b, disabled and 28 or 70))
-        draw.SimpleText(L("previousPage"), "LiliaFont.16", w * 0.5, h * 0.5, disabled and Color(80, 100, 100) or Color(205, 220, 220), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("Previous", "LiliaFont.16", w * 0.5, h * 0.5, disabled and Color(80, 100, 100) or Color(205, 220, 220), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     local pageLabel = pagination:Add("DLabel")
@@ -289,7 +289,7 @@ local function renderCategory(panel, category)
     pageLabel:SetFont("LiliaFont.16")
     pageLabel:SetTextColor(Color(210, 224, 224))
     pageLabel:SetContentAlignment(5)
-    pageLabel:SetText(L("pageIndicator", categoryData.currentPage, categoryData.totalPages))
+    pageLabel:SetText(string.format("Page %d of %d", categoryData.currentPage, categoryData.totalPages))
     local nextButton = pagination:Add("DButton")
     nextButton:Dock(RIGHT)
     nextButton:SetWide(108)
@@ -299,7 +299,7 @@ local function renderCategory(panel, category)
         local disabled = categoryData.currentPage >= categoryData.totalPages
         local background = s:IsHovered() and not disabled and Color(accent.r, accent.g, accent.b, 16) or Color(4, 17, 21, 225)
         drawPanel(0, 6, w, h - 12, 5, background, Color(accent.r, accent.g, accent.b, disabled and 28 or 70))
-        draw.SimpleText(L("next"), "LiliaFont.16", w * 0.5, h * 0.5, disabled and Color(80, 100, 100) or Color(205, 220, 220), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("Next", "LiliaFont.16", w * 0.5, h * 0.5, disabled and Color(80, 100, 100) or Color(205, 220, 220), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     local function rebuildTable()
@@ -336,8 +336,8 @@ function MODULE:CreateMenuButtons(tabs)
     if not IsValid(client) then return end
     local canSeeLogs = client:hasPrivilege("canSeeLogs")
     if canSeeLogs then
-        tabs["@logs"] = {
-            name = "@logs",
+        tabs["Logs"] = {
+            name = "Logs",
             func = openLogsPanel
         }
     end
@@ -354,7 +354,7 @@ function MODULE:CreateLogsUI(panel, categories)
     if not categories or #categories == 0 then
         local noLogsLabel = panel:Add("DLabel")
         noLogsLabel:Dock(FILL)
-        noLogsLabel:SetText(L("noLogsAvailable"))
+        noLogsLabel:SetText("No logs available.")
         noLogsLabel:SetTextColor(Color(150, 170, 170))
         noLogsLabel:SetFont("LiliaFont.20")
         noLogsLabel:SetContentAlignment(5)
@@ -494,7 +494,7 @@ lia.net.readBigTable("liaSendLogs", function(logsData)
     end
 
     if not logsData then
-        chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
+        chat.AddText(Color(255, 0, 0), "Failed to retrieve logs.")
         removeLoadingLabel()
         return
     end
@@ -502,10 +502,10 @@ lia.net.readBigTable("liaSendLogs", function(logsData)
     if IsValid(logsPanel) then
         local success, err = pcall(UpdateLogsUI, logsPanel, logsData)
         if not success then
-            chat.AddText(Color(255, 0, 0), L("logsUIUpdateError", tostring(err)))
+            chat.AddText(Color(255, 0, 0), string.format("Error updating logs UI: %s", tostring(err)))
             removeLoadingLabel()
         end
     else
-        chat.AddText(Color(255, 100, 100), L("logsPanelError"))
+        chat.AddText(Color(255, 100, 100), "Logs panel not found. Please reopen the logs tab.")
     end
 end)

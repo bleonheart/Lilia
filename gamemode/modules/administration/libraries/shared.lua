@@ -5,7 +5,7 @@
 end
 
 properties.Add("TogglePropBlacklist", {
-    MenuLabel = L("togglePropBlacklist"),
+    MenuLabel = "Toggle Prop Blacklist",
     Order = 900,
     MenuIcon = "icon16/link.png",
     Filter = function(_, ent, ply)
@@ -31,17 +31,17 @@ properties.Add("TogglePropBlacklist", {
         if table.HasValue(list, model) then
             table.RemoveByValue(list, model)
             lia.data.set("prop_blacklist", list, true, true)
-            ply:notifySuccessLocalized("removedFromBlacklist", model)
+            ply:notifySuccess(string.format("Removed from blacklist: %s", model))
         else
             table.insert(list, model)
             lia.data.set("prop_blacklist", list, true, true)
-            ply:notifySuccessLocalized("addedToBlacklist", model)
+            ply:notifySuccess(string.format("Added to blacklist: %s", model))
         end
     end
 })
 
 properties.Add("ToggleCarBlacklist", {
-    MenuLabel = L("toggleCarBlacklist"),
+    MenuLabel = "Toggle Car Blacklist",
     Order = 901,
     MenuIcon = "icon16/link.png",
     Filter = function(_, ent, ply)
@@ -67,11 +67,11 @@ properties.Add("ToggleCarBlacklist", {
         if table.HasValue(list, model) then
             table.RemoveByValue(list, model)
             lia.data.set("carBlacklist", list, true, true)
-            ply:notifySuccessLocalized("removedFromBlacklist", model)
+            ply:notifySuccess(string.format("Removed from blacklist: %s", model))
         else
             table.insert(list, model)
             lia.data.set("carBlacklist", list, true, true)
-            ply:notifySuccessLocalized("addedToBlacklist", model)
+            ply:notifySuccess(string.format("Added to blacklist: %s", model))
         end
     end
 })
@@ -519,7 +519,7 @@ properties.Add("entity_info", {
     end
 })
 
-lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
+lia.util.setPositionCallback("Faction Spawn Adder", {
     onRun = function(pos, client, typeId)
         if SERVER then
             local factionID = net.ReadString()
@@ -538,23 +538,23 @@ lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
 
                 lia.module.get("spawns"):StoreSpawns(spawns):next(function()
                     lia.log.add(client, "spawnAdd", factionInfo.name)
-                    client:notifySuccessLocalized("spawnAdded")
+                    client:notifySuccess("Sucessfully Added Point")
                 end)
             end)
         else
             local names, idByDisplay = {}, {}
             for k, v in pairs(lia.faction.teams or {}) do
-                local display = L(v.name) or v.name or k
+                local display = v.name or v.name or k
                 names[#names + 1] = display
                 idByDisplay[display] = k
             end
 
             if #names == 0 then
-                client:notifyErrorLocalized("invalidFaction")
+                client:notifyError("The specified faction is not valid.")
                 return
             end
 
-            lia.derma.requestDropdown("@factionSpawnAdderTitle", names, function(selection)
+            lia.derma.requestDropdown("Faction Spawn Adder", names, function(selection)
                 if not selection or selection == false then return end
                 local factionID = idByDisplay[selection]
                 if not factionID then return end
@@ -577,7 +577,7 @@ lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
                 local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
                 for factionID, factionInfo in pairs(lia.faction.teams or {}) do
                     local mapSpawns = factionInfo and factionInfo.spawns and factionInfo.spawns[curMap]
-                    local label = factionInfo and (factionInfo.name and L(factionInfo.name) or factionID) or factionID
+                    local label = factionInfo and (factionInfo.name and factionInfo.name or factionID) or factionID
                     for i = 1, #(mapSpawns or {}) do
                         local data = mapSpawns[i]
                         local pos = data.pos or data.position
@@ -593,7 +593,7 @@ lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
 
                 for factionID, factionSpawns in pairs(spawns or {}) do
                     local factionInfo = lia.faction.get(factionID)
-                    local label = factionInfo and (factionInfo.name and L(factionInfo.name) or factionID) or factionID
+                    local label = factionInfo and (factionInfo.name and factionInfo.name or factionID) or factionID
                     for i = 1, #(factionSpawns or {}) do
                         local data = factionSpawns[i]
                         local pos = data.pos or data.position
@@ -642,7 +642,7 @@ lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
     serverOnly = true
 })
 
-lia.util.setPositionCallback(L("classSpawnAdderTitle"), {
+lia.util.setPositionCallback("Class Spawn Adder", {
     onRun = function(pos, client, typeId)
         if SERVER then
             local classID = net.ReadString()
@@ -664,7 +664,7 @@ lia.util.setPositionCallback(L("classSpawnAdderTitle"), {
 
             lia.data.set("spawns", data)
             lia.log.add(client, "classSpawnAdd", classData.name)
-            client:notifySuccessLocalized("spawnAdded")
+            client:notifySuccess("Sucessfully Added Point")
         else
             local names, idByDisplay = {}, {}
             for k, v in pairs(lia.class.list or {}) do
@@ -676,11 +676,11 @@ lia.util.setPositionCallback(L("classSpawnAdderTitle"), {
             end
 
             if #names == 0 then
-                client:notifyErrorLocalized("invalidClass")
+                client:notifyError("The specified class is not valid.")
                 return
             end
 
-            lia.derma.requestDropdown("@classSpawnAdderTitle", names, function(selection)
+            lia.derma.requestDropdown("Class Spawn Adder", names, function(selection)
                 if not selection or selection == false then return end
                 local classID = idByDisplay[selection]
                 if not classID then return end
@@ -772,7 +772,7 @@ lia.util.setPositionCallback(L("classSpawnAdderTitle"), {
     serverOnly = true
 })
 
-lia.util.setPositionCallback(L("sitRoomTitle"), {
+lia.util.setPositionCallback("Sit Room", {
     onRun = function(pos, client, typeId)
         if SERVER then
             local name = net.ReadString()
@@ -780,13 +780,13 @@ lia.util.setPositionCallback(L("sitRoomTitle"), {
             local rooms = lia.data.get("sitrooms", {})
             rooms[name] = pos
             lia.data.set("sitrooms", rooms)
-            client:notifySuccessLocalized("sitroomSet")
-            lia.log.add(client, "sitRoomSet", L("sitroomSetDetail", name, tostring(pos)), L("logSetSitroom"))
+            client:notifySuccess("Administration Room has been set!")
+            lia.log.add(client, "sitRoomSet", string.format("Name: %s | Position: %s", name, tostring(pos)), "Set the administration room location")
         elseif CLIENT then
-            client:requestString("@enterNamePrompt", L("enterSitroomPrompt") .. ":", function(name)
+            client:requestString("Enter Name", "Enter the name of the Administration Room" .. ":", function(name)
                 if name == false then return end
                 if not name or name == "" then
-                    client:notifyErrorLocalized("invalidName")
+                    client:notifyError("Invalid name!")
                     return
                 end
 

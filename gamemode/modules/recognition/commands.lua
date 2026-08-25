@@ -1,5 +1,4 @@
-
--- Recognition command registrations.
+﻿-- Recognition command registrations.
 lia.command.add("recogwhisper", {
     adminOnly = true,
     arguments = {
@@ -8,9 +7,9 @@ lia.command.add("recogwhisper", {
             type = "player"
         },
     },
-    desc = "@recogWhisperDesc",
+    desc = "Force player recognition in whisper range.",
     AdminStick = {
-        Name = "@adminStickForceRecognitionWhisperName",
+        Name = "Force Recognition (Whisper)",
         ButtonText = "Force Recognize Whisper",
         Category = "Recognition",
     },
@@ -29,9 +28,9 @@ lia.command.add("recognormal", {
             type = "player"
         },
     },
-    desc = "@recogNormalDesc",
+    desc = "Force player recognition in normal range.",
     AdminStick = {
-        Name = "@adminStickForceRecognitionNormalName",
+        Name = "Force Recognition (Normal)",
         ButtonText = "Force Recognize Nearby",
         Category = "Recognition",
     },
@@ -50,9 +49,9 @@ lia.command.add("recogyell", {
             type = "player"
         },
     },
-    desc = "@recogYellDesc",
+    desc = "Force player recognition in yell range.",
     AdminStick = {
-        Name = "@adminStickForceRecognitionYellName",
+        Name = "Force Recognition (Yell)",
         ButtonText = "Force Recognize Yell",
         Category = "Recognition",
     },
@@ -77,7 +76,7 @@ lia.command.add("recogbots", {
             optional = true
         },
     },
-    desc = "@recogBotsDesc",
+    desc = "Force all bots to recognize people around them. Optionally specify a fake name.",
     onRun = function(_, arguments)
         local range = arguments[1] or "normal"
         local fakeName = arguments[2]
@@ -86,4 +85,3 @@ lia.command.add("recogbots", {
         end
     end
 })
-

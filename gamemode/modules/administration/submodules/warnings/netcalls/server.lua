@@ -6,30 +6,30 @@ net.Receive("liaRequestRemoveWarning", function(_, client)
     local rowData = net.ReadTable()
     local warnIndex = tonumber(rowData.ID or rowData.index)
     if not warnIndex then
-        client:notifyErrorLocalized("invalidWarningIndex")
+        client:notifyError("Invalid warning index.")
         return
     end
 
     lia.char.getCharacter(charID, client, function(targetChar)
         if not targetChar then
-            client:notifyErrorLocalized("characterNotFound")
+            client:notifyError("Character not found.")
             return
         end
 
         local targetClient = targetChar:getPlayer()
         if not IsValid(targetClient) then
-            client:notifyErrorLocalized("playerNotFound")
+            client:notifyError("Player not found.")
             return
         end
 
         MODULE:RemoveWarning(charID, warnIndex):next(function(warn)
             if not warn then
-                client:notifyErrorLocalized("invalidWarningIndex")
+                client:notifyError("Invalid warning index.")
                 return
             end
 
-            targetClient:notifyInfoLocalized("warningRemovedNotify", client:Nick())
-            client:notifySuccessLocalized("warningRemoved", warnIndex, targetClient:Nick())
+            targetClient:notifyInfo(string.format("A warning has been removed from your record by %s", client:Nick()))
+            client:notifySuccess(string.format("Removed warning #%s from %s", warnIndex, targetClient:Nick()))
             hook.Run("WarningRemoved", client, targetClient, {
                 reason = warn.message,
                 admin = warn.warner,

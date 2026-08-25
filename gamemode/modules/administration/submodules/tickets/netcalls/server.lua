@@ -12,7 +12,7 @@ end)
 net.Receive("liaTicketSystemClaim", function(_, client)
     local requester = net.ReadEntity()
     if client == requester then
-        client:notifyErrorLocalized("ticketActionSelf")
+        client:notifyError("You cannot perform this action on your own ticket.")
         return
     end
 
@@ -59,7 +59,7 @@ end)
 net.Receive("liaTicketSystemClose", function(_, client)
     local requester = net.ReadEntity()
     if client == requester then
-        client:notifyErrorLocalized("ticketActionSelf")
+        client:notifyError("You cannot perform this action on your own ticket.")
         return
     end
 

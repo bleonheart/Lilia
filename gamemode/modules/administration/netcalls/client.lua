@@ -1,31 +1,4 @@
-﻿--[[
-    Hooks:
-        OnlineStaffDataReceived(table staffData)
-
-    Purpose:
-        Runs after the online-staff summary payload arrives on the client so UI code can refresh with the latest staff data.
-
-    Category:
-        Administration
-
-    Parameters:
-        staffData (table)
-            The decoded online-staff summary array received from the server.
-
-    Example Usage:
-        ```lua
-        hook.Add("OnlineStaffDataReceived", "liaExampleOnlineStaffDataReceived", function(staffData)
-            print("Online staff entries:", #staffData)
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
-lia.adminStickMapState = lia.adminStickMapState or lia.mapConfigurerState or {
+﻿lia.adminStickMapState = lia.adminStickMapState or lia.mapConfigurerState or {
     modeIndex = 1,
     cachedPositions = {},
     cacheType = nil,
@@ -98,7 +71,7 @@ end)
 
 net.Receive("liaAdminModeSwapCharacter", function()
     local id = net.ReadInt(32)
-    assert(isnumber(id), L("idMustBeNumber"))
+    assert(isnumber(id), "id must be a number")
     local d = deferred.new()
     net.Receive("liaCharChoose", function()
         local message = net.ReadString()
@@ -117,13 +90,13 @@ net.Receive("liaAdminModeSwapCharacter", function()
     net.Start("liaCharChoose")
     net.WriteUInt(id, 32)
     net.SendToServer()
-    d:catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
+    d:catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end)
 end)
 
 net.Receive("liaManagesitrooms", function()
     local rooms = net.ReadTable() or {}
     local frame = vgui.Create("liaFrame")
-    frame:SetTitle(L("manageSitRooms"))
+    frame:SetTitle("Manage Administration Rooms")
     frame:SetSize(640, 420)
     frame:Center()
     frame:MakePopup()
@@ -145,14 +118,14 @@ net.Receive("liaManagesitrooms", function()
             local btn = vgui.Create("liaButton", entry)
             btn:Dock(RIGHT)
             btn:SetWide(80)
-            btn:SetText(L(key))
+            btn:SetText(key)
             btn.DoClick = function()
                 net.Start("liaManagesitroomsAction")
                 net.WriteUInt(action, 2)
                 net.WriteString(name)
                 if action == 2 then
                     local prompt = vgui.Create("liaFrame")
-                    prompt:SetTitle(L("renameSitroomTitle"))
+                    prompt:SetTitle("Rename Administration Room")
                     prompt:SetSize(300, 100)
                     prompt:Center()
                     prompt:MakePopup()
@@ -160,7 +133,7 @@ net.Receive("liaManagesitrooms", function()
                     txt:Dock(FILL)
                     local ok = vgui.Create("liaButton", prompt)
                     ok:Dock(BOTTOM)
-                    ok:SetText(string.upper(L("ok")))
+                    ok:SetText(string.upper("ok"))
                     ok.DoClick = function()
                         net.WriteString(txt:GetValue())
                         net.SendToServer()
@@ -231,8 +204,16 @@ net.Receive("liaNetProfilerSnapshot", function()
 end)
 
 net.Receive("liaToolPermissionTiers", function()
-    local data = net.ReadTable() or {tools = {}, tiers = {}}
-    MODULE.toolPermissionTierData = MODULE.toolPermissionTierData or {tools = {}, tiers = {}}
+    local data = net.ReadTable() or {
+        tools = {},
+        tiers = {}
+    }
+
+    MODULE.toolPermissionTierData = MODULE.toolPermissionTierData or {
+        tools = {},
+        tiers = {}
+    }
+
     MODULE.toolPermissionTierData.tools = data.tools or {}
     MODULE.toolPermissionTierData.tiers = data.tiers or {}
     if MODULE.toolPermissionTierRefresh then MODULE.toolPermissionTierRefresh() end
@@ -242,9 +223,15 @@ net.Receive("liaStaffCharacterConfiguration", function()
     local config = MODULE.staffCharacterConfiguration or {}
     local incoming = net.ReadTable()
     if incoming then
-        for key in pairs(config) do config[key] = nil end
-        for key, value in pairs(incoming) do config[key] = value end
+        for key in pairs(config) do
+            config[key] = nil
+        end
+
+        for key, value in pairs(incoming) do
+            config[key] = value
+        end
     end
+
     config.permissions = config.permissions or {}
     config.flags = config.flags or {}
     config.privileges = config.privileges or {}
@@ -261,9 +248,202 @@ net.Receive("liaStaffCharacterConfiguration", function()
             config.flags = {}
         end
     end
+
     MODULE.staffCharacterConfiguration = config
     lia.staffCharacterPermissions = config.permissions
     lia.staffCharacterFlags = config.flags
     if MODULE.staffCharacterConfigurationRefresh then MODULE.staffCharacterConfigurationRefresh(true) end
 end)
+net.Receive("liaBodygrouperMenu", function()
+    local client = LocalPlayer()
+    if IsValid(lia.gui.bodygroupMenu) then lia.gui.bodygroupMenu:Remove() end
+    local entity = net.ReadEntity()
+    lia.gui.bodygroupMenu = vgui.Create("BodygrouperMenu")
+    local target = IsValid(entity) and entity or client
+    lia.gui.bodygroupMenu:SetTarget(target)
+end)
 
+net.Receive("liaBodygrouperMenuCloseClientside", function() if IsValid(lia.gui.bodygroupMenu) then lia.gui.bodygroupMenu:Remove() end end)
+net.Receive("liaSeeModelTable", function()
+    local models = net.ReadTable()
+    if not istable(models) or #models == 0 then return end
+    local selectedModel = models[1]
+    local frame = vgui.Create("liaFrame")
+    frame:setScaledSize(520, math.min(ScrH() * 0.82, 820))
+    frame:SetPos(ScrW() - frame:GetWide() - 48, math.max(48, (ScrH() - frame:GetTall()) * 0.5))
+    frame:SetTitle("Model Wardrobe")
+    frame:MakePopup()
+    frame:DockPadding(12, 34, 12, 12)
+    local function positionWardrobeCloseButton(this)
+        if IsValid(this.cls) then
+            this.cls:SetParent(this)
+            this.cls:SetSize(20, 20)
+            this.cls:SetPos(this:GetWide() - 22, 2)
+            this.cls:SetZPos(1000)
+        end
+    end
+
+    frame.OnSizeChanged = function(this) positionWardrobeCloseButton(this) end
+    positionWardrobeCloseButton(frame)
+    local title = frame:Add("DPanel")
+    title:Dock(TOP)
+    title:DockMargin(0, 0, 0, 12)
+    title:SetTall(32)
+    title.Paint = function(_, w, h)
+        local lineColor = lia.color.theme.theme
+        surface.SetDrawColor(lineColor)
+        surface.DrawRect(4, h - 2, math.max(w - 8, 0), 2)
+    end
+
+    local titleLabel = title:Add("DLabel")
+    titleLabel:Dock(FILL)
+    titleLabel:DockMargin(8, 0, 8, 0)
+    titleLabel:SetFont("LiliaFont.18")
+    titleLabel:SetText(("Select a model"):upper())
+    titleLabel:SetTextColor(lia.color.theme and lia.color.theme.text or color_white)
+    titleLabel:SetContentAlignment(5)
+    local hint = frame:Add("DLabel")
+    hint:Dock(TOP)
+    hint:DockMargin(0, 0, 0, 10)
+    hint:SetTall(20)
+    hint:SetFont("LiliaFont.16")
+    hint:SetTextColor(Color(220, 220, 220))
+    hint:SetContentAlignment(5)
+    hint:SetText(string.format("Use %s and %s to rotate the model.", "A", "D"))
+    local confirmButton = vgui.Create("DButton", frame)
+    confirmButton:SetText("Confirm")
+    confirmButton:Dock(BOTTOM)
+    confirmButton:SetTall(40)
+    confirmButton:SetColor(Color(255, 255, 255))
+    confirmButton:SetFont("DermaDefaultBold")
+    confirmButton:SetContentAlignment(5)
+    confirmButton:DockMargin(0, 10, 0, 0)
+    local modelsScroll = vgui.Create("liaScrollPanel", frame)
+    modelsScroll:Dock(FILL)
+    modelsScroll:DockMargin(0, 0, 0, 0)
+    local iconLayoutParent = modelsScroll.GetCanvas and modelsScroll:GetCanvas() or modelsScroll
+    local iconLayout = iconLayoutParent:Add("DIconLayout")
+    iconLayout:Dock(LEFT)
+    iconLayout:SetSpaceX(8)
+    iconLayout:SetSpaceY(8)
+    iconLayout:SetPaintBackground(false)
+    frame._iconColumns = 5
+    frame._iconSpace = 8
+    local function requestIconResize()
+        if not IsValid(iconLayout) then return false end
+        local w = iconLayout:GetWide() or 0
+        if w <= 0 then return false end
+        frame._needsIconResize = true
+        frame:InvalidateLayout(true)
+        return true
+    end
+
+    local oldLayoutPerformLayout = iconLayout.PerformLayout
+    iconLayout.PerformLayout = function(layout, w, h)
+        if oldLayoutPerformLayout then oldLayoutPerformLayout(layout, w, h) end
+        local offsetX = layout._centerOffsetX or 0
+        local prevOffsetX = layout._appliedCenterOffsetX or 0
+        local delta = offsetX - prevOffsetX
+        if delta == 0 then return end
+        for _, child in ipairs(layout:GetChildren()) do
+            if IsValid(child) then
+                local x, y = child:GetPos()
+                child:SetPos(x + delta, y)
+            end
+        end
+
+        layout._appliedCenterOffsetX = offsetX
+    end
+
+    frame.PerformLayout = function(this, w, h)
+        local columns = this._iconColumns or 5
+        local space = this._iconSpace or 8
+        local layoutW = IsValid(modelsScroll) and modelsScroll:GetWide() or 0
+        if layoutW <= 0 then return end
+        iconLayout:SetWide(layoutW)
+        local iconW = math.floor((layoutW - (columns - 1) * space) / columns)
+        if iconW < 64 then iconW = 64 end
+        if iconW > 80 then iconW = 80 end
+        local iconH = math.floor(iconW * 2)
+        for _, child in ipairs(iconLayout:GetChildren()) do
+            if IsValid(child) and child.SetSize then child:SetSize(iconW, iconH) end
+        end
+
+        iconLayout:SizeToChildren(false, true)
+        local childCount = #iconLayout:GetChildren()
+        local usedWidth = math.min(childCount, columns) * iconW + math.max(0, math.min(childCount, columns) - 1) * space
+        iconLayout._centerOffsetX = math.max(0, math.floor((layoutW - usedWidth) * 0.5))
+        iconLayout:InvalidateLayout(true)
+        this._needsIconResize = nil
+    end
+
+    local function previewModel(modelPath)
+        lia.camera.begin(frame, {
+            hideEntities = {LocalPlayer()}
+        })
+
+        lia.camera.setModel(frame, modelPath)
+    end
+
+    local function setSelectedModel(modelPath)
+        selectedModel = modelPath
+        previewModel(modelPath)
+        if IsValid(iconLayout) then
+            for _, child in ipairs(iconLayout:GetChildren()) do
+                if IsValid(child) then child._liaSelected = child.modelPath == modelPath end
+            end
+        end
+    end
+
+    local function paintIcon(icon, w, h)
+        if not icon._liaSelected then return end
+        local col = lia.config.get("Color", color_white)
+        surface.SetDrawColor(col.r, col.g, col.b, 200)
+        for i = 1, 3 do
+            local o = i * 2
+            surface.DrawOutlinedRect(i, i, w - o, h - o)
+        end
+    end
+
+    local function buildModelIcons()
+        if not IsValid(iconLayout) then return end
+        iconLayout:Clear()
+        for _, modelPath in ipairs(models) do
+            local icon = iconLayout:Add("SpawnIcon")
+            icon:SetModel(modelPath)
+            icon.modelPath = modelPath
+            icon.PaintOver = paintIcon
+            icon.DoClick = function() setSelectedModel(modelPath) end
+        end
+
+        requestIconResize()
+    end
+
+    buildModelIcons()
+    setSelectedModel(models[1])
+    frame.Think = function()
+        if input.IsKeyDown(KEY_A) then
+            lia.camera.rotate(frame, -50 * FrameTime())
+        elseif input.IsKeyDown(KEY_D) then
+            lia.camera.rotate(frame, 50 * FrameTime())
+        end
+    end
+
+    frame.OnRemove = function() lia.camera.close(frame) end
+    confirmButton.DoClick = function()
+        if isstring(selectedModel) and selectedModel ~= "" then
+            net.Start("liaWardrobeChangeModel")
+            net.WriteString(selectedModel)
+            net.SendToServer()
+            frame:Close()
+        else
+            chat.AddText(Color(255, 0, 0), "Failed to load wardrobe models.")
+        end
+    end
+
+    timer.Simple(0, function()
+        if not IsValid(frame) then return end
+        requestIconResize()
+        timer.Simple(0.05, function() if IsValid(frame) then requestIconResize() end end)
+    end)
+end)

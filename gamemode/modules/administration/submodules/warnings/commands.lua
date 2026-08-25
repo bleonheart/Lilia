@@ -1,8 +1,7 @@
-
--- Warning command registrations.
+﻿-- Warning command registrations.
 lia.command.add("warn", {
     adminOnly = true,
-    desc = "@warnDesc",
+    desc = "Issues a warning to the specified player with a given reason.",
     arguments = {
         {
             name = "target",
@@ -19,7 +18,7 @@ lia.command.add("warn", {
         },
     },
     AdminStick = {
-        Name = "@warnPlayer",
+        Name = "Warn Player",
         ButtonText = "Warn Player",
         Category = "Warnings",
     },
@@ -41,17 +40,17 @@ lia.command.add("warn", {
         if normalized then
             severity = normalized
         elseif rawSeverity and rawSeverity ~= "" then
-            client:notifyErrorLocalized("invalidArg")
+            client:notifyError("Invalid argument.")
             return
         else
             reasonStartIndex = 2
         end
 
         local reason = table.concat(arguments, " ", reasonStartIndex)
-        if not targetName or reason == "" then return L("warnUsage") end
+        if not targetName or reason == "" then return "Usage: warn [player] [severity] [reason]" end
         local target = lia.util.findPlayer(client, targetName)
         if not target or not IsValid(target) then
-            client:notifyErrorLocalized("targetNotFound")
+            client:notifyError("Target not found")
             return
         end
 
@@ -60,19 +59,18 @@ lia.command.add("warn", {
         local warnerSteamID = client:SteamID()
         hook.Run("AddWarning", target:getChar():getID(), target:Nick(), target:SteamID(), timestamp, reason, warnerName, warnerSteamID, severity)
         lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
-            target:notifyWarningLocalized("playerWarned", warnerName .. " (" .. warnerSteamID .. ")", severity, reason)
-            client:notifySuccessLocalized("warningIssued", target:Nick())
-            local message = L("staffLogWarnedPlayer", warnerName, target:Name(), target:getChar():getID(), target:SteamID64(), reason, severity)
+            target:notifyWarning(string.format("You have been warned by %s (%s) for: %s", warnerName .. " (" .. warnerSteamID .. ")", severity, reason))
+            client:notifySuccess(string.format("Warning issued to %s", target:Nick()))
+            local message = string.format("%s warned %s (Character %s | Steam64ID: %s) for \\\"%s\\\" [Severity: %s].", warnerName, target:Name(), target:getChar():getID(), target:SteamID64(), reason, severity)
             StaffAddTextShadowed(Color(255, 140, 0), "WARNING", Color(255, 255, 255), message)
             hook.Run("WarningIssued", client, target, reason, severity, count, warnerSteamID, target:SteamID())
         end)
     end
 })
 
-
 lia.command.add("viewwarns", {
     adminOnly = true,
-    desc = "@viewWarnsDesc",
+    desc = "Displays all warnings issued to the specified player.",
     arguments = {
         {
             name = "target",
@@ -80,14 +78,14 @@ lia.command.add("viewwarns", {
         },
     },
     AdminStick = {
-        Name = "@viewPlayerWarnings",
+        Name = "View Player Warnings",
         ButtonText = "View Warnings",
         Category = "Warnings",
     },
     onRun = function(client, arguments)
         local targetName = arguments[1]
         if not targetName then
-            client:notifyErrorLocalized("targetNotFound")
+            client:notifyError("Target not found")
             return
         end
 
@@ -107,7 +105,7 @@ lia.command.add("viewwarns", {
 
         warningsPromise:next(function(warns)
             if #warns == 0 then
-                client:notifyInfoLocalized("noWarnings", displayName)
+                client:notifyInfo(string.format("%s has no warnings.", displayName))
                 return
             end
 
@@ -115,14 +113,14 @@ lia.command.add("viewwarns", {
             for index, warn in ipairs(warns) do
                 table.insert(warningList, {
                     index = index,
-                    timestamp = warn.timestamp or L("na"),
-                    admin = string.format("%s (%s)", warn.warner or L("na"), warn.warnerSteamID or L("na")),
-                    warningMessage = warn.message or L("na"),
+                    timestamp = warn.timestamp or "N/A",
+                    admin = string.format("%s (%s)", warn.warner or "N/A", warn.warnerSteamID or "N/A"),
+                    warningMessage = warn.message or "N/A",
                     severity = warn.severity or "Medium"
                 })
             end
 
-            lia.util.sendTableUI(client, L("playerWarningsTitle", displayName), {
+            lia.util.sendTableUI(client, string.format("%s's Warnings", displayName), {
                 {
                     name = "id",
                     field = "index"
@@ -140,12 +138,12 @@ lia.command.add("viewwarns", {
                     field = "warningMessage"
                 },
                 {
-                    name = L("warningSeverity"),
+                    name = "Severity",
                     field = "severity"
                 }
             }, warningList, {
                 {
-                    name = L("removeThing", L("warning")),
+                    name = string.format("Remove %s", "Warning"),
                     net = "liaRequestRemoveWarning"
                 }
             }, target:getChar():getID())
@@ -162,7 +160,7 @@ end
 
 lia.command.add("viewwarnsissued", {
     adminOnly = true,
-    desc = "@viewWarnsIssuedDesc",
+    desc = "Displays all warnings issued by the specified staff member.",
     arguments = {
         {
             name = "staff",
@@ -172,7 +170,7 @@ lia.command.add("viewwarnsissued", {
     onRun = function(client, arguments)
         local targetName = arguments[1]
         if not targetName then
-            client:notifyErrorLocalized("targetNotFound")
+            client:notifyError("Target not found")
             return
         end
 
@@ -185,7 +183,7 @@ lia.command.add("viewwarnsissued", {
 
         GetWarningsByIssuer(steamID):next(function(warns)
             if #warns == 0 then
-                client:notifyInfoLocalized("noWarnings", displayName)
+                client:notifyInfo(string.format("%s has no warnings.", displayName))
                 return
             end
 
@@ -193,14 +191,14 @@ lia.command.add("viewwarnsissued", {
             for index, warn in ipairs(warns) do
                 warningList[#warningList + 1] = {
                     index = index,
-                    timestamp = warn.timestamp or L("na"),
-                    player = string.format("%s (%s)", warn.warned or L("na"), warn.warnedSteamID or L("na")),
-                    warningMessage = warn.message or L("na"),
+                    timestamp = warn.timestamp or "N/A",
+                    player = string.format("%s (%s)", warn.warned or "N/A", warn.warnedSteamID or "N/A"),
+                    warningMessage = warn.message or "N/A",
                     severity = warn.severity or "Medium"
                 }
             end
 
-            lia.util.sendTableUI(client, L("warningsIssuedTitle", displayName), {
+            lia.util.sendTableUI(client, string.format("Warnings Issued by %s", displayName), {
                 {
                     name = "id",
                     field = "index"
@@ -218,7 +216,7 @@ lia.command.add("viewwarnsissued", {
                     field = "warningMessage"
                 },
                 {
-                    name = L("warningSeverity"),
+                    name = "Severity",
                     field = "severity"
                 }
             }, warningList)
@@ -227,4 +225,3 @@ lia.command.add("viewwarnsissued", {
         end)
     end
 })
-

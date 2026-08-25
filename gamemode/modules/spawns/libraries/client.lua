@@ -1,43 +1,4 @@
-﻿--[[
-    Hooks:
-        GetRespawnScreenCause(client, timeLeft, baseTime, lastDeath)
-
-    Purpose:
-        Allows clientside code to replace the cause-of-death text shown on the respawn screen.
-
-    Category:
-        Spawns
-
-    Parameters:
-        client (Player)
-            The local player whose respawn screen is being drawn.
-
-        timeLeft (number)
-            The remaining time before normal respawning becomes available.
-
-        baseTime (number)
-            The configured base respawn delay.
-
-        lastDeath (number)
-            The Unix timestamp recorded for the player's last death.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetRespawnScreenCause", "liaExampleGetRespawnScreenCause", function(client, timeLeft, baseTime, lastDeath)
-            if IsValid(client) and client:WaterLevel() >= 3 then
-                return "Lost beneath the surface"
-            end
-        end)
-        ```
-
-    Returns:
-        string|nil
-            Return non-empty replacement text. Returning nil or an empty string uses the default environmental-death text.
-
-    Realm:
-        Client
-]]
-local ceil, clamp = math.ceil, math.Clamp
+﻿local ceil, clamp = math.ceil, math.Clamp
 local fade, shadowFade = 0, 0
 local hideKey = false
 local fastFade = false
@@ -45,12 +6,6 @@ local deathTimeReceived = 0
 local lastDeathTimeValue = 0
 local function getHUDFont(size)
     return "LiliaHUDFont." .. tostring(size)
-end
-
-local function resolveText(key, fallback, ...)
-    local value = L(key, ...)
-    if not isstring(value) or value == key then return fallback end
-    return value
 end
 
 local function alphaColor(color, alpha)
@@ -227,7 +182,7 @@ function MODULE:HUDPaint()
     local badgeX = px + panelW * 0.5 - badgeSize * 0.5
     local badgeY = py + 26
     drawDeathBadge(badgeX, badgeY, badgeSize, panelAlpha)
-    drawCenteredText(resolveText("youHaveDied", "You have died"), getHUDFont(72), px + panelW * 0.5, py + 112, alphaColor(titleColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+    drawCenteredText("You have died", getHUDFont(72), px + panelW * 0.5, py + 112, alphaColor(titleColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     local causeText = hook.Run("GetRespawnScreenCause", ply, left, baseTime, lastDeath)
     if not isstring(causeText) or causeText == "" then causeText = "Killed by the environment" end
     drawCenteredText(causeText, getHUDFont(24), px + panelW * 0.5, py + 184, alphaColor(bodyColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
@@ -245,7 +200,7 @@ function MODULE:HUDPaint()
                 color = bodyColor
             },
             {
-                text = resolveText("spaceKey", "SPACE"),
+                text = "SPACE",
                 color = accent
             },
             {
@@ -254,7 +209,7 @@ function MODULE:HUDPaint()
             }
         }, getHUDFont(27), px + panelW * 0.5, instructionY, panelAlpha)
     else
-        drawCenteredText(resolveText("respawnIn", "Respawn in %d", ceil(left)), getHUDFont(27), px + panelW * 0.5, instructionY, alphaColor(bodyColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+        drawCenteredText(string.format("Respawn in %d", ceil(left)), getHUDFont(27), px + panelW * 0.5, instructionY, alphaColor(bodyColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     end
 
     local buttonW = clamp(panelW - 190, 390, 470)
@@ -276,7 +231,7 @@ function MODULE:HUDPaint()
     local keyBg = ready and Color(16, 34, 40, 245) or Color(11, 25, 30, 225)
     local keyOutline = ready and Color(accent.r, accent.g, accent.b, 145) or Color(accent.r, accent.g, accent.b, 65)
     drawPanelBox(keyX, keyY, keyW, keyH, 6, keyBg, keyOutline, panelAlpha)
-    drawCenteredText(resolveText("spaceKey", "SPACE"), getHUDFont(27), keyX + keyW * 0.5, keyY + 9, alphaColor(ready and titleColor or dimColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+    drawCenteredText("SPACE", getHUDFont(27), keyX + keyW * 0.5, keyY + 9, alphaColor(ready and titleColor or dimColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     drawCenteredText("RESPAWN", getHUDFont(25), labelX + labelW * 0.5, buttonY + 18, alphaColor(ready and accent or dimColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     if left > 0 then
         local fillFrac = 1 - clamp(left / safeBaseTime, 0, 1)

@@ -1,80 +1,4 @@
-﻿--[[
-    Hooks:
-        GetCharacterCreationSummary(Player client, table context, table summary, Panel panel)
-
-    Purpose:
-        Allows code to replace the summary entry list shown on the final character creation step.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The local player viewing the summary step.
-
-        context (table)
-            The accumulated character creation context gathered from prior steps.
-
-        summary (table)
-            The default summary entry array built before external overrides run.
-
-        panel (Panel)
-            The active `liaCharacterSummary` panel.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetCharacterCreationSummary", "liaExampleGetCharacterCreationSummary", function(client, context, summary, panel)
-            return summary
-        end)
-        ```
-
-    Returns:
-        table|nil
-            Return a replacement sequential summary table to override the default entries. Return nil to keep the generated summary.
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ModifyCharacterCreationSummary(Player client, table context, table summary, Panel panel)
-
-    Purpose:
-        Allows code to mutate the final character creation summary entries in place after any replacement summary has been resolved.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The local player viewing the summary step.
-
-        context (table)
-            The accumulated character creation context gathered from prior steps.
-
-        summary (table)
-            The mutable summary entry array that will be rendered.
-
-        panel (Panel)
-            The active `liaCharacterSummary` panel.
-
-    Example Usage:
-        ```lua
-        hook.Add("ModifyCharacterCreationSummary", "liaExampleModifyCharacterCreationSummary", function(client, context, summary, panel)
-            summary[#summary + 1] = {
-                title = "Preview",
-                value = tostring(context.model or "")
-            }
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self.title = self:Add("DPanel")
     self.title:Dock(TOP)
@@ -83,7 +7,7 @@ function PANEL:Init()
     self.title.Paint = function(_, w, h) end
     local lbl = self.title:Add("DLabel")
     lbl:SetFont("LiliaFont.18")
-    lbl:SetText(tostring(L("summary")))
+    lbl:SetText(tostring("Summary"))
     lbl:SizeToContents()
     lbl:Dock(FILL)
     lbl:DockMargin(8, 0, 8, 0)
@@ -110,7 +34,7 @@ function PANEL:Init()
     self.create:Dock(BOTTOM)
     self.create:DockMargin(0, 12, 0, 0)
     self.create:SetTall(44)
-    self.create:SetText((L("create") .. " " .. L("character")):upper())
+    self.create:SetText(("Create" .. " " .. "Character"):upper())
     self.create:SetRadius(6)
     local createAccent = lia.color.theme.accent or lia.color.theme.theme or lia.color.theme.maincolor or color_white
     self.create:PaintButton(Color(createAccent.r, createAccent.g, createAccent.b, 52), Color(createAccent.r, createAccent.g, createAccent.b, 92))
@@ -138,18 +62,18 @@ function PANEL:buildDefaultSummary(context)
     local name = context.name or context.charName
     local desc = context.desc or context.description
     summary[#summary + 1] = {
-        title = L("name"),
+        title = "Name",
         value = tostring(name or "")
     }
 
     summary[#summary + 1] = {
-        title = L("desc"),
+        title = "Description",
         value = tostring(desc or "")
     }
 
     local faction = context.faction and lia.faction.indices[context.faction] or nil
     summary[#summary + 1] = {
-        title = L("faction"),
+        title = "Faction",
         value = faction and tostring(faction.name or "") or ""
     }
 
@@ -179,7 +103,7 @@ function PANEL:buildDefaultSummary(context)
 
     if #attribLines > 0 then
         summary[#summary + 1] = {
-            title = L("attributesModuleName"),
+            title = "Attributes",
             value = table.concat(attribLines, "\n")
         }
     end
@@ -199,7 +123,7 @@ function PANEL:buildDefaultSummary(context)
 
     if #idLines > 0 then
         summary[#summary + 1] = {
-            title = L("identifications"),
+            title = "Identifications",
             value = table.concat(idLines, "\n")
         }
     end

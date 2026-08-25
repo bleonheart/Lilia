@@ -1,13 +1,4 @@
---[[
-Copyright (c) 2025 Srlion (https://github.com/Srlion)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-]]
-lia.derma = lia.derma or {}
+﻿lia.derma = lia.derma or {}
 local bit_band = bit.band
 local surface_SetDrawColor = surface.SetDrawColor
 local surface_SetMaterial = surface.SetMaterial
@@ -213,287 +204,35 @@ local function drawRounded(x, y, w, h, col, flags, tl, tr, bl, br, texture, thic
     return surface_DrawTexturedRectUV(x, y, w, h, -0.015625, -0.015625, 1.015625, 1.015625)
 end
 
---[[
-    Purpose:
-        Draws a rounded rectangle using the shader-backed rounded renderer.
-
-    Parameters:
-        radius (number)
-            Corner radius applied to every corner.
-        x (number)
-            Left screen coordinate.
-        y (number)
-            Top screen coordinate.
-        w (number)
-            Rectangle width.
-        h (number)
-            Rectangle height.
-        col (Color|nil)
-            Draw color. Defaults to white unless manual color mode is enabled.
-        flags (number|nil)
-            Optional bit flags such as `lia.derma.SHAPE_IOS`, `lia.derma.BLUR`, or corner-disable flags.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.draw(8, 20, 20, 160, 40, Color(25, 28, 35, 240), lia.derma.SHAPE_IOS)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.draw(radius, x, y, w, h, col, flags)
     return drawRounded(x, y, w, h, col, flags, radius, radius, radius, radius)
 end
 
---[[
-    Purpose:
-        Draws an outlined rounded rectangle using the shader-backed rounded renderer.
-
-    Parameters:
-        radius (number)
-            Corner radius applied to every corner.
-        x (number)
-            Left screen coordinate.
-        y (number)
-            Top screen coordinate.
-        w (number)
-            Rectangle width.
-        h (number)
-            Rectangle height.
-        col (Color|nil)
-            Outline color.
-        thickness (number|nil)
-            Outline thickness. Defaults to 1.
-        flags (number|nil)
-            Optional shape and corner flags.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.drawOutlined(8, 20, 20, 160, 40, color_white, 2)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.drawOutlined(radius, x, y, w, h, col, thickness, flags)
     return drawRounded(x, y, w, h, col, flags, radius, radius, radius, radius, nil, thickness or 1)
 end
 
---[[
-    Purpose:
-        Draws a rounded rectangle filled with a texture.
-
-    Parameters:
-        radius (number)
-            Corner radius applied to every corner.
-        x (number)
-            Left screen coordinate.
-        y (number)
-            Top screen coordinate.
-        w (number)
-            Rectangle width.
-        h (number)
-            Rectangle height.
-        col (Color|nil)
-            Tint color for the texture.
-        texture (ITexture)
-            Texture used as the base texture.
-        flags (number|nil)
-            Optional shape and corner flags.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.drawTexture(8, x, y, w, h, color_white, material:GetTexture("$basetexture"))
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.drawTexture(radius, x, y, w, h, col, texture, flags)
     return drawRounded(x, y, w, h, col, flags, radius, radius, radius, radius, texture)
 end
 
---[[
-    Purpose:
-        Draws a rounded rectangle from a material by using the material base texture when available.
-
-    Parameters:
-        radius (number)
-            Corner radius applied to every corner.
-        x (number)
-            Left screen coordinate.
-        y (number)
-            Top screen coordinate.
-        w (number)
-            Rectangle width.
-        h (number)
-            Rectangle height.
-        col (Color|nil)
-            Tint color for the material texture.
-        mat (IMaterial)
-            Material whose `$basetexture` is drawn.
-        flags (number|nil)
-            Optional shape and corner flags.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.drawMaterial(6, x, y, w, h, color_white, Material("vgui/gradient_down"))
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.drawMaterial(radius, x, y, w, h, col, mat, flags)
     local tex = mat:GetTexture("$basetexture")
     if tex then return lia.derma.drawTexture(radius, x, y, w, h, col, tex, flags) end
 end
 
---[[
-    Purpose:
-        Draws a filled circle through the rounded renderer.
-
-    Parameters:
-        x (number)
-            Circle center X coordinate.
-        y (number)
-            Circle center Y coordinate.
-        radius (number)
-            Circle diameter used by the renderer.
-        col (Color|nil)
-            Circle color.
-        flags (number|nil)
-            Optional flags combined with the circle shape flag.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.drawCircle(100, 100, 32, Color(255, 255, 255))
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.drawCircle(x, y, radius, col, flags)
     return lia.derma.draw(radius / 2, x - radius / 2, y - radius / 2, radius, radius, col, (flags or 0) + SHAPE_CIRCLE)
 end
 
---[[
-    Purpose:
-        Draws an outlined circle through the rounded renderer.
-
-    Parameters:
-        x (number)
-            Circle center X coordinate.
-        y (number)
-            Circle center Y coordinate.
-        radius (number)
-            Circle diameter used by the renderer.
-        col (Color|nil)
-            Outline color.
-        thickness (number|nil)
-            Outline thickness.
-        flags (number|nil)
-            Optional flags combined with the circle shape flag.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.drawCircleOutlined(100, 100, 32, color_white, 2)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.drawCircleOutlined(x, y, radius, col, thickness, flags)
     return lia.derma.drawOutlined(radius / 2, x - radius / 2, y - radius / 2, radius, radius, col, thickness, (flags or 0) + SHAPE_CIRCLE)
 end
 
---[[
-    Purpose:
-        Draws a textured circle through the rounded renderer.
-
-    Parameters:
-        x (number)
-            Circle center X coordinate.
-        y (number)
-            Circle center Y coordinate.
-        radius (number)
-            Circle diameter used by the renderer.
-        col (Color|nil)
-            Texture tint color.
-        texture (ITexture)
-            Texture used as the base texture.
-        flags (number|nil)
-            Optional flags combined with the circle shape flag.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.drawCircleTexture(100, 100, 32, color_white, tex)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.drawCircleTexture(x, y, radius, col, texture, flags)
     return lia.derma.drawTexture(radius / 2, x - radius / 2, y - radius / 2, radius, radius, col, texture, (flags or 0) + SHAPE_CIRCLE)
 end
 
---[[
-    Purpose:
-        Draws a circular material by using the material base texture when available.
-
-    Parameters:
-        x (number)
-            Circle center X coordinate.
-        y (number)
-            Circle center Y coordinate.
-        radius (number)
-            Circle diameter used by the renderer.
-        col (Color|nil)
-            Texture tint color.
-        mat (IMaterial)
-            Material whose `$basetexture` is drawn.
-        flags (number|nil)
-            Optional flags combined with the circle shape flag.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.drawCircleMaterial(100, 100, 32, color_white, Material("icon16/star.png"))
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.drawCircleMaterial(x, y, radius, col, mat, flags)
     return lia.derma.drawMaterial(radius / 2, x - radius / 2, y - radius / 2, radius, radius, col, mat, (flags or 0) + SHAPE_CIRCLE)
 end
@@ -516,44 +255,6 @@ local function drawBlur()
     surface_DrawTexturedRect(X, Y, W, H)
 end
 
---[[
-    Purpose:
-        Draws a rounded shader blur region. This lower-level renderer is used by rounded draw flags before the later panel blur helper redefines `lia.derma.drawBlur`.
-
-    Parameters:
-        x (number)
-            Left screen coordinate.
-        y (number)
-            Top screen coordinate.
-        w (number)
-            Blur region width.
-        h (number)
-            Blur region height.
-        flags (number|nil)
-            Optional shape and corner flags.
-        tl (number)
-            Top-left radius.
-        tr (number)
-            Top-right radius.
-        bl (number)
-            Bottom-left radius.
-        br (number)
-            Bottom-right radius.
-        thickness (number|nil)
-            Optional outline thickness for the shader parameters.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.drawBlur(x, y, w, h, lia.derma.SHAPE_IOS, 8, 8, 8, 8)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.drawBlur(x, y, w, h, flags, tl, tr, bl, br, thickness)
     resetParams()
     if not flags then flags = defaultDrawFlags end
@@ -594,50 +295,6 @@ local function drawShadows(r, g, b, a)
     surface_DrawTexturedRectUV(X, Y, W, H, -0.015625, -0.015625, 1.015625, 1.015625)
 end
 
---[[
-    Purpose:
-        Draws a rounded shadow with independent corner radii, spread, intensity, optional blur, and optional outline thickness.
-
-    Parameters:
-        x (number)
-            Left screen coordinate.
-        y (number)
-            Top screen coordinate.
-        w (number)
-            Shadow source width.
-        h (number)
-            Shadow source height.
-        col (Color|nil)
-            Shadow color.
-        flags (number|nil)
-            Optional shape, blur, manual color, and corner flags.
-        tl (number)
-            Top-left radius.
-        tr (number)
-            Top-right radius.
-        bl (number)
-            Bottom-left radius.
-        br (number)
-            Bottom-right radius.
-        spread (number|nil)
-            Shadow spread. Defaults to 30.
-        intensity (number|nil)
-            Shadow intensity. Defaults to spread multiplied by 1.2.
-        thickness (number|nil)
-            Optional outline thickness for the shader parameters.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.drawShadowsEx(x, y, w, h, Color(0, 0, 0, 180), lia.derma.SHAPE_IOS, 8, 8, 8, 8, 20, 24)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread, intensity, thickness)
     if col and col.a == 0 then return end
     local OLD_CLIPPING_STATE = DisableClipping(true)
@@ -656,84 +313,10 @@ function lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread,
     DisableClipping(OLD_CLIPPING_STATE)
 end
 
---[[
-    Purpose:
-        Draws a rounded shadow using the same radius on every corner.
-
-    Parameters:
-        radius (number)
-            Corner radius applied to every corner.
-        x (number)
-            Left screen coordinate.
-        y (number)
-            Top screen coordinate.
-        w (number)
-            Shadow source width.
-        h (number)
-            Shadow source height.
-        col (Color|nil)
-            Shadow color.
-        spread (number|nil)
-            Shadow spread.
-        intensity (number|nil)
-            Shadow intensity.
-        flags (number|nil)
-            Optional shape and blur flags.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.drawShadows(10, x, y, w, h, Color(0, 0, 0, 180), 20, 24)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.drawShadows(radius, x, y, w, h, col, spread, intensity, flags)
     return lia.derma.drawShadowsEx(x, y, w, h, col, flags, radius, radius, radius, radius, spread, intensity)
 end
 
---[[
-    Purpose:
-        Draws an outlined rounded shadow using the same radius on every corner.
-
-    Parameters:
-        radius (number)
-            Corner radius applied to every corner.
-        x (number)
-            Left screen coordinate.
-        y (number)
-            Top screen coordinate.
-        w (number)
-            Shadow source width.
-        h (number)
-            Shadow source height.
-        col (Color|nil)
-            Shadow color.
-        thickness (number|nil)
-            Outline thickness. Defaults to 1.
-        spread (number|nil)
-            Shadow spread.
-        intensity (number|nil)
-            Shadow intensity.
-        flags (number|nil)
-            Optional shape and blur flags.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.drawShadowsOutlined(10, x, y, w, h, Color(0, 0, 0, 180), 2, 20, 24)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.drawShadowsOutlined(radius, x, y, w, h, col, thickness, spread, intensity, flags)
     return lia.derma.drawShadowsEx(x, y, w, h, col, flags, radius, radius, radius, radius, spread, intensity, thickness or 1)
 end
@@ -913,60 +496,10 @@ lia.derma.Types = {
     end
 }
 
---[[
-    Purpose:
-        Creates a chainable rounded rectangle draw builder.
-
-    Parameters:
-        x (number)
-            Left screen coordinate.
-        y (number)
-            Top screen coordinate.
-        w (number)
-            Rectangle width.
-        h (number)
-            Rectangle height.
-
-    Returns:
-        table
-            A `lia.derma.Rect` builder with chainable draw configuration methods.
-
-    Example Usage:
-        ```lua
-        lia.derma.rect(20, 20, 160, 40):Rad(8):Color(Color(25, 28, 35, 240)):Draw()
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.rect(x, y, w, h)
     return lia.derma.Types.Rect(x, y, w, h)
 end
 
---[[
-    Purpose:
-        Creates a chainable circle draw builder.
-
-    Parameters:
-        x (number)
-            Circle center X coordinate.
-        y (number)
-            Circle center Y coordinate.
-        r (number)
-            Circle diameter used by the renderer.
-
-    Returns:
-        table
-            A `lia.derma.Circle` builder with chainable draw configuration methods.
-
-    Example Usage:
-        ```lua
-        lia.derma.circle(100, 100, 32):Color(color_white):Draw()
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.circle(x, y, r)
     return lia.derma.Types.Circle(x, y, r)
 end
@@ -980,30 +513,6 @@ lia.derma.SHAPE_FIGMA = SHAPE_FIGMA
 lia.derma.SHAPE_IOS = SHAPE_IOS
 lia.derma.BLUR = BLUR
 lia.derma.MANUAL_COLOR = manualColor
---[[
-    Purpose:
-        Adds or removes a bit flag from an existing flag mask. String flag names are resolved from `lia.derma` constants when present.
-
-    Parameters:
-        flags (number)
-            Existing flag mask.
-        flag (number|string)
-            Flag value or `lia.derma` flag name.
-        bool (any)
-            Truthy value adds the flag; falsey value removes it.
-
-    Returns:
-        number
-            The updated flag mask.
-
-    Example Usage:
-        ```lua
-        flags = lia.derma.setFlag(flags or 0, "BLUR", true)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.setFlag(flags, flag, bool)
     flag = lia.derma[flag] or flag
     if tobool(bool) then
@@ -1013,26 +522,6 @@ function lia.derma.setFlag(flags, flag, bool)
     end
 end
 
---[[
-    Purpose:
-        Sets the default rounded shape flag used when draw calls do not supply an explicit shape.
-
-    Parameters:
-        shape (number|nil)
-            Shape flag to use by default. Defaults to `lia.derma.SHAPE_FIGMA` when nil.
-
-    Returns:
-        nil
-            This function does not return a value.
-
-    Example Usage:
-        ```lua
-        lia.derma.setDefaultShape(lia.derma.SHAPE_IOS)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.derma.setDefaultShape(shape)
     defaultShape = shape or SHAPE_FIGMA
     defaultDrawFlags = defaultShape

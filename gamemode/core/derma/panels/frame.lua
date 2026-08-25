@@ -7,7 +7,7 @@ end
 function PANEL:Init()
     self.bool_alpha = true
     self.bool_lite = false
-    self.title = L("title")
+    self.title = "Title"
     self.center_title = ""
     self.blurAmount = 6
     self.blurPasses = 0
@@ -64,10 +64,10 @@ function PANEL:Init()
 
     self.cls.DoRightClick = function()
         local DM = DermaMenu()
-        DM:AddOption(L("transparency"), function() self.bool_alpha = not self.bool_alpha end, self.bool_alpha and "icon16/bullet_green.png" or "icon16/bullet_red.png")
+        DM:AddOption("Transparency", function() self.bool_alpha = not self.bool_alpha end, self.bool_alpha and "icon16/bullet_green.png" or "icon16/bullet_red.png")
         local boolInput = self:IsKeyboardInputEnabled()
-        DM:AddOption(L("moveFromMenu"), function() self:SetKeyboardInputEnabled(not boolInput) end, not boolInput and "icon16/bullet_green.png" or "icon16/bullet_red.png")
-        DM:AddOption(L("closeWindow"), function() self:Remove() end, "icon16/cross.png")
+        DM:AddOption("Move From Menu", function() self:SetKeyboardInputEnabled(not boolInput) end, not boolInput and "icon16/bullet_green.png" or "icon16/bullet_red.png")
+        DM:AddOption("Close Window", function() self:Remove() end, "icon16/cross.png")
     end
 
     self.resizer = vgui.Create("DButton", self)
@@ -398,7 +398,7 @@ function PANEL:Init()
     self:MakePopup()
     self:Center()
     self:SetDraggable(true)
-    self:SetTitle(L("inv"))
+    self:SetTitle("Inventory")
 end
 
 function PANEL:setInventory(inventory)

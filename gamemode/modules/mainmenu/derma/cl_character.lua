@@ -1,358 +1,4 @@
-﻿--[[
-    Hooks:
-        CharMenuOpened(self)
-
-    Purpose:
-        Runs after the main character menu panel has been created and registered as the active character UI.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        self (Panel)
-            The character menu panel instance that was opened.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("CharMenuOpened", "liaExampleCharMenuOpened", function(self)
-            self:SetAlpha(255)
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        GetCharacterCreateButtonTooltip(client, currentChars, maxChars)
-
-    Purpose:
-        Allows plugins or modules to override the tooltip shown on the create-character button.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The local player viewing the menu.
-
-        currentChars (number)
-            The number of characters currently available to the player.
-
-        maxChars (number)
-            The maximum number of character slots available to the player.
-
-    Returns:
-        string|nil
-            Return a string to override the tooltip text. Returning nil allows the default behavior to continue.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetCharacterCreateButtonTooltip", "liaExampleGetCharacterCreateButtonTooltip", function(client, currentChars, maxChars)
-            if currentChars >= maxChars then
-                return "No free character slots"
-            end
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        GetCharacterLoadButtonTooltip(client)
-
-    Purpose:
-        Allows plugins or modules to override the tooltip shown on the load-character button.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The local player viewing the menu.
-
-    Returns:
-        string|nil
-            Return a string to override the tooltip text. Returning nil allows the default behavior to continue.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetCharacterLoadButtonTooltip", "liaExampleGetCharacterLoadButtonTooltip", function(client)
-            return "Browse your available characters"
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        GetCharacterLoadMainButtonTooltip(client)
-
-    Purpose:
-        Allows plugins or modules to override the tooltip shown on the load-main-character button.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The local player viewing the menu.
-
-    Returns:
-        string|nil
-            Return a string to override the tooltip text. Returning nil allows the default behavior to continue.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetCharacterLoadMainButtonTooltip", "liaExampleGetCharacterLoadMainButtonTooltip", function(client)
-            return "Load your configured main character"
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        GetCharacterStaffButtonTooltip(client, hasStaffChar)
-
-    Purpose:
-        Allows plugins or modules to override the tooltip shown on the staff-character button.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The local player viewing the menu.
-
-        hasStaffChar (boolean)
-            Whether the player already has a staff character available.
-
-    Returns:
-        string|nil
-            Return a string to override the tooltip text. Returning nil allows the default behavior to continue.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetCharacterStaffButtonTooltip", "liaExampleGetCharacterStaffButtonTooltip", function(client, hasStaffChar)
-            if hasStaffChar then
-                return "Open your staff character"
-            end
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        GetCharacterDiscordButtonTooltip(client, discordURL)
-
-    Purpose:
-        Allows plugins or modules to override the tooltip shown on the Discord button.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The local player viewing the menu.
-
-        discordURL (string)
-            The configured Discord URL.
-
-    Returns:
-        string|nil
-            Return a string to override the tooltip text. Returning nil allows the default behavior to continue.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetCharacterDiscordButtonTooltip", "liaExampleGetCharacterDiscordButtonTooltip", function(client, discordURL)
-            return "Join the community Discord"
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        GetCharacterWorkshopButtonTooltip(client, workshopURL)
-
-    Purpose:
-        Allows plugins or modules to override the tooltip shown on the Workshop button.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The local player viewing the menu.
-
-        workshopURL (string)
-            The configured Workshop URL.
-
-    Returns:
-        string|nil
-            Return a string to override the tooltip text. Returning nil allows the default behavior to continue.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetCharacterWorkshopButtonTooltip", "liaExampleGetCharacterWorkshopButtonTooltip", function(client, workshopURL)
-            return "Open the server Workshop collection"
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        GetCharacterMountButtonTooltip(client)
-
-    Purpose:
-        Allows plugins or modules to override the tooltip shown on the Workshop mount button.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The local player viewing the menu.
-
-    Returns:
-        string|nil
-            Return a string to override the tooltip text. Returning nil allows the default behavior to continue.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetCharacterMountButtonTooltip", "liaExampleGetCharacterMountButtonTooltip", function(client)
-            return "Mount installed Workshop content"
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        GetCharacterDisconnectButtonTooltip(client)
-
-    Purpose:
-        Allows plugins or modules to override the tooltip shown on the disconnect button.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The local player viewing the menu.
-
-    Returns:
-        string|nil
-            Return a string to override the tooltip text. Returning nil allows the default behavior to continue.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetCharacterDisconnectButtonTooltip", "liaExampleGetCharacterDisconnectButtonTooltip", function(client)
-            return "Disconnect from the server"
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        GetCharacterReturnButtonTooltip(client)
-
-    Purpose:
-        Allows plugins or modules to override the tooltip shown on the return button while browsing characters.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        client (Player)
-            The local player viewing the menu.
-
-    Returns:
-        string|nil
-            Return a string to override the tooltip text. Returning nil allows the default behavior to continue.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetCharacterReturnButtonTooltip", "liaExampleGetCharacterReturnButtonTooltip", function(client)
-            return "Return to the main character menu"
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        LoadMainMenuInformation(info, character)
-
-    Purpose:
-        Allows plugins or modules to append extra information rows to the selected-character info panel.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        info (table)
-            The mutable array of text rows shown in the info panel.
-
-        character (Character)
-            The character currently being previewed.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("LoadMainMenuInformation", "liaExampleLoadMainMenuInformation", function(info, character)
-            info[#info + 1] = "Steam Name: " .. LocalPlayer():Nick()
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        CharMenuClosed()
-
-    Purpose:
-        Runs after the active character menu has been removed.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        None
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("CharMenuClosed", "liaExampleCharMenuClosed", function()
-            print("[MainMenu] Character menu closed")
-        end)
-        ```
-
-    Realm:
-        Client
-]]
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     if hook.Run("IsCharacterCreationOverridden") == true then
         self:SetVisible(false)
@@ -588,7 +234,7 @@ function PANEL:createWelcomeScreen()
         return
     end
 
-    local defaultPlayerName = L("player")
+    local defaultPlayerName = "Player"
     local function getDisplayName()
         return client.steamName and client:steamName() or client:SteamName() or client:Nick() or defaultPlayerName
     end
@@ -597,9 +243,9 @@ function PANEL:createWelcomeScreen()
         local days = math.floor(playtime / 86400)
         local hours = math.floor((playtime % 86400) / 3600)
         local minutes = math.floor((playtime % 3600) / 60)
-        local daySuffix = L("dayShort")
-        local hourSuffix = L("hourShort")
-        local minuteSuffix = L("minuteShort")
+        local daySuffix = "d"
+        local hourSuffix = "h"
+        local minuteSuffix = "m"
         local duration
         if days > 0 then
             duration = string.format("%d%s %d%s %d%s", days, daySuffix, hours, hourSuffix, minutes, minuteSuffix)
@@ -608,7 +254,7 @@ function PANEL:createWelcomeScreen()
         else
             duration = string.format("%d%s", minutes, minuteSuffix)
         end
-        return L("youHavePlayedFor") .. duration
+        return "You have played for " .. duration
     end
 
     local isFirstJoin = not lia.characters or #lia.characters == 0
@@ -692,7 +338,7 @@ function PANEL:createWelcomeScreen()
     local pressEnterLabel = container:Add("DLabel")
     pressEnterLabel:SetFont("LiliaFont.22")
     pressEnterLabel:SetTextColor(Color(200, 200, 200))
-    pressEnterLabel:SetText(L("pressSpaceToContinue"))
+    pressEnterLabel:SetText("Press [SPACE] to continue")
     pressEnterLabel:SetContentAlignment(5)
     pressEnterLabel:SetWide(containerW - padding * 2)
     pressEnterLabel:SetTall(40)
@@ -712,9 +358,9 @@ function PANEL:createWelcomeScreen()
         if not IsValid(welcomeLabel) then return end
         local currentSteamName = getDisplayName()
         if isFirstJoin then
-            welcomeLabel:SetText(L("welcomePlayer", currentSteamName))
+            welcomeLabel:SetText(string.format("Welcome, %s!", currentSteamName))
         else
-            welcomeLabel:SetText(L("welcomeBackPlayer", currentSteamName))
+            welcomeLabel:SetText(string.format("Welcome back, %s!", currentSteamName))
         end
     end
 
@@ -778,7 +424,7 @@ function PANEL:createChangelogDisplay()
     local titleLabel = self.changelogPanel:Add("DLabel")
     titleLabel:SetFont("LiliaFont.30")
     titleLabel:SetTextColor(Color(255, 255, 255))
-    titleLabel:SetText(L("changelog"))
+    titleLabel:SetText("Changelog")
     titleLabel:SetContentAlignment(5)
     titleLabel:SetWide(self.changelogPanel:GetWide() - padding * 2)
     titleLabel:SetPos(padding, contentY)
@@ -902,7 +548,7 @@ function PANEL:createChangelogDisplay()
             table.sort(sortedVersions, versionSorter)
             for _, version in ipairs(sortedVersions) do
                 local entry = changelogContent[version]
-                local versionText = L("versionNumber", version)
+                local versionText = string.format("Version %s", version)
                 local dateText
                 local changes = entry
                 if istable(entry) and (entry.changes or entry.notes or entry.entries or entry.items or entry.text or entry.message or entry.title or entry.label or entry.date or entry.released or entry.releaseDate) then
@@ -923,7 +569,7 @@ function PANEL:createChangelogDisplay()
                 if isstring(entry) then
                     renderChanges({entry})
                 elseif istable(entry) then
-                    local versionText = entry.version or entry.title or entry.label or L("versionNumber", i)
+                    local versionText = entry.version or entry.title or entry.label or string.format("Version %s", i)
                     local dateText = entry.date or entry.released or entry.releaseDate
                     local changes = entry.changes or entry.notes or entry.entries or entry.items or entry.text or entry.message or (#entry > 0 and entry or nil)
                     addVersionLabel(versionText)
@@ -1166,15 +812,15 @@ function PANEL:createStartButton()
         local tooltip = hook.Run("GetCharacterCreateButtonTooltip", client, currentChars, maxChars)
         if not tooltip or tooltip == "" then
             if remainingChars > 0 then
-                tooltip = L("createCharacterTooltipAvailable", currentChars, maxChars, remainingChars)
+                tooltip = string.format("Create a new character (%s/%s slots used, %s remaining)", currentChars, maxChars, remainingChars)
             else
-                tooltip = L("maximumCharactersReached", currentChars, maxChars)
+                tooltip = string.format("Maximum characters reached (%s/%s)", currentChars, maxChars)
             end
         end
 
         table.insert(buttonsData, {
             id = "create",
-            text = L("createCharacter"),
+            text = "Create Character",
             tooltip = tooltip,
             doClick = function()
                 if self.inCharacterCreation then return end
@@ -1188,10 +834,10 @@ function PANEL:createStartButton()
 
     if hasNonStaffChar then
         local tooltip = hook.Run("GetCharacterLoadButtonTooltip", client)
-        if not tooltip or tooltip == "" then tooltip = L("loadExistingCharacter") end
+        if not tooltip or tooltip == "" then tooltip = "Load an existing character" end
         table.insert(buttonsData, {
             id = "load",
-            text = L("loadCharacter"),
+            text = "Load Character",
             tooltip = tooltip,
             doClick = function()
                 for _, b in pairs(self.buttons) do
@@ -1216,14 +862,14 @@ function PANEL:createStartButton()
     local mainCharID = IsValid(client) and client:getMainCharacter() or nil
     if mainCharID and lia.characters and #lia.characters > 0 and table.HasValue(lia.characters, mainCharID) and (not clientChar or clientChar:getID() ~= mainCharID) then
         local tooltip = hook.Run("GetCharacterLoadMainButtonTooltip", client)
-        if not tooltip or tooltip == "" then tooltip = L("loadMainCharacterTooltip") end
+        if not tooltip or tooltip == "" then tooltip = "Load your main character" end
         table.insert(buttonsData, {
             id = "loadmain",
-            text = L("loadMainCharacter"),
+            text = "Load Main Character",
             tooltip = tooltip,
             doClick = function()
                 self:clickSound()
-                lia.module.get("mainmenu"):LoadMainCharacter():next(function() end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
+                lia.module.get("mainmenu"):LoadMainCharacter():next(function() end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end)
             end
         })
     end
@@ -1232,10 +878,10 @@ function PANEL:createStartButton()
     local isStaffOnDuty = client:isStaffOnDuty()
     if canCreateStaffCharacter and not isStaffOnDuty then
         local tooltip = hook.Run("GetCharacterStaffButtonTooltip", client, hasStaffChar)
-        if not tooltip or tooltip == "" then tooltip = hasStaffChar and L("loadStaffCharacterTooltip") or L("createStaffCharacterTooltip") end
+        if not tooltip or tooltip == "" then tooltip = hasStaffChar and "Load your staff character" or "Create a staff character" end
         table.insert(buttonsData, {
             id = "staff",
-            text = hasStaffChar and L("loadStaffCharacter") or L("createStaffCharacter"),
+            text = hasStaffChar and "Load Staff Character" or "Create Staff Character",
             tooltip = tooltip,
             doClick = function()
                 for _, b in pairs(self.buttons) do
@@ -1247,7 +893,7 @@ function PANEL:createStartButton()
                     for _, charID in pairs(lia.characters) do
                         local character = lia.char.getCharacter(charID)
                         if character and character:getFaction() == FACTION_STAFF then
-                            lia.module.get("mainmenu"):ChooseCharacter(character:getID()):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
+                            lia.module.get("mainmenu"):ChooseCharacter(character:getID()):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end)
                             break
                         end
                     end
@@ -1260,10 +906,10 @@ function PANEL:createStartButton()
 
     if discordURL ~= "" then
         local tooltip = hook.Run("GetCharacterDiscordButtonTooltip", client, discordURL)
-        if not tooltip or tooltip == "" then tooltip = L("joinDiscordServer") end
+        if not tooltip or tooltip == "" then tooltip = "Join our Discord server" end
         table.insert(buttonsData, {
             id = "discord",
-            text = L("discord"),
+            text = "Discord",
             tooltip = tooltip,
             doClick = function()
                 self:clickSound()
@@ -1274,10 +920,10 @@ function PANEL:createStartButton()
 
     if workshopURL ~= "" then
         local tooltip = hook.Run("GetCharacterWorkshopButtonTooltip", client, workshopURL)
-        if not tooltip or tooltip == "" then tooltip = L("viewWorkshopCollection") end
+        if not tooltip or tooltip == "" then tooltip = "View our Workshop collection" end
         table.insert(buttonsData, {
             id = "workshop",
-            text = L("workshop"),
+            text = "Workshop",
             tooltip = tooltip,
             doClick = function()
                 self:clickSound()
@@ -1290,15 +936,15 @@ function PANEL:createStartButton()
     local tooltip = hook.Run("GetCharacterMountButtonTooltip", client)
     if not tooltip or tooltip == "" then
         if needsDownload then
-            tooltip = L("mountRequiredWorkshopContent")
+            tooltip = "Mount required Workshop content"
         else
-            tooltip = L("remountWorkshopAddons")
+            tooltip = "Remount Workshop Addons"
         end
     end
 
     table.insert(buttonsData, {
         id = "mount",
-        text = needsDownload and L("mountContent") or L("remountWorkshopAddons"),
+        text = needsDownload and "Mount Content" or "Remount Workshop Addons",
         tooltip = tooltip,
         doClick = function()
             self:clickSound()
@@ -1311,10 +957,10 @@ function PANEL:createStartButton()
     })
 
     local disconnectTooltip = hook.Run("GetCharacterDisconnectButtonTooltip", client)
-    if not disconnectTooltip or disconnectTooltip == "" then disconnectTooltip = L("disconnectFromServer") end
+    if not disconnectTooltip or disconnectTooltip == "" then disconnectTooltip = "Disconnect from the server" end
     table.insert(buttonsData, {
         id = "disconnect",
-        text = L("disconnect"),
+        text = "Disconnect",
         tooltip = disconnectTooltip,
         doClick = function()
             self:clickSound()
@@ -1324,10 +970,10 @@ function PANEL:createStartButton()
 
     if clientChar and not self.isKickedFromChar then
         local returnTooltip = hook.Run("GetCharacterReturnButtonTooltip", client)
-        if not returnTooltip or returnTooltip == "" then returnTooltip = L("returnToCharacter") end
+        if not returnTooltip or returnTooltip == "" then returnTooltip = "Return to your character" end
         table.insert(buttonsData, {
             id = "return",
-            text = L("returnToCharacter"),
+            text = "Return to your character",
             tooltip = returnTooltip,
             doClick = function() self:Remove() end
         })
@@ -1408,7 +1054,7 @@ function PANEL:createStartButton()
     title:SetPos(padding, y)
     title:SetSize(contentW, 54)
     title:SetFont("LiliaFont.40")
-    title:SetText(L("character"))
+    title:SetText("Character")
     title:SetTextColor(text)
     title:SetContentAlignment(4)
     y = y + 58
@@ -1416,7 +1062,7 @@ function PANEL:createStartButton()
     subtitle:SetPos(padding, y)
     subtitle:SetSize(contentW, 26)
     subtitle:SetFont("LiliaFont.16")
-    subtitle:SetText(clientChar and clientChar:getName() or L("createCharacter"))
+    subtitle:SetText(clientChar and clientChar:getName() or "Create Character")
     subtitle:SetTextColor(withAlpha(text, 150))
     subtitle:SetContentAlignment(4)
     y = y + 34
@@ -1534,7 +1180,7 @@ function PANEL:createStartButton()
         utilityLabel:SetPos(padding, y)
         utilityLabel:SetSize(contentW, 20)
         utilityLabel:SetFont("LiliaFont.14")
-        utilityLabel:SetText(L("utilities"):upper())
+        utilityLabel:SetText(("Utilities"):upper())
         utilityLabel:SetTextColor(withAlpha(text, 115))
         utilityLabel:SetContentAlignment(4)
         y = y + 27
@@ -1573,7 +1219,7 @@ function PANEL:createStartButton()
     onlineLabel:SetFont("LiliaFont.14")
     onlineLabel:SetTextColor(withAlpha(text, 150))
     onlineLabel:SetContentAlignment(4)
-    onlineLabel:SetText(L("online"))
+    onlineLabel:SetText("Online")
     status.Think = function()
         if not IsValid(countLabel) then return end
         local value = player.GetCount() .. " / " .. game.MaxPlayers()
@@ -1585,9 +1231,9 @@ function PANEL:addTab(name, callback, justClick, height)
     local btn = self.tabs:Add("liaButton")
     btn:SetFont("LiliaFont.25")
     surface.SetFont(btn:GetFont())
-    local textW, textH = surface.GetTextSize(L(name):upper())
+    local textW, textH = surface.GetTextSize(name:upper())
     btn:SetWide(textW + 40)
-    btn:SetText(L(name):upper())
+    btn:SetText(name:upper())
     btn:SetShowLine(true)
     btn:SetTall(height or textH + 20)
     if justClick then
@@ -1602,7 +1248,7 @@ end
 
 function PANEL:createTabs()
     self.tabs:Clear()
-    if not self.isKickedFromChar then self:addTab(L("returnToMainMenu"), function() self:backToMainMenu() end, true) end
+    if not self.isKickedFromChar then self:addTab("Return to Main Menu", function() self:backToMainMenu() end, true) end
 end
 
 function PANEL:backToMainMenu()
@@ -1740,7 +1386,7 @@ function PANEL:createStaffCharacter()
         groups = {}
     }
 
-    lia.module.get("mainmenu"):CreateCharacter(staffData):next(function(charID) lia.module.get("mainmenu"):ChooseCharacter(charID):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end) end):catch(function(err) LocalPlayer():notifyErrorLocalized(err or "failedToCreateStaffCharacter") end)
+    lia.module.get("mainmenu"):CreateCharacter(staffData):next(function(charID) lia.module.get("mainmenu"):ChooseCharacter(charID):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end) end):catch(function(err) LocalPlayer():notifyError(err or "Failed to create staff character") end)
 end
 
 function PANEL:updateSelectedCharacter()
@@ -1829,13 +1475,13 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         end
     end
 
-    local info = {L("name") .. ": " .. (character:getName() or ""), L("desc") .. ":", character:getDesc() or "", L("faction") .. ": " .. (team.GetName(character:getFaction()) or "")}
+    local info = {"Name" .. ": " .. (character:getName() or ""), "Description" .. ":", character:getDesc() or "", "Faction" .. ": " .. (team.GetName(character:getFaction()) or "")}
     if character:getClass() then
         local cls = lia.class.list[character:getClass()]
-        if cls and cls.name then table.insert(info, L("class") .. ": " .. cls.name) end
+        if cls and cls.name then table.insert(info, "Class" .. ": " .. cls.name) end
     end
 
-    table.insert(info, L("money") .. ": " .. lia.currency.get(character:getMoney()))
+    table.insert(info, "Money" .. ": " .. lia.currency.get(character:getMoney()))
     hook.Run("LoadMainMenuInformation", info, character)
     self.infoFrame = self:Add("liaFrame")
     self.infoFrame:SetSize(ScrW() * 0.25, ScrH() * 0.45)
@@ -1939,8 +1585,8 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local bw, bh = fw * 0.85, 40
     local pad = 10
     local cx = fx + (fw - bw) * 0.5
-    local selectText = L("select") .. " " .. L("character")
-    if character:isBanned() then selectText = L("permaKilledCharacter") end
+    local selectText = "Select" .. " " .. "Character"
+    if character:isBanned() then selectText = "This character was perma killed" end
     self.selectBtn = self:Add("liaButton")
     self.selectBtn:SetFont("LiliaFont.17")
     self.selectBtn:SetSize(bw, bh)
@@ -1958,11 +1604,11 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.selectBtn.DoClick = function()
         if character:isBanned() then
             local characterName = character:getName()
-            LocalPlayer():requestString(L("permaKillTitle"), L("pkDialogMessage", characterName), function() end)
+            LocalPlayer():requestString("Permanent Kill", string.format("Your character: %s, has been permanently killed. An administrator has approved this PK.\\nPKs are a regular part of RP; you can always make a new character. Have fun!", characterName), function() end)
             return
         end
 
-        lia.module.get("mainmenu"):ChooseCharacter(character:getID()):next(function() if IsValid(self) then self:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
+        lia.module.get("mainmenu"):ChooseCharacter(character:getID()):next(function() if IsValid(self) then self:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end)
     end
 
     self.deleteBtn = self:Add("liaButton")
@@ -1970,7 +1616,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.deleteBtn:SetSize(bw, bh)
     self.deleteBtn:SetPos(cx, fy + fh + pad + bh + pad)
     self.deleteBtn:SetShowLine(true)
-    self.deleteBtn:SetText(L("delete") .. " " .. L("character"))
+    self.deleteBtn:SetText("Delete" .. " " .. "Character")
     self.deleteBtn:Stop()
     self.deleteBtn:SetAlpha(255)
     do
@@ -1982,11 +1628,11 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.deleteBtn.DoClick = function()
         local charID = character:getID()
         if hook.Run("CanDeleteChar", charID) == false then
-            LocalPlayer():notifyErrorLocalized("cannotDeleteChar")
+            LocalPlayer():notifyError("You cannot delete this character!")
             return
         end
 
-        self:showConfirmation(L("charDeletionAreYouSure") .. "\n" .. L("charDeletionCannotUndone"), function() lia.module.get("mainmenu"):DeleteCharacter(charID) end)
+        self:showConfirmation("Are you sure you want to delete this character?" .. "\n" .. "This action cannot be undone.", function() lia.module.get("mainmenu"):DeleteCharacter(charID) end)
     end
 
     local localClient = LocalPlayer()
@@ -1997,7 +1643,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         self.setMainBtn:SetSize(bw, bh)
         self.setMainBtn:SetPos(cx, fy + fh + pad + bh + pad + bh + pad)
         self.setMainBtn:SetShowLine(true)
-        self.setMainBtn:SetText(L("setAsMainCharacter"))
+        self.setMainBtn:SetText("Set as Main Character")
         self.setMainBtn:Stop()
         self.setMainBtn:SetAlpha(255)
         do
@@ -2340,7 +1986,7 @@ function PANEL:showConfirmation(message, onConfirm, onCancel)
     frame:SetSize(400, 200)
     frame:MakePopup()
     frame:SetTitle("")
-    frame:SetCenterTitle(L("areYouSure"):upper())
+    frame:SetCenterTitle(("Are you sure?"):upper())
     frame:ShowCloseButton(false)
     frame:SetDraggable(false)
     local accentColor = lia.color.theme.theme
@@ -2358,7 +2004,7 @@ function PANEL:showConfirmation(message, onConfirm, onCancel)
     messageLabel:SetContentAlignment(5)
     local confirmButton = frame:Add("liaButton")
     confirmButton:SetFont("LiliaFont.17")
-    confirmButton:SetText(L("yes"):upper())
+    confirmButton:SetText(("Yes"):upper())
     confirmButton:SetPaintBackground(false)
     confirmButton:SetContentAlignment(5)
     function confirmButton:OnCursorEntered()
@@ -2374,7 +2020,7 @@ function PANEL:showConfirmation(message, onConfirm, onCancel)
 
     local cancelButton = frame:Add("liaButton")
     cancelButton:SetFont("LiliaFont.17")
-    cancelButton:SetText(L("no"):upper())
+    cancelButton:SetText(("No"):upper())
     cancelButton:SetPaintBackground(false)
     cancelButton:SetContentAlignment(5)
     function cancelButton:OnCursorEntered()

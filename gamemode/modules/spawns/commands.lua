@@ -1,8 +1,7 @@
-
--- Spawn command registrations.
+﻿-- Spawn command registrations.
 lia.command.add("spawnadd", {
     adminOnly = true,
-    desc = "@spawnAddDesc",
+    desc = "Adds a spawn point at your current position for the specified faction.",
     arguments = {
         {
             name = "faction",
@@ -10,7 +9,7 @@ lia.command.add("spawnadd", {
             options = function()
                 local options = {}
                 for k, v in pairs(lia.faction.teams) do
-                    options[k] = L(v.name)
+                    options[k] = v.name
                 end
                 return options
             end
@@ -24,7 +23,7 @@ lia.command.add("spawnadd", {
     onRun = function(client, arguments)
         local factionName = arguments[1]
         if not factionName then
-            client:notifyErrorLocalized("invalidArg")
+            client:notifyError("Invalid argument.")
             return
         end
 
@@ -42,18 +41,18 @@ lia.command.add("spawnadd", {
                 table.insert(spawns[factionInfo.uniqueID], newSpawn)
                 lia.module.get("spawns"):StoreSpawns(spawns):next(function()
                     lia.log.add(client, "spawnAdd", factionInfo.name)
-                    client:notifySuccessLocalized("spawnAdded")
+                    client:notifySuccess("Sucessfully Added Point")
                 end)
             end)
         else
-            client:notifyErrorLocalized("invalidFaction")
+            client:notifyError("The specified faction is not valid.")
         end
     end
 })
 
 lia.command.add("spawnremoveinradius", {
     adminOnly = true,
-    desc = "@spawnRemoveInRadiusDesc",
+    desc = "Removes all spawn points within the given radius of your position (default 120).",
     arguments = {
         {
             name = "radius",
@@ -86,11 +85,11 @@ lia.command.add("spawnremoveinradius", {
             if removedCount > 0 then
                 lia.module.get("spawns"):StoreSpawns(spawns):next(function()
                     lia.log.add(client, "spawnRemoveRadius", radius, removedCount)
-                    client:notifySuccessLocalized("spawnDeleted")
+                    client:notifySuccess("Sucessfully Removed Points")
                 end)
             else
                 lia.log.add(client, "spawnRemoveRadius", radius, removedCount)
-                client:notifySuccessLocalized("spawnDeleted")
+                client:notifySuccess("Sucessfully Removed Points")
             end
         end)
     end
@@ -98,7 +97,7 @@ lia.command.add("spawnremoveinradius", {
 
 lia.command.add("spawnremovebyname", {
     adminOnly = true,
-    desc = "@spawnRemoveByNameDesc",
+    desc = "Removes all spawn points for the specified faction.",
     arguments = {
         {
             name = "faction",
@@ -106,7 +105,7 @@ lia.command.add("spawnremovebyname", {
             options = function()
                 local options = {}
                 for k, v in pairs(lia.faction.teams) do
-                    options[k] = L(v.name)
+                    options[k] = v.name
                 end
                 return options
             end
@@ -133,18 +132,17 @@ lia.command.add("spawnremovebyname", {
                         if #list == 0 then spawns[factionInfo.uniqueID] = nil end
                         lia.module.get("spawns"):StoreSpawns(spawns):next(function()
                             lia.log.add(client, "spawnRemoveByName", factionInfo.name, removedCount)
-                            client:notifySuccessLocalized("spawnDeletedByName")
+                            client:notifySuccess("Sucessfully Removed Points")
                         end)
                     else
-                        client:notifyInfoLocalized("noSpawnsForFaction")
+                        client:notifyInfo("No spawn points exist for this faction.")
                     end
                 else
-                    client:notifyInfoLocalized("noSpawnsForFaction")
+                    client:notifyInfo("No spawn points exist for this faction.")
                 end
             end)
         else
-            client:notifyErrorLocalized("invalidFaction")
+            client:notifyError("The specified faction is not valid.")
         end
     end
 })
-

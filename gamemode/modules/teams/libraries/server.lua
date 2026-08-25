@@ -1,216 +1,4 @@
---[[
-    Hooks:
-        GetNPCRelations(client, relations)
-
-    Purpose:
-        Allows serverside code to replace the NPC disposition map resolved from a player's faction and class.
-
-    Category:
-        Teams
-
-    Parameters:
-        client (Player)
-            The player whose NPC relationships are being resolved.
-
-        relations (table|nil)
-            The merged faction and class relation map keyed by NPC class, or nil when neither defines relations.
-
-    Example Usage:
-        ```lua
-        hook.Add("GetNPCRelations", "liaExampleGetNPCRelations", function(client, relations)
-            relations = table.Copy(relations or {})
-            if IsValid(client) and client:IsAdmin() then relations["npc_combine_s"] = D_LI end
-            return relations
-        end)
-        ```
-
-    Returns:
-        table|nil
-            Return a replacement NPC-class-to-disposition map. Returning nil preserves the merged faction and class relations.
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        TrackFactionTransfer(character, oldFaction, newFaction, actor, reason)
-
-    Purpose:
-        Records an online character's faction join date, transfer history, and time spent in the previous faction.
-
-    Category:
-        Teams
-
-    Parameters:
-        character (Character)
-            The online character being transferred.
-
-        oldFaction (number|string|table)
-            The character's previous faction index, unique ID, or faction data.
-
-        newFaction (number|string|table)
-            The destination faction index, unique ID, or faction data.
-
-        actor (Player)
-            The player responsible for the transfer, when available.
-
-        reason (string)
-            The machine-readable reason stored in the transfer history.
-
-    Example Usage:
-        ```lua
-        hook.Add("TrackFactionTransfer", "liaExampleTrackFactionTransfer", function(character, oldFaction, newFaction, actor, reason)
-            print(character:getID(), oldFaction, newFaction, IsValid(actor) and actor:Name(), reason)
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        TrackOfflineFactionTransfer(characterID, oldFaction, newFaction, actor, reason)
-
-    Purpose:
-        Records faction join and transfer history for a character that is not currently online.
-
-    Category:
-        Teams
-
-    Parameters:
-        characterID (number)
-            The database ID of the offline character being transferred.
-
-        oldFaction (number|string|table)
-            The character's previous faction index, unique ID, or faction data.
-
-        newFaction (number|string|table)
-            The destination faction index, unique ID, or faction data.
-
-        actor (Player)
-            The player responsible for the transfer, when available.
-
-        reason (string)
-            The machine-readable reason stored in the transfer history.
-
-    Example Usage:
-        ```lua
-        hook.Add("TrackOfflineFactionTransfer", "liaExampleTrackOfflineFactionTransfer", function(characterID, oldFaction, newFaction, actor, reason)
-            print("Offline faction transfer", characterID, oldFaction, newFaction, reason)
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        OnPlayerJoinClass(Player client, number class, number|nil oldClass)
-
-    Purpose:
-        Runs after a player is assigned to a class so modules can react to the new class and any transferred state.
-
-    Category:
-        Teams
-
-    Parameters:
-        client (Player)
-            The player joining the class.
-
-        class (number)
-            The class index the player has just joined.
-
-        oldClass (number|nil)
-            The previous class index when the player switched from another class.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("OnPlayerJoinClass", "liaExampleOnPlayerJoinClass", function(client, class, oldClass)
-            if IsValid(client) then
-                print(client:Nick(), "joined class", class, "from", oldClass)
-            end
-        end)
-        ```
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        CanAccessFactionRoster(Player client, string|number|table factionUniqueID)
-
-    Purpose:
-        Controls whether a player can view a faction roster and member details.
-
-    Category:
-        Teams
-
-    Parameters:
-        client (Player)
-            The player requesting roster access.
-
-        factionUniqueID (string|number|table)
-            The target faction identifier or faction data.
-
-    Returns:
-        boolean|nil
-            Return true to allow access or false to deny it. Returning nil allows the default Lilia permission check to run.
-
-    Example Usage:
-        ```lua
-        hook.Add("CanAccessFactionRoster", "liaExampleCanAccessFactionRoster", function(client, factionUniqueID)
-            if IsValid(client) and client:IsSuperAdmin() then
-                return true
-            end
-        end)
-        ```
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        CanEditFactionNotes(Player client, string|number|table factionUniqueID)
-
-    Purpose:
-        Controls whether a player can edit faction notes for a faction member.
-
-    Category:
-        Teams
-
-    Parameters:
-        client (Player)
-            The player attempting to edit notes.
-
-        factionUniqueID (string|number|table)
-            The target faction identifier or faction data.
-
-    Returns:
-        boolean|nil
-            Return true to allow editing or false to deny it. Returning nil allows the default Lilia permission check to run.
-
-    Example Usage:
-        ```lua
-        hook.Add("CanEditFactionNotes", "liaExampleCanEditFactionNotes", function(client, factionUniqueID)
-            if IsValid(client) and client:hasPrivilege("canManageFactions") then
-                return true
-            end
-        end)
-        ```
-
-    Realm:
-        Server
-]]
-local MODULE = MODULE
+﻿local MODULE = MODULE
 local updateNPCRelations
 local flushFactionPlaytime
 local ensureFactionTracking
@@ -221,7 +9,7 @@ function MODULE:OnPlayerJoinClass(client, class, oldClass)
         if info.OnSet then info:OnSet(client) end
         if oldClass ~= class and info.OnTransferred then info:OnTransferred(client, oldClass) end
     else
-        lia.error(L("invalidClassError", tostring(class)))
+        lia.error(string.format("Invalid class '%s' provided for client.", tostring(class)))
     end
 
     if info2 and info2.OnLeave then info2:OnLeave(client) end
@@ -268,7 +56,7 @@ end
 function MODULE:PlayerLoadedChar(client, character)
     ensureFactionTracking(character, client, "loaded")
     if character:getData("factionKickWarn") then
-        client:notifyWarningLocalized("kickedFromFaction")
+        client:notifyWarning("You were kicked from your faction!")
         hook.Run("OnTransferred", client)
         local faction = lia.faction.indices[client:Team()]
         if faction and faction.OnTransferred then faction:OnTransferred(client) end
@@ -449,7 +237,7 @@ end
 function MODULE:CanCharBeTransfered(character, faction)
     if faction.oneCharOnly then
         for _, otherCharacter in next, lia.char.getAll() do
-            if otherCharacter.steamID == character.steamID and faction.index == otherCharacter:getFaction() then return false, L("charAlreadyInFaction") end
+            if otherCharacter.steamID == character.steamID and faction.index == otherCharacter:getFaction() then return false, "This player already has another character in this faction!" end
         end
     end
 end
@@ -522,12 +310,12 @@ end
 
 function MODULE:CanPlayerUseChar(client, character)
     local faction = lia.faction.indices[character:getFaction()]
-    if faction and hook.Run("CheckFactionLimitReached", faction, character, client) then return false, L("limitFaction") end
+    if faction and hook.Run("CheckFactionLimitReached", faction, character, client) then return false, "This faction is full. Try again later." end
 end
 
 function MODULE:CanPlayerSwitchChar(client, currentCharacter, newCharacter)
     local faction = lia.faction.indices[newCharacter:getFaction()]
-    if faction and self:CheckFactionLimitReached(faction, newCharacter, client) then return false, L("limitFaction") end
+    if faction and self:CheckFactionLimitReached(faction, newCharacter, client) then return false, "This faction is full. Try again later." end
 end
 
 local TRACKED_FACTION_KEYS = {
@@ -676,21 +464,133 @@ end
 function MODULE:TrackOfflineFactionTransfer(charID, oldFactionValue, newFactionValue, actor, reason)
     charID = tonumber(charID)
     if not charID then return end
-    local joinDates = lia.char.getCharData(charID, "factionJoinDates")
-    if not istable(joinDates) then joinDates = {} end
-    local newFactionUniqueID = getFactionUniqueID(newFactionValue)
-    if newFactionUniqueID then joinDates[newFactionUniqueID] = os.time() end
-    lia.char.setCharDatabase(charID, "factionJoinDates", joinDates)
-    local history = sanitizeFactionHistory(lia.char.getCharData(charID, "factionTransferHistory"))
-    table.insert(history, 1, {
-        at = os.time(),
-        from = getFactionUniqueID(oldFactionValue),
-        to = newFactionUniqueID,
-        byName = IsValid(actor) and actor:Name() or nil,
-        bySteamID = IsValid(actor) and actor:SteamID() or nil,
-        reason = reason or "transferred"
-    })
-
-    trimFactionHistory(history)
-    lia.char.setCharDatabase(charID, "factionTransferHistory", history)
+    lia.char.getCharData(charID):next(function(data)
+        local joinDates = istable(data.factionJoinDates) and data.factionJoinDates or {}
+        local newFactionUniqueID = getFactionUniqueID(newFactionValue)
+        if newFactionUniqueID then joinDates[newFactionUniqueID] = os.time() end
+        lia.char.setCharDatabase(charID, "factionJoinDates", joinDates)
+        local history = sanitizeFactionHistory(data.factionTransferHistory)
+        table.insert(history, 1, {
+            at = os.time(),
+            from = getFactionUniqueID(oldFactionValue),
+            to = newFactionUniqueID,
+            byName = IsValid(actor) and actor:Name() or nil,
+            bySteamID = IsValid(actor) and actor:SteamID() or nil,
+            reason = reason or "transferred"
+        })
+        trimFactionHistory(history)
+        lia.char.setCharDatabase(charID, "factionTransferHistory", history)
+    end):catch(function(message) lia.error("Failed to track offline faction transfer: " .. tostring(message)) end)
 end
+local function canInviteToFaction(client, target)
+    local clientChar = client:getChar()
+    local targetChar = target:getChar()
+    if not clientChar or not targetChar then return false end
+    if clientChar:getFaction() == targetChar:getFaction() then return false end
+    if clientChar:hasFlags("Z") then return true end
+    local classData = lia.class.list[clientChar:getClass()]
+    if classData and classData.canInviteToFaction then return true end
+    return hook.Run("CanInviteToFaction", client, target) == true
+end
+
+local function canInviteToClass(client, target)
+    local clientChar = client:getChar()
+    local targetChar = target:getChar()
+    if not clientChar or not targetChar then return false end
+    if clientChar:getFaction() ~= targetChar:getFaction() then return false end
+    if clientChar:hasFlags("X") then return true end
+    local classData = lia.class.list[clientChar:getClass()]
+    if classData and classData.canInviteToClass then return true end
+    return hook.Run("CanInviteToClass", client, target) == true
+end
+
+lia.playerinteract.addInteraction("inviteToFaction", {
+    serverOnly = true,
+    category = "Faction Management",
+    shouldShow = canInviteToFaction,
+    onRun = function(client, target)
+        if not SERVER or not canInviteToFaction(client, target) then return end
+        local clientChar = client:getChar()
+        local targetChar = target:getChar()
+        if not clientChar or not targetChar then return end
+        local faction
+        for _, factionData in pairs(lia.faction.teams) do
+            if factionData.index == client:Team() then
+                faction = factionData
+                break
+            end
+        end
+
+        if not faction then
+            client:notifyError("The specified faction is not valid.")
+            return
+        end
+
+        if faction.uniqueID == "staff" then
+            client:notifyError("You cannot invite players to the staff faction through the interaction menu. Staff characters must be created through the menu system.")
+            return
+        end
+
+        target:requestBinaryQuestion("Join Faction", "Do you want to join this faction?", "Yes", "No", function(choice)
+            if not IsValid(client) or not IsValid(target) then return end
+            if choice ~= 0 then
+                client:notifyInfo("Invite declined.")
+                return
+            end
+
+            clientChar = client:getChar()
+            targetChar = target:getChar()
+            if not clientChar or not targetChar then return end
+            if not canInviteToFaction(client, target) then return end
+            if hook.Run("CanCharBeTransfered", targetChar, faction, targetChar:getFaction()) == false then return end
+            local oldFaction = targetChar:getFaction()
+            hook.Run("TrackFactionTransfer", targetChar, oldFaction, faction, client, "inviteToFaction")
+            targetChar.vars.faction = faction.uniqueID
+            targetChar:setFaction(faction.index)
+            hook.Run("OnTransferred", target)
+            if faction.OnTransferred then faction:OnTransferred(target, oldFaction) end
+            hook.Run("PlayerLoadout", target)
+            client:notifySuccess(string.format("%s has been transferred to %s.", target:Name(), faction.name))
+            if client ~= target then target:notifyInfo(string.format("You have been transferred to %s by %s.", faction.name, client:Name())) end
+            targetChar:takeFlags("Z")
+        end)
+    end
+})
+
+lia.playerinteract.addInteraction("inviteToClass", {
+    serverOnly = true,
+    category = "Faction Management",
+    shouldShow = canInviteToClass,
+    onRun = function(client, target)
+        if not SERVER or not canInviteToClass(client, target) then return end
+        local clientChar = client:getChar()
+        local targetChar = target:getChar()
+        if not clientChar or not targetChar then return end
+        local class = lia.class.list[clientChar:getClass()]
+        if not class then
+            client:notifyError("The specified class is not valid.")
+            return
+        end
+
+        target:requestBinaryQuestion("Join Class", "Do you want to join this class?", "Yes", "No", function(choice)
+            if not IsValid(client) or not IsValid(target) then return end
+            if choice ~= 0 then
+                client:notifyInfo("Invite declined.")
+                return
+            end
+
+            clientChar = client:getChar()
+            targetChar = target:getChar()
+            if not clientChar or not targetChar then return end
+            if not canInviteToClass(client, target) then return end
+            class = lia.class.list[clientChar:getClass()]
+            if not class then return end
+            if hook.Run("CanCharBeTransfered", targetChar, class, targetChar:getClass()) == false then return end
+            local oldClass = targetChar:getClass()
+            targetChar:setClass(class.index)
+            hook.Run("OnPlayerJoinClass", target, class.index, oldClass)
+            client:notifySuccess(string.format("%s has been transferred to %s.", target:Name(), class.name))
+            if client ~= target then target:notifyInfo(string.format("You have been transferred to %s by %s.", class.name, client:Name())) end
+        end)
+    end
+})

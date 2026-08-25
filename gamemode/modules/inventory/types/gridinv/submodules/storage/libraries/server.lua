@@ -39,7 +39,7 @@ function MODULE:PlayerSpawnedProp(client, model, entity)
             if isfunction(data.OnSpawn) then data.OnSpawn(storage) end
         end
     end, function(err)
-        lia.error(L("unableCreateStorageEntity", client:Name(), err))
+        lia.error(string.format("Unable to create storage entity for %s\\n%s", client:Name(), err))
         if IsValid(storage) then SafeRemoveEntity(storage) end
     end)
 
@@ -126,7 +126,7 @@ function MODULE:SaveData()
 end
 
 lia.inventory.registerStorage("models/props_junk/wood_crate001a.mdl", {
-    name = "@storageContainer",
+    name = "Storage Container",
     invType = "GridInv",
     invData = {
         w = 6,
@@ -135,7 +135,7 @@ lia.inventory.registerStorage("models/props_junk/wood_crate001a.mdl", {
 })
 
 lia.inventory.registerTrunk("vehicle", {
-    name = "@vehicleTrunk",
+    name = "Vehicle Trunk",
     invType = "GridInv",
     invData = {
         w = lia.config.get("trunkInvW", 10),

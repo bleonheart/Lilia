@@ -18,7 +18,7 @@
             end
         end
 
-        lia.information(L("doorDisableAll"))
+        lia.information("All doors have been disabled.")
     end
 end
 
@@ -45,26 +45,26 @@ function MODULE:LoadData()
         for _, row in ipairs(rows) do
             local id = tonumber(row.id)
             if not id then
-                lia.warning(L("skippingDoorRecordWithInvalidID") .. ": " .. tostring(row.id))
+                lia.warning("Skipping door record with invalid ID:" .. ": " .. tostring(row.id))
                 continue
             end
 
             local ent = ents.GetMapCreatedEntity(id)
             if not IsValid(ent) then
-                lia.warning(L("doorEntityNotFound", id))
+                lia.warning(string.format("Door entity %s not found in map, skipping", id))
                 continue
             end
 
             if not ent:isDoor() then
-                lia.warning(L("entityIsNotADoorSkipping") .. " " .. id .. " (Class: " .. ent:GetClass() .. ")")
+                lia.warning("Entity Is Not A Door, Skipping" .. " " .. id .. " (Class: " .. ent:GetClass() .. ")")
                 continue
             end
 
             local factions
             if row.factions and row.factions ~= "NULL" and row.factions ~= "" then
                 if tostring(row.factions):match("^[%d%.%-%s]+$") and not tostring(row.factions):match("[{}%[%]]") then
-                    lia.warning(L("doorHasCoordinateDataInFactionsColumn") .. " " .. id .. ": " .. tostring(row.factions))
-                    lia.warning(L("suggestsDataCorruptionClearingFactions"))
+                    lia.warning("Door Has Coordinate Data In Factions Column" .. " " .. id .. ": " .. tostring(row.factions))
+                    lia.warning("This suggests data corruption. Clearing factions data.")
                     row.factions = ""
                 else
                     local success, result = pcall(lia.data.deserialize, row.factions)
@@ -84,8 +84,8 @@ function MODULE:LoadData()
                             ent.liaFactions = factions
                         end
                     else
-                        lia.warning(L("failedToDeserializeFactionsForDoor", id) .. ": " .. tostring(result))
-                        lia.warning(L("rawFactionsData") .. " " .. tostring(row.factions))
+                        lia.warning(string.format("Failed to deserialize factions for door %s", id) .. ": " .. tostring(result))
+                        lia.warning("Raw factions data:" .. " " .. tostring(row.factions))
                     end
                 end
             end
@@ -93,8 +93,8 @@ function MODULE:LoadData()
             local classes
             if row.classes and row.classes ~= "NULL" and row.classes ~= "" then
                 if tostring(row.classes):match("^[%d%.%-%s]+$") and not tostring(row.classes):match("[{}%[%]]") then
-                    lia.warning(L("doorCoordinateDataWarning", id, tostring(row.classes)))
-                    lia.warning(L("doorDataCorruptionClearing"))
+                    lia.warning(string.format("Door %s has coordinate-like data in classes column: %s", id, tostring(row.classes)))
+                    lia.warning("This suggests data corruption. Clearing classes data.")
                     row.classes = ""
                 else
                     local success, result = pcall(lia.data.deserialize, row.classes)
@@ -114,8 +114,8 @@ function MODULE:LoadData()
                             ent.liaClasses = classes
                         end
                     else
-                        lia.warning(L("failedToDeserializeClassesForDoor", id) .. ": " .. tostring(result))
-                        lia.warning(L("rawClassesData") .. " " .. tostring(row.classes))
+                        lia.warning(string.format("Failed to deserialize classes for door %s", id) .. ": " .. tostring(result))
+                        lia.warning("Raw classes data:" .. " " .. tostring(row.classes))
                     end
                 end
             end
@@ -229,18 +229,18 @@ function MODULE:LoadData()
                         if hasPresetData then
                             doorData = hook.Run("PostDoorDataLoad", ent, doorData) or doorData
                             lia.doors.setCachedData(ent, doorData)
-                            lia.information(L("appliedPresetToDoor", doorID))
+                            lia.information(string.format("Applied preset to door ID %s", doorID))
                             loadedCount = loadedCount + 1
                         end
                     else
-                        lia.warning(L("doorNotFoundForPreset", doorID))
+                        lia.warning(string.format("Door entity %s not found for preset application", doorID))
                     end
                 end
             end
         end
     end):catch(function(err)
-        lia.error(L("failedToLoadDoorData", tostring(err)))
-        lia.error(L("databaseConnectionIssue"))
+        lia.error(string.format("Failed to load door data: %s", tostring(err)))
+        lia.error("This may indicate a database connection issue or missing table")
     end)
 end
 
@@ -262,25 +262,25 @@ function MODULE:SaveData()
             if not doorData.factions and door.liaFactions then factionsTable = door.liaFactions end
             if not doorData.classes and door.liaClasses then classesTable = door.liaClasses end
             if not istable(factionsTable) then
-                lia.warning(L("doorInvalidFactionsType", mapID, type(factionsTable)))
+                lia.warning(string.format("Door %s has invalid factions data type: %s, resetting to empty table", mapID, type(factionsTable)))
                 factionsTable = {}
             end
 
             if not istable(classesTable) then
-                lia.warning(L("doorInvalidClassesType", mapID, type(classesTable)))
+                lia.warning(string.format("Door %s has invalid classes data type: %s, resetting to empty table", mapID, type(classesTable)))
                 classesTable = {}
             end
 
             local factionsSerialized = lia.data.serialize(factionsTable)
             local classesSerialized = lia.data.serialize(classesTable)
             if factionsSerialized and factionsSerialized:match("^[%d%.%-%s]+$") and not factionsSerialized:match("[{}%[%]]") then
-                lia.warning(L("doorFactionsCoordinateReset", mapID))
+                lia.warning(string.format("Door %s factions would serialize to coordinate-like data, resetting to empty", mapID))
                 factionsTable = {}
                 factionsSerialized = lia.data.serialize(factionsTable)
             end
 
             if classesSerialized and classesSerialized:match("^[%d%.%-%s]+$") and not classesSerialized:match("[{}%[%]]") then
-                lia.warning(L("doorClassesCoordinateReset", mapID))
+                lia.warning(string.format("Door %s classes would serialize to coordinate-like data, resetting to empty", mapID))
                 classesTable = {}
                 classesSerialized = lia.data.serialize(classesTable)
             end
@@ -328,8 +328,8 @@ function MODULE:SaveData()
 
     if #rows > 0 then
         lia.db.bulkUpsert("doors", rows):next(function() end):catch(function(err)
-            lia.error(L("failedToSaveDoorData", tostring(err)))
-            lia.error(L("schemaProblem"))
+            lia.error(string.format("Failed to save door data: %s", tostring(err)))
+            lia.error("This may indicate a database connection issue or schema problem")
         end)
     end
 end
@@ -401,6 +401,16 @@ end
 
 function MODULE:PostPlayerLoadout(client)
     client:Give("lia_keys")
+    for _, door in ents.Iterator() do
+        if IsValid(door) and door:isDoor() then
+            local data = lia.doors.getData(door)
+            if data.ownerSteamID == client:SteamID() then
+                door:SetDTEntity(0, client)
+                door.liaAccess = door.liaAccess or {}
+                door.liaAccess[client] = DOOR_OWNER
+            end
+        end
+    end
 end
 
 function MODULE:ShowTeam(client)
@@ -426,7 +436,7 @@ function MODULE:ShowTeam(client)
             elseif not IsValid(entity:GetDTEntity(0)) then
                 lia.command.run(client, "doorbuy")
             else
-                client:notifyErrorLocalized("notNow")
+                client:notifyError("You are not allowed to do this right now.")
             end
             return true
         end
@@ -468,7 +478,7 @@ local function ToggleLock(client, door, state)
     end
 
     hook.Run("DoorLockToggled", client, door, state)
-    lia.log.add(client, "toggleLock", door, state and L("locked") or L("unlocked"))
+    lia.log.add(client, "toggleLock", door, state and "Locked" or "unlocked")
 end
 
 local function resetKeyCooldown(client)
@@ -497,7 +507,7 @@ function MODULE:KeyLock(client, door, time)
     lia.debug("[Permissions]", "Permission Check for function MODULE:KeyLock", "isProperEntity=", tostring(isProperEntity), "doorIsLocked=", tostring(isLocked), "distanceWithin256=", tostring(distance <= 256), "door:checkDoorAccess=", tostring(hasDoorAccess), "doorCreatorMatch=", tostring(isCreator), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     if permission then
         client:stopAction()
-        client:setAction(L("locking"), time, function() end)
+        client:setAction("Locking this entity...", time, function() end)
         client:doStaredAction(door, function() ToggleLock(client, door, true) end, time, function()
             client:stopAction()
             resetKeyCooldown(client)
@@ -520,7 +530,7 @@ function MODULE:KeyUnlock(client, door, time)
     lia.debug("[Permissions]", "Permission Check for function MODULE:KeyUnlock", "isProperEntity=", tostring(isProperEntity), "doorIsLocked=", tostring(isLocked), "distanceWithin256=", tostring(distance <= 256), "door:checkDoorAccess=", tostring(hasDoorAccess), "doorCreatorMatch=", tostring(isCreator), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     if permission then
         client:stopAction()
-        client:setAction(L("unlocking"), time, function() end)
+        client:setAction("Unlocking this entity...", time, function() end)
         client:doStaredAction(door, function() ToggleLock(client, door, false) end, time, function()
             client:stopAction()
             resetKeyCooldown(client)
@@ -528,4 +538,12 @@ function MODULE:KeyUnlock(client, door, time)
 
         lia.log.add(client, "unlockDoor", door)
     end
+end
+
+function MODULE:CollectDoorDataFields(fields)
+    fields.ownerSteamID = {
+        column = "ownerSteamID",
+        type = "TEXT",
+        default = ""
+    }
 end

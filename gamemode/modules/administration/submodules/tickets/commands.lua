@@ -1,6 +1,5 @@
-if SERVER then
+﻿if SERVER then
     MODULE.ActiveTickets = MODULE.ActiveTickets or {}
-
     function MODULE:SendPopup(client, message)
         for _, v in player.Iterator() do
             local hasAlwaysSeeTickets = v:hasPrivilege("alwaysSeeTickets")
@@ -36,15 +35,15 @@ if SERVER then
                 type = "string"
             },
         },
-        desc = "@ticketDesc",
+        desc = "Sends a support ticket to staff.",
         onRun = function(client, arguments)
             local message = table.concat(arguments, " ")
             if not message or message == "" then
-                client:notifyErrorLocalized("mustProvideString")
+                client:notifyError("Must Provide a String")
                 return
             end
 
-            ClientAddText(client, Color(70, 0, 130), L("you"), Color(151, 211, 255), " " .. L("ticketMessageToAdmins") .. ": ", Color(0, 255, 0), message)
+            ClientAddText(client, Color(70, 0, 130), "You", Color(151, 211, 255), " " .. "to admins" .. ": ", Color(0, 255, 0), message)
             MODULE:SendPopup(client, message)
         end
     })
@@ -53,7 +52,7 @@ end
 -- Ticket and claim command registrations.
 lia.command.add("viewtickets", {
     adminOnly = true,
-    desc = "@viewTicketsDesc",
+    desc = "Displays all tickets requested by the specified player.",
     arguments = {
         {
             name = "name",
@@ -63,7 +62,7 @@ lia.command.add("viewtickets", {
     onRun = function(client, arguments)
         local targetName = arguments[1]
         if not targetName then
-            client:notifyErrorLocalized("specifyPlayer")
+            client:notifyError("Please specify a player.")
             return
         end
 
@@ -79,7 +78,7 @@ lia.command.add("viewtickets", {
 
         GetTicketsByRequester(steamID):next(function(tickets)
             if #tickets == 0 then
-                client:notifyInfoLocalized("noTicketsFound")
+                client:notifyInfo("No tickets found for the specified player.")
                 return
             end
 
@@ -87,12 +86,12 @@ lia.command.add("viewtickets", {
             for _, ticket in ipairs(tickets) do
                 ticketsData[#ticketsData + 1] = {
                     timestamp = os.date("%Y-%m-%d %H:%M:%S", ticket.timestamp),
-                    admin = string.format("%s (%s)", ticket.admin or L("na"), ticket.adminSteamID or L("na")),
+                    admin = string.format("%s (%s)", ticket.admin or "N/A", ticket.adminSteamID or "N/A"),
                     message = ticket.message or ""
                 }
             end
 
-            lia.util.sendTableUI(client, L("ticketsForTitle", displayName), {
+            lia.util.sendTableUI(client, string.format("Tickets for %s", displayName), {
                 {
                     name = "timestamp",
                     field = "timestamp"
@@ -114,7 +113,7 @@ lia.command.add("viewtickets", {
 
 lia.command.add("plyviewclaims", {
     adminOnly = true,
-    desc = "@plyViewClaimsDesc",
+    desc = "Displays detailed claim information for the specified player.",
     arguments = {
         {
             name = "name",
@@ -122,20 +121,20 @@ lia.command.add("plyviewclaims", {
         },
     },
     AdminStick = {
-        Name = "@viewTicketClaims",
+        Name = "View Ticket Claims",
         ButtonText = "View Ticket Claims",
         Category = "Tickets",
     },
     onRun = function(client, arguments)
         local targetName = arguments[1]
         if not targetName then
-            client:notifyErrorLocalized("specifyPlayer")
+            client:notifyError("Please specify a player.")
             return
         end
 
         local target = lia.util.findPlayer(client, targetName)
         if not target or not IsValid(target) then
-            client:notifyErrorLocalized("targetNotFound")
+            client:notifyError("Target not found")
             return
         end
 
@@ -143,7 +142,7 @@ lia.command.add("plyviewclaims", {
         lia.module.get("administration"):GetAllCaseClaims():next(function(caseclaims)
             local claim = caseclaims[steamID]
             if not claim then
-                client:notifyInfoLocalized("noClaimsFound")
+                client:notifyInfo("No claims found for the specified player.")
                 return
             end
 
@@ -154,7 +153,7 @@ lia.command.add("plyviewclaims", {
                     claims = claim.claims,
                     lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
                     timeSinceLastClaim = lia.time.timeSince(claim.lastclaim),
-                    claimedFor = table.IsEmpty(claim.claimedFor) and L("none") or table.concat((function()
+                    claimedFor = table.IsEmpty(claim.claimedFor) and "None" or table.concat((function()
                         local t = {}
                         for sid, name in pairs(claim.claimedFor) do
                             table.insert(t, string.format("%s (%s)", name, sid))
@@ -164,7 +163,7 @@ lia.command.add("plyviewclaims", {
                 }
             }
 
-            lia.util.sendTableUI(client, L("claimsForTitle", target:Nick()), {
+            lia.util.sendTableUI(client, string.format("Claims for %s", target:Nick()), {
                 {
                     name = "steamID",
                     field = "steamID"
@@ -198,11 +197,11 @@ lia.command.add("plyviewclaims", {
 
 lia.command.add("viewallclaims", {
     adminOnly = true,
-    desc = "@viewAllClaimsDesc",
+    desc = "Displays a summary table of claim data for all admins.",
     onRun = function(client)
         lia.module.get("administration"):GetAllCaseClaims():next(function(caseclaims)
             if table.IsEmpty(caseclaims) then
-                client:notifyInfoLocalized("noClaimsRecorded")
+                client:notifyInfo("No claims have been recorded yet.")
                 return
             end
 
@@ -214,7 +213,7 @@ lia.command.add("viewallclaims", {
                     claims = claim.claims,
                     lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
                     timeSinceLastClaim = lia.time.timeSince(claim.lastclaim),
-                    claimedFor = table.IsEmpty(claim.claimedFor) and L("none") or table.concat((function()
+                    claimedFor = table.IsEmpty(claim.claimedFor) and "None" or table.concat((function()
                         local t = {}
                         for sid, name in pairs(claim.claimedFor) do
                             table.insert(t, string.format("%s (%s)", name, sid))
@@ -258,11 +257,11 @@ lia.command.add("viewallclaims", {
 
 lia.command.add("viewclaims", {
     adminOnly = true,
-    desc = "@viewClaimsDesc",
+    desc = "Prints detailed claim information for every admin to chat.",
     onRun = function(client)
         lia.module.get("administration"):GetAllCaseClaims():next(function(caseclaims)
             if table.IsEmpty(caseclaims) then
-                client:notifyInfoLocalized("noClaimsData")
+                client:notifyInfo("No claims data available.")
                 return
             end
 
@@ -275,7 +274,7 @@ lia.command.add("viewclaims", {
                     claims = claim.claims,
                     lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
                     timeSinceLastClaim = lia.time.timeSince(claim.lastclaim),
-                    claimedFor = table.IsEmpty(claim.claimedFor) and L("none") or table.concat((function()
+                    claimedFor = table.IsEmpty(claim.claimedFor) and "None" or table.concat((function()
                         local t = {}
                         for sid, name in pairs(claim.claimedFor) do
                             table.insert(t, string.format("%s (%s)", name, sid))
@@ -314,4 +313,3 @@ lia.command.add("viewclaims", {
         end)
     end
 })
-

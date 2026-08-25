@@ -26,7 +26,7 @@ net.Receive("liaKickCharacterToBase", function(_, client)
     end
 
     if not defaultFaction then
-        client:notifyErrorLocalized("invalidFaction")
+        client:notifyError("The specified faction is not valid.")
         return
     end
 
@@ -38,12 +38,12 @@ net.Receive("liaKickCharacterToBase", function(_, client)
             local oldFaction = targetChar:getFaction()
             local oldFactionData = lia.faction.indices[oldFaction]
             if oldFactionData and oldFactionData.isDefault then
-                client:notifyErrorLocalized("alreadyInBaseFaction")
+                client:notifyError("Character is already in the base faction.")
                 return
             end
 
             if hook.Run("CanCharBeTransfered", targetChar, defaultFaction, oldFaction) == false then return end
-            target:notifyWarningLocalized("kickedFromFaction")
+            target:notifyWarning("You were kicked from your faction!")
             hook.Run("TrackFactionTransfer", targetChar, oldFaction, defaultFaction, client, "kickToBase")
             targetChar.vars.faction = defaultFaction.uniqueID
             targetChar:setFaction(defaultFaction.index)
@@ -51,22 +51,23 @@ net.Receive("liaKickCharacterToBase", function(_, client)
             if defaultFaction.OnTransferred then defaultFaction:OnTransferred(target, oldFaction) end
             hook.Run("PlayerLoadout", target)
             targetChar:save()
-            client:notifySuccessLocalized("transferSuccess", target:Name(), defaultFaction.name)
+            client:notifySuccess(string.format("%s has been transferred to %s.", target:Name(), defaultFaction.name))
             lia.log.add(client, "kickToBaseFaction", target:Name(), oldFactionData and oldFactionData.name or tostring(oldFaction), defaultFaction.name)
         end
     end
 
     if not isOnline then
         lia.db.query("SELECT faction FROM lia_characters WHERE id = " .. characterID):next(function(data)
-            if not data or not data[1] then
-                client:notifyErrorLocalized("characterNotFound")
+            local rows = data.results or {}
+            if not rows[1] then
+                client:notifyError("Character not found.")
                 return
             end
 
-            local currentFaction = data[1].faction
+            local currentFaction = rows[1].faction
             local currentFactionData = lia.faction.get(currentFaction)
             if currentFactionData and currentFactionData.isDefault then
-                client:notifyErrorLocalized("alreadyInBaseFaction")
+                client:notifyError("Character is already in the base faction.")
                 return
             end
 
@@ -75,8 +76,8 @@ net.Receive("liaKickCharacterToBase", function(_, client)
                 faction = defaultFaction.uniqueID
             }, nil, "characters", "id = " .. characterID)
 
-            client:notifySuccessLocalized("transferSuccess", L("character"), defaultFaction.name)
-            lia.log.add(client, "kickToBaseFaction", L("character"), currentFactionData and currentFactionData.name or tostring(currentFaction), defaultFaction.name)
+            client:notifySuccess(string.format("%s has been transferred to %s.", "Character", defaultFaction.name))
+            lia.log.add(client, "kickToBaseFaction", "Character", currentFactionData and currentFactionData.name or tostring(currentFaction), defaultFaction.name)
         end)
     end
 end)
@@ -173,17 +174,17 @@ local function buildFactionMembersPayload(client, factionUniqueID, callback)
 
                 local ownerChar = IsValid(owner) and owner:getChar() or nil
                 if ownerChar and ownerChar:getID() == tonumber(charID) then
-                    lastOnlineText = L("onlineNow")
+                    lastOnlineText = "Online now"
                 else
-                    lastOnlineText = row.lastJoinTime or L("unknown")
+                    lastOnlineText = row.lastJoinTime or "Unknown"
                 end
 
                 local classIndex = tonumber(row.class) or 0
                 local classData = lia.class.list[classIndex]
                 members[#members + 1] = {
-                    name = row.name or L("unknown"),
+                    name = row.name or "Unknown",
                     lastOnline = lastOnlineText,
-                    lastActive = row.lastJoinTime or L("unknown"),
+                    lastActive = row.lastJoinTime or "Unknown",
                     charID = charID,
                     steamID = row.steamID,
                     class = classIndex,
@@ -245,7 +246,7 @@ local function buildFactionMemberDetailsPayload(client, factionUniqueID, charID,
             trackedKeys[#trackedKeys + 1] = "'" .. lia.db.escape(key) .. "'"
         end
 
-        lia.db.query(string.format("SELECT charID, key, value FROM lia_chardata WHERE charID = %d AND key IN (%s)", charID, table.concat(trackedKeys, ",")), function(extraRows)
+        lia.db.query(string.format("SELECT `charID`, `key`, `value` FROM `lia_chardata` WHERE `charID` = %d AND `key` IN (%s)", charID, table.concat(trackedKeys, ",")), function(extraRows)
             local charData = {}
             for _, extraRow in ipairs(extraRows or {}) do
                 charData[extraRow.key] = decodeTrackedFactionRow(extraRow.value)
@@ -272,18 +273,18 @@ local function buildFactionMemberDetailsPayload(client, factionUniqueID, charID,
             local joinDate = tonumber(joinDates[faction.uniqueID]) or nil
             local factionPlaytime = istable(charData.factionPlaytime) and charData.factionPlaytime or {}
             local playtimeInFaction = tonumber(factionPlaytime[faction.uniqueID]) or 0
-            local lastOnlineText = row.lastJoinTime or L("unknown")
+            local lastOnlineText = row.lastJoinTime or "Unknown"
             if ownerChar and ownerChar:getID() == charID then
-                lastOnlineText = L("onlineNow")
+                lastOnlineText = "Online now"
                 if ownerChar:getFaction() == faction.index and tonumber(ownerChar.liaFactionSessionStart or 0) > 0 then playtimeInFaction = playtimeInFaction + math.max(0, now - tonumber(ownerChar.liaFactionSessionStart)) end
             end
 
             local notesByFaction = istable(charData.factionNotes) and charData.factionNotes or {}
             local noteData = notesByFaction[faction.uniqueID]
             local member = {
-                name = row.name or L("unknown"),
+                name = row.name or "Unknown",
                 lastOnline = lastOnlineText,
-                lastActive = row.lastJoinTime or L("unknown"),
+                lastActive = row.lastJoinTime or "Unknown",
                 charID = charID,
                 steamID = row.steamID,
                 class = classIndex,
@@ -361,14 +362,17 @@ net.Receive("liaSaveFactionNote", function(_, client)
                 loadedCharacter:setData("factionNotes", notesByFaction)
             end
         else
-            local notesByFaction = lia.char.getCharData(charID, "factionNotes")
-            if not istable(notesByFaction) then notesByFaction = {} end
-            notesByFaction[factionUniqueID] = noteData
-            if noteData == nil and table.IsEmpty(notesByFaction) then
-                lia.char.setCharDatabase(charID, "factionNotes", nil)
-            else
-                lia.char.setCharDatabase(charID, "factionNotes", notesByFaction)
-            end
+            lia.char.getCharData(charID, "factionNotes"):next(function(notesByFaction)
+                if not istable(notesByFaction) then notesByFaction = {} end
+                notesByFaction[factionUniqueID] = noteData
+                if noteData == nil and table.IsEmpty(notesByFaction) then
+                    lia.char.setCharDatabase(charID, "factionNotes", nil)
+                else
+                    lia.char.setCharDatabase(charID, "factionNotes", notesByFaction)
+                end
+                sendFactionMemberDetails(client, factionUniqueID, charID)
+            end):catch(function(message) lia.error("Failed to load faction notes: " .. tostring(message)) end)
+            return
         end
 
         sendFactionMemberDetails(client, factionUniqueID, charID)

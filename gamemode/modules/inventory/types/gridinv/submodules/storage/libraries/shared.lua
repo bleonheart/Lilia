@@ -1,41 +1,11 @@
-﻿--[[
-    Hooks:
-        IsSuitableForTrunk(Entity ent)
-
-    Purpose:
-        Allows modules to decide whether an entity should be treated as a valid trunk-capable storage target.
-
-    Category:
-        Inventory
-
-    Parameters:
-        ent (Entity)
-            The entity being checked for trunk storage support.
-
-    Returns:
-        boolean|nil
-            Return true to mark the entity as trunk-capable or false to reject it. Returning nil allows the default vehicle and storage checks to continue.
-
-    Example Usage:
-        ```lua
-        hook.Add("IsSuitableForTrunk", "liaExampleIsSuitableForTrunk", function(ent)
-            if IsValid(ent) and ent:GetClass() == "prop_vehicle_jeep" then
-                return true
-            end
-        end)
-        ```
-
-    Realm:
-        Shared
-]]
-function MODULE:IsSuitableForTrunk(ent)
+﻿function MODULE:IsSuitableForTrunk(ent)
     if IsValid(ent) and ((ent.isSimfphysCar and ent:isSimfphysCar()) or (ent:IsVehicle() and ent:getNetVar("hasStorage", false))) then return true end
 end
 
 function MODULE:InitializeStorage(entity)
     if not IsValid(entity) then
         local d = deferred.new()
-        d:reject(L("invalidEntity"))
+        d:reject("Invalid entity selected.")
         return d
     end
 
@@ -64,7 +34,7 @@ function MODULE:InitializeStorage(entity)
         if not def and entity:IsVehicle() and lia.inventory.storage then def = lia.inventory.storage["vehicle"] end
         if not def then
             def = {
-                name = lia.lang.resolveToken("@storageContainer"),
+                name = "Storage Container",
                 invType = "GridInv",
                 invData = {
                     w = 4,
@@ -85,7 +55,7 @@ function MODULE:InitializeStorage(entity)
             return d
         else
             local d = deferred.new()
-            d:reject(L("storageInitServerOnly"))
+            d:reject("Storage Init Server Only")
             return d
         end
     end

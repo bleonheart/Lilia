@@ -44,7 +44,7 @@ end
 local PANEL = {}
 function PANEL:Init()
     self.title = nil
-    self.placeholder = L("enterText")
+    self.placeholder = "Enter Text"
     self.font = "LiliaFont.18"
     self.textColor = nil
     self.placeholderColor = nil

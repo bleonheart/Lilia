@@ -846,8 +846,15 @@ class FunctionComparator:
             r"^\s*function\s+"
             r"(lia\.[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\s*\("
         )
+        # An alias is a local variable assigned the library/table itself, e.g.
+        # ``local keybind = lia.keybind``.  Do not treat assignments from a
+        # library function call as aliases: ``local view =
+        # lia.camera.calcView(...)`` is a real usage of calcView.  The old
+        # expression matched both forms and consequently discarded the whole
+        # line from the usage scan.
         alias_pattern = re.compile(
-            r"\blocal\s+([A-Za-z_]\w*)\s*=\s*(lia(?:\.[A-Za-z_]\w*)*)\b"
+            r"^\s*local\s+([A-Za-z_]\w*)\s*=\s*"
+            r"(lia(?:\.[A-Za-z_]\w*)*)\s*(?:--.*)?$"
         )
         path_pattern = re.compile(r"\blia(?:\.[A-Za-z_]\w*)+")
 
@@ -907,6 +914,106 @@ class FunctionComparator:
             if unused:
                 unused_by_file[file_path] = unused
         return unused_by_file
+
+    def _find_lilia_rp_cross_usage(
+        self, function_comparison: Dict[str, Dict]
+    ) -> List[Dict[str, Any]]:
+        """Find Lilia functions unused locally but referenced by ``lilia_rp``.
+
+        This is intentionally a separate result from the normal unused list:
+        an API can be unused by the framework while still being a dependency
+        of the sibling gamemode.
+        """
+        if not self.lilia_rp_path.is_dir():
+            return []
+
+        unused_locations: Dict[str, Dict[str, Any]] = {}
+        for lilia_file, file_data in function_comparison.items():
+            for function_name in file_data.get("unused_functions", []):
+                info = file_data.get("functions", {}).get(function_name, {})
+                unused_locations[function_name] = {
+                    "function": function_name,
+                    "lilia_file": lilia_file,
+                    "lilia_line": info.get("line_number", 0),
+                    "lilia_rp_usages": [],
+                }
+
+        if not unused_locations:
+            return []
+
+        patterns = {
+            name: re.compile(rf"\b{re.escape(name)}\b")
+            for name in unused_locations
+        }
+        # Only actual declarations should be excluded.  A call such as
+        # ``lia.db.createTable(...)`` may also begin a line, but it is not a
+        # definition and must count as cross-gamemode usage.
+        definition_pattern = re.compile(
+            r"^\s*(?:function\s+|)"
+            r"(lia\.[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)"
+            r"\s*=\s*function\b|"
+            r"^\s*function\s+"
+            r"(lia\.[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\s*\("
+        )
+
+        for root, dirs, files in os.walk(self.lilia_rp_path):
+            dirs[:] = [
+                directory for directory in dirs
+                if directory not in {"node_modules", ".git", "docs", "documentation"}
+            ]
+            for file_name in files:
+                if not file_name.endswith(".lua"):
+                    continue
+                file_path = Path(root) / file_name
+                try:
+                    lines = file_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+                except OSError:
+                    continue
+
+                relative_path = os.path.relpath(file_path, self.lilia_rp_path)
+                aliases = {
+                    alias: library_path
+                    for alias, library_path in re.findall(
+                        r"^\s*local\s+([A-Za-z_]\w*)\s*=\s*"
+                        r"(lia(?:\.[A-Za-z_]\w*)*)\s*(?:--.*)?$",
+                        "\n".join(lines),
+                        re.MULTILINE,
+                    )
+                }
+                for line_number, line in enumerate(lines, 1):
+                    defined_match = definition_pattern.match(line)
+                    defined_name = next(
+                        (group for group in defined_match.groups() if group),
+                        None,
+                    ) if defined_match else None
+                    for function_name, pattern in patterns.items():
+                        if function_name == defined_name:
+                            continue
+                        if pattern.search(line):
+                            unused_locations[function_name]["lilia_rp_usages"].append({
+                                "file": relative_path,
+                                "line": line_number,
+                                "text": line.strip(),
+                            })
+                            continue
+                        for alias, library_path in aliases.items():
+                            prefix = f"{library_path}."
+                            if function_name.startswith(prefix):
+                                suffix = function_name[len(prefix):]
+                                if re.search(rf"\b{re.escape(alias)}\.{re.escape(suffix)}\b", line):
+                                    unused_locations[function_name]["lilia_rp_usages"].append({
+                                        "file": relative_path,
+                                        "line": line_number,
+                                        "text": line.strip(),
+                                    })
+                                    break
+
+        results = []
+        for entry in unused_locations.values():
+            if entry["lilia_rp_usages"]:
+                entry["lilia_rp_usages"].sort(key=lambda usage: (usage["file"].lower(), usage["line"]))
+                results.append(entry)
+        return sorted(results, key=lambda entry: entry["function"].lower())
 
     def _extract_base_function_name(self, full_name: str) -> str:
         """Extract base function name from dotted name (e.g., 'lia.administrator.hasAccess' -> 'hasAccess')"""
@@ -1811,6 +1918,7 @@ class CombinedReportData:
     missing_library_functions: List[FunctionInfo]
     missing_hook_functions: List[FunctionInfo]
     missing_meta_functions: List[FunctionInfo]
+    lilia_rp_cross_usage: List[Dict[str, Any]]
     
     fonts_registered: Set[str]
     fonts_used: Set[str]
@@ -1875,6 +1983,12 @@ class FunctionComparisonReportGenerator:
             else:
                 self.language_file = str(lang_file_path)
         self.generate_module_docs = generate_module_docs
+        # ``lilia_rp`` is kept as a sibling gamemode and consumes part of the
+        # Lilia API.  Keep this optional so the dashboard still works in
+        # checkouts that only contain Lilia.
+        # ``base_path`` normally points at ``.../gamemodes/Lilia/gamemode``.
+        # ``lilia_rp`` is a sibling of ``Lilia``, not a child of it.
+        self.lilia_rp_path = self.base_path.parent.parent / "lilia_rp"
 
         
         
@@ -3776,6 +3890,17 @@ class FunctionComparisonReportGenerator:
             },
         }
 
+    def _find_lilia_rp_cross_usage(
+        self, function_comparison: Dict[str, Dict]
+    ) -> List[Dict[str, Any]]:
+        """Find Lilia functions unused locally but referenced by lilia_rp."""
+        # Reuse the same Lua usage rules as the function comparator.  Keeping
+        # the cross-gamemode scan there prevents the two usage analyses from
+        # drifting apart.
+        comparator = FunctionComparator(str(self.base_path))
+        comparator.lilia_rp_path = self.lilia_rp_path
+        return comparator._find_lilia_rp_cross_usage(function_comparison)
+
     def run_all_analyses(self) -> CombinedReportData:
         """Run all three analyses and combine results"""
 
@@ -3785,6 +3910,7 @@ class FunctionComparisonReportGenerator:
         
         print("Analyzing function documentation...")
         function_results = self._run_function_comparison()
+        lilia_rp_cross_usage = self._find_lilia_rp_cross_usage(function_results)
 
         
         print("Analyzing hooks documentation...")
@@ -3867,6 +3993,7 @@ class FunctionComparisonReportGenerator:
             missing_library_functions=missing_library_functions,
             missing_hook_functions=missing_hook_functions,
             missing_meta_functions=missing_meta_functions,
+            lilia_rp_cross_usage=lilia_rp_cross_usage,
             fonts_registered=fonts_registered,
             fonts_used=fonts_used,
             fonts_unregistered=fonts_unregistered,
@@ -5168,6 +5295,7 @@ class FunctionComparisonReportGenerator:
             missing_library_functions=missing_library_functions,
             missing_hook_functions=[],
             missing_meta_functions=missing_meta_functions,
+            lilia_rp_cross_usage=[],
             fonts_registered=set(),
             fonts_used=set(),
             fonts_unregistered=set(),
@@ -6312,6 +6440,29 @@ class FunctionComparisonReportGenerator:
             "",
         ])
 
+        cross_usage = getattr(data, "lilia_rp_cross_usage", []) or []
+        lines.extend([
+            "### Unused in Lilia, Used in lilia_rp",
+            f"Total: {len(cross_usage)} functions",
+            "",
+        ])
+        if cross_usage:
+            lines.append("These functions are unused by Lilia itself but referenced by the sibling `lilia_rp` gamemode:")
+            lines.append("")
+            for entry in cross_usage:
+                usages = "; ".join(
+                    f"`{usage['file']}:{usage['line']}`"
+                    for usage in entry.get("lilia_rp_usages", [])[:5]
+                )
+                lines.append(
+                    f"- `{entry['function']}` — defined in `{entry['lilia_file']}:{entry['lilia_line']}`; "
+                    f"used at {usages}"
+                )
+            lines.append("")
+        else:
+            lines.append("_No cross-gamemode usage detected._")
+            lines.append("")
+
         
         if data.missing_library_functions:
             lines.extend([
@@ -6834,6 +6985,9 @@ class FunctionComparisonReportGenerator:
                         for file_data in (data.function_comparison or {}).values()
                         for function_name in file_data.get("unused_functions", [])
                     ]),
+                    "lilia_rp_cross_usage": self._json_safe(
+                        getattr(data, "lilia_rp_cross_usage", []) or []
+                    ),
                     "files": functions_by_file,
                 },
                 "hooks": {
@@ -7809,6 +7963,7 @@ def render_index_html(refresh_seconds: int) -> str:
       const missingLibraries = sections.functions?.missing_library_functions || [];
       const missingMeta = sections.functions?.missing_meta_functions || [];
       const unusedLilia = sections.functions?.unused_lilia_functions || [];
+      const liliaRpCrossUsage = sections.functions?.lilia_rp_cross_usage || [];
       const configIssues = sections.config?.undefined_get_calls || [];
       const duplicateFiles = sections.duplicates?.language_duplicates?.files || [];
       const privilegeModules = sections.privileges?.modules || [];
@@ -7817,6 +7972,7 @@ def render_index_html(refresh_seconds: int) -> str:
         detailsBlock("Missing library functions", missingLibraries, item => `<code>${{escapeHtml(item.name || "?")}}</code>`),
         detailsBlock("Missing meta functions", missingMeta, item => `<code>${{escapeHtml(item.name || "?")}}</code>`),
         detailsBlock("Unused Lilia functions", unusedLilia, item => `<code>${{escapeHtml(item)}}</code>`),
+        detailsBlock("Unused in Lilia, used in lilia_rp", liliaRpCrossUsage, item => `<code>${{escapeHtml(item.function || "?")}}</code> — ${{(item.lilia_rp_usages || []).slice(0, 5).map(usage => `<code>${{escapeHtml(usage.file || "?")}}:${{escapeHtml(usage.line || "?")}}</code>`).join(", ")}}`),
         detailsBlock("Undefined config get calls", configIssues, item => `<code>${{escapeHtml(item.file || "unknown")}}</code> line ${{escapeHtml(item.line || "?")}}: ${{escapeHtml(item.key || JSON.stringify(item))}}`),
         detailsBlock("Duplicate language entries", duplicateFiles.flatMap(item => (item.duplicates || []).map(dup => ({{
           file: item.file,

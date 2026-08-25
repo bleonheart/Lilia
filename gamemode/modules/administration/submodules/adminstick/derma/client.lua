@@ -1,6 +1,5 @@
-local MODULE = MODULE
-
-local playerInfoLabel = L("player") .. " " .. L("information")
+﻿local MODULE = MODULE
+local playerInfoLabel = "Player" .. " " .. "Information"
 local subMenuIcons = {
     moderationTools = "icon16/wrench.png",
     warnings = "icon16/error.png",
@@ -221,16 +220,16 @@ local function GetIconForCategory(name)
     end
 
     local localizedExactMatches = {
-        [L("adminStickCategoryModeration"):lower()] = "icon16/shield.png",
-        [L("characterManagement"):lower()] = "icon16/user_gray.png",
-        [L("doorManagement"):lower()] = "icon16/door.png",
-        [L("playerinformation"):lower()] = "icon16/information.png",
-        [L("adminStickCategoryTeleportation"):lower()] = "icon16/arrow_right.png",
-        [L("adminStickCategoryUtility"):lower()] = "icon16/application_view_tile.png",
-        [L("misc"):lower()] = "icon16/application_view_tile.png",
-        [L("items"):lower()] = "icon16/box.png",
-        [L("outOfCharacter"):lower()] = "icon16/comment.png",
-        [L("warnsModuleName"):lower()] = "icon16/error.png",
+        [("Moderation"):lower()] = "icon16/shield.png",
+        [("Character Management"):lower()] = "icon16/user_gray.png",
+        [("Door Management"):lower()] = "icon16/door.png",
+        [("Player Information"):lower()] = "icon16/information.png",
+        [("Teleportation"):lower()] = "icon16/arrow_right.png",
+        [("Utility"):lower()] = "icon16/application_view_tile.png",
+        [("Miscellaneous"):lower()] = "icon16/application_view_tile.png",
+        [("Items"):lower()] = "icon16/box.png",
+        [("out of character"):lower()] = "icon16/comment.png",
+        [("Warnings"):lower()] = "icon16/error.png",
     }
 
     if localizedExactMatches[nameLower] then return localizedExactMatches[nameLower] end
@@ -251,7 +250,6 @@ local function GetIconForCategory(name)
     end
 end
 
-
 local function getAdminStickTheme()
     local theme = lia.color and lia.color.theme or {}
     local accent = theme.accent or theme.header or theme.theme or lia.config and lia.config.get("Color") or Color(45, 190, 170)
@@ -263,9 +261,9 @@ local function resolveAdminStickLabel(value)
     if isfunction(value) then value = value() end
     if value == nil then return "" end
     if not isstring(value) then return tostring(value) end
-    local resolved = lia.lang and lia.lang.resolveToken and lia.lang.resolveToken(value) or value
+    local resolved = lia.lang and lia.lang.resolveToken and value or value
     if resolved and resolved ~= "" and resolved ~= value and resolved ~= value:sub(2) then return resolved end
-    return L(value)
+    return value
 end
 
 local function drawAdminStickPanel(x, y, w, h, radius, color, outline)
@@ -287,18 +285,18 @@ local function adminStickCopyText(value, notifyKey)
     if value == "" or value == "BOT" then return end
     SetClipboardText(value)
     local client = LocalPlayer()
-    if IsValid(client) and client.notifySuccessLocalized then client:notifySuccessLocalized(notifyKey or "copied") end
+    if IsValid(client) and client.notifySuccessLocalized then client:notifySuccess(notifyKey or "Copied to clipboard.") end
 end
 
 local function adminStickGetTargetName(target)
-    if not IsValid(target) then return L("unknown") end
+    if not IsValid(target) then return "Unknown" end
     if target:IsPlayer() then
         local char = target:getChar()
-        return char and char:getName() or target:Nick() or target:Name() or L("unknown")
+        return char and char:getName() or target:Nick() or target:Name() or "Unknown"
     end
 
     if target.GetName and target:GetName() ~= "" then return target:GetName() end
-    return target:GetClass() or L("unknown")
+    return target:GetClass() or "Unknown"
 end
 
 local function adminStickShouldShowTargetHeader(target)
@@ -310,16 +308,16 @@ local function adminStickGetTargetSubtitle(target)
     if target:IsPlayer() then
         local char = target:getChar()
         local factionName = char and team.GetName(char:getFaction()) or team.GetName(target:Team())
-        local className = L("none")
+        local className = "None"
         if char and char.getClass then
             local classIndex = char:getClass()
-            if classIndex and classIndex ~= -1 and lia.class.list[classIndex] then className = L(lia.class.list[classIndex].name or "none") end
+            if classIndex and classIndex ~= -1 and lia.class.list[classIndex] then className = lia.class.list[classIndex].name or "none" end
         end
 
-        local charID = char and char:getID() or L("na")
-        return tostring(factionName or L("none")) .. "  •  " .. tostring(className or L("none")) .. "  •  Character #" .. tostring(charID)
+        local charID = char and char:getID() or "N/A"
+        return tostring(factionName or "None") .. "  •  " .. tostring(className or "None") .. "  •  Character #" .. tostring(charID)
     end
-    return target:GetClass() or L("unknown")
+    return target:GetClass() or "Unknown"
 end
 
 local function adminStickBuildActionText(name, path, category, subcategory)
@@ -918,8 +916,8 @@ function ADMIN_STICK_PANEL:BuildDoorAccessPanel()
     header.Paint = function(_, w, h)
         local accent = getAdminStickTheme()
         drawAdminStickPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
-        draw.SimpleText(L("doorAccess"), "LiliaFont.30", 16, 12, Color(242, 247, 247), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        draw.SimpleText(L("vendorFactionAccessSubtitle"), "LiliaFont.17", 16, 52, Color(165, 187, 188), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText("Door Access", "LiliaFont.30", 16, 12, Color(242, 247, 247), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText("Choose which factions and classes can use this vendor.", "LiliaFont.17", 16, 52, Color(165, 187, 188), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 42)
         surface.DrawRect(16, h - 2, w - 32, 2)
     end
@@ -976,7 +974,7 @@ function ADMIN_STICK_PANEL:BuildDoorAccessPanel()
         factionLabel:SetTall(24)
         factionLabel:SetFont("LiliaFont.20")
         factionLabel:SetTextColor(factionData.color or Color(230, 239, 239))
-        factionLabel:SetText(L(factionData.name))
+        factionLabel:SetText(factionData.name)
         factionLabel:SetContentAlignment(4)
         local factionMeta = factionInfoWrap:Add("DLabel")
         factionMeta:Dock(TOP)
@@ -1047,7 +1045,7 @@ function ADMIN_STICK_PANEL:BuildDoorAccessPanel()
             classLabel:SetTall(16)
             classLabel:SetFont("LiliaFont.16")
             classLabel:SetTextColor(Color(210, 223, 223))
-            classLabel:SetText(L(classData.name))
+            classLabel:SetText(classData.name)
             classLabel:SetContentAlignment(4)
             local classMeta = classInfoWrap:Add("DLabel")
             classMeta:Dock(TOP)
@@ -1311,7 +1309,7 @@ function ADMIN_STICK_PANEL:BuildCategories()
 
     if IsValid(self.target) and self.target.isDoor and self.target:isDoor() then
         self.categories.doorAccess = {
-            name = L("doorAccess"),
+            name = "Door Access",
             icon = GetIconForCategory("doorAccess"),
             count = 0,
             isDoorAccess = true
@@ -1634,4 +1632,3 @@ function ADMIN_STICK_PANEL:ExecuteAction(action)
 end
 
 vgui.Register("liaAdminStickPanel", ADMIN_STICK_PANEL, "EditablePanel")
-

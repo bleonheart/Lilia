@@ -73,7 +73,7 @@ ITEM.functions.target = {
                 applyAidEffects(item, target, client)
                 return true
             else
-                client:notifyErrorLocalized("invalidTargetNeedLiving")
+                client:notifyError("You must be looking at a valid, living player to use this.")
                 return false
             end
         end

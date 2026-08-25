@@ -4,10 +4,10 @@ net.Receive("liaViewClaims", function()
     local steamid = net.ReadString()
     if steamid and steamid ~= "" and steamid ~= " " then
         local v = tbl[steamid]
-        lia.information(L("claimRecordLast", v.name, v.claims, string.NiceTime(os.time() - v.lastclaim)))
+        lia.information(string.format("%s - %s claims - last claim %s ago", v.name, v.claims, string.NiceTime(os.time() - v.lastclaim)))
     else
         for _, v in pairs(tbl) do
-            lia.information(L("claimRecord", v.name, v.claims))
+            lia.information(string.format("%s - %s claims", v.name, v.claims))
         end
     end
 end)
@@ -28,7 +28,7 @@ net.Receive("liaTicketSystemClaim", function()
     local requesterSteamID = IsValid(requester) and requester:SteamID() or nil
     for _, v in pairs(MODULE.TicketFrames) do
         if v.requesterSteamID == requesterSteamID then
-            v:SetTitle(requester:Nick() .. " - " .. L("claimedBy") .. " " .. pl:Nick())
+            v:SetTitle(requester:Nick() .. " - " .. "Claimed by" .. " " .. pl:Nick())
             local bu = v:GetChildren()[11]
             if not bu or not IsValid(bu) then return end
             bu.DoClick = function()

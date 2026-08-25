@@ -19,7 +19,7 @@ end
 
 function PANEL:validateCharVar(name)
     local var = lia.char.vars[name]
-    assert(var, L("invalidCharVar", tostring(name)))
+    assert(var, string.format("Invalid character variable %s", tostring(name)))
     return isfunction(var.onValidate) and var.onValidate(self:getContext(name), self:getContext(), LocalPlayer()) or true
 end
 
@@ -60,7 +60,7 @@ end
 function PANEL:addLabel(text)
     local lbl = self:Add("DLabel")
     lbl:SetFont("LiliaFont.16")
-    lbl:SetText(L(text):upper())
+    lbl:SetText(text:upper())
     lbl:SizeToContents()
     lbl:Dock(TOP)
     return lbl

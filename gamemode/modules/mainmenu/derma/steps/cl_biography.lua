@@ -32,7 +32,7 @@ function PANEL:makeLabel(key)
     label:DockMargin(2, 0, 2, 5)
     label:SetTall(22)
     label:SetFont("LiliaFont.18")
-    label:SetText(L(key))
+    label:SetText(key)
     label:SetTextColor(themeColor("text", color_white))
     label:SetContentAlignment(4)
     return label
@@ -75,7 +75,7 @@ function PANEL:makeFactionComboBox()
     for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
         if lia.faction.hasWhitelist(fac.index) then
             if fac.uniqueID == "staff" then continue end
-            local desc = fac.desc or L("noDesc")
+            local desc = fac.desc or "No Description"
             combo:AddChoice(fac.name, id, desc ~= "" and desc or nil)
             firstFactionID = firstFactionID or id
         end
@@ -223,12 +223,12 @@ function PANEL:updateAttributesLabel()
 
     local left = math.max(total - sum, 0)
     if IsValid(self.attrLabelText) then
-        self.attrLabelText:SetText(L("attributesModuleName"))
+        self.attrLabelText:SetText("Attributes")
         self.attrLabelText:SizeToContents()
     end
 
     if IsValid(self.pointsLabel) then
-        self.pointsLabel:SetText(left .. " " .. L("pointsLeft"):lower())
+        self.pointsLabel:SetText(left .. " " .. ("Points Left"):lower())
         self.pointsLabel:SizeToContents()
     end
 end
@@ -237,7 +237,7 @@ function PANEL:validate()
     for _, info in ipairs({{self.nameEntry, "name"}, {self.descEntry, "desc"}}) do
         if IsValid(info[1]) then
             local value = string.Trim(info[1]:GetValue() or "")
-            if value == "" then return false, L("requiredFieldError", info[2]) end
+            if value == "" then return false, string.format("The field '%s' is required and cannot be empty.", info[2]) end
         end
     end
 
@@ -245,10 +245,10 @@ function PANEL:validate()
         local desc = string.Trim(self.descEntry:GetValue() or "")
         local descWithoutSpaces = string.gsub(desc, "%s", "")
         local minLength = lia.config.get("MinDescLen", 16)
-        if #descWithoutSpaces < minLength then return false, L("descMinLen", minLength) end
+        if #descWithoutSpaces < minLength then return false, string.format("Description must be at least %s characters long.", minLength) end
     end
 
-    if not IsValid(self.factionCombo) or not self.factionCombo:GetSelectedData() then return false, L("requiredFieldError", "faction") end
+    if not IsValid(self.factionCombo) or not self.factionCombo:GetSelectedData() then return false, string.format("The field '%s' is required and cannot be empty.", "faction") end
     return true
 end
 

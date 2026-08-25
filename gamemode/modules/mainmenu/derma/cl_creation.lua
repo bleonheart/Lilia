@@ -1,59 +1,4 @@
-﻿--[[
-    Hooks:
-        ConfigureCharacterCreationSteps(Panel self)
-
-    Purpose:
-        Allows modules to insert additional creation-step panels into the default character creation flow before the summary step is appended.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        self (Panel)
-            The active `liaCharacterCreation` panel that owns the step list.
-
-    Example Usage:
-        ```lua
-        hook.Add("ConfigureCharacterCreationSteps", "liaExampleConfigureCharacterCreationSteps", function(self)
-            self:addStep(vgui.Create("liaCharacterSummary"), 1)
-        end)
-        ```
-
-    Returns:
-        nil
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ShouldMenuButtonShow(string buttonID)
-
-    Purpose:
-        Allows code to block the default character creation button before the menu enters the creation flow.
-
-    Category:
-        Main Menu
-
-    Parameters:
-        buttonID (string)
-            The menu action identifier being checked. This flow currently passes `"create"`.
-
-    Example Usage:
-        ```lua
-        hook.Add("ShouldMenuButtonShow", "liaExampleShouldMenuButtonShow", function(buttonID)
-            if buttonID == "create" then return false, "Creation disabled" end
-        end)
-        ```
-
-    Returns:
-        boolean|string|nil
-            Return false to block the button. A second return value may provide the reason shown by the caller.
-
-    Realm:
-        Client
-]]
-local function themeColor(key, fallback)
+﻿local function themeColor(key, fallback)
     local theme = lia.color and lia.color.theme or {}
     local value = theme[key]
     if IsColor(value) then return value end
@@ -114,10 +59,10 @@ function PANEL:canCreateCharacter()
         if lia.faction.hasWhitelist(team.index) then valid[#valid + 1] = team.index end
     end
 
-    if #valid == 0 then return false, L("unableToJoinFactions") end
+    if #valid == 0 then return false, "You are unable to join any factions" end
     self.validFactions = valid
     local maxChars = hook.Run("GetMaxPlayerChar", LocalPlayer()) or lia.config.get("MaxCharacters", 5)
-    if lia.characters and #lia.characters >= maxChars then return false, L("maxCharactersReached") end
+    if lia.characters and #lia.characters >= maxChars then return false, "You have reached the maximum number of characters" end
     local ok, reason = hook.Run("ShouldMenuButtonShow", "create")
     if ok == false then return false, reason end
     return true
@@ -147,22 +92,22 @@ function PANEL:onFinish()
 
     lia.module.get("mainmenu"):CreateCharacter(self.context):next(function(charID)
         finish()
-        lia.module.get("mainmenu"):ChooseCharacter(charID):next(function() hook.Run("ResetCharacterPanel") end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
+        lia.module.get("mainmenu"):ChooseCharacter(charID):next(function() hook.Run("ResetCharacterPanel") end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end)
     end, fail)
 
     timer.Create("liaFailedToCreate", 60, 1, function()
         if not IsValid(self) or not self.creating then return end
-        fail(L("unknownError"))
+        fail("Unknown error")
     end)
 end
 
 function PANEL:showError(msg, ...)
     if IsValid(self.error) then self.error:Remove() end
     if not msg or msg == "" then return end
-    assert(IsValid(self.content), L("noStepAvailable"))
+    assert(IsValid(self.content), "No step is available")
     local err = self.content:Add("DLabel")
     err:SetFont("LiliaFont.18")
-    err:SetText(L(msg, ...))
+    err:SetText(msg)
     err:SetTextColor(themeColor("text", color_white))
     err:Dock(TOP)
     err:SetTall(32)
@@ -189,7 +134,7 @@ function PANEL:showMessage(msg, ...)
         return
     end
 
-    local text = L(msg, ...):upper()
+    local text = msg:upper()
     if IsValid(self.message) then
         self.message:SetText(text)
         return
@@ -205,8 +150,8 @@ function PANEL:showMessage(msg, ...)
 end
 
 function PANEL:addStep(step, priority)
-    assert(IsValid(step), L("invalidPanelForStep"))
-    assert(step.isCharCreateStep, L("panelMustInherit"))
+    assert(IsValid(step), "Invalid panel for step")
+    assert(step.isCharCreateStep, "Panel must inherit liaCharacterCreateStep")
     if isnumber(priority) then
         table.insert(self.steps, priority, step)
     else
@@ -302,7 +247,7 @@ function PANEL:onStepChanged(oldStep, newStep)
         btn:SetWide(math.max(112, textW + 40))
     end
 
-    local nextText = L(key):upper()
+    local nextText = key:upper()
     if nextText ~= self.next:GetText() then
         self.next:SetAlpha(0)
         sizeButton(self.next, nextText)
@@ -407,7 +352,7 @@ function PANEL:Init()
         local text = themeColor("text", color_white)
         local count = math.max(#self.steps, 1)
         local step = math.Clamp(self.curStep, 1, count)
-        draw.SimpleText(L("createCharacter"):upper(), "LiliaFont.25", 24, 22, text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(("Create Character"):upper(), "LiliaFont.25", 24, 22, text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         draw.SimpleText(step .. " / " .. count, "LiliaFont.18", w - 24, 22, alphaColor(text, 180), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
         local barX, barY, barW = 24, h - 20, math.max(w - 48, 1)
         surface.SetDrawColor(alphaColor(text, 28))
@@ -434,7 +379,7 @@ function PANEL:Init()
     self.content:DockMargin(24, 0, 24, 12)
     self.content:SetPaintBackground(false)
     self.model = self.content:Add("liaModelPanel")
-    if not IsValid(self.model) then return self:showError(L("failedToCreateModelPanel")) end
+    if not IsValid(self.model) then return self:showError("Failed to create model panel") end
     self.model:SetWide(0)
     self.model:Dock(LEFT)
     self.model:SetModel("models/error.mdl")
@@ -459,13 +404,13 @@ function PANEL:Init()
     end
 
     self.prev = self.buttons:Add("liaButton")
-    configureButton(self.prev, L("back"):upper(), false)
+    configureButton(self.prev, ("Back"):upper(), false)
     self.prev:Dock(LEFT)
     self.prev.DoClick = function() self:previousStep() end
     self.prev:SetAlpha(0)
     self.prev:SetMouseInputEnabled(false)
     self.next = self.buttons:Add("liaButton")
-    configureButton(self.next, L("next"):upper(), true)
+    configureButton(self.next, ("Next"):upper(), true)
     self.next:Dock(RIGHT)
     self.next.DoClick = function() self:nextStep() end
     self:configureSteps()

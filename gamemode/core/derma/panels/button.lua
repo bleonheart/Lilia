@@ -5,7 +5,7 @@ local function drawPanel(x, y, w, h, radius, background, outline)
 end
 
 function PANEL:Init()
-    self._text = L("button")
+    self._text = "Button"
     self._hover = 0
     self._secondary = false
     self._customColor = nil
