@@ -1,4 +1,4 @@
-﻿local pon = {}
+local pon = {}
 _G.pon = pon
 do
     local type = type
@@ -117,7 +117,7 @@ do
     encode['PhysObj'] = encode['Entity']
     encode['nil'] = function() output[#output + 1] = '?' end
     encode.__index = function(key)
-        lia.error(string.format("Type: %s can not be encoded. Encoded as pass-over value.", key))
+        lia.error(string.format("Cannot encode network type '%s'.", key))
         return encode['nil']
     end
 
@@ -385,7 +385,7 @@ if SERVER then
                     if bStatus then
                         netstream.stored[player.nsDataStreamName](player, unpack(value))
                     else
-                        lia.error(string.format("NetStream: '%s'\\n%s\\n", NS_DS_NAME, value))
+                        lia.error(string.format("NetStream: '%s'\n%s\n", NS_DS_NAME, value))
                     end
                 end
 
@@ -416,7 +416,7 @@ else
             if bStatus then
                 netstream.stored[NS_DS_NAME](unpack(value))
             else
-                lia.error(string.format("NetStream: '%s'\\n%s\\n", NS_DS_NAME, value))
+                lia.error(string.format("NetStream: '%s'\n%s\n", NS_DS_NAME, value))
             end
         end
     end)

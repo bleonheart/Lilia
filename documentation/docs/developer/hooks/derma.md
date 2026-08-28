@@ -28,7 +28,7 @@ This page documents hooks in the derma category.
 ---
 
 <details class="realm-client" id="function-interactionmenuclosed">
-<summary><span class="summary-main"><a id="InteractionMenuClosed"></a>InteractionMenuClosed()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L26" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="InteractionMenuClosed"></a>InteractionMenuClosed()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L39" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="interactionmenuclosed"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -59,7 +59,7 @@ This page documents hooks in the derma category.
 ---
 
 <details class="realm-client" id="function-interactionmenuopened">
-<summary><span class="summary-main"><a id="InteractionMenuOpened"></a>InteractionMenuOpened(panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="InteractionMenuOpened"></a>InteractionMenuOpened(panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/derma.lua#L14" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="interactionmenuopened"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

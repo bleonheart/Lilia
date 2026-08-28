@@ -9,7 +9,7 @@ end
 
 function ENT:Use(activator)
     if activator:IsPlayer() then
-        net.Start("liaBodygrouperMenu")
+        net.Start("BodygrouperMenu")
         net.Send(activator)
         self:AddUser(activator)
     end

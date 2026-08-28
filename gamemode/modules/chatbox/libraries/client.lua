@@ -1,4 +1,57 @@
-﻿local MODULE = MODULE
+--[[
+    Hooks:
+        CreateChatboxPanel()
+
+    Purpose:
+        Ensures the custom chatbox panel exists so persisted messages, message-mode input, and chat synchronization can target a live UI panel.
+
+    Category:
+        Chat
+
+    Parameters:
+        None
+
+    Example Usage:
+        ```lua
+        hook.Add("CreateChatboxPanel", "liaExampleCreateChatboxPanel", function()
+            print("Chatbox creation requested")
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ChatboxPanelCreated(Panel panel)
+
+    Purpose:
+        Runs immediately after the custom chatbox panel is created so modules can attach post-creation behavior before persisted messages are replayed.
+
+    Category:
+        Chat
+
+    Parameters:
+        panel (Panel)
+            The newly created `liaChatBox` panel instance.
+
+    Example Usage:
+        ```lua
+        hook.Add("ChatboxPanelCreated", "liaExampleChatboxPanelCreated", function(panel)
+            panel:SetAlpha(255)
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+local MODULE = MODULE
 lia.chat = lia.chat or {}
 lia.chat.persistedMessages = lia.chat.persistedMessages or {}
 chat.liaAddText = chat.liaAddText or chat.AddText
@@ -136,7 +189,7 @@ local function openAddFilteredWordPrompt()
         if value == false then return end
         value = string.Trim(tostring(value or ""))
         if value == "" then
-            LocalPlayer():notifyError("Enter a valid word first.")
+            LocalPlayer():notifyErrorLocalized("Enter a valid word first.")
             return
         end
 
@@ -521,7 +574,7 @@ function MODULE:PopulateAdminTabs(pages)
     if not IsValid(client) or not client:hasPrivilege("manageChatFilter") then return end
     pages[#pages + 1] = {
         name = "Chat Filter",
-        icon = "chatfilter.png",
+        icon = "icon16/comments.png",
         drawFunc = function(panel)
             buildFilteredWordsAdminPanel(panel)
             net.Start("liaChatboxRequestFilteredWords")

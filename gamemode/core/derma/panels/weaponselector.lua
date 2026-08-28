@@ -39,6 +39,11 @@ local function getOption(name, fallback)
     return fallback
 end
 
+local function getAccent()
+    local theme = lia and lia.color and lia.color.theme
+    return theme and (theme.accent or theme.header or theme.theme) or bronzeFallback
+end
+
 local function withAlpha(color, alphaValue)
     return Color(color.r, color.g, color.b, math.Clamp(alphaValue, 0, 255))
 end
@@ -226,7 +231,7 @@ local function HUDPaint()
         centerX = screenW * 0.66
     end
 
-    local accent = lia.color.theme.accent or lia.color.theme.maincolor or bronzeFallback
+    local accent = getAccent()
     local visibleCount = math.Clamp(math.floor((screenH - 210) / 92), 3, 7)
     if visibleCount % 2 == 0 then visibleCount = visibleCount - 1 end
     local firstIndex, lastIndex = getVisibleBounds(total, index, visibleCount)

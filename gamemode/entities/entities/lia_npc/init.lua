@@ -1,4 +1,4 @@
-﻿function ENT:Initialize()
+function ENT:Initialize()
     self:SetModel(self.Model)
     self:SetUseType(SIMPLE_USE)
     self:SetMoveType(MOVETYPE_VPHYSICS)
@@ -59,7 +59,7 @@ function ENT:Use(client)
             net.WriteTable(npcOptions)
             net.Send(client)
         else
-            client:notifyError("No NPC types available! The server may still be loading modules. Please try again in a moment.")
+            client:notifyErrorLocalized("No NPC types available! The server may still be loading modules. Please try again in a moment.")
         end
     end)
 end

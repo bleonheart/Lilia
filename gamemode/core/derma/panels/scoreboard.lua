@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 local frameColor = Color(4, 14, 19, 248)
 local headerColor = Color(5, 18, 24, 252)
 local panelColor = Color(6, 21, 28, 246)
@@ -226,8 +226,8 @@ function PANEL:Init()
     for _, factionInfo in ipairs(sortedFactions) do
         local facID, facData = factionInfo.id, factionInfo.data
         local facColor = team.GetColor(facID)
-        local factionTitle = string.upper(facData.name)
-        local factionSubtitle = facData.scoreboardSubtitle and facData.scoreboardSubtitle or ""
+        local factionTitle = string.upper(L(facData.name))
+        local factionSubtitle = facData.scoreboardSubtitle and L(facData.scoreboardSubtitle) or ""
         local facCat = layout:Add("DCollapsibleCategory")
         facCat:SetLabel("")
         facCat:SetExpanded(true)
@@ -360,7 +360,7 @@ function PANEL:Init()
                             textX = textX + 30
                         end
 
-                        draw.SimpleText(string.upper(clsData.name), "LiliaFont.15b", textX, centerY, tintColor(mutedTextColor, headerClassColor, 0.45, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(string.upper(L(clsData.name)), "LiliaFont.15b", textX, centerY, tintColor(mutedTextColor, headerClassColor, 0.45, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                         local count = IsValid(list) and list:ChildCount() or 0
                         draw.SimpleText(count == 1 and "1 PLAYER" or count .. " PLAYERS", "LiliaFont.16", w - 14, centerY, mutedTextColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
                     end
@@ -375,7 +375,7 @@ function PANEL:Init()
                     classLabel:SetFont("LiliaFont.15b")
                     classLabel:SetTextColor(color_white)
                     classLabel:SetExpensiveShadow(1, Color(0, 0, 0, 170))
-                    classLabel:SetText(string.upper(clsData.name))
+                    classLabel:SetText(string.upper(L(clsData.name)))
                     classLabel:SizeToContents()
                     classLabel:SetMouseInputEnabled(false)
                     classLabel:SetVisible(false)
@@ -548,7 +548,7 @@ function PANEL:addPlayer(ply, parent)
                     surface.DrawTexturedRect(8, (h - 16) * 0.5, 16, 16)
                 end
 
-                draw.SimpleText(option.name, "LiliaFont.17", 32, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(L(option.name), "LiliaFont.17", 32, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             end
 
             button.DoClick = function()

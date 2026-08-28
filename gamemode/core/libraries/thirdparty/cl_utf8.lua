@@ -1,4 +1,4 @@
-﻿local function utf8charbytes(s, i)
+local function utf8charbytes(s, i)
     i = i or 1
     if not isstring(s) then error(string.format("bad argument #1 to 'utf8charbytes' (string expected, got %s)", type(s))) end
     if not isnumber(i) then error(string.format("bad argument #2 to 'utf8charbytes' (number expected, got %s)", type(i))) end

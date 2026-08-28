@@ -1,10 +1,58 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 MODULE.ActiveTickets = MODULE.ActiveTickets or {}
+local function SendPopup(client, message)
+    for _, v in player.Iterator() do
+        local hasAlwaysSeeTickets = v:hasPrivilege("alwaysSeeTickets")
+        local isStaffOnDuty = v:isStaffOnDuty()
+        local permission = hasAlwaysSeeTickets or isStaffOnDuty
+        lia.debug("[Permissions]", "Permission Check for function SendPopup ticket recipient", "targetPlayer=", tostring(v:Name()), "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+        if permission then
+            net.Start("liaTicketSystem")
+            net.WriteEntity(client)
+            net.WriteString(message)
+            net.WriteEntity(client.CaseClaimed)
+            net.Send(v)
+        end
+    end
+
+    if IsValid(client) and client:IsPlayer() then
+        local requesterSteamID = client:SteamID()
+        MODULE.ActiveTickets[requesterSteamID] = {
+            timestamp = os.time(),
+            requester = requesterSteamID,
+            admin = client.CaseClaimed and IsValid(client.CaseClaimed) and client.CaseClaimed:SteamID() or nil,
+            message = message
+        }
+
+        hook.Run("OnTicketCreated", client, message)
+    end
+end
+
+lia.command.add("ticket", {
+    arguments = {
+        {
+            name = "text",
+            type = "string"
+        },
+    },
+    desc = "Sends a support ticket to staff.",
+    onRun = function(client, arguments)
+        local message = table.concat(arguments, " ")
+        if not message or message == "" then
+            client:notifyErrorLocalized("Must Provide a String")
+            return
+        end
+
+        ClientAddText(client, Color(70, 0, 130), "You", Color(151, 211, 255), " " .. "to admins" .. ": ", Color(0, 255, 0), message)
+        SendPopup(client, message)
+    end
+})
+
 function MODULE:PlayerSay(client, text)
     if text and string.sub(text, 1, 1) == "@" then
         local message = string.sub(text, 2)
         ClientAddText(client, Color(70, 0, 130), "You", Color(151, 211, 255), " " .. "to admins" .. ": ", Color(0, 255, 0), message)
-        MODULE:SendPopup(client, message)
+        SendPopup(client, message)
         return ""
     end
 end

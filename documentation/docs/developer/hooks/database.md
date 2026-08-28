@@ -28,7 +28,7 @@ This page documents hooks in the database category.
 ---
 
 <details class="realm-server" id="function-ondatabaseloaded">
-<summary><span class="summary-main"><a id="OnDatabaseLoaded"></a>OnDatabaseLoaded()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/database.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnDatabaseLoaded"></a>OnDatabaseLoaded()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/database.lua#L14" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="ondatabaseloaded"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -61,7 +61,7 @@ This page documents hooks in the database category.
 ---
 
 <details class="realm-server" id="function-onloadtables">
-<summary><span class="summary-main"><a id="OnLoadTables"></a>OnLoadTables()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/database.lua#L23" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnLoadTables"></a>OnLoadTables()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/database.lua#L36" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onloadtables"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

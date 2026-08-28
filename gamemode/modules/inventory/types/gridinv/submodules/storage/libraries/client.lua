@@ -1,4 +1,4 @@
-﻿local function ExitStorage()
+local function ExitStorage()
     local client = LocalPlayer()
     if client.liaLockPanel and IsValid(client.liaLockPanel) then
         client.liaLockPanel:Remove()
@@ -93,7 +93,7 @@ function MODULE:OnCreateStoragePanel(localInvPanel, storageInvPanel, storage)
     local textColor = lia.color.theme and lia.color.theme.text or color_white
     lockPanelRef.Paint = function(_, w, h)
         lia.derma.rect(0, 0, w, h):Rad(8):Color(panelColor):Shape(lia.derma.SHAPE_IOS):Draw()
-        draw.SimpleText("Lock Management", "LiliaFont.17", w / 2, 8, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+        draw.SimpleText("Lock Management", "liaSmallFont", w / 2, 8, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     end
 
     local client = LocalPlayer()
@@ -117,7 +117,7 @@ function MODULE:OnCreateStoragePanel(localInvPanel, storageInvPanel, storage)
     removeBtn:SetSize(buttonWidth, 22)
     removeBtn:SetPos(20 + buttonWidth * 2, buttonY)
     removeBtn:PaintButton(lia.color.theme and lia.color.theme.button or Color(80, 50, 50), lia.color.theme and lia.color.theme.button_hovered or Color(100, 60, 60))
-    removeBtn.DoClick = function() LocalPlayer():requestString(string.format("Remove %s", "Password"), "Are you sure you want to remove the password from this storage?", function(value) if value and value:lower() == ("Yes"):lower() then SetStoragePassword("remove") end end) end
+    removeBtn.DoClick = function() LocalPlayer():requestString(string.format("Remove %s", "Password"), "Are you sure you want to remove the password from this storage?", function(value) if value and value:lower() == "Yes":lower() then SetStoragePassword("remove") end end) end
     local updateButtons = function()
         local isLocked = storage:getNetVar("locked", false)
         lockBtn:SetEnabled(not isLocked)

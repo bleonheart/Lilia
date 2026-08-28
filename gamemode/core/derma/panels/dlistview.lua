@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 function PANEL:Init()
     local client = LocalPlayer()
     self:SetTitle("")
@@ -36,18 +36,18 @@ function PANEL:Init()
     self.refreshButton:SetText("Refresh")
     self.refreshButton.DoClick = function()
         self:Populate()
-        client:notifySuccess("Privilege list refreshed.")
+        client:notifySuccessLocalized("Privilege list refreshed.")
     end
 
     self.listView = vgui.Create("DListView", self)
     self.listView:Dock(FILL)
     self.listView:SetMultiSelect(false)
     self.listView.OnRowRightClick = function(_, _, line)
-        local m = DermaMenu()
+        local m = lia.derma.dermaMenu()
         for i, header in ipairs(self.columns) do
             m:AddOption("Copy" .. " " .. header, function()
                 SetClipboardText(line:GetColumnText(i) or "")
-                client:notifySuccess("Copied to clipboard.")
+                client:notifySuccessLocalized("Copied to clipboard.")
             end)
         end
 
@@ -59,7 +59,7 @@ function PANEL:Init()
             end
 
             SetClipboardText(table.concat(t, "\n"))
-            client:notifySuccess("All privilege information copied.")
+            client:notifySuccessLocalized("All privilege information copied.")
         end)
 
         m:Open()
@@ -67,7 +67,7 @@ function PANEL:Init()
 
     self.listView.OnRowDoubleClick = function(_, _, line)
         SetClipboardText(line:GetColumnText(1) or "")
-        client:notifySuccess("Privilege ID copied.")
+        client:notifySuccessLocalized("Privilege ID copied.")
     end
 
     self.statusBar = vgui.Create("DPanel", self)

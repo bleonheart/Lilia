@@ -1,4 +1,4 @@
-﻿lia.chat.register("ic", {
+lia.chat.register("ic", {
     arguments = {
         {
             name = "text",
@@ -12,7 +12,7 @@
         if client:getTracedEntity() == speaker then return (lia.color.theme and lia.color.theme.chatListen) or Color(168, 240, 170) end
         return (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150)
     end,
-    onChatAdd = function(speaker, text, anonymous) chat.AddText(lia.chat.timestamp(false), (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), string.format("%s says \\\"%s\\\"", anonymous and "Someone" or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or "CONSOLE", text)) end,
+    onChatAdd = function(speaker, text, anonymous) chat.AddText(lia.chat.timestamp(false), (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), string.format("%s says \"%s\"", anonymous and "Someone" or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or "CONSOLE", text)) end,
     onCanHear = function(speaker, listener)
         if speaker == listener then return true end
         if speaker:EyePos():Distance(listener:EyePos()) <= lia.config.get("TalkRange", 280) then return true end
@@ -218,7 +218,7 @@ lia.chat.register("looc", {
         if speaker:isStaff() and lia.config.get("LOOCDelayAdmin", false) and delay > 0 and speaker.liaLastLOOC then
             local lastLOOC = CurTime() - speaker.liaLastLOOC
             if lastLOOC <= delay then
-                speaker:notifyWarning(string.format("You must wait %s more second(s) before using LOOC again.", delay - math.ceil(lastLOOC)))
+                speaker:notifyWarningLocalized("You must wait %s more second(s) before using LOOC again.", delay - math.ceil(lastLOOC))
                 return false
             end
         end
@@ -339,17 +339,17 @@ lia.chat.register("ooc", {
         local canBypassOOCBlock = speaker:hasPrivilege("bypassOOCBlock")
         lia.debug("[Permissions]", "Permission Check for chat ooc onCanSay OOC block", "OOCBlocked=", tostring(oocBlocked), "hasPrivilege(bypassOOCBlock)=", tostring(canBypassOOCBlock), "finalResult=", tostring(not oocBlocked or canBypassOOCBlock))
         if oocBlocked and not canBypassOOCBlock then
-            speaker:notifyError("The OOC is Globally Blocked!")
+            speaker:notifyErrorLocalized("The OOC is Globally Blocked!")
             return false
         end
 
         if speaker:getLiliaData("oocBanned", false) then
-            speaker:notifyError("You have been banned from using OOC!")
+            speaker:notifyErrorLocalized("You have been banned from using OOC!")
             return false
         end
 
         if text and #text > lia.config.get("OOCLimit", 150) then
-            speaker:notifyError("Text too big!")
+            speaker:notifyErrorLocalized("Text too big!")
             return false
         end
 
@@ -360,7 +360,7 @@ lia.chat.register("ooc", {
         if not hasNoOOCCooldown and oocDelay > 0 and speaker.liaLastOOC then
             local lastOOC = CurTime() - speaker.liaLastOOC
             if lastOOC <= oocDelay then
-                speaker:notifyWarning(string.format("You must wait %s more second(s) before using OOC again.", oocDelay - math.ceil(lastOOC)))
+                speaker:notifyWarningLocalized("You must wait %s more second(s) before using OOC again.", oocDelay - math.ceil(lastOOC))
                 return false
             end
         end
@@ -476,7 +476,7 @@ function MODULE:PlayerSay(client, text)
     local lowerText = tostring(text or ""):lower()
     for _, filteredWord in ipairs(self.FilteredWords or {}) do
         if lowerText:find(filteredWord, 1, true) then
-            client:notify("Your message contained a filtered word and was not sent.")
+            client:notifyLocalized("Your message contained a filtered word and was not sent.")
             return ""
         end
     end

@@ -28,7 +28,7 @@ This page documents hooks in the initialization category.
 ---
 
 <details class="realm-client" id="function-prelilialoaded">
-<summary><span class="summary-main"><a id="PreLiliaLoaded"></a>PreLiliaLoaded()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L493" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="PreLiliaLoaded"></a>PreLiliaLoaded()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L529" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="prelilialoaded"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

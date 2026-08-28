@@ -1,4 +1,4 @@
-﻿local PENDING, FULFILLED, REJECTED = "pending", "fulfilled", "rejected"
+local PENDING, FULFILLED, REJECTED = "pending", "fulfilled", "rejected"
 local HANDLER_RESOLVE, HANDLER_REJECT, HANDLER_PROMISE = 1, 2, 3
 REJECTION_HANDLER_ID = REJECTION_HANDLER_ID or 0
 UNHANDLED_PROMISES = UNHANDLED_PROMISES or {}
@@ -172,7 +172,7 @@ function Promise:_handle(value)
         timer.Simple(0.1, function()
             if UNHANDLED_PROMISES and UNHANDLED_PROMISES[self.rejectionHandlerID] and not DEBUG_IGNOREUNHANDLED then
                 UNHANDLED_PROMISES[self.rejectionHandlerID] = nil
-                lia.error(string.format("Unhandled rejection: %s\\n", tostring(self.reason or "")))
+                lia.error(string.format("Unhandled rejection: %s\n", tostring(self.reason or "")))
                 lia.error(trace)
             end
         end)

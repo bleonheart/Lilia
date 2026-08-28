@@ -1,4 +1,4 @@
-﻿local VoicePanels = {}
+local VoicePanels = {}
 local function ClearVoicePanels()
     for client, pnl in pairs(VoicePanels) do
         if IsValid(pnl) then pnl:Remove() end
@@ -6,14 +6,19 @@ local function ClearVoicePanels()
     end
 end
 
+local function GetThemeAccent()
+    local theme = lia.color and lia.color.theme or {}
+    return theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
+end
+
 local function GetVoiceColor(voiceType)
     if voiceType == "yelling" then return Color(235, 130, 38) end
     if voiceType == "whispering" then return Color(190, 130, 245) end
-    return lia.color.theme.accent
+    return GetThemeAccent()
 end
 
 local function GetVoiceIndicatorText(voiceType)
-    return "You are" .. " " .. voiceType or "talking"
+    return "You are" .. " " .. L(voiceType or "talking")
 end
 
 local function DrawGlassPanel(x, y, w, h, radius, background, outline)
@@ -67,7 +72,7 @@ end
 function PANEL:UpdateText()
     local voiceType = self.cachedVoiceType or "talking"
     self.LabelName:SetText(self.name or "Unknown")
-    self.LabelMode:SetText(voiceType)
+    self.LabelMode:SetText(L(voiceType))
     self.LabelMode:SetTextColor(GetVoiceColor(voiceType))
 end
 
@@ -99,7 +104,7 @@ end
 function PANEL:Paint(w, h)
     if not IsValid(self.client) then return end
     local accent = GetVoiceColor(self.cachedVoiceType)
-    local baseAccent = lia.color.theme.accent
+    local baseAccent = GetThemeAccent()
     lia.util.drawBlur(self, 4, 2)
     DrawGlassPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(baseAccent.r, baseAccent.g, baseAccent.b, 95))
     surface.SetDrawColor(accent.r, accent.g, accent.b, 230)

@@ -5,7 +5,18 @@ local fastFade = false
 local deathTimeReceived = 0
 local lastDeathTimeValue = 0
 local function getHUDFont(size)
-    return "LiliaHUDFont." .. tostring(size)
+    return "HUDFont." .. tostring(size)
+end
+
+local function resolveText(key, fallback, ...)
+    local value = L(key, ...)
+    if not isstring(value) or value == key then return fallback end
+    return value
+end
+
+local function getThemeAccent()
+    local theme = lia.color and lia.color.theme or {}
+    return theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
 end
 
 local function alphaColor(color, alpha)
@@ -160,7 +171,7 @@ function MODULE:HUDPaint()
 
     if IsValid(lia.gui.char) and lia.gui.char:IsVisible() then return end
     if fade <= 0.01 then return end
-    local accent = lia.color.theme.accent
+    local accent = getThemeAccent()
     local titleColor = Color(240, 246, 246)
     local bodyColor = Color(175, 194, 194)
     local dimColor = Color(120, 142, 142)
@@ -182,7 +193,7 @@ function MODULE:HUDPaint()
     local badgeX = px + panelW * 0.5 - badgeSize * 0.5
     local badgeY = py + 26
     drawDeathBadge(badgeX, badgeY, badgeSize, panelAlpha)
-    drawCenteredText("You have died", getHUDFont(72), px + panelW * 0.5, py + 112, alphaColor(titleColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+    drawCenteredText(resolveText("youHaveDied", "You have died"), getHUDFont(72), px + panelW * 0.5, py + 112, alphaColor(titleColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     local causeText = hook.Run("GetRespawnScreenCause", ply, left, baseTime, lastDeath)
     if not isstring(causeText) or causeText == "" then causeText = "Killed by the environment" end
     drawCenteredText(causeText, getHUDFont(24), px + panelW * 0.5, py + 184, alphaColor(bodyColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
@@ -200,7 +211,7 @@ function MODULE:HUDPaint()
                 color = bodyColor
             },
             {
-                text = "SPACE",
+                text = resolveText("spaceKey", "SPACE"),
                 color = accent
             },
             {
@@ -209,7 +220,7 @@ function MODULE:HUDPaint()
             }
         }, getHUDFont(27), px + panelW * 0.5, instructionY, panelAlpha)
     else
-        drawCenteredText(string.format("Respawn in %d", ceil(left)), getHUDFont(27), px + panelW * 0.5, instructionY, alphaColor(bodyColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+        drawCenteredText(resolveText("respawnIn", "Respawn in %d", ceil(left)), getHUDFont(27), px + panelW * 0.5, instructionY, alphaColor(bodyColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     end
 
     local buttonW = clamp(panelW - 190, 390, 470)
@@ -231,7 +242,7 @@ function MODULE:HUDPaint()
     local keyBg = ready and Color(16, 34, 40, 245) or Color(11, 25, 30, 225)
     local keyOutline = ready and Color(accent.r, accent.g, accent.b, 145) or Color(accent.r, accent.g, accent.b, 65)
     drawPanelBox(keyX, keyY, keyW, keyH, 6, keyBg, keyOutline, panelAlpha)
-    drawCenteredText("SPACE", getHUDFont(27), keyX + keyW * 0.5, keyY + 9, alphaColor(ready and titleColor or dimColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+    drawCenteredText(resolveText("spaceKey", "SPACE"), getHUDFont(27), keyX + keyW * 0.5, keyY + 9, alphaColor(ready and titleColor or dimColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     drawCenteredText("RESPAWN", getHUDFont(25), labelX + labelW * 0.5, buttonY + 18, alphaColor(ready and accent or dimColor, panelAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     if left > 0 then
         local fillFrac = 1 - clamp(left / safeBaseTime, 0, 1)

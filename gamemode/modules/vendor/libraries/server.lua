@@ -1,4 +1,4 @@
-﻿function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, itemType, isFailed)
+function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, itemType, isFailed)
     local vendorName = lia.vendor.getVendorProperty(vendor, "name")
     if not isSellingToVendor then
         lia.log.add(client, "vendorBuy", item and (item:getName() or item.name) or "", vendorName or "Unknown", isFailed)
@@ -93,9 +93,9 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
     if canAccess == false then
         if isstring(reason) then
             if param1 then
-                client:notifyError(reason, param1)
+                client:notifyErrorLocalized(reason, param1)
             else
-                client:notifyError(reason)
+                client:notifyErrorLocalized(reason)
             end
         end
         return
@@ -120,14 +120,14 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
 
             local canTransfer, transferReason = VendorInventoryMeasure:canAccess("transfer", context)
             if not canTransfer then
-                client:notifyError(transferReason or "An error occurred during the transaction.")
+                client:notifyErrorLocalized(transferReason or "An error occurred during the transaction.")
                 client.vendorTransaction = nil
                 return
             end
 
             local canTransferItem, itemTransferReason = hook.Run("CanItemBeTransfered", item, inventory, VendorInventoryMeasure, client)
             if canTransferItem == false then
-                client:notifyError(itemTransferReason or "An error occurred during the transaction.")
+                client:notifyErrorLocalized(itemTransferReason or "An error occurred during the transaction.")
                 client.vendorTransaction = nil
                 return
             end
@@ -135,12 +135,12 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
             character:giveMoney(price)
             item:remove():next(function() client.vendorTransaction = nil end):catch(function() client.vendorTransaction = nil end)
             if stockEnabled then vendor:addStock(itemType) end
-            client:notifyMoney(string.format("You sold %s for %s.", item:getName(), lia.currency.get(price)))
+            client:notifyMoneyLocalized("You sold %s for %s.", item:getName(), lia.currency.get(price))
             hook.Run("OnCharTradeVendor", client, vendor, item, isSellingToVendor, character)
         end
     else
         if not character:getInv():doesFitInventory(itemType) then
-            client:notifyError("You don't have enough space for this item!")
+            client:notifyErrorLocalized("You don't have enough space for this item!")
             hook.Run("OnCharTradeVendor", client, vendor, nil, isSellingToVendor, character, itemType, true)
             client.vendorTransaction = nil
             return
@@ -149,7 +149,7 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
         character:takeMoney(price)
         if stockEnabled then vendor:takeStock(itemType) end
         character:getInv():add(itemType):next(function(item)
-            client:notifyMoney(string.format("You bought %s for %s.", item:getName(), lia.currency.get(price)))
+            client:notifyMoneyLocalized("You bought %s for %s.", item:getName(), lia.currency.get(price))
             local itemData = lia.item.list[itemType]
             if itemData and itemData.Cooldown and itemData.Cooldown > 0 then
                 local cooldowns = character:getData("vendorCooldowns", {})

@@ -1,4 +1,31 @@
-﻿lia.adminStickMapState = lia.adminStickMapState or lia.mapConfigurerState or {
+--[[
+    Hooks:
+        OnlineStaffDataReceived(table staffData)
+
+    Purpose:
+        Runs after the online-staff summary payload arrives on the client so UI code can refresh with the latest staff data.
+
+    Category:
+        Administration
+
+    Parameters:
+        staffData (table)
+            The decoded online-staff summary array received from the server.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnlineStaffDataReceived", "liaExampleOnlineStaffDataReceived", function(staffData)
+            print("Online staff entries:", #staffData)
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+lia.adminStickMapState = lia.adminStickMapState or lia.mapConfigurerState or {
     modeIndex = 1,
     cachedPositions = {},
     cacheType = nil,
@@ -90,7 +117,7 @@ net.Receive("liaAdminModeSwapCharacter", function()
     net.Start("liaCharChoose")
     net.WriteUInt(id, 32)
     net.SendToServer()
-    d:catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end)
+    d:catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
 end)
 
 net.Receive("liaManagesitrooms", function()
@@ -118,7 +145,7 @@ net.Receive("liaManagesitrooms", function()
             local btn = vgui.Create("liaButton", entry)
             btn:Dock(RIGHT)
             btn:SetWide(80)
-            btn:SetText(key)
+            btn:SetText(L(key))
             btn.DoClick = function()
                 net.Start("liaManagesitroomsAction")
                 net.WriteUInt(action, 2)
@@ -154,6 +181,128 @@ net.Receive("liaManagesitrooms", function()
     end
 end)
 
+net.Receive("liaAllPks", function()
+    local cases = net.ReadTable() or {}
+    if MODULE and isfunction(MODULE.HandleStaffCasesPayload) and MODULE:HandleStaffCasesPayload("pks", cases) then return end
+    if not IsValid(panelRef) then return end
+    panelRef:Clear()
+    panelRef:DockPadding(6, 6, 6, 6)
+    panelRef.Paint = function() end
+    local search = panelRef:Add("liaEntry")
+    search:Dock(TOP)
+    search:DockMargin(0, 20, 0, 15)
+    search:SetTall(30)
+    search:SetFont("LiliaFont.17")
+    search:SetPlaceholderText("Search...")
+    search:SetTextColor(Color(200, 200, 200))
+    local list = panelRef:Add("liaTable")
+    list:Dock(FILL)
+    panelRef.searchEntry = search
+    panelRef.list = list
+    panelRef:InvalidateLayout(true)
+    panelRef:SizeToChildren(false, true)
+    local columns = {
+        {
+            name = "Timestamp",
+            field = "timestamp"
+        },
+        {
+            name = "Character",
+            field = "character"
+        },
+        {
+            name = "Submitter",
+            field = "submitter"
+        },
+        {
+            name = "Evidence",
+            field = "evidence"
+        }
+    }
+
+    for _, col in ipairs(columns) do
+        list:AddColumn(col.name)
+    end
+
+    local function populate(filter)
+        list:Clear()
+        filter = string.lower(filter or "")
+        for _, c in ipairs(cases) do
+            local charInfo = string.format("%s (%s, %s)", c.player or "N/A", c.steamID or "N/A", c.charID or "N/A")
+            local submitInfo = string.format("%s (%s)", c.submitterName or "N/A", c.submitterSteamID or "N/A")
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S", tonumber(c.timestamp) or 0)
+            local lineData = {timestamp, charInfo, submitInfo, c.evidence or ""}
+            local searchStr = table.concat(lineData, " ") .. " " .. (c.reason or "")
+            if filter == "" or searchStr:lower():find(filter, 1, true) then
+                lineData.steamID = c.steamID or ""
+                lineData.reason = c.reason or ""
+                lineData.evidence = c.evidence or ""
+                lineData.submitter = c.submitterName or ""
+                lineData.submitterSteamID = c.submitterSteamID or ""
+                lineData.charID = c.charID
+                list:AddLine(unpack(lineData))
+            end
+        end
+
+        list:ForceCommit()
+        list:InvalidateLayout(true)
+        if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
+    end
+
+    list:AddMenuOption("Copy Submitter", function(rowData) if rowData.submitter and rowData.submitterSteamID then SetClipboardText(string.format("%s (%s)", rowData.submitter, rowData.submitterSteamID)) end end, "icon16/page_copy.png")
+    list:AddMenuOption("Copy Reason", function(rowData) if rowData.reason then SetClipboardText(rowData.reason) end end, "icon16/page_copy.png")
+    list:AddMenuOption("Copy Evidence", function(rowData) if rowData.evidence then SetClipboardText(rowData.evidence) end end, "icon16/page_copy.png")
+    list:AddMenuOption("Copy Steam ID", function(rowData) if rowData.steamID then SetClipboardText(rowData.steamID) end end, "icon16/page_copy.png")
+    list:AddMenuOption("View Evidence", function(rowData) if rowData.evidence and rowData.evidence:match("^https?://") then gui.OpenURL(rowData.evidence) end end, "icon16/world.png")
+    list:AddMenuOption("Ban Character", function(rowData)
+        if not rowData.charID then return end
+        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
+        if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charban") then LocalPlayer():ConCommand('say "/charban ' .. rowData.charID .. '"') end
+    end, "icon16/cancel.png")
+
+    list:AddMenuOption("Wipe Character", function(rowData)
+        if not rowData.charID then return end
+        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
+        if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipe") then LocalPlayer():ConCommand('say "/charwipe ' .. rowData.charID .. '"') end
+    end, "icon16/user_delete.png")
+
+    list:AddMenuOption("Unban Character", function(rowData)
+        if not rowData.charID then return end
+        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
+        if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunban") then LocalPlayer():ConCommand('say "/charunban ' .. rowData.charID .. '"') end
+    end, "icon16/accept.png")
+
+    list:AddMenuOption("Ban Character (Offline)", function(rowData)
+        if not rowData.charID then return end
+        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
+        if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charbanoffline") then LocalPlayer():ConCommand('say "/charbanoffline ' .. rowData.charID .. '"') end
+    end, "icon16/cancel.png")
+
+    list:AddMenuOption("Wipe Character (Offline)", function(rowData)
+        if not rowData.charID then return end
+        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
+        if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipeoffline") then LocalPlayer():ConCommand('say "/charwipeoffline ' .. rowData.charID .. '"') end
+    end, "icon16/user_delete.png")
+
+    list:AddMenuOption("Unban Character (Offline)", function(rowData)
+        if not rowData.charID then return end
+        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
+        if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then LocalPlayer():ConCommand('say "/charunbanoffline ' .. rowData.charID .. '"') end
+    end, "icon16/accept.png")
+
+    search.OnTextChanged = function(_, value) populate(value or "") end
+    populate("")
+end)
+
+lia.net.readBigTable("liaMapEntities", function(entities)
+    local adminModule = lia.module.get("administration")
+    if not adminModule then return end
+    adminModule.playerEntityData = istable(entities) and entities or {}
+    if isfunction(adminModule.ReconcilePlayerEntityWaypoints) then adminModule:ReconcilePlayerEntityWaypoints(adminModule:BuildPlayerEntityData(adminModule.playerEntityData)) end
+    local panel = adminModule.playerEntityPanel
+    if IsValid(panel) and isfunction(panel.SetEntities) then panel:SetEntities(adminModule.playerEntityData) end
+end)
+
 lia.net.readBigTable("liaStaffCasesSnapshot", function(payload)
     payload = payload or {}
     local adminModule = lia.module.get("administration")
@@ -168,282 +317,136 @@ lia.net.readBigTable("liaStaffCasesSnapshot", function(payload)
     if IsValid(panel) and isfunction(panel.RefreshData) then panel:RefreshData() end
 end)
 
+net.Receive("liaCharDeleted", function() if IsValid(panelRef) and isfunction(panelRef.buildSheets) and MODULE and isfunction(MODULE.startFullCharListRequest) then MODULE:startFullCharListRequest(panelRef) end end)
 net.Receive("liaOnlineStaffData", function()
     local staffData = net.ReadTable() or {}
     hook.Run("OnlineStaffDataReceived", staffData)
 end)
 
-net.Receive("liaCharDeleted", function()
-    if not (IsValid(panelRef) and isfunction(panelRef.buildSheets)) then return end
-    MODULE.charListRequestID = ((MODULE.charListRequestID or 0) + 1) % 65535
-    panelRef.charListRequestID = MODULE.charListRequestID
-    panelRef.charListLoadedCount = 0
-    panelRef.charListTotalCount = 0
-    panelRef.charListBuilt = false
-    panelRef:Clear()
-    panelRef:DockPadding(16, 16, 16, 16)
-    panelRef.Paint = nil
-    local loading = panelRef:Add("DLabel")
-    loading:Dock(FILL)
-    loading:SetFont("LiliaFont.20")
-    loading:SetText("Loading character records...")
-    loading:SetTextColor(Color(180, 190, 190))
-    loading:SetContentAlignment(5)
-    net.Start("liaRequestFullCharListPage")
-    net.WriteUInt(panelRef.charListRequestID, 16)
-    net.WriteUInt(0, 32)
-    net.WriteUInt(100, 16)
-    net.SendToServer()
-end)
-
-net.Receive("liaNetProfilerSnapshot", function()
-    local panel = MODULE.netProfilerPanel
-    if not IsValid(panel) then return end
-    local snapshot = net.ReadTable()
-    if isfunction(panel.RenderNetProfilerSnapshot) then panel:RenderNetProfilerSnapshot(snapshot) end
-end)
-
-net.Receive("liaToolPermissionTiers", function()
-    local data = net.ReadTable() or {
-        tools = {},
-        tiers = {}
-    }
-
-    MODULE.toolPermissionTierData = MODULE.toolPermissionTierData or {
-        tools = {},
-        tiers = {}
-    }
-
-    MODULE.toolPermissionTierData.tools = data.tools or {}
-    MODULE.toolPermissionTierData.tiers = data.tiers or {}
-    if MODULE.toolPermissionTierRefresh then MODULE.toolPermissionTierRefresh() end
-end)
-
-net.Receive("liaStaffCharacterConfiguration", function()
-    local config = MODULE.staffCharacterConfiguration or {}
-    local incoming = net.ReadTable()
-    if incoming then
-        for key in pairs(config) do
-            config[key] = nil
-        end
-
-        for key, value in pairs(incoming) do
-            config[key] = value
-        end
-    end
-
-    config.permissions = config.permissions or {}
-    config.flags = config.flags or {}
-    config.privileges = config.privileges or {}
-    config.flagDefinitions = config.flagDefinitions or {}
-    local operations = MODULE.staffCharacterConfigurationOperations or {}
-    if #operations > 0 then table.remove(operations, 1) end
-    for _, operation in ipairs(operations) do
-        if operation.kind == "permission" then
-            config.permissions[operation.id] = operation.enabled and true or nil
-        elseif operation.kind == "flag" then
-            config.flags[operation.id] = operation.enabled and true or nil
-        elseif operation.kind == "reset" then
-            config.permissions = {}
-            config.flags = {}
-        end
-    end
-
-    MODULE.staffCharacterConfiguration = config
-    lia.staffCharacterPermissions = config.permissions
-    lia.staffCharacterFlags = config.flags
-    if MODULE.staffCharacterConfigurationRefresh then MODULE.staffCharacterConfigurationRefresh(true) end
-end)
-net.Receive("liaBodygrouperMenu", function()
-    local client = LocalPlayer()
-    if IsValid(lia.gui.bodygroupMenu) then lia.gui.bodygroupMenu:Remove() end
-    local entity = net.ReadEntity()
-    lia.gui.bodygroupMenu = vgui.Create("BodygrouperMenu")
-    local target = IsValid(entity) and entity or client
-    lia.gui.bodygroupMenu:SetTarget(target)
-end)
-
-net.Receive("liaBodygrouperMenuCloseClientside", function() if IsValid(lia.gui.bodygroupMenu) then lia.gui.bodygroupMenu:Remove() end end)
-net.Receive("liaSeeModelTable", function()
-    local models = net.ReadTable()
-    if not istable(models) or #models == 0 then return end
-    local selectedModel = models[1]
-    local frame = vgui.Create("liaFrame")
-    frame:setScaledSize(520, math.min(ScrH() * 0.82, 820))
-    frame:SetPos(ScrW() - frame:GetWide() - 48, math.max(48, (ScrH() - frame:GetTall()) * 0.5))
-    frame:SetTitle("Model Wardrobe")
-    frame:MakePopup()
-    frame:DockPadding(12, 34, 12, 12)
-    local function positionWardrobeCloseButton(this)
-        if IsValid(this.cls) then
-            this.cls:SetParent(this)
-            this.cls:SetSize(20, 20)
-            this.cls:SetPos(this:GetWide() - 22, 2)
-            this.cls:SetZPos(1000)
-        end
-    end
-
-    frame.OnSizeChanged = function(this) positionWardrobeCloseButton(this) end
-    positionWardrobeCloseButton(frame)
-    local title = frame:Add("DPanel")
-    title:Dock(TOP)
-    title:DockMargin(0, 0, 0, 12)
-    title:SetTall(32)
-    title.Paint = function(_, w, h)
-        local lineColor = lia.color.theme.theme
-        surface.SetDrawColor(lineColor)
-        surface.DrawRect(4, h - 2, math.max(w - 8, 0), 2)
-    end
-
-    local titleLabel = title:Add("DLabel")
-    titleLabel:Dock(FILL)
-    titleLabel:DockMargin(8, 0, 8, 0)
-    titleLabel:SetFont("LiliaFont.18")
-    titleLabel:SetText(("Select a model"):upper())
-    titleLabel:SetTextColor(lia.color.theme and lia.color.theme.text or color_white)
-    titleLabel:SetContentAlignment(5)
-    local hint = frame:Add("DLabel")
-    hint:Dock(TOP)
-    hint:DockMargin(0, 0, 0, 10)
-    hint:SetTall(20)
-    hint:SetFont("LiliaFont.16")
-    hint:SetTextColor(Color(220, 220, 220))
-    hint:SetContentAlignment(5)
-    hint:SetText(string.format("Use %s and %s to rotate the model.", "A", "D"))
-    local confirmButton = vgui.Create("DButton", frame)
-    confirmButton:SetText("Confirm")
-    confirmButton:Dock(BOTTOM)
-    confirmButton:SetTall(40)
-    confirmButton:SetColor(Color(255, 255, 255))
-    confirmButton:SetFont("DermaDefaultBold")
-    confirmButton:SetContentAlignment(5)
-    confirmButton:DockMargin(0, 10, 0, 0)
-    local modelsScroll = vgui.Create("liaScrollPanel", frame)
-    modelsScroll:Dock(FILL)
-    modelsScroll:DockMargin(0, 0, 0, 0)
-    local iconLayoutParent = modelsScroll.GetCanvas and modelsScroll:GetCanvas() or modelsScroll
-    local iconLayout = iconLayoutParent:Add("DIconLayout")
-    iconLayout:Dock(LEFT)
-    iconLayout:SetSpaceX(8)
-    iconLayout:SetSpaceY(8)
-    iconLayout:SetPaintBackground(false)
-    frame._iconColumns = 5
-    frame._iconSpace = 8
-    local function requestIconResize()
-        if not IsValid(iconLayout) then return false end
-        local w = iconLayout:GetWide() or 0
-        if w <= 0 then return false end
-        frame._needsIconResize = true
-        frame:InvalidateLayout(true)
-        return true
-    end
-
-    local oldLayoutPerformLayout = iconLayout.PerformLayout
-    iconLayout.PerformLayout = function(layout, w, h)
-        if oldLayoutPerformLayout then oldLayoutPerformLayout(layout, w, h) end
-        local offsetX = layout._centerOffsetX or 0
-        local prevOffsetX = layout._appliedCenterOffsetX or 0
-        local delta = offsetX - prevOffsetX
-        if delta == 0 then return end
-        for _, child in ipairs(layout:GetChildren()) do
-            if IsValid(child) then
-                local x, y = child:GetPos()
-                child:SetPos(x + delta, y)
+net.Receive("liaDisplayCharList", function()
+    local sendData = net.ReadTable()
+    local targetSteamIDsafe = net.ReadString()
+    local extraColumns, extraOrder = {}, {}
+    for _, v in pairs(sendData or {}) do
+        if istable(v.extraDetails) then
+            for k in pairs(v.extraDetails) do
+                if not extraColumns[k] then
+                    extraColumns[k] = true
+                    table.insert(extraOrder, k)
+                end
             end
         end
-
-        layout._appliedCenterOffsetX = offsetX
     end
 
-    frame.PerformLayout = function(this, w, h)
-        local columns = this._iconColumns or 5
-        local space = this._iconSpace or 8
-        local layoutW = IsValid(modelsScroll) and modelsScroll:GetWide() or 0
-        if layoutW <= 0 then return end
-        iconLayout:SetWide(layoutW)
-        local iconW = math.floor((layoutW - (columns - 1) * space) / columns)
-        if iconW < 64 then iconW = 64 end
-        if iconW > 80 then iconW = 80 end
-        local iconH = math.floor(iconW * 2)
-        for _, child in ipairs(iconLayout:GetChildren()) do
-            if IsValid(child) and child.SetSize then child:SetSize(iconW, iconH) end
-        end
+    local columns = {
+        {
+            name = "name",
+            field = "Name"
+        },
+        {
+            name = "description",
+            field = "Desc"
+        },
+        {
+            name = "faction",
+            field = "Faction"
+        },
+        {
+            name = "banned",
+            field = "Banned"
+        },
+        {
+            name = "banningAdminName",
+            field = "BanningAdminName"
+        },
+        {
+            name = "banningAdminSteamID",
+            field = "BanningAdminSteamID"
+        },
+        {
+            name = "banningAdminRank",
+            field = "BanningAdminRank"
+        },
+        {
+            name = "charMoney",
+            field = "Money"
+        },
+        {
+            name = "lastUsed",
+            field = "LastUsed"
+        }
+    }
 
-        iconLayout:SizeToChildren(false, true)
-        local childCount = #iconLayout:GetChildren()
-        local usedWidth = math.min(childCount, columns) * iconW + math.max(0, math.min(childCount, columns) - 1) * space
-        iconLayout._centerOffsetX = math.max(0, math.floor((layoutW - usedWidth) * 0.5))
-        iconLayout:InvalidateLayout(true)
-        this._needsIconResize = nil
-    end
-
-    local function previewModel(modelPath)
-        lia.camera.begin(frame, {
-            hideEntities = {LocalPlayer()}
+    for _, name in ipairs(extraOrder) do
+        table.insert(columns, {
+            name = name,
+            field = name
         })
-
-        lia.camera.setModel(frame, modelPath)
     end
 
-    local function setSelectedModel(modelPath)
-        selectedModel = modelPath
-        previewModel(modelPath)
-        if IsValid(iconLayout) then
-            for _, child in ipairs(iconLayout:GetChildren()) do
-                if IsValid(child) then child._liaSelected = child.modelPath == modelPath end
+    local _, listView = lia.util.createTableUI(string.format("Charlist for SteamID: %s", targetSteamIDsafe), columns, sendData)
+    if IsValid(listView) then
+        for _, line in ipairs(listView:GetLines()) do
+            local dataIndex = line:GetID()
+            local rowData = sendData[dataIndex]
+            if rowData and rowData.Banned == "Yes" then
+                line.DoPaint = line.Paint
+                line.Paint = function(pnl, w, h)
+                    surface.SetDrawColor(200, 100, 100)
+                    surface.DrawRect(0, 0, w, h)
+                    pnl:DoPaint(w, h)
+                end
+            end
+
+            line.CharID = rowData and rowData.ID
+            line.SteamID = targetSteamIDsafe
+            if rowData and rowData.extraDetails then
+                local colIndex = 10
+                for _, name in ipairs(extraOrder) do
+                    line:SetColumnText(colIndex, tostring(rowData.extraDetails[name] or ""))
+                    colIndex = colIndex + 1
+                end
             end
         end
-    end
 
-    local function paintIcon(icon, w, h)
-        if not icon._liaSelected then return end
-        local col = lia.config.get("Color", color_white)
-        surface.SetDrawColor(col.r, col.g, col.b, 200)
-        for i = 1, 3 do
-            local o = i * 2
-            surface.DrawOutlinedRect(i, i, w - o, h - o)
+        listView.OnRowRightClick = function(_, _, ln)
+            if not (ln and ln.CharID) then return end
+            if not (lia.command.hasAccess(LocalPlayer(), "charban") or lia.command.hasAccess(LocalPlayer(), "charwipe") or lia.command.hasAccess(LocalPlayer(), "charunban") or lia.command.hasAccess(LocalPlayer(), "charbanoffline") or lia.command.hasAccess(LocalPlayer(), "charwipeoffline") or lia.command.hasAccess(LocalPlayer(), "charunbanoffline")) then return end
+            local owner = ln.SteamID and lia.util.getBySteamID(ln.SteamID)
+            local dMenu = lia.derma.dermaMenu()
+            if IsValid(owner) then
+                if lia.command.hasAccess(LocalPlayer(), "charban") then
+                    local opt1 = dMenu:AddOption("Ban Character", function() LocalPlayer():ConCommand('say "/charban ' .. ln.CharID .. '"') end)
+                    opt1:SetIcon("icon16/cancel.png")
+                end
+
+                if lia.command.hasAccess(LocalPlayer(), "charwipe") then
+                    local opt1_5 = dMenu:AddOption("Wipe Character", function() LocalPlayer():ConCommand('say "/charwipe ' .. ln.CharID .. '"') end)
+                    opt1_5:SetIcon("icon16/user_delete.png")
+                end
+
+                if lia.command.hasAccess(LocalPlayer(), "charunban") then
+                    local opt2 = dMenu:AddOption("Unban Character", function() LocalPlayer():ConCommand('say "/charunban ' .. ln.CharID .. '"') end)
+                    opt2:SetIcon("icon16/accept.png")
+                end
+            else
+                if lia.command.hasAccess(LocalPlayer(), "charbanoffline") then
+                    local opt3 = dMenu:AddOption("Ban Character (Offline)", function() LocalPlayer():ConCommand('say "/charbanoffline ' .. ln.CharID .. '"') end)
+                    opt3:SetIcon("icon16/cancel.png")
+                end
+
+                if lia.command.hasAccess(LocalPlayer(), "charwipeoffline") then
+                    local opt3_5 = dMenu:AddOption("Wipe Character (Offline)", function() LocalPlayer():ConCommand('say "/charwipeoffline ' .. ln.CharID .. '"') end)
+                    opt3_5:SetIcon("icon16/user_delete.png")
+                end
+
+                if lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then
+                    local opt4 = dMenu:AddOption("Unban Character (Offline)", function() LocalPlayer():ConCommand('say "/charunbanoffline ' .. ln.CharID .. '"') end)
+                    opt4:SetIcon("icon16/accept.png")
+                end
+            end
+
+            dMenu:Open()
         end
     end
-
-    local function buildModelIcons()
-        if not IsValid(iconLayout) then return end
-        iconLayout:Clear()
-        for _, modelPath in ipairs(models) do
-            local icon = iconLayout:Add("SpawnIcon")
-            icon:SetModel(modelPath)
-            icon.modelPath = modelPath
-            icon.PaintOver = paintIcon
-            icon.DoClick = function() setSelectedModel(modelPath) end
-        end
-
-        requestIconResize()
-    end
-
-    buildModelIcons()
-    setSelectedModel(models[1])
-    frame.Think = function()
-        if input.IsKeyDown(KEY_A) then
-            lia.camera.rotate(frame, -50 * FrameTime())
-        elseif input.IsKeyDown(KEY_D) then
-            lia.camera.rotate(frame, 50 * FrameTime())
-        end
-    end
-
-    frame.OnRemove = function() lia.camera.close(frame) end
-    confirmButton.DoClick = function()
-        if isstring(selectedModel) and selectedModel ~= "" then
-            net.Start("liaWardrobeChangeModel")
-            net.WriteString(selectedModel)
-            net.SendToServer()
-            frame:Close()
-        else
-            chat.AddText(Color(255, 0, 0), "Failed to load wardrobe models.")
-        end
-    end
-
-    timer.Simple(0, function()
-        if not IsValid(frame) then return end
-        requestIconResize()
-        timer.Simple(0.05, function() if IsValid(frame) then requestIconResize() end end)
-    end)
 end)

@@ -7,16 +7,6 @@
         net.WriteUInt(charID, 32)
         net.Send(client)
     else
-        if errorMsg then client:notifyError(errorMsg) end
+        if errorMsg then client:notifyErrorLocalized(errorMsg) end
     end
-end)
-net.Receive("liaStaffDiscordResponse", function(_, client)
-    local discord = net.ReadString()
-    local character = client:getChar()
-    if not character or character:getFaction() ~= FACTION_STAFF then return end
-    client:setLiliaData("staffDiscord", discord)
-    local steamID = client:SteamID()
-    local description = string.format("Staff Character - Discord: %s, SteamID: %s", discord, steamID)
-    character:setDesc(description)
-    client:notifySuccess("Staff character description updated!")
 end)

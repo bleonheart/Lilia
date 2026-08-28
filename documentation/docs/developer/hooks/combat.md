@@ -116,7 +116,7 @@ This page documents hooks in the combat category.
 ---
 
 <details class="realm-shared" id="function-gethandsattackspeed">
-<summary><span class="summary-main"><a id="GetHandsAttackSpeed"></a>GetHandsAttackSpeed(client, defaultDelay)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/entities/weapons/lia_hands/shared.lua#L34" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetHandsAttackSpeed"></a>GetHandsAttackSpeed(client, defaultDelay)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/entities/weapons/lia_hands/shared.lua#L36" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="gethandsattackspeed"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -160,7 +160,7 @@ This page documents hooks in the combat category.
 ---
 
 <details class="realm-shared" id="function-getplayerpunchdamage">
-<summary><span class="summary-main"><a id="GetPlayerPunchDamage"></a>GetPlayerPunchDamage(client, damage, context)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/entities/weapons/lia_hands/shared.lua#L67" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetPlayerPunchDamage"></a>GetPlayerPunchDamage(client, damage, context)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/entities/weapons/lia_hands/shared.lua#L69" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getplayerpunchdamage"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -205,7 +205,7 @@ This page documents hooks in the combat category.
 ---
 
 <details class="realm-shared" id="function-getplayerpunchragdolltime">
-<summary><span class="summary-main"><a id="GetPlayerPunchRagdollTime"></a>GetPlayerPunchRagdollTime(client, target)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/entities/weapons/lia_hands/shared.lua#L103" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetPlayerPunchRagdollTime"></a>GetPlayerPunchRagdollTime(client, target)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/entities/weapons/lia_hands/shared.lua#L105" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getplayerpunchragdolltime"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -249,7 +249,7 @@ This page documents hooks in the combat category.
 ---
 
 <details class="realm-server" id="function-playerthrowpunch">
-<summary><span class="summary-main"><a id="PlayerThrowPunch"></a>PlayerThrowPunch(client, trace)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/entities/weapons/lia_hands/shared.lua#L136" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="PlayerThrowPunch"></a>PlayerThrowPunch(client, trace)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/entities/weapons/lia_hands/shared.lua#L138" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="playerthrowpunch"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

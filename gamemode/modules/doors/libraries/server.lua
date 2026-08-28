@@ -1,4 +1,4 @@
-﻿function MODULE:PostLoadData()
+function MODULE:PostLoadData()
     if lia.config.get("DoorsAlwaysDisabled", false) then
         local count = 0
         for _, door in ents.Iterator() do
@@ -401,16 +401,6 @@ end
 
 function MODULE:PostPlayerLoadout(client)
     client:Give("lia_keys")
-    for _, door in ents.Iterator() do
-        if IsValid(door) and door:isDoor() then
-            local data = lia.doors.getData(door)
-            if data.ownerSteamID == client:SteamID() then
-                door:SetDTEntity(0, client)
-                door.liaAccess = door.liaAccess or {}
-                door.liaAccess[client] = DOOR_OWNER
-            end
-        end
-    end
 end
 
 function MODULE:ShowTeam(client)
@@ -436,7 +426,7 @@ function MODULE:ShowTeam(client)
             elseif not IsValid(entity:GetDTEntity(0)) then
                 lia.command.run(client, "doorbuy")
             else
-                client:notifyError("You are not allowed to do this right now.")
+                client:notifyErrorLocalized("You are not allowed to do this right now.")
             end
             return true
         end
@@ -538,12 +528,4 @@ function MODULE:KeyUnlock(client, door, time)
 
         lia.log.add(client, "unlockDoor", door)
     end
-end
-
-function MODULE:CollectDoorDataFields(fields)
-    fields.ownerSteamID = {
-        column = "ownerSteamID",
-        type = "TEXT",
-        default = ""
-    }
 end

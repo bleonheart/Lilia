@@ -1,4 +1,4 @@
-﻿ITEM.name = "weaponsName"
+ITEM.name = "weaponsName"
 ITEM.desc = "weaponsDesc"
 ITEM.category = "weapons"
 ITEM.model = "models/weapons/w_pistol.mdl"
@@ -12,7 +12,7 @@ function ITEM.postHooks:drop()
     local client = self.player
     if not client or not IsValid(client) then return end
     if client:HasWeapon(self.class) then
-        client:notifyError("You cannot drop this weapon while it's equipped.")
+        client:notifyErrorLocalized("You cannot drop this weapon while it's equipped.")
         client:StripWeapon(self.class)
     end
 end
@@ -21,7 +21,7 @@ ITEM:hook("drop", function(item)
     local client = item.player
     if not client or not IsValid(client) then return false end
     if IsValid(client:GetRagdollEntity()) then
-        client:notifyError("You cannot do that while ragdolled.")
+        client:notifyErrorLocalized("You cannot do that while ragdolled.")
         return false
     end
 
@@ -44,7 +44,7 @@ ITEM.functions.Unequip = {
         local client = item.player
         if not client or not IsValid(client) then return false end
         if IsValid(client:GetRagdollEntity()) then
-            client:notifyError("You cannot do that while ragdolled.")
+            client:notifyErrorLocalized("You cannot do that while ragdolled.")
             return false
         end
 
@@ -72,7 +72,7 @@ ITEM.functions.Equip = {
         local client = item.player
         if not client or not IsValid(client) then return false end
         if IsValid(client:GetRagdollEntity()) then
-            client:notifyError("You cannot do that while ragdolled.")
+            client:notifyErrorLocalized("You cannot do that while ragdolled.")
             return false
         end
 
@@ -80,7 +80,7 @@ ITEM.functions.Equip = {
         if item.weaponCategory then
             for _, v in pairs(items) do
                 if v.id ~= item.id and v.isWeapon and v.weaponCategory == item.weaponCategory and v:getData("equip") then
-                    client:notifyError("You already have a weapon equipped in that slot.")
+                    client:notifyErrorLocalized("You already have a weapon equipped in that slot.")
                     return false
                 end
             end
@@ -132,7 +132,7 @@ end
 if CLIENT then
     function ITEM:getName()
         local override = lia.item.WeaponOverrides and lia.item.WeaponOverrides[self.class]
-        if override and override.name then return isstring(override.name) and override.name or override.name end
+        if override and override.name then return isstring(override.name) and L(override.name) or override.name end
         local weapon = weapons.GetStored(self.class)
         if weapon and weapon.PrintName then return language.GetPhrase(weapon.PrintName) end
         return self.name

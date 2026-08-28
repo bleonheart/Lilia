@@ -1,8 +1,22 @@
-﻿local PANEL = {}
+local PANEL = {}
 local function isGeneratedCloseNode(node)
     if not istable(node) then return false end
     local nodeID = string.Trim(string.lower(tostring(node.dialogID or "")))
     return nodeID == "goodbye" or nodeID == "bye" or nodeID == "farewell" or nodeID == "close"
+end
+
+local function resolveThemeColor(value, fallback)
+    if IsColor(value) then return value end
+    if istable(value) and IsColor(value[1]) then return value[1] end
+    return fallback
+end
+
+local function getThemeColors()
+    local theme = lia.color.theme or {}
+    local configured = lia.config and lia.config.get and lia.config.get("Color") or nil
+    local accent = resolveThemeColor(theme.accent or theme.theme or configured, Color(45, 190, 170))
+    local text = resolveThemeColor(theme.text, Color(225, 238, 238))
+    return accent, text
 end
 
 local function drawPanel(x, y, w, h, radius, color, outline)
@@ -57,7 +71,7 @@ function PANEL:Init()
     self:SetKeyboardInputEnabled(true)
     self:SetAlpha(0)
     self.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         drawPanel(0, 0, w, h, 8, Color(4, 16, 21, 246), Color(accent.r, accent.g, accent.b, 145))
     end
 
@@ -83,7 +97,7 @@ function PANEL:Init()
     self.dialogHistoryFrame:SetKeyboardInputEnabled(false)
     self.dialogHistoryFrame:SetAlpha(0)
     self.dialogHistoryFrame.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         drawPanel(0, 0, w, h, 8, Color(4, 16, 21, 246), Color(accent.r, accent.g, accent.b, 145))
     end
 
@@ -92,7 +106,7 @@ function PANEL:Init()
     self.historyHeader:Dock(TOP)
     self.historyHeader:SetTall(58)
     self.historyHeader.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         draw.SimpleText(string.upper("History"), "LiliaFont.18", 18, 20, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 78)
         surface.DrawRect(16, h - 1, w - 32, 1)
@@ -110,7 +124,7 @@ function PANEL:Init()
     self.header:SetMouseInputEnabled(true)
     self.header:SetTall(58)
     self.header.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         draw.SimpleText(string.upper(tostring(self.npcDisplayName or "Dialog")), "LiliaFont.18", 18, 20, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 78)
         surface.DrawRect(16, h - 1, w - 32, 1)
@@ -121,7 +135,7 @@ function PANEL:Init()
     self.closeButton:SetWide(52)
     self.closeButton:SetText("")
     self.closeButton.Paint = function(button, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         local hovered = button:IsHovered()
         if hovered then drawPanel(6, 8, w - 12, h - 16, 5, Color(accent.r, accent.g, accent.b, 24), Color(accent.r, accent.g, accent.b, 72)) end
         draw.SimpleText("X", "LiliaFont.20", w * 0.5, h * 0.5, hovered and Color(244, 248, 248) or Color(170, 192, 193), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -250,7 +264,7 @@ function PANEL:ClearDialogOptions()
 end
 
 function PANEL:GetSpeakerColor(isPlayer)
-    local accent, text = lia.color.theme.accent
+    local accent, text = getThemeColors()
     return isPlayer and accent or text
 end
 
@@ -264,7 +278,7 @@ end
 function PANEL:AppendDialogLine(text, isPlayer, skipResponseUpdate)
     if not text or text == "" or not IsValid(self.dialogHistoryList) then return end
     local speaker = isPlayer and "You" or self.npcDisplayName or "Dialog"
-    local accent = lia.color.theme.accent
+    local accent = getThemeColors()
     local isFirstMessage = not self.hasHistoryMessage
     self.hasHistoryMessage = true
     local container = self.dialogHistoryList:Add("DPanel")
@@ -535,7 +549,7 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         choiceBtn:SetText("")
         choiceBtn:SetCursor("hand")
         choiceBtn.Paint = function(button, w, h)
-            local accent = lia.color.theme.accent
+            local accent = getThemeColors()
             local hovered = button:IsHovered()
             local pressed = button:IsDown()
             local background = pressed and Color(18, 39, 45, 248) or hovered and Color(14, 34, 40, 246) or Color(8, 25, 30, 238)

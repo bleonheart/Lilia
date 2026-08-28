@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 net.Receive("liaViewClaims", function(_, client)
     local sid = net.ReadString()
     MODULE:GetAllCaseClaims():next(function(caseclaims)
@@ -12,7 +12,7 @@ end)
 net.Receive("liaTicketSystemClaim", function(_, client)
     local requester = net.ReadEntity()
     if client == requester then
-        client:notifyError("You cannot perform this action on your own ticket.")
+        client:notifyErrorLocalized("You cannot perform this action on your own ticket.")
         return
     end
 
@@ -59,7 +59,7 @@ end)
 net.Receive("liaTicketSystemClose", function(_, client)
     local requester = net.ReadEntity()
     if client == requester then
-        client:notifyError("You cannot perform this action on your own ticket.")
+        client:notifyErrorLocalized("You cannot perform this action on your own ticket.")
         return
     end
 
@@ -84,4 +84,39 @@ net.Receive("liaTicketSystemClose", function(_, client)
     hook.Run("OnTicketClosed", client, requester, ticketMessage)
     requester.CaseClaimed = nil
     MODULE.ActiveTickets[requester:SteamID()] = nil
+end)
+
+net.Receive("liaRequestActiveTickets", function(_, client)
+    local hasAlwaysSeeTickets = client:hasPrivilege("alwaysSeeTickets")
+    local isStaffOnDuty = client:isStaffOnDuty()
+    local permission = hasAlwaysSeeTickets or isStaffOnDuty
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestActiveTickets", "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    if not permission then return end
+    local tickets = {}
+    for steamID, ticket in pairs(MODULE.ActiveTickets) do
+        tickets[#tickets + 1] = {
+            requester = steamID,
+            timestamp = ticket.timestamp or os.time(),
+            admin = ticket.admin,
+            message = ticket.message,
+        }
+    end
+
+    table.sort(tickets, function(a, b) return (a.timestamp or 0) > (b.timestamp or 0) end)
+    net.Start("liaActiveTickets")
+    net.WriteTable(tickets)
+    net.Send(client)
+end)
+
+net.Receive("liaRequestTicketsCount", function(_, client)
+    local hasAlwaysSeeTickets = client:hasPrivilege("alwaysSeeTickets")
+    local isStaffOnDuty = client:isStaffOnDuty()
+    local permission = hasAlwaysSeeTickets or isStaffOnDuty
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestTicketsCount", "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    if not permission then return end
+    lia.db.count("ticketclaims"):next(function(count)
+        net.Start("liaTicketsCount")
+        net.WriteInt(count or 0, 32)
+        net.Send(client)
+    end)
 end)
