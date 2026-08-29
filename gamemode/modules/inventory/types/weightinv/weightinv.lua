@@ -1,4 +1,4 @@
-local WeightInv = lia.Inventory:extend("WeightInv")
+﻿local WeightInv = lia.Inventory:extend("WeightInv")
 local function getItemWeight(item)
     return item.weight or (item:getWidth() * item:getHeight())
 end

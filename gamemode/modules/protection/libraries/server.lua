@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 local function getEntityOwner(entity)
     if not IsValid(entity) then return nil end
     if entity.GetOwner then

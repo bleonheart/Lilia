@@ -1,4 +1,4 @@
-net.Receive("liaMainCharacterSet", function()
+﻿net.Receive("liaMainCharacterSet", function()
     local charID = net.ReadUInt(32)
     charID = tonumber(charID)
     local client = LocalPlayer()

@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local renderedIcons = {}
 local function getThemeColors()
     local theme = lia.color and lia.color.theme or {}

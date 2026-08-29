@@ -1,149 +1,4 @@
---[[
-    Folder: Developer - Libraries
-    File: lia.camera.md
-]]
---[[
-    Camera
-
-    Camera helpers for Lilia third-person view, realistic first-person view, freelook input, and local-player visibility handling.
-]]
---[[
-    Overview:
-        The camera library centralizes clientside camera behavior under `lia.camera`. It controls when third-person view may override the default view, builds collision-safe third-person camera positions, supports realistic first-person body rendering, applies freelook angle offsets, and hides local head/headwear geometry when needed for first-person body visibility.
-]]
---[[
-    Hooks:
-        ShouldDisableThirdperson(Player client)
-
-    Purpose:
-        Allows plugins or modules to disable the Lilia third-person camera override for a client.
-
-    Category:
-        Camera
-
-    Parameters:
-        client (Player)
-            The player whose third-person camera availability is being checked.
-
-    Example Usage:
-        ```lua
-        hook.Add("ShouldDisableThirdperson", "liaExampleShouldDisableThirdperson", function(client)
-            return true
-        end)
-        ```
-
-    Returns:
-        boolean|nil
-            Return true to block third-person view. Return nil or false to allow normal camera checks to continue.
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ShouldUseFreelook(Player client)
-
-    Purpose:
-        Allows plugins or modules to prevent freelook input processing for the local player.
-
-    Category:
-        Camera
-
-    Parameters:
-        client (Player)
-            The local player whose freelook availability is being checked.
-
-    Example Usage:
-        ```lua
-        hook.Add("ShouldUseFreelook", "liaExampleShouldUseFreelook", function(client)
-            return true
-        end)
-        ```
-
-    Returns:
-        boolean|nil
-            Return false to block freelook input. Return nil or true to allow normal freelook checks to continue.
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        PreFreelookToggle(boolean enabled)
-
-    Purpose:
-        Runs before manual freelook input from the configurable keybind or console command changes state.
-
-    Category:
-        Camera
-
-    Parameters:
-        enabled (boolean)
-            True when freelook is about to be enabled, false when it is about to be disabled.
-
-    Example Usage:
-        ```lua
-        hook.Add("PreFreelookToggle", "liaExamplePreFreelookToggle", function(enabled)
-            return true
-        end)
-        ```
-
-    Returns:
-        boolean|nil
-            Return false to block the freelook state change. Return nil or true to allow it.
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        FreelookToggled(boolean enabled)
-
-    Purpose:
-        Runs after manual freelook input from the configurable keybind or console command changes state.
-
-    Category:
-        Camera
-
-    Parameters:
-        enabled (boolean)
-            True when freelook was enabled, false when it was disabled.
-
-    Example Usage:
-        ```lua
-        hook.Add("FreelookToggled", "liaExampleFreelookToggled", function(enabled)
-            print("[MyModule] handled FreelookToggled")
-        end)
-        ```
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        ThirdPersonToggled(boolean enabled)
-
-    Purpose:
-        Runs after the F4 third-person toggle changes the third-person option.
-
-    Category:
-        Camera
-
-    Parameters:
-        enabled (boolean)
-            True when third-person view was enabled, false when it was disabled.
-
-    Example Usage:
-        ```lua
-        hook.Add("ThirdPersonToggled", "liaExampleThirdPersonToggled", function(enabled)
-            print("[MyModule] handled ThirdPersonToggled")
-        end)
-        ```
-
-    Realm:
-        Client
-]]
-lia.camera = lia.camera or {}
+﻿lia.camera = lia.camera or {}
 local view, traceData, traceData2, aimOrigin, crouchFactor, ft, curAng
 local clmp = math.Clamp
 crouchFactor = 0
@@ -168,116 +23,20 @@ local maxValues = {
     distance = 100
 }
 
---[[
-    Function: lia.camera.isCharacterMenuOpen
-
-    Purpose:
-        Checks whether any loading or character menu panel is currently open.
-
-    Example Usage:
-        ```lua
-        local allowed = lia.camera.isCharacterMenuOpen()
-        if allowed then
-            print("lia.camera.isCharacterMenuOpen returned true for the current context.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when a character-related UI panel is open.
-
-    Realm:
-        Client
-]]
 function lia.camera.isCharacterMenuOpen()
     return IsValid(lia.gui.loading) or IsValid(lia.gui.char) or IsValid(lia.gui.charCreate) or IsValid(lia.gui.character)
 end
 
---[[
-    Function: lia.camera.isUsingThirdPersonCamera
-
-    Purpose:
-        Checks whether the player is currently using the Lilia third-person camera override.
-
-    Parameters:
-        client (Player)
-            The player whose view entity and camera eligibility should be checked.
-
-    Example Usage:
-        ```lua
-        local allowed = lia.camera.isUsingThirdPersonCamera()
-        if allowed then
-            print("lia.camera.isUsingThirdPersonCamera returned true for the current context.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when the player's view entity is themselves and third-person override is available.
-
-    Realm:
-        Client
-]]
 function lia.camera.isUsingThirdPersonCamera(client)
     if not IsValid(client) then return false end
     return client:GetViewEntity() == client and lia.camera.canOverrideView(client)
 end
 
---[[
-    Function: lia.camera.shouldSuppressRealisticView
-
-    Purpose:
-        Determines whether realistic first-person view should be temporarily suppressed.
-
-    Parameters:
-        client (Player)
-            The player whose input state should be checked.
-
-    Example Usage:
-        ```lua
-        local allowed = lia.camera.shouldSuppressRealisticView()
-        if allowed then
-            print("lia.camera.shouldSuppressRealisticView returned true for the current context.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when realistic view should be blocked for the current frame.
-
-    Realm:
-        Client
-]]
 function lia.camera.shouldSuppressRealisticView(client)
     if not IsValid(client) then return false end
     return client:KeyDown(IN_ATTACK2)
 end
 
---[[
-    Function: lia.camera.canOverrideView
-
-    Purpose:
-        Determines whether the client may currently use the Lilia third-person camera override.
-
-    Parameters:
-        client (Player)
-            The player whose camera state should be checked.
-
-    Example Usage:
-        ```lua
-        local allowed = lia.camera.canOverrideView()
-        if allowed then
-            print("lia.camera.canOverrideView returned true for the current context.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when third-person view is enabled, configured, and not blocked by menus, vehicles, ragdolls, or hooks.
-
-    Realm:
-        Client
-]]
 function lia.camera.canOverrideView(client)
     if not IsValid(client) then return false end
     if lia.camera.isCharacterMenuOpen() then return false end
@@ -287,31 +46,6 @@ function lia.camera.canOverrideView(client)
     return lia.option.get("thirdPersonEnabled", false) and lia.config.get("ThirdPersonEnabled", true) and client:getChar() and not IsValid(ragdoll)
 end
 
---[[
-    Function: lia.camera.canUseRealisticView
-
-    Purpose:
-        Determines whether realistic first-person body view may be used for the local player.
-
-    Parameters:
-        client (Player)
-            The local player being checked.
-
-    Example Usage:
-        ```lua
-        local allowed = lia.camera.canUseRealisticView()
-        if allowed then
-            print("lia.camera.canUseRealisticView returned true for the current context.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when realistic view is enabled and no state blocks it.
-
-    Realm:
-        Client
-]]
 function lia.camera.canUseRealisticView(client)
     if not IsValid(client) or client ~= LocalPlayer() then return false end
     if client.IsInAdminEntityView then return false end
@@ -324,60 +58,10 @@ function lia.camera.canUseRealisticView(client)
     return lia.option.get("realisticViewEnabled", false)
 end
 
---[[
-    Function: lia.camera.canUseFreelook
-
-    Purpose:
-        Determines whether freelook can be applied to the local player's current view.
-
-    Parameters:
-        client (Player)
-            The local player being checked.
-
-    Example Usage:
-        ```lua
-        local allowed = lia.camera.canUseFreelook()
-        if allowed then
-            print("lia.camera.canUseFreelook returned true for the current context.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when freelook is enabled and available.
-
-    Realm:
-        Client
-]]
 function lia.camera.canUseFreelook(client)
     return IsValid(client) and client == LocalPlayer() and lia.option.get("freelookEnabled", false)
 end
 
---[[
-    Function: lia.camera.isInSights
-
-    Purpose:
-        Checks whether the player is aiming down sights with the active weapon.
-
-    Parameters:
-        client (Player)
-            The player whose weapon and input state should be checked.
-
-    Example Usage:
-        ```lua
-        local allowed = lia.camera.isInSights()
-        if allowed then
-            print("lia.camera.isInSights returned true for the current context.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when ADS blocking is enabled and the player is considered in sights.
-
-    Realm:
-        Client
-]]
 function lia.camera.isInSights(client)
     local weapon = client:GetActiveWeapon()
     if not IsValid(weapon) then return client:KeyDown(IN_ATTACK2) end
@@ -385,126 +69,20 @@ function lia.camera.isInSights(client)
     return lia.option.get("freelookBlockADS", true) and (client:KeyDown(IN_ATTACK2) or weapon.GetInSights and weapon:GetInSights() or inArcCWSights or weapon.GetIronSights and weapon:GetIronSights())
 end
 
---[[
-    Function: lia.camera.isHoldingFreelookBind
-
-    Purpose:
-        Checks whether the configurable Lilia freelook keybind or the legacy `+freelook` command is being held.
-
-    Parameters:
-        client (Player)
-            The local player whose freelook input state should be checked.
-
-    Example Usage:
-        ```lua
-        local held = lia.camera.isHoldingFreelookBind(LocalPlayer())
-        if held then
-            print("The manual freelook bind is held.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when manual freelook input is currently held.
-
-    Realm:
-        Client
-]]
 function lia.camera.isHoldingFreelookBind(client)
     return IsValid(client) and freelooking
 end
 
---[[
-    Function: lia.camera.isPlayerStationary
-
-    Purpose:
-        Checks whether the player is stationary enough to begin or continue automatic freelook.
-
-    Parameters:
-        client (Player)
-            The local player whose movement state should be checked.
-
-    Example Usage:
-        ```lua
-        if lia.camera.isPlayerStationary(LocalPlayer()) then
-            print("Automatic freelook may start after mouse movement.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when no movement keys are held and horizontal velocity is effectively zero.
-
-    Realm:
-        Client
-]]
 function lia.camera.isPlayerStationary(client)
     if not IsValid(client) or client:KeyDown(movementKeys) then return false end
     local velocity = client:GetVelocity()
     return velocity.x * velocity.x + velocity.y * velocity.y <= automaticFreelookSpeedSqr
 end
 
---[[
-    Function: lia.camera.hasFreelookMouseInput
-
-    Purpose:
-        Checks whether mouse input is large enough to intentionally move the freelook camera.
-
-    Parameters:
-        x (number)
-            Horizontal mouse delta.
-
-        y (number)
-            Vertical mouse delta.
-
-    Example Usage:
-        ```lua
-        if lia.camera.hasFreelookMouseInput(x, y) then
-            print("The player moved the camera.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when horizontal or vertical mouse input exceeds the freelook activation threshold.
-
-    Realm:
-        Client
-]]
 function lia.camera.hasFreelookMouseInput(x, y)
     return math.abs(x or 0) > freelookMouseThreshold or math.abs(y or 0) > freelookMouseThreshold
 end
 
---[[
-    Function: lia.camera.canStartAutomaticFreelook
-
-    Purpose:
-        Determines whether mouse movement should automatically begin freelook while the player is stationary.
-
-    Parameters:
-        client (Player)
-            The local player attempting to begin automatic freelook.
-
-        x (number)
-            Horizontal mouse delta.
-
-        y (number)
-            Vertical mouse delta.
-
-    Example Usage:
-        ```lua
-        if lia.camera.canStartAutomaticFreelook(LocalPlayer(), x, y) then
-            lia.camera.beginFreelook(LocalPlayer(), true)
-        end
-        ```
-
-    Returns:
-        boolean
-            True when freelook is available, the player is stationary, and the mouse is moving.
-
-    Realm:
-        Client
-]]
 function lia.camera.canStartAutomaticFreelook(client, x, y)
     if not lia.camera.canUseFreelook(client) then return false end
     if lia.camera.isInSights(client) then return false end
@@ -512,95 +90,23 @@ function lia.camera.canStartAutomaticFreelook(client, x, y)
     return lia.camera.hasFreelookMouseInput(x, y)
 end
 
---[[
-    Function: lia.camera.resetFreelookState
-
-    Purpose:
-        Resets freelook offsets and smoothed freelook angles back to neutral.
-
-    Example Usage:
-        ```lua
-        lia.camera.resetFreelookState()
-        ```
-
-    Realm:
-        Client
-]]
 function lia.camera.resetFreelookState()
     freelookX = 0
     freelookY = 0
     freelookCurrentAngles = zeroAngle
 end
 
---[[
-    Function: lia.camera.beginFreelook
-
-    Purpose:
-        Captures the player's current eye angles and begins manual or automatic freelook.
-
-    Parameters:
-        client (Player)
-            The local player beginning freelook.
-
-        automatic (boolean|nil)
-            Whether freelook was automatically activated by stationary mouse movement.
-
-    Example Usage:
-        ```lua
-        lia.camera.beginFreelook(LocalPlayer(), true)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.camera.beginFreelook(client, automatic)
     freelookInitialAngles = client:EyeAngles()
     freelookInitialAngles.r = 0
     freelookWasHolding = true
 end
 
---[[
-    Function: lia.camera.endFreelook
-
-    Purpose:
-        Ends active freelook and clears all freelook offsets.
-
-    Example Usage:
-        ```lua
-        lia.camera.endFreelook()
-        ```
-
-    Realm:
-        Client
-]]
 function lia.camera.endFreelook()
     freelookWasHolding = false
     lia.camera.resetFreelookState()
 end
 
---[[
-    Function: lia.camera.setManualFreelook
-
-    Purpose:
-        Changes the manual freelook input state for both the Lilia keybind and legacy console commands.
-
-    Parameters:
-        enabled (boolean)
-            Whether manual freelook input should be considered held.
-
-    Example Usage:
-        ```lua
-        lia.camera.setManualFreelook(true)
-        lia.camera.setManualFreelook(false)
-        ```
-
-    Returns:
-        boolean
-            True when the state changed or already matched the requested state, false when a hook blocked it.
-
-    Realm:
-        Client
-]]
 function lia.camera.setManualFreelook(enabled)
     enabled = enabled == true
     if freelooking == enabled then return true end
@@ -612,61 +118,11 @@ function lia.camera.setManualFreelook(enabled)
     return true
 end
 
---[[
-    Function: lia.camera.shouldDrawBodyForFreelook
-
-    Purpose:
-        Determines whether the local player's body should be drawn for freelook.
-
-    Parameters:
-        client (Player)
-            The local player being checked.
-
-    Example Usage:
-        ```lua
-        local allowed = lia.camera.shouldDrawBodyForFreelook()
-        if allowed then
-            print("lia.camera.shouldDrawBodyForFreelook returned true for the current context.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when freelook is active or still easing back toward center.
-
-    Realm:
-        Client
-]]
 function lia.camera.shouldDrawBodyForFreelook(client)
     if not lia.camera.canUseFreelook(client) then return false end
     return freelookWasHolding and (math.abs(freelookCurrentAngles.p) >= 0.05 or math.abs(freelookCurrentAngles.y) >= 0.05)
 end
 
---[[
-    Function: lia.camera.getFirstPersonHeadBones
-
-    Purpose:
-        Finds and caches head, neck, collar, clavicle, and upper chest bones for first-person hiding.
-
-    Parameters:
-        client (Player)
-            The player model whose bones should be inspected.
-
-    Example Usage:
-        ```lua
-        local result = lia.camera.getFirstPersonHeadBones()
-        if istable(result) then
-            PrintTable(result)
-        end
-        ```
-
-    Returns:
-        table
-            A cached list of bone indexes that should be hidden in first-person body view.
-
-    Realm:
-        Client
-]]
 function lia.camera.getFirstPersonHeadBones(client)
     if client.liaFirstPersonHeadBones then return client.liaFirstPersonHeadBones end
     local bones = {}
@@ -698,34 +154,6 @@ function lia.camera.getFirstPersonHeadBones(client)
     return bones
 end
 
---[[
-    Function: lia.camera.getFirstPersonHeadBoneChildren
-
-    Purpose:
-        Collects child bones parented under a first-person head-related root bone.
-
-    Parameters:
-        client (Player)
-            The player model whose skeleton should be inspected.
-
-        rootBone (number)
-            The root bone index used to find descendants.
-
-    Example Usage:
-        ```lua
-        local result = lia.camera.getFirstPersonHeadBoneChildren()
-        if istable(result) then
-            PrintTable(result)
-        end
-        ```
-
-    Returns:
-        table
-            A list of child bone indexes under the given root bone.
-
-    Realm:
-        Client
-]]
 function lia.camera.getFirstPersonHeadBoneChildren(client, rootBone)
     local children = {}
     local boneCount = (client:GetBoneCount() or 0) - 1
@@ -743,31 +171,6 @@ function lia.camera.getFirstPersonHeadBoneChildren(client, rootBone)
     return children
 end
 
---[[
-    Function: lia.camera.getParentAttachmentNames
-
-    Purpose:
-        Builds and caches a lookup of parent attachment names for the player model.
-
-    Parameters:
-        client (Player)
-            The player model whose attachment names should be cached.
-
-    Example Usage:
-        ```lua
-        local result = lia.camera.getParentAttachmentNames()
-        if istable(result) then
-            PrintTable(result)
-        end
-        ```
-
-    Returns:
-        table
-            A table keyed by attachment ID with lowercased attachment names.
-
-    Realm:
-        Client
-]]
 function lia.camera.getParentAttachmentNames(client)
     if client.liaFirstPersonAttachmentNames then return client.liaFirstPersonAttachmentNames end
     local attachmentNames = {}
@@ -779,119 +182,23 @@ function lia.camera.getParentAttachmentNames(client)
     return attachmentNames
 end
 
---[[
-    Function: lia.camera.isHeadAttachmentName
-
-    Purpose:
-        Checks whether an attachment name appears to belong to head or face geometry.
-
-    Parameters:
-        name (string)
-            The lowercased attachment name to inspect.
-
-    Example Usage:
-        ```lua
-        local allowed = lia.camera.isHeadAttachmentName()
-        if allowed then
-            print("lia.camera.isHeadAttachmentName returned true for the current context.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when the name matches a head, face, eye, mouth, or neck attachment.
-
-    Realm:
-        Client
-]]
 function lia.camera.isHeadAttachmentName(name)
     if not name or name == "" then return false end
     return name:find("head", 1, true) or name:find("eye", 1, true) or name:find("face", 1, true) or name:find("mouth", 1, true) or name:find("neck", 1, true)
 end
 
---[[
-    Function: lia.camera.isHeadwearModel
-
-    Purpose:
-        Checks whether a model path appears to represent headwear or face-worn geometry.
-
-    Parameters:
-        model (string)
-            The model path to inspect.
-
-    Example Usage:
-        ```lua
-        local allowed = lia.camera.isHeadwearModel()
-        if allowed then
-            print("lia.camera.isHeadwearModel returned true for the current context.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when the model path matches known headwear terms.
-
-    Realm:
-        Client
-]]
 function lia.camera.isHeadwearModel(model)
     if not model or model == "" then return false end
     model = model:lower()
     return model:find("hat", 1, true) or model:find("mask", 1, true) or model:find("helmet", 1, true) or model:find("head", 1, true) or model:find("face", 1, true)
 end
 
---[[
-    Function: lia.camera.isHeadBodygroupName
-
-    Purpose:
-        Checks whether a bodygroup name appears to control headwear or face geometry.
-
-    Parameters:
-        name (string)
-            The bodygroup name to inspect.
-
-    Example Usage:
-        ```lua
-        local allowed = lia.camera.isHeadBodygroupName()
-        if allowed then
-            print("lia.camera.isHeadBodygroupName returned true for the current context.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when the bodygroup should be hidden for first-person body view.
-
-    Realm:
-        Client
-]]
 function lia.camera.isHeadBodygroupName(name)
     if not name or name == "" then return false end
     name = name:lower()
     return name:find("head", 1, true) or name:find("face", 1, true) or name:find("mask", 1, true) or name:find("helmet", 1, true) or name:find("hat", 1, true) or name:find("gas", 1, true)
 end
 
---[[
-    Function: lia.camera.setFirstPersonHeadBodygroupsHidden
-
-    Purpose:
-        Hides or restores player bodygroups that contain headwear or face geometry.
-
-    Parameters:
-        client (Player)
-            The player model whose bodygroups should be modified.
-
-        hidden (boolean)
-            Whether matching bodygroups should be hidden or restored.
-
-    Example Usage:
-        ```lua
-        lia.camera.setFirstPersonHeadBodygroupsHidden()
-        ```
-
-    Realm:
-        Client
-]]
 function lia.camera.setFirstPersonHeadBodygroupsHidden(client, hidden)
     if not IsValid(client) then return end
     client.liaFirstPersonHiddenBodygroups = client.liaFirstPersonHiddenBodygroups or {}
@@ -911,34 +218,6 @@ function lia.camera.setFirstPersonHeadBodygroupsHidden(client, hidden)
     end
 end
 
---[[
-    Function: lia.camera.shouldHideFirstPersonChildEntity
-
-    Purpose:
-        Determines whether a child entity attached to the player should be hidden in first-person body view.
-
-    Parameters:
-        client (Player)
-            The player whose attached entities are being inspected.
-
-        entity (Entity)
-            The child entity being checked.
-
-    Example Usage:
-        ```lua
-        local allowed = lia.camera.shouldHideFirstPersonChildEntity()
-        if allowed then
-            print("lia.camera.shouldHideFirstPersonChildEntity returned true for the current context.")
-        end
-        ```
-
-    Returns:
-        boolean
-            True when the entity appears to be headwear, facewear, or nearby bonemerged head geometry.
-
-    Realm:
-        Client
-]]
 function lia.camera.shouldHideFirstPersonChildEntity(client, entity)
     if not IsValid(client) or not IsValid(entity) or entity == client then return false end
     if entity == client:GetActiveWeapon() or entity == client:GetViewModel() then return false end
@@ -953,27 +232,6 @@ function lia.camera.shouldHideFirstPersonChildEntity(client, entity)
     return false
 end
 
---[[
-    Function: lia.camera.setFirstPersonHeadwearHidden
-
-    Purpose:
-        Hides or restores headwear entities parented to the player for first-person body view.
-
-    Parameters:
-        client (Player)
-            The player whose child headwear entities should be modified.
-
-        hidden (boolean)
-            Whether matching child entities should be hidden or restored.
-
-    Example Usage:
-        ```lua
-        lia.camera.setFirstPersonHeadwearHidden()
-        ```
-
-    Realm:
-        Client
-]]
 function lia.camera.setFirstPersonHeadwearHidden(client, hidden)
     if not IsValid(client) then return end
     client.liaFirstPersonHiddenChildren = client.liaFirstPersonHiddenChildren or {}
@@ -993,27 +251,6 @@ function lia.camera.setFirstPersonHeadwearHidden(client, hidden)
     end
 end
 
---[[
-    Function: lia.camera.setFirstPersonHeadHidden
-
-    Purpose:
-        Hides or restores local first-person head, neck, head bodygroups, and headwear geometry.
-
-    Parameters:
-        client (Player)
-            The player model to modify.
-
-        hidden (boolean)
-            Whether head-related geometry should be hidden.
-
-    Example Usage:
-        ```lua
-        lia.camera.setFirstPersonHeadHidden()
-        ```
-
-    Realm:
-        Client
-]]
 function lia.camera.setFirstPersonHeadHidden(client, hidden)
     if not IsValid(client) then return end
     if client.liaFirstPersonHeadHidden == hidden then return end
@@ -1035,28 +272,6 @@ function lia.camera.setFirstPersonHeadHidden(client, hidden)
     client:InvalidateBoneCache()
 end
 
---[[
-    Function: lia.camera.getFreelookHeadPoseParameters
-
-    Purpose:
-        Finds and caches the current model's head pitch and head yaw pose parameters.
-
-    Parameters:
-        client (Player)
-            The local player whose model pose parameters should be inspected.
-
-    Example Usage:
-        ```lua
-        local pitch, yaw = lia.camera.getFreelookHeadPoseParameters(LocalPlayer())
-        ```
-
-    Returns:
-        number, number
-            The head pitch and head yaw pose parameter indexes, or negative values when unsupported.
-
-    Realm:
-        Client
-]]
 function lia.camera.getFreelookHeadPoseParameters(client)
     local model = client:GetModel() or ""
     if client.liaFreelookHeadPoseModel ~= model then
@@ -1067,24 +282,6 @@ function lia.camera.getFreelookHeadPoseParameters(client)
     return client.liaFreelookHeadPitchParameter, client.liaFreelookHeadYawParameter
 end
 
---[[
-    Function: lia.camera.updateFreelookHead
-
-    Purpose:
-        Applies the horizontal freelook camera offset to only the local player's head yaw without rotating the body.
-
-    Parameters:
-        client (Player)
-            The local player whose head pose should be updated.
-
-    Example Usage:
-        ```lua
-        lia.camera.updateFreelookHead(LocalPlayer())
-        ```
-
-    Realm:
-        Client
-]]
 function lia.camera.updateFreelookHead(client)
     if not IsValid(client) then return end
     local active = lia.camera.canUseFreelook(client) and freelookWasHolding
@@ -1115,34 +312,6 @@ function lia.camera.updateFreelookHead(client)
     if changed then client:InvalidateBoneCache() end
 end
 
---[[
-    Function: lia.camera.applyFreelookToAngles
-
-    Purpose:
-        Applies the current horizontal freelook offset to a camera angle when freelook is available.
-
-    Parameters:
-        client (Player)
-            The local player using freelook.
-
-        angles (Angle)
-            The base camera angles.
-
-    Example Usage:
-        ```lua
-        local result = lia.camera.applyFreelookToAngles()
-        if result then
-            print(result)
-        end
-        ```
-
-    Returns:
-        Angle
-            The adjusted camera angles.
-
-    Realm:
-        Client
-]]
 function lia.camera.applyFreelookToAngles(client, angles)
     if not lia.camera.canUseFreelook(client) or not freelooking then
         if freelookWasHolding then lia.camera.endFreelook() end
@@ -1155,40 +324,6 @@ function lia.camera.applyFreelookToAngles(client, angles)
     return angles + freelookCurrentAngles
 end
 
---[[
-    Function: lia.camera.buildRealisticView
-
-    Purpose:
-        Builds a realistic first-person view from the player's eye attachment or eye position.
-
-    Parameters:
-        client (Player)
-            The local player.
-
-        origin (Vector)
-            The original view origin.
-
-        angles (Angle)
-            The original view angles.
-
-        fov (number)
-            The current field of view.
-
-    Example Usage:
-        ```lua
-        local result = lia.camera.buildRealisticView()
-        if istable(result) then
-            PrintTable(result)
-        end
-        ```
-
-    Returns:
-        table|nil
-            A CalcView-compatible view table when realistic view can be built.
-
-    Realm:
-        Client
-]]
 function lia.camera.buildRealisticView(client, origin, angles, fov)
     if IsValid(lia.gui.menu) then return end
     if client:GetMoveType() == MOVETYPE_NOCLIP then return end
@@ -1210,40 +345,6 @@ function lia.camera.buildRealisticView(client, origin, angles, fov)
     }
 end
 
---[[
-    Function: lia.camera.buildFreelookBodyView
-
-    Purpose:
-        Builds a first-person body view while freelook is active or easing back to center.
-
-    Parameters:
-        client (Player)
-            The local player.
-
-        pos (Vector)
-            The original view position.
-
-        ang (Angle)
-            The original view angles.
-
-        fov (number)
-            The current field of view.
-
-    Example Usage:
-        ```lua
-        local result = lia.camera.buildFreelookBodyView()
-        if istable(result) then
-            PrintTable(result)
-        end
-        ```
-
-    Returns:
-        table|nil
-            A CalcView-compatible view table when body rendering should be forced.
-
-    Realm:
-        Client
-]]
 function lia.camera.buildFreelookBodyView(client, pos, ang, fov)
     if not lia.camera.shouldDrawBodyForFreelook(client) then return end
     local bodyView = lia.camera.buildRealisticView(client, pos, ang, fov)
@@ -1258,37 +359,6 @@ function lia.camera.buildFreelookBodyView(client, pos, ang, fov)
     }
 end
 
---[[
-    Function: lia.camera.calcView
-
-    Purpose:
-        Builds the final Lilia camera view for third-person, realistic first-person, freelook body view, or the default first-person view.
-
-    Parameters:
-        client (Player)
-            The player whose view is being calculated.
-
-        pos (Vector)
-            The original view position.
-
-        ang (Angle)
-            The original view angles.
-
-        fov (number)
-            The current field of view.
-
-    Returns:
-        table
-            A CalcView-compatible table containing origin, angles, fov, and drawviewer when required.
-
-    Example Usage:
-        ```lua
-        hook.Add("CalcView", "liaCameraCalcView", lia.camera.calcView)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.camera.calcView(client, pos, ang, fov)
     ft = FrameTime()
     local owner = LocalPlayer()

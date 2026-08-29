@@ -1,4 +1,4 @@
-function ENT:Initialize()
+﻿function ENT:Initialize()
     self:SetModel(self.Model)
     self:SetUseType(SIMPLE_USE)
     self:SetMoveType(MOVETYPE_VPHYSICS)

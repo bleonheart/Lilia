@@ -1,4 +1,4 @@
-local function canInviteToFaction(client, target)
+﻿local function canInviteToFaction(client, target)
     local clientChar = client:getChar()
     local targetChar = target:getChar()
     if not clientChar or not targetChar then return false end

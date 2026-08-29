@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 net.Receive("liaChatboxRequestFilteredWords", function(_, client)
     if not hook.Run("CanManageFilteredWords", client) then return end
     MODULE:SyncFilteredWords(client)

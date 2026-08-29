@@ -1,4 +1,4 @@
-SWEP.Base = "weapon_base"
+﻿SWEP.Base = "weapon_base"
 SWEP.PrintName = "Distance Tool"
 SWEP.Author = "liliaplayer"
 SWEP.Contact = "liliaplayer"

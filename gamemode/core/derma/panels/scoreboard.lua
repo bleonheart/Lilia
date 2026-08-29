@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local frameColor = Color(4, 14, 19, 248)
 local headerColor = Color(5, 18, 24, 252)
 local panelColor = Color(6, 21, 28, 246)

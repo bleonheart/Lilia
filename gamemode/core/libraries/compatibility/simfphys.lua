@@ -1,4 +1,4 @@
-if SERVER then
+﻿if SERVER then
     hook.Add("EntityTakeDamage", "liaSimfphys", function(target, dmgInfo)
         if IsValid(target) and target:isSimfphysCar() then
             local attacker = dmgInfo:GetAttacker()

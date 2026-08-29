@@ -1,4 +1,4 @@
-local currentCategoryData = {}
+﻿local currentCategoryData = {}
 local categoryIcons = {
     combat = "icon16/brick.png",
     connections = "icon16/connect.png",

@@ -1,4 +1,4 @@
-local spawnCooldowns = {}
+﻿local spawnCooldowns = {}
 local validToolTiers = {
     disabled = true,
     staff = true,

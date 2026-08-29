@@ -1,4 +1,4 @@
-local uploads = WireLib.RegisterPlayerTable()
+﻿local uploads = WireLib.RegisterPlayerTable()
 local upload_ents = WireLib.RegisterPlayerTable()
 net.Receive("wire_expression2_upload", function(len, ply)
     local toent = Entity(net.ReadUInt(16))

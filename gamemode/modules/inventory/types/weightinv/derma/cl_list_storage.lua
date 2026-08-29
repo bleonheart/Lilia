@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local BORDER_FIX_W = 8
 local PADDING = 4
 function PANEL:Init()

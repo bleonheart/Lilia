@@ -1,4 +1,4 @@
-ENT.Type = "anim"
+﻿ENT.Type = "anim"
 ENT.Base = "base_anim"
 ENT.PrintName = "Ammo Box"
 ENT.Author = "Samael"

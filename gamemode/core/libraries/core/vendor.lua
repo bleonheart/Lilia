@@ -1,4 +1,4 @@
-lia.vendor = lia.vendor or {}
+﻿lia.vendor = lia.vendor or {}
 lia.vendor.stored = lia.vendor.stored or {}
 lia.vendor.editor = lia.vendor.editor or {}
 lia.vendor.presets = lia.vendor.presets or {}

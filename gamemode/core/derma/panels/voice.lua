@@ -1,4 +1,4 @@
-local VoicePanels = {}
+﻿local VoicePanels = {}
 local function ClearVoicePanels()
     for client, pnl in pairs(VoicePanels) do
         if IsValid(pnl) then pnl:Remove() end

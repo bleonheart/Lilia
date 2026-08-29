@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local PADDING = 2
 local WEIGHT_PANEL_HEIGHT = 32
 local SHADOW_COLOR = Color(0, 0, 0, 100)

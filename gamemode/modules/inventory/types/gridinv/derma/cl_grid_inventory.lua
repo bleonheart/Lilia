@@ -1,4 +1,4 @@
-local function headerHeight(frame)
+﻿local function headerHeight(frame)
     return IsValid(frame.btnClose) and frame.btnClose:GetTall() + 4 or 24
 end
 

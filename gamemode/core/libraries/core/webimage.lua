@@ -1,44 +1,4 @@
---[[
-    Folder: Developer - Libraries
-    File: lia.webimage.md
-]]
---[[
-    Web Image
-
-    Web image helpers for downloading remote PNG and JPEG assets, caching them under the data folder, resolving registered image names, and allowing Material and DImage to load web-backed images.
-]]
---[[
-    Overview:
-        The web image library centralizes clientside image loading under `lia.webimage`. It validates HTTP and HTTPS image URLs, downloads supported image formats into `data/lilia/webimages/`, caches built materials, maps URLs to stored image names, and integrates those cached assets with `Material` and `DImage:SetImage`.
-]]
---[[
-    Hooks:
-        WebImageDownloaded(string name, string path)
-
-    Purpose:
-        Runs after a web image is successfully downloaded, saved, and built into a material.
-
-    Category:
-        Web Image
-
-    Parameters:
-        name (string)
-            The registered image name or derived save name used by the web image cache.
-
-        path (string)
-            The data material path for the downloaded image, prefixed with `data/`.
-
-    Example Usage:
-        ```lua
-        hook.Add("WebImageDownloaded", "liaExampleWebImageDownloaded", function(name, path)
-            print("[MyModule] handled WebImageDownloaded")
-        end)
-        ```
-
-    Realm:
-        Client
-]]
-lia.webimage = lia.webimage or {}
+﻿lia.webimage = lia.webimage or {}
 lia.webimage.stored = lia.webimage.stored or {}
 local baseDir = "lilia/webimages/"
 local cache = {}
@@ -96,37 +56,6 @@ local function validateURL(url)
     return true
 end
 
---[[
-    Purpose:
-        Downloads a named web image, validates the URL, stores supported PNG or JPEG data under the web image cache folder, builds a material for the saved file, and updates download statistics.
-
-    Parameters:
-        n (string)
-            The image cache name or save name to use for the downloaded image.
-
-        u (string|nil)
-            The URL to download. When omitted, the URL stored for `n` in `lia.webimage.stored` is used.
-
-        cb (function|nil)
-            Optional callback called with the material and cache state on success, or nil, false, and an error message on failure.
-
-        flags (string|nil)
-            Optional material flags used when building the cached material.
-
-    Example Usage:
-        ```lua
-        lia.webimage.download("schema_logo", "https://example.com/schema_logo.png", function(material, fromCache, err)
-            if material and not material:IsError() then
-                print(string.format("Loaded schema logo (from cache: %s)", tostring(fromCache)))
-            elseif err then
-                print("Schema logo failed to download:", err)
-            end
-        end, "smooth noclamp")
-        ```
-
-    Realm:
-        Client
-]]
 function lia.webimage.download(n, u, cb, flags)
     if not isstring(n) then return end
     local url = u or lia.webimage.stored[n] and lia.webimage.stored[n].url
@@ -211,36 +140,6 @@ function lia.webimage.download(n, u, cb, flags)
     end)
 end
 
---[[
-    Purpose:
-        Registers a named web image URL and immediately starts downloading or loading it through the web image cache.
-
-    Parameters:
-        n (string)
-            The image name used to store and retrieve the web image.
-
-        u (string)
-            The HTTP or HTTPS URL for the image.
-
-        cb (function|nil)
-            Optional callback passed to `lia.webimage.download`.
-
-        flags (string|nil)
-            Optional material flags saved with the registered image and used when building its material.
-
-    Example Usage:
-        ```lua
-        lia.webimage.register("schema_logo", "https://example.com/schema_logo.png", function(material)
-            if material and not material:IsError() then
-                local icon = vgui.Create("DImage")
-                icon:SetImage("schema_logo")
-            end
-        end)
-        ```
-
-    Realm:
-        Client
-]]
 function lia.webimage.register(n, u, cb, flags)
     lia.webimage.stored[n] = {
         url = u,
@@ -250,33 +149,6 @@ function lia.webimage.register(n, u, cb, flags)
     lia.webimage.download(n, u, cb, flags)
 end
 
---[[
-    Purpose:
-        Returns a cached material for a registered image name, URL, or saved web image path when the file is already available locally.
-
-    Parameters:
-        n (string)
-            The registered image name, mapped URL, or saved cache path to resolve.
-
-        flags (string|nil)
-            Optional material flags used when building the material if it is not already cached.
-
-    Example Usage:
-        ```lua
-        local material = lia.webimage.get("schema_logo", "smooth noclamp")
-        if material and not material:IsError() then
-            surface.SetMaterial(material)
-            surface.DrawTexturedRect(32, 32, 128, 128)
-        end
-        ```
-
-    Returns:
-        IMaterial|nil
-            The cached or newly built material when the saved image exists, otherwise nil.
-
-    Realm:
-        Client
-]]
 function lia.webimage.get(n, flags)
     local key = urlMap[n] or n
     if cache[key] then return cache[key] end
@@ -365,25 +237,6 @@ function dimage:SetImage(src, backup)
     origSetImage(self, src, backup)
 end
 
---[[
-    Purpose:
-        Returns runtime statistics for the web image cache.
-
-    Example Usage:
-        ```lua
-        local imageStats = lia.webimage.getStats()
-        if imageStats.stored > 0 then
-            PrintTable(imageStats)
-        end
-        ```
-
-    Returns:
-        table
-            A table containing `downloaded`, `stored`, and `lastReset` values.
-
-    Realm:
-        Client
-]]
 function lia.webimage.getStats()
     local totalStored = 0
     for _ in pairs(lia.webimage.stored) do
@@ -396,24 +249,6 @@ function lia.webimage.getStats()
     }
 end
 
---[[
-    Purpose:
-        Clears cached materials, URL mappings, and downloaded files from the web image cache folder, then optionally re-registers stored web images.
-
-    Parameters:
-        skipReRegister (boolean|nil)
-            Whether to skip re-registering images from `lia.webimage.stored` after clearing cached files.
-
-    Example Usage:
-        ```lua
-        lia.webimage.clearCache(true)
-        lia.webimage.register("schema_logo", "https://example.com/schema_logo.png")
-        lia.webimage.register("schema_icon", "https://example.com/schema_icon.png")
-        ```
-
-    Realm:
-        Client
-]]
 function lia.webimage.clearCache(skipReRegister)
     cache = {}
     urlMap = {}

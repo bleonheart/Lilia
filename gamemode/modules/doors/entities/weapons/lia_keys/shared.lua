@@ -1,4 +1,4 @@
-SWEP.Author = "liliaplayer"
+﻿SWEP.Author = "liliaplayer"
 SWEP.Contact = "liliaplayer"
 SWEP.Instructions = "Primary Fire: Lock\nSecondary Fire: Unlock"
 SWEP.Drop = false

@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 function MODULE:CanPlayerSeeLogs(client)
     local adminConsoleNetworkLogs = lia.config.get("AdminConsoleNetworkLogs", true)
     local canSeeLogs = client:hasPrivilege("canSeeLogs")

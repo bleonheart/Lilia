@@ -1,4 +1,4 @@
-function ENT:Initialize()
+﻿function ENT:Initialize()
     if self:GetModel() == "models/error.mdl" or self:GetModel() == "" then self:SetModel("models/props_junk/cardboard_box002b.mdl") end
     self:SetSolid(SOLID_VPHYSICS)
     self:SetUseType(SIMPLE_USE)
