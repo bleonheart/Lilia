@@ -1,5 +1,5 @@
-if SERVER then
-concommand.Add("lia_redownload_assets", function(client)
+﻿if SERVER then
+    concommand.Add("lia_redownload_assets", function(client)
         if IsValid(client) then
             client:notifyError("This command can only be run from the server console.")
             return
@@ -9,4 +9,3 @@ concommand.Add("lia_redownload_assets", function(client)
         lia.information("Assets Redownloaded")
     end)
 end
-

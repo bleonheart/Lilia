@@ -118,5 +118,4 @@ if SERVER then
         if IsValid(client) and not client:IsSuperAdmin() then return end
         appendPermanentFlags(args[1], args[2])
     end)
-
-
+end

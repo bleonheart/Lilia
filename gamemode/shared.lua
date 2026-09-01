@@ -15,7 +15,7 @@ for _, hint in ipairs(hints) do
     hook.Run("SuppressHint", hint)
 end
 
-function lia.error(msg)
+ function lia.error(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. "Error" .. "] ")
     MsgC(Color(255, 0, 0), tostring(msg), "\n")
 end

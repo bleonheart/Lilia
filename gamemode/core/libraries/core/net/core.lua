@@ -168,43 +168,6 @@ local function getChunkInterval()
     return (lia.reloadInProgress and chunkTime * 2) or chunkTime
 end
 
-local function generateCacheKey(name, args)
-    local key = name .. "|"
-    for i, arg in ipairs(args) do
-        key = key .. tostring(arg) .. (i < #args and "|" or "")
-    end
-    return util.CRC(key)
-end
-
-local function cleanupCache()
-    local currentTime = CurTime()
-    local expired = {}
-    for key, entry in pairs(lia.net.cache) do
-        if currentTime - entry.timestamp > CACHE_TTL then table.insert(expired, key) end
-    end
-
-    for _, key in ipairs(expired) do
-        lia.net.cache[key] = nil
-    end
-
-    local cacheSize = table.Count(lia.net.cache)
-    if cacheSize > MAX_CACHE_SIZE then
-        local sorted = {}
-        for key, entry in pairs(lia.net.cache) do
-            table.insert(sorted, {
-                key = key,
-                timestamp = entry.timestamp
-            })
-        end
-
-        table.sort(sorted, function(a, b) return a.timestamp < b.timestamp end)
-        local toRemove = cacheSize - MAX_CACHE_SIZE
-        for i = 1, math.min(toRemove, #sorted) do
-            lia.net.cache[sorted[i].key] = nil
-        end
-    end
-end
-
 function lia.net.readBigTable(netStr, callback)
     lia.net.buffers[netStr] = lia.net.buffers[netStr] or {}
     net.Receive(netStr, function(_, ply)
@@ -296,7 +259,7 @@ if SERVER then
         end)
     end
 
-function lia.net.writeBigTable(targets, netStr, tbl, chunkSize)
+    function lia.net.writeBigTable(targets, netStr, tbl, chunkSize)
         if not istable(tbl) then return end
         local json = util.TableToJSON(tbl)
         if not json then return end
@@ -367,7 +330,11 @@ if SERVER then
         if not q then return end
         local s = q[sid]
         if not s or last ~= s.idx then return end
-        if s.idx >= s.total then q[sid] = nil return end
+        if s.idx >= s.total then
+            q[sid] = nil
+            return
+        end
+
         timer.Simple(getChunkInterval(), function()
             if not IsValid(ply) then return end
             local qq = lia.net.sendq[ply]

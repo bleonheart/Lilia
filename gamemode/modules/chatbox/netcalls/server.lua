@@ -37,6 +37,7 @@ net.Receive("liaChatboxRemoveFilteredWord", function(_, client)
     client:notifySuccess(string.format("Removed filtered word: %s", result))
     MODULE:SyncFilteredWords()
 end)
+
 net.Receive("liaMessageData", function(_, client)
     local text = net.ReadString()
     if not text then return end

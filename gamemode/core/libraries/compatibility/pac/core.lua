@@ -1,4 +1,6 @@
-﻿if SERVER then
+﻿if not pac then return end
+print("[Lilia] Loaded PAC3 compatibility.")
+if SERVER then
     hook.Add("PostPlayerInitialSpawn", "liaPAC", function(client) timer.Simple(1, function() client:syncParts() end) end)
     hook.Add("PlayerLoadout", "liaPAC", function(client) client:resetParts() end)
     game.ConsoleCommand("sv_pac_webcontent_limit 35840\n")
@@ -134,7 +136,9 @@ else
 
     net.Receive("liaPacSync", function()
         for _, client in player.Iterator() do
-            for id in pairs(client:getParts()) do hook.Run("AttachPart", client, id) end
+            for id in pairs(client:getParts()) do
+                hook.Run("AttachPart", client, id)
+            end
         end
     end)
 
@@ -154,7 +158,10 @@ else
         local client = net.ReadEntity()
         if not IsValid(client) or not client.RemovePACPart then return end
         if client.liaPACParts then
-            for _, part in pairs(client.liaPACParts) do client:RemovePACPart(part) end
+            for _, part in pairs(client.liaPACParts) do
+                client:RemovePACPart(part)
+            end
+
             client.liaPACParts = nil
         end
     end)

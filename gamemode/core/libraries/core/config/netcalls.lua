@@ -1,4 +1,4 @@
-if CLIENT then
+﻿if CLIENT then
     net.Receive("liaCfgList", function()
         local data = net.ReadTable() or {}
         for k, v in pairs(data) do
@@ -26,7 +26,6 @@ if CLIENT then
         hook.Run("OnConfigUpdated", key, oldValue, lia.config.stored[key].value)
     end)
 end
-
 
 if SERVER then
     net.Receive("liaCfgList", function(_, client)

@@ -254,6 +254,7 @@ net.Receive("liaStaffCharacterConfiguration", function()
     lia.staffCharacterFlags = config.flags
     if MODULE.staffCharacterConfigurationRefresh then MODULE.staffCharacterConfigurationRefresh(true) end
 end)
+
 net.Receive("liaBodygrouperMenu", function()
     local client = LocalPlayer()
     if IsValid(lia.gui.bodygroupMenu) then lia.gui.bodygroupMenu:Remove() end

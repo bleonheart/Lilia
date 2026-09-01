@@ -1,4 +1,4 @@
-local function fetchURL(url, onSuccess, onError)
+﻿local function fetchURL(url, onSuccess, onError)
     local hasChttp = util.IsBinaryModuleInstalled("chttp")
     if hasChttp then
         require("chttp")
@@ -184,3 +184,14 @@ function lia.loader.checkForUpdates()
         end
     end, function(err) logError(string.format("Error fetching framework version: %s", err)) end)
 end
+
+concommand.Add("lia_check_updates", function(client)
+    lia.debug("[Permissions]", "Permission Check for concommand lia_check_updates", "isValidPlayer=", tostring(IsValid(client)), "isSuperAdmin=", tostring(IsValid(client) and client:IsSuperAdmin() or true), "finalResult=", tostring(not IsValid(client) or client:IsSuperAdmin()))
+    if IsValid(client) and not client:IsSuperAdmin() then
+        client:notifyError("You do not have permission to use this command.")
+        return
+    end
+
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Checking for updates..." .. "\n")
+    lia.loader.checkForUpdates()
+end)

@@ -341,15 +341,9 @@ if SERVER then
         return output
     end
 else
-    lia.util.ShadowText = lia.derma.shadowText
-    lia.util.DrawTextOutlined = lia.derma.drawTextOutlined
-    lia.util.DrawTip = lia.derma.drawTip
     lia.util.drawText = lia.derma.drawText
-    lia.util.drawTexture = lia.derma.drawSurfaceTexture
-    lia.util.skinFunc = lia.derma.skinFunc
     lia.util.approachExp = lia.derma.approachExp
-    lia.util.easeOutCubic = lia.derma.easeOutCubic
-    lia.util.easeInOutCubic = lia.derma.easeInOutCubic
+    local easeInOutCubic = lia.derma.easeInOutCubic
     function lia.util.animateAppearance(panel, targetWidth, targetHeight, duration, alphaDuration, callback, scaleFactor)
         scaleFactor = scaleFactor or 0.8
         if not IsValid(panel) then return end
@@ -838,7 +832,7 @@ else
         end
 
         lia.util.entsScales[idx] = cur
-        local eased = lia.util.easeInOutCubic(cur)
+        local eased = easeInOutCubic(cur)
         if eased <= 0 then return end
         local fade = eased
         if alphaOverride then

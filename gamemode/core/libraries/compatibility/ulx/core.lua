@@ -1,4 +1,6 @@
-﻿hook.Add("ULibGroupAccessChanged", "liaULXCAMI", function(group_name, access, revoke)
+﻿if not ulx then return end
+print("[Lilia] Loaded ULX compatibility.")
+hook.Add("ULibGroupAccessChanged", "liaULXCAMI", function(group_name, access, revoke)
     if not group_name or not access then return end
     if not revoke then
         if CAMI and not CAMI.GetPrivilege(access) then

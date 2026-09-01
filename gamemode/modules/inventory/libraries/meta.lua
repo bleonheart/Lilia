@@ -1,5 +1,4 @@
-local playerMeta = FindMetaTable("Player")
-
+﻿local playerMeta = FindMetaTable("Player")
 function playerMeta:getItemWeapon()
     local character = self:getChar()
     local inv = character:getInv()
@@ -24,6 +23,7 @@ function playerMeta:getItemDropPos()
         endpos = self:GetShootPos() + self:GetAimVector() * 86,
         filter = self
     }
+
     local trace = util.TraceLine(data)
     data.start = trace.HitPos
     data.endpos = data.start + trace.HitNormal * 46

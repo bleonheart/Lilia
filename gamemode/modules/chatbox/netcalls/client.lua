@@ -20,6 +20,7 @@ net.Receive("liaChatboxSyncFilteredWords", function()
     MODULE.filteredWords = words
     if IsValid(MODULE.filteredWordAdminPanel) and MODULE.filteredWordAdminPanel.populateFilteredWords then MODULE.filteredWordAdminPanel:populateFilteredWords(words) end
 end)
+
 net.Receive("liaChatMsg", function()
     local client = net.ReadEntity()
     local chatType = net.ReadString()
@@ -41,6 +42,7 @@ net.Receive("liaChatMsg", function()
         end
     end
 end)
+
 net.Receive("liaServerChatAddText", function()
     local args = net.ReadTable()
     if #args >= 3 and IsColor(args[1]) and isstring(args[2]) and IsColor(args[3]) then

@@ -1,4 +1,4 @@
-local panelMeta = FindMetaTable("Panel")
+﻿local panelMeta = FindMetaTable("Panel")
 local originalSetSize = panelMeta.SetSize
 local originalSetPos = panelMeta.SetPos
 function panelMeta:liaListenForInventoryChanges(inventory)
@@ -555,5 +555,3 @@ function panelMeta:ReadyTextbox()
     self:SetPaintBackground(false)
     self:SetAppendOverwrite("PaintOver"):SetTransitionFunc(function(s) return s:IsEditing() end)
 end
-
-

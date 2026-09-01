@@ -1,4 +1,6 @@
-﻿local groupLevelCache = {}
+﻿if not CAMI then return end
+print("[Lilia] Loaded CAMI compatibility.")
+local groupLevelCache = {}
 local function getGroupLevel(group)
     if groupLevelCache[group] ~= nil then return groupLevelCache[group] end
     local levels = lia.admin.DefaultGroups or {}

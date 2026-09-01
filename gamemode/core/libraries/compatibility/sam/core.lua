@@ -1,4 +1,6 @@
-﻿hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
+﻿if not sam then return end
+print("[Lilia] Loaded SAM | Admin Mod compatibility.")
+hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
 local function getGroupLevelForPermissionSummary(groupName, visited)
     visited = visited or {}
     if visited[groupName] then return 1 end

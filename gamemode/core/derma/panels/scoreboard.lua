@@ -621,7 +621,6 @@ function PANEL:addPlayer(ply, parent)
         local description = hook.Run("ShouldAllowScoreboardOverride", ply, "desc") and hook.Run("GetDisplayedDescription", ply, false) or char:getDesc()
         description = description:gsub("#", "\226\128\139#")
         local wrapped = lia.util.wrapText(description, math.max(self.desc:GetWide(), 80), "LiliaFont.16", 1, " (...)")
-
         local finalDescription = table.concat(wrapped, "\n")
         if self.lastDesc ~= finalDescription then
             self.desc:SetText(finalDescription)

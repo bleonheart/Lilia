@@ -1,4 +1,4 @@
-if SERVER then
+﻿if SERVER then
     local MODULE = MODULE
     function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
         local isStaffOnDuty = client:isStaffOnDuty()

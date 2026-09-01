@@ -554,7 +554,9 @@ lia.char.registerVar("banned", {
 function lia.char.getCharData(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return deferred.new():reject("invalid character ID") end
-    return lia.db.select({"key", "value"}, "chardata", {charID = charIDsafe}):next(function(result)
+    return lia.db.select({"key", "value"}, "chardata", {
+        charID = charIDsafe
+    }):next(function(result)
         local data = {}
         for _, row in ipairs(result.results) do
             local ok, decoded = pcall(pon.decode, row.value)
@@ -821,7 +823,9 @@ if SERVER then
     function lia.char.getCharBanned(charID)
         local charIDsafe = tonumber(charID)
         if not charIDsafe then return deferred.new():reject("invalid character ID") end
-        return lia.db.selectOne("banned", "characters", {id = charIDsafe}):next(function(result) return tonumber(result and result.banned) or 0 end)
+        return lia.db.selectOne("banned", "characters", {
+            id = charIDsafe
+        }):next(function(result) return tonumber(result and result.banned) or 0 end)
     end
 
     function lia.char.setCharDatabase(charID, field, value)

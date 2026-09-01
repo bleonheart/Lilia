@@ -746,4 +746,3 @@ hook.Add("SetupQuickMenu", "liaFreelookSetupQuickMenu", function(menu)
         end
     end, lia.option.get("freelookEnabled", false))
 end)
-

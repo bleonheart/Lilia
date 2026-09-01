@@ -476,7 +476,6 @@ end
 
 lia.websound.register("button_click.wav", "https://bleonheart.github.io/Samael-Assets/misc/button_click.wav")
 lia.websound.register("ratio_button.wav", "https://bleonheart.github.io/Samael-Assets/misc/ratio_button.wav")
-
 net.Receive("liaEmitUrlSound", function()
     local ent = net.ReadEntity()
     local soundPath = net.ReadString()
@@ -501,4 +500,5 @@ net.Receive("liaEmitUrlSound", function()
         ent:EmitSound(soundPath, soundLevel, nil, volume, nil, nil, nil)
     end
 end)
+
 ensureDir(baseDir)

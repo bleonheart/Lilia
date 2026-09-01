@@ -370,6 +370,7 @@ net.Receive("liaSaveFactionNote", function(_, client)
                 else
                     lia.char.setCharDatabase(charID, "factionNotes", notesByFaction)
                 end
+
                 sendFactionMemberDetails(client, factionUniqueID, charID)
             end):catch(function(message) lia.error("Failed to load faction notes: " .. tostring(message)) end)
             return

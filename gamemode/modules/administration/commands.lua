@@ -1284,8 +1284,14 @@ if SERVER then
         onRun = function(client, arguments)
             local charID = tonumber(arguments[1])
             if not charID then return client:notifyError("Invalid character ID.") end
-            lia.db.selectOne("id", "characters", {id = charID}):next(function(result)
-                if not result then client:notifyError("Character not found.") return end
+            lia.db.selectOne("id", "characters", {
+                id = charID
+            }):next(function(result)
+                if not result then
+                    client:notifyError("Character not found.")
+                    return
+                end
+
                 lia.char.setCharDatabase(charID, "banned", 0)
                 lia.char.setCharDatabase(charID, "charBanInfo", nil)
                 client:notifySuccess(string.format("Offline character ID %s has been unbanned.", charID))
@@ -1306,16 +1312,28 @@ if SERVER then
         onRun = function(client, arguments)
             local charID = tonumber(arguments[1])
             if not charID then return client:notifyError("Invalid character ID.") end
-            lia.db.selectOne("id", "characters", {id = charID}):next(function(result)
-                if not result then client:notifyError("Character not found.") return end
+            lia.db.selectOne("id", "characters", {
+                id = charID
+            }):next(function(result)
+                if not result then
+                    client:notifyError("Character not found.")
+                    return
+                end
+
                 lia.char.setCharDatabase(charID, "banned", -1)
-                lia.char.setCharDatabase(charID, "charBanInfo", {name = client:Nick(), steamID = client:SteamID(), rank = client:GetUserGroup()})
+                lia.char.setCharDatabase(charID, "charBanInfo", {
+                    name = client:Nick(),
+                    steamID = client:SteamID(),
+                    rank = client:GetUserGroup()
+                })
+
                 for _, ply in player.Iterator() do
                     if ply:getChar() and ply:getChar():getID() == charID then
                         ply:Kick("You have been banned.")
                         break
                     end
                 end
+
                 client:notifySuccess(string.format("Offline character ID %s has been banned.", charID))
                 lia.log.add(client, "charBanOffline", charID)
             end):catch(function(message) client:notifyError("Database error: " .. tostring(message)) end)
@@ -1822,12 +1840,19 @@ lia.command.add("charunban", {
                 local charID = tonumber(data[1].id)
                 lia.char.getCharBanned(charID):next(function(banned)
                     client.liaNextSearch = 0
-                    if banned == 0 then client:notifyInfo("This character isn't banned!") return end
+                    if banned == 0 then
+                        client:notifyInfo("This character isn't banned!")
+                        return
+                    end
+
                     lia.char.setCharDatabase(charID, "banned", 0)
                     lia.char.setCharDatabase(charID, "charBanInfo", nil)
                     client:notifySuccess(string.format("%s has unbanned the character %s.", client:Name(), data[1].name))
                     lia.log.add(client, "charUnban", data[1].name, charID)
-                end):catch(function(message) client.liaNextSearch = 0 client:notifyError("Database error: " .. tostring(message)) end)
+                end):catch(function(message)
+                    client.liaNextSearch = 0
+                    client:notifyError("Database error: " .. tostring(message))
+                end)
             end
         end)
     end
@@ -2935,6 +2960,7 @@ lia.command.add("getallinfos", {
                     lia.admin(column .. " = " .. tostring(value))
                 end
             end
+
             client:notifyInfo("Character information printed to console.")
         end):catch(function(message) client:notifyError("Database error: " .. tostring(message)) end)
     end

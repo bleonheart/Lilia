@@ -1,5 +1,4 @@
-lia.player = lia.player or {}
-
+﻿lia.player = lia.player or {}
 function lia.player.registerWaypointStop(player, waypointID, onReach)
     concommand.Add("waypoint_stop_" .. waypointID, function()
         hook.Remove("HUDPaint", waypointID)

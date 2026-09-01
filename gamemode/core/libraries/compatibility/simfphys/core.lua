@@ -1,4 +1,6 @@
-﻿if SERVER then
+﻿if not simfphys then return end
+print("[Lilia] Loaded Simfphys Vehicles compatibility.")
+if SERVER then
     hook.Add("EntityTakeDamage", "liaSimfphys", function(target, dmgInfo)
         if IsValid(target) and target:isSimfphysCar() then
             local attacker = dmgInfo:GetAttacker()

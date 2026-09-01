@@ -10,6 +10,7 @@
         if errorMsg then client:notifyError(errorMsg) end
     end
 end)
+
 net.Receive("liaStaffDiscordResponse", function(_, client)
     local discord = net.ReadString()
     local character = client:getChar()

@@ -1,8 +1,5 @@
-if CLIENT then
-    lia.net.readBigTable("liaSendTableUI", function(data)
-        lia.util.createTableUI(data.title, data.columns, data.data, data.options, data.characterID)
-    end)
-
+﻿if CLIENT then
+    lia.net.readBigTable("liaSendTableUI", function(data) lia.util.createTableUI(data.title, data.columns, data.data, data.options, data.characterID) end)
     net.Receive("liaDataSync", function()
         local bytesRemaining = net.BytesLeft()
         if bytesRemaining > 100 then

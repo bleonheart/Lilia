@@ -1,4 +1,6 @@
-﻿local uploads = WireLib.RegisterPlayerTable()
+﻿if not SERVER or not WireLib then return end
+print("[Lilia] Loaded Wiremod compatibility.")
+local uploads = WireLib.RegisterPlayerTable()
 local upload_ents = WireLib.RegisterPlayerTable()
 net.Receive("wire_expression2_upload", function(len, ply)
     local toent = Entity(net.ReadUInt(16))

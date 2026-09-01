@@ -78,12 +78,17 @@ local function buildInfoLines(weapon, maxWidth)
     local maxLines = 5
     if weapon.Purpose and tostring(weapon.Purpose):find("%S") then
         local wrapped = lia.util.wrapText("Purpose: " .. tostring(weapon.Purpose), maxWidth, "LiliaFont.17", maxLines - #lines)
-        for _, line in ipairs(wrapped) do lines[#lines + 1] = line end
+        for _, line in ipairs(wrapped) do
+            lines[#lines + 1] = line
+        end
     end
+
     if #lines < maxLines and weapon.Instructions and tostring(weapon.Instructions):find("%S") then
         lines[#lines + 1] = "Instructions:"
         local wrapped = lia.util.wrapText(tostring(weapon.Instructions), maxWidth, "LiliaFont.17", maxLines - #lines)
-        for _, line in ipairs(wrapped) do lines[#lines + 1] = line end
+        for _, line in ipairs(wrapped) do
+            lines[#lines + 1] = line
+        end
     end
     return lines, #lines > 0 and #lines * 19 or 0, 19
 end

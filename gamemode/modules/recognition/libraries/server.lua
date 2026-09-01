@@ -20,6 +20,7 @@ function MODULE:ForceRecognizeRange(ply, range, fakeName)
     hook.Run("OnCharRecognized", ply)
     hook.Run("CharForceRecognized", ply, range)
 end
+
 local function canRecog(ply)
     return lia.config.get("RecognitionEnabled", true) and ply:getChar() and ply:Alive()
 end

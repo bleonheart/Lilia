@@ -1,4 +1,6 @@
-﻿local function CheckDuplicationScale(client, entities)
+﻿if not SERVER or not AdvDupe then return end
+print("[Lilia] Loaded AdvDupe compatibility.")
+local function CheckDuplicationScale(client, entities)
     entities = entities or {}
     for _, ent in pairs(entities) do
         if ent.ModelScale and ent.ModelScale > 10 then

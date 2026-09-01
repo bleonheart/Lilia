@@ -1,4 +1,4 @@
-if SERVER then
+﻿if SERVER then
     net.Receive("liaKeybindServer", function(_, ply)
         if not IsValid(ply) then return end
         local action = net.ReadString()

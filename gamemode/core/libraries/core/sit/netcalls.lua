@@ -1,4 +1,4 @@
-if SERVER then
+﻿if SERVER then
     local pitchOffset = Angle(270, 0, 0)
     net.Receive("liaSitSitFacing", function(_, ply)
         local curTime = CurTime()

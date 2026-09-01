@@ -1114,7 +1114,6 @@ local function toggleStandaloneInventory()
 end
 
 lia.keybind.toggleStandaloneInventory = toggleStandaloneInventory
-
 lia.keybind.add("openInventory", {
     keyBind = KEY_NONE,
     desc = "Opens your inventory menu",

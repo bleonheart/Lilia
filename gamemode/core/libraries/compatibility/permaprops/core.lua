@@ -1,4 +1,6 @@
-﻿local spawnedPositions = {}
+﻿if not SERVER or not PermaProps then return end
+print("[Lilia] Loaded PermaProps compatibility.")
+local spawnedPositions = {}
 local radiusSqr = 16
 local lastSaver
 hook.Add("CanTool", "liaPermaProps", function(ply, trace, tool)

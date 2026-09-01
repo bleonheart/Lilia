@@ -53,7 +53,6 @@ local function cfgCoerceValue(key, value)
 end
 
 lia.config.coerceValue = cfgCoerceValue
-
 local function cfgValuesEqual(a, b)
     a = cfgNormalizeValue(a)
     b = cfgNormalizeValue(b)
@@ -278,8 +277,6 @@ if SERVER then
         lia.config.save()
         lia.config.send()
     end
-
-    end)
 else
     hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
         local uiColors = {

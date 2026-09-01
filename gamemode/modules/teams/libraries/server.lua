@@ -478,10 +478,12 @@ function MODULE:TrackOfflineFactionTransfer(charID, oldFactionValue, newFactionV
             bySteamID = IsValid(actor) and actor:SteamID() or nil,
             reason = reason or "transferred"
         })
+
         trimFactionHistory(history)
         lia.char.setCharDatabase(charID, "factionTransferHistory", history)
     end):catch(function(message) lia.error("Failed to track offline faction transfer: " .. tostring(message)) end)
 end
+
 local function canInviteToFaction(client, target)
     local clientChar = client:getChar()
     local targetChar = target:getChar()

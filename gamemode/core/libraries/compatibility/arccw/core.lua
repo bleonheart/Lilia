@@ -1,4 +1,5 @@
-﻿lia.bootstrap("ArcCW", "Loading ArcCW compatibility...")
+﻿if not ArcCWInstalled then return end
+print("[Lilia] Loaded ArcCW compatibility.")
 hook.Remove("PlayerSpawn", "ArcCW_SpawnAttInv")
 RunConsoleCommand("arccw_override_hud_off", "1")
 RunConsoleCommand("arccw_override_crosshair_off", 1)

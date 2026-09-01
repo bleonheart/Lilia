@@ -1,4 +1,6 @@
-﻿local function OnPrivilegeRegistered(privilege)
+﻿if not serverguard then return end
+print("[Lilia] Loaded ServerGuard compatibility.")
+local function OnPrivilegeRegistered(privilege)
     local permission = privilege.Name
     serverguard.permission:Add(permission)
     if SERVER then

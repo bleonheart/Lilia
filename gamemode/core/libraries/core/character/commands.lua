@@ -1,18 +1,18 @@
-local function registerCharacterCommands()
-    lia.command.add("charid", {
-        adminOnly = false,
-        desc = "Displays your current character's ID.",
-        onRun = function(client)
-            local char = client:getChar()
-            if not char then
-                client:notifyError("You have no character selected")
-                return
-            end
-
-            local charID = char:getID()
-            client:notifyInfo(string.format("Your character ID is: %s", charID))
+﻿lia.command.add("charid", {
+    adminOnly = false,
+    desc = "Displays your current character's ID.",
+    onRun = function(client)
+        local char = client:getChar()
+        if not char then
+            client:notifyError("You have no character selected")
+            return
         end
-    })
+
+        local charID = char:getID()
+        client:notifyInfo(string.format("Your character ID is: %s", charID))
+    end
+})
+
 lia.command.add("returntodeathpos", {
     adminOnly = true,
     desc = "Return to your last recorded death position.",
@@ -177,15 +177,9 @@ lia.command.add("fallover", {
         timer.Simple(time, function() if IsValid(client) then client.FallOverCooldown = false end end)
     end
 })
-end
 
-if lia.command and lia.command.add then
-    registerCharacterCommands()
-else
-    hook.Add("LiliaCommandFrameworkReady", "liaCharacterCommands", registerCharacterCommands)
-end
 if SERVER then
-concommand.Add("lia_wipecharacters", function(client)
+    concommand.Add("lia_wipecharacters", function(client)
         if IsValid(client) then
             client:notifyError("This command can only be run from the server console.")
             return
@@ -195,7 +189,7 @@ concommand.Add("lia_wipecharacters", function(client)
         lia.information("All characters have been wiped!")
     end)
 
-concommand.Add("lia_fix_characters", function(client)
+    concommand.Add("lia_fix_characters", function(client)
         if IsValid(client) then
             client:notifyError("This command can only be run from the server console.")
             return

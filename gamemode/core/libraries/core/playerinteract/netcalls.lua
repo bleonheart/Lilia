@@ -1,4 +1,4 @@
-if SERVER then
+﻿if SERVER then
     net.Receive("liaRunInteraction", function(_, ply)
         local name = net.ReadString()
         local hasEntity = net.ReadBool()
@@ -14,7 +14,11 @@ if SERVER then
         end
 
         if opt and opt.type == "action" and opt.serverOnly then
-            if hasEntity and IsValid(tracedEntity) then opt.onRun(ply, tracedEntity) else opt.onRun(ply) end
+            if hasEntity and IsValid(tracedEntity) then
+                opt.onRun(ply, tracedEntity)
+            else
+                opt.onRun(ply)
+            end
         end
     end)
 
@@ -47,11 +51,24 @@ if SERVER then
                     local ok, result = pcall(opt.shouldShow, ply, requestType == "interaction" and ent or nil)
                     canShow = ok and result ~= false
                 end
+
                 local inRange = requestType ~= "interaction" or lia.playerinteract.isWithinRange(ply, ent, opt.range and math.min(opt.range, 100) or 100)
                 local target = opt.target or "player"
                 local targetMatches = requestType ~= "interaction" or target == "any" or target == "player" and ent:IsPlayer() or target == "entity" and not ent:IsPlayer()
                 if canShow and inRange and targetMatches then
-                    options[#options + 1] = {name = name, opt = {type = opt.type, serverOnly = opt.serverOnly and true or false, range = opt.range, category = opt.category or "", target = opt.target, timeToComplete = opt.timeToComplete, actionText = opt.actionText, targetActionText = opt.targetActionText}}
+                    options[#options + 1] = {
+                        name = name,
+                        opt = {
+                            type = opt.type,
+                            serverOnly = opt.serverOnly and true or false,
+                            range = opt.range,
+                            category = opt.category or "",
+                            target = opt.target,
+                            timeToComplete = opt.timeToComplete,
+                            actionText = opt.actionText,
+                            targetActionText = opt.targetActionText
+                        }
+                    }
                 end
             end
         end
@@ -75,6 +92,7 @@ if SERVER then
             net.WriteBool(data.targetActionText ~= nil)
             if data.targetActionText ~= nil then net.WriteString(data.targetActionText) end
         end
+
         net.Send(ply)
     end)
 end

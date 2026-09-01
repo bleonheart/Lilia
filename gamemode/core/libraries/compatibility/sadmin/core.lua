@@ -1,4 +1,6 @@
-﻿local sadminCommands = {
+﻿if not SERVER or not concommand.GetTable().sa then return end
+print("[Lilia] Loaded sAdmin compatibility.")
+local sadminCommands = {
     kick = function(id, _, reason) RunConsoleCommand("sa", "kick", id, reason or "") end,
     ban = function(id, dur, reason) RunConsoleCommand("sa", "ban", id, tostring(dur or 0), reason or "") end,
     banid = function(id, dur, reason) RunConsoleCommand("sa", "banid", id, tostring(dur or 0), reason or "") end,

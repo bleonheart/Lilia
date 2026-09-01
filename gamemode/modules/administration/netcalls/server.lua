@@ -1503,6 +1503,7 @@ net.Receive("liaRequestOnlineStaffData", function(_, client)
         net.Send(client)
     end)
 end)
+
 net.Receive("liaBodygrouperMenuClose", function(_, client)
     for _, v in pairs(ents.FindByClass("lia_bodygrouper")) do
         if v:HasUser(client) then v:RemoveUser(client) end
@@ -1622,6 +1623,7 @@ local function canAccessWardrobe(client)
     end
     return client:hasPrivilege("manageBodygroups")
 end
+
 net.Receive("liaWardrobeChangeModel", function(_, client)
     local character = client:getChar()
     if not character then return end

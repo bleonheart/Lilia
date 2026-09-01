@@ -1,4 +1,4 @@
-if SERVER then
+﻿if SERVER then
     concommand.Add("sit", function(ply)
         local curTime = CurTime()
         local steamID = ply:SteamID64()

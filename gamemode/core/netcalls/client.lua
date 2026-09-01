@@ -1,4 +1,4 @@
-local PaintedNotificationPanel = {}
+﻿local PaintedNotificationPanel = {}
 function PaintedNotificationPanel:Init()
     self.labelText = ""
     self.labelColor = Color(255, 255, 255)

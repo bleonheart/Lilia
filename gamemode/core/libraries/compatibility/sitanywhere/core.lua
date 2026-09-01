@@ -1,4 +1,6 @@
-﻿local function isSitAnywhereCallback(callback)
+﻿if not SitAnywhere then return end
+print("[Lilia] Loaded Sit Anywhere compatibility.")
+local function isSitAnywhereCallback(callback)
     if not isfunction(callback) or not debug or not debug.getinfo then return false end
     local info = debug.getinfo(callback, "S")
     if not info or not isstring(info.source) then return false end

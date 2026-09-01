@@ -1,4 +1,4 @@
-net.Receive("liaInsertKeyPressed", function(_, client)
+﻿net.Receive("liaInsertKeyPressed", function(_, client)
     if not IsValid(client) then return end
     local char = client:getChar()
     if not char then return end

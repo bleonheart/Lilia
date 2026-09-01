@@ -1,5 +1,4 @@
-local playerMeta = FindMetaTable("Player")
-
+﻿local playerMeta = FindMetaTable("Player")
 function playerMeta:hasPrivilege(privilegeName)
     if not isstring(privilegeName) then
         lia.error(string.format("Privilege name must be a string, got %s", tostring(privilegeName)))
@@ -31,6 +30,7 @@ local function groupHasType(groupName, t)
         for _, typ in ipairs(info.types or {}) do
             if tostring(typ):lower() == t then return true end
         end
+
         groupName = info.inheritance
     end
     return false

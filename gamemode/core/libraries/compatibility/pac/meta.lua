@@ -1,5 +1,5 @@
+﻿if not pac then return end
 local playerMeta = FindMetaTable("Player")
-
 function playerMeta:getParts()
     return self:getNetVar("parts", {})
 end

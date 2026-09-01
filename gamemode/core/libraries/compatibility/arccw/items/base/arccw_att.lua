@@ -1,4 +1,5 @@
-﻿ITEM.name = "arccwAttachment"
+﻿if not ArcCWInstalled then return end
+ITEM.name = "arccwAttachment"
 ITEM.desc = "arccwAttachmentDesc"
 ITEM.category = "attachments"
 ITEM.model = "models/Items/BoxSRounds.mdl"

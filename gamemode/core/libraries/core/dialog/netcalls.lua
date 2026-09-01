@@ -1,8 +1,5 @@
-if CLIENT then
-    lia.net.readBigTable("liaDialogSync", function(data)
-        if istable(data) then lia.dialog.stored = data end
-    end)
-
+﻿if CLIENT then
+    lia.net.readBigTable("liaDialogSync", function(data) if istable(data) then lia.dialog.stored = data end end)
     net.Receive("liaOpenNpcDialog", function()
         local npc = net.ReadEntity()
         local canCustomize = net.ReadBool()
@@ -124,9 +121,14 @@ if SERVER then
                 end
             end
 
-            for _, line in ipairs(response) do pushLine(line) end
+            for _, line in ipairs(response) do
+                pushLine(line)
+            end
+
             if #payload == 0 then
-                for _, line in pairs(response) do pushLine(line) end
+                for _, line in pairs(response) do
+                    pushLine(line)
+                end
             end
             return #payload > 0 and payload or nil
         end
@@ -234,7 +236,10 @@ if SERVER then
             for _, entry in pairs(conversationTable) do
                 if istable(entry) and isfunction(entry.GetOptions) then
                     local dynamicOptions = entry.GetOptions(ply, npc)
-                    if istable(dynamicOptions) and dynamicOptions[label] then option = dynamicOptions[label] break end
+                    if istable(dynamicOptions) and dynamicOptions[label] then
+                        option = dynamicOptions[label]
+                        break
+                    end
                 end
             end
         end
@@ -256,7 +261,11 @@ if SERVER then
         local payload
         if isfunction(option.Response) then
             local success, result = pcall(option.Response, ply, npc)
-            if not success then ErrorNoHalt(string.format("[Lilia] Dialog response error for '%s': %s\n", label, tostring(result))) return end
+            if not success then
+                ErrorNoHalt(string.format("[Lilia] Dialog response error for '%s': %s\n", label, tostring(result)))
+                return
+            end
+
             payload = result
         else
             payload = option.Response
@@ -284,7 +293,12 @@ if SERVER then
         if not selectedNode then return end
         local allowed = false
         if currentNode then
-            for _, childID in ipairs(currentNode.children or {}) do if childID == selectedNodeID then allowed = true break end end
+            for _, childID in ipairs(currentNode.children or {}) do
+                if childID == selectedNodeID then
+                    allowed = true
+                    break
+                end
+            end
         else
             local startNode = lia.dialog.getGeneratedStartNode(generatedDialog)
             if startNode and startNode.id == selectedNodeID then allowed = true end
@@ -295,7 +309,16 @@ if SERVER then
         local responseText = success and selectedNode.npcText or (selectedNode.requirementMessage ~= "" and selectedNode.requirementMessage or "You do not meet the requirement for this dialog.")
         if success then applyGeneratedNodeEffects(ply, npc, selectedNode) end
         net.Start("liaNpcDialogNodeResult")
-        net.WriteTable({success = success, selectedNodeID = selectedNodeID, currentNodeID = currentNodeID, npcText = responseText, soundPath = success and selectedNode.soundPath or "", closeDialog = success and isGeneratedCloseNode(selectedNode) or false, options = buildGeneratedNodeOptions(generatedDialog, success and selectedNodeID or currentNodeID)})
+        net.WriteTable({
+            success = success,
+            selectedNodeID = selectedNodeID,
+            currentNodeID = currentNodeID,
+            npcText = responseText,
+            soundPath = success and selectedNode.soundPath or "",
+            closeDialog = success and isGeneratedCloseNode(selectedNode) or false,
+            options = buildGeneratedNodeOptions(generatedDialog, success and selectedNodeID or currentNodeID)
+        })
+
         net.Send(ply)
     end)
 
@@ -309,7 +332,11 @@ if SERVER then
         if not config or not isfunction(config.onApply) then return end
         if isfunction(config.shouldShow) then
             local ok, allowed = pcall(config.shouldShow, ply, npc, npc.uniqueID)
-            if not ok then ErrorNoHalt(string.format("[Lilia] NPC configuration '%s' visibility check failed: %s\n", configID, tostring(allowed))) return end
+            if not ok then
+                ErrorNoHalt(string.format("[Lilia] NPC configuration '%s' visibility check failed: %s\n", configID, tostring(allowed)))
+                return
+            end
+
             if allowed == false then return end
         end
 

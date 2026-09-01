@@ -1,4 +1,4 @@
-lia.db = lia.db or {}
+﻿lia.db = lia.db or {}
 lia.db.prepared = lia.db.prepared or {}
 lia.db.schemaLoading = lia.db.schemaLoading or false
 lia.db.schemaCallbacks = lia.db.schemaCallbacks or {}

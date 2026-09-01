@@ -113,7 +113,6 @@ if SERVER then
     lia.sit.optimalRotation = lia.sit.findBestSittingRotation
     lia.sit.canSitHere = lia.sit.canPlayerSitAt
     lia.sit.sit = lia.sit.placePlayerInSeat
-
     hook.Add("PlayerLeaveVehicle", "lia.sit.remove", function(ply, chair)
         if not IsValid(chair) then return end
         if not chair.liaSit then return end

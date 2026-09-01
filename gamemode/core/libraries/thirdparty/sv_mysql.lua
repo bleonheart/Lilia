@@ -1,4 +1,4 @@
-mysql = mysql or {}
+﻿mysql = mysql or {}
 mysql.module = mysql.module or "sqlite"
 mysql.queue = mysql.queue or {}
 mysql.state = mysql.state or "disconnected"

@@ -1,4 +1,4 @@
-if SERVER then
+﻿if SERVER then
     net.Receive("liaCommandData", function(_, client)
         local command = net.ReadString()
         local arguments = net.ReadTable()

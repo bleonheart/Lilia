@@ -1,4 +1,4 @@
-if SERVER then
+﻿if SERVER then
     net.Receive("liaStringRequest", function(_, client)
         local id = net.ReadUInt(32)
         local value = net.ReadString()
