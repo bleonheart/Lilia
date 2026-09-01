@@ -318,7 +318,7 @@ The player interaction library centralizes menu-driven player interactions under
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liaplayerinteractopenmenu"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-  <p>Opens the clientside player interaction or personal action options menu.</p>
+  <p>Opens the clientside player interaction or personal action radial menu.</p>
 </div>
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
@@ -338,7 +338,7 @@ The player interaction library centralizes menu-driven player interactions under
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Returns</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-<p><span class="types"><a class="type" href="/developer/meta/panel/">Panel|nil</a></span> The created options menu panel, or nil if the local player is invalid.</p>
+<p><span class="types"><a class="type" href="/developer/meta/panel/">Panel|nil</a></span> The created radial panel, or nil if the local player is invalid.</p>
 </div>
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
@@ -360,7 +360,7 @@ The player interaction library centralizes menu-driven player interactions under
 ---
 
 <details class="realm-server" id="function-onvoicetypechanged">
-<summary><span class="summary-main"><a id="OnVoiceTypeChanged"></a>OnVoiceTypeChanged(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/playerinteract.lua#L14" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnVoiceTypeChanged"></a>OnVoiceTypeChanged(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/playerinteract.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onvoicetypechanged"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

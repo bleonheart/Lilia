@@ -28,7 +28,7 @@ This page documents hooks in the data category.
 ---
 
 <details class="realm-server" id="function-ondataset">
-<summary><span class="summary-main"><a id="OnDataSet"></a>OnDataSet(key, value, gamemode, map)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/data.lua#L14" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnDataSet"></a>OnDataSet(key, value, gamemode, map)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/data.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="ondataset"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -67,7 +67,7 @@ This page documents hooks in the data category.
 ---
 
 <details class="realm-server" id="function-persistencesave">
-<summary><span class="summary-main"><a id="PersistenceSave"></a>PersistenceSave()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/data.lua#L70" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="PersistenceSave"></a>PersistenceSave()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/data.lua#L57" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="persistencesave"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -98,7 +98,7 @@ This page documents hooks in the data category.
 ---
 
 <details class="realm-server" id="function-savedata">
-<summary><span class="summary-main"><a id="SaveData"></a>SaveData()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/data.lua#L47" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="SaveData"></a>SaveData()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/data.lua#L34" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="savedata"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

@@ -1,6 +1,8 @@
 ﻿MODULE.name = "Chat Box"
 MODULE.author = "Samael"
-MODULE.NetworkStrings = {"liaChatboxAddFilteredWord", "liaChatboxRemoveFilteredWord", "liaChatboxRequestFilteredWords", "liaChatboxSyncFilteredWords"}
+MODULE.discord = "liliaplayer"
+MODULE.desc = "Replaces the default chat with a configurable box that supports colored text, command parsing, and dedicated staff channels."
+MODULE.NetworkStrings = {"liaChatboxAddFilteredWord", "liaChatboxRemoveFilteredWord", "liaChatboxRequestFilteredWords", "liaChatboxSyncFilteredWords", "liaChatMsg", "liaMessageData", "liaServerChatAddText", "liaServerChatAddTextShadowed"}
 MODULE.Privileges = {
     ["noOOCCooldown"] = {
         Name = "No OOC Cooldown",

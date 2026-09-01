@@ -67,7 +67,7 @@ export enum ComponentType {
   liaNotice = 'liaNotice',
   liaNoticePanel = 'liaNoticePanel',
   liaVoicePanel = 'liaVoicePanel',
-  liaLockCircle = 'liaLockCircle',
+  liaActionCircle = 'liaActionCircle',
   liaDermaMenu = 'liaDermaMenu'
 }
 

@@ -79,7 +79,7 @@ local ForceDrawCrosshairWeapon = {
 }
 
 local function getHUDFont(size, suffix)
-    return "HUDFont." .. tostring(size) .. (suffix or "")
+    return "LiliaHUDFont." .. tostring(size) .. (suffix or "")
 end
 
 local function isToolgunHUDHidden(client)
@@ -233,57 +233,6 @@ local function buildPlayerInfoSections(descriptionRows, infoRows, defaultInfoTit
     return sections
 end
 
-local function fitDescriptionLine(text, maxWidth, font, suffix)
-    surface.SetFont(font)
-    local trimmed = string.Trim(text or "")
-    local candidate = trimmed .. (suffix or "")
-    while trimmed ~= "" and surface.GetTextSize(candidate) > maxWidth do
-        trimmed = string.Trim(trimmed:sub(1, -2))
-        candidate = trimmed .. (suffix or "")
-    end
-    return candidate ~= "" and candidate or (suffix or "")
-end
-
-local function wrapPlayerDescription(text, maxWidth, font, maxLines)
-    local source = string.Trim(tostring(text or ""):gsub("%s+", " "))
-    if source == "" then return {""} end
-    surface.SetFont(font)
-    local lines = {}
-    local remaining = source
-    local truncated = false
-    while remaining ~= "" and #lines < maxLines do
-        if surface.GetTextSize(remaining) <= maxWidth then
-            lines[#lines + 1] = remaining
-            remaining = ""
-            break
-        end
-
-        local lastFitIndex, lastSpaceIndex
-        for i = 1, #remaining do
-            local chunk = remaining:sub(1, i)
-            if surface.GetTextSize(chunk) <= maxWidth then
-                lastFitIndex = i
-                if chunk:sub(-1):match("%s") then lastSpaceIndex = i end
-            else
-                break
-            end
-        end
-
-        if not lastFitIndex then
-            lines[#lines + 1] = fitDescriptionLine(remaining:sub(1, 1), maxWidth, font)
-            remaining = remaining:sub(2):gsub("^%s+", "")
-        else
-            local splitIndex = lastSpaceIndex or lastFitIndex
-            lines[#lines + 1] = string.Trim(remaining:sub(1, splitIndex))
-            remaining = remaining:sub(splitIndex + 1):gsub("^%s+", "")
-        end
-    end
-
-    if remaining ~= "" then truncated = true end
-    if truncated and #lines > 0 then lines[#lines] = fitDescriptionLine(lines[#lines], maxWidth, font, "(...)") end
-    return lines
-end
-
 local function canDrawAmmo(wpn)
     if not IsValid(wpn) or wpn.DrawAmmo == false then return false end
     local hookResult = hook.Run("ShouldDrawAmmo", wpn)
@@ -402,6 +351,11 @@ local function RenderEntities()
                     if IsValid(netPlayer) then
                         local p = toScreen(ent:LocalToWorld(ent:OBBCenter()))
                         hook.Run("DrawEntityInfo", netPlayer, a, p)
+                    elseif ent.DrawInfo then
+                        for _, info in ipairs(ent.DrawInfo) do
+                            local text = isfunction(info.text) and info.text(ent) or info.text
+                            lia.util.drawEntText(ent, text, info.posY, a)
+                        end
                     elseif ent.onDrawEntityInfo then
                         ent.onDrawEntityInfo(ent, a)
                     else
@@ -516,7 +470,7 @@ function GM:DrawCharInfo(c, character, info)
 
         info[#info + 1] = {
             label = "Condition",
-            value = L(injured[1])
+            value = injured[1]
         }
     end
 end
@@ -555,7 +509,7 @@ function GM:DrawEntityInfo(e, a, pos)
     if e.liaDescLines == nil or e.liaDescWrapWidth ~= descriptionWrapWidth then
         local wrappedDesc = e.liaDescCache or desc
         if #wrappedDesc > 250 then wrappedDesc = wrappedDesc:sub(1, 250) .. "..." end
-        e.liaDescLines = wrapPlayerDescription(wrappedDesc, descriptionWrapWidth, getHUDFont(17), 3)
+        e.liaDescLines = lia.util.wrapText(wrappedDesc, descriptionWrapWidth, getHUDFont(17), 3, "(...)")
         e.liaDescWrapWidth = descriptionWrapWidth
     end
 
@@ -866,7 +820,7 @@ function GM:ItemShowEntityMenu(entity)
     end
 
     if IsValid(liaItemDermaMenu) then liaItemDermaMenu:Remove() end
-    liaItemDermaMenu = vgui.Create("liaDermaMenu")
+    liaItemDermaMenu = DermaMenu()
     local tempItem = table.Copy(itemTable)
     tempItem.player = LocalPlayer()
     tempItem.entity = entity
@@ -874,7 +828,7 @@ function GM:ItemShowEntityMenu(entity)
         if key == "combine" then continue end
         if hook.Run("CanRunItemAction", tempItem, key) == false then continue end
         if isfunction(fn.onCanRun) and not fn.onCanRun(tempItem) then continue end
-        liaItemDermaMenu:AddOption(L(fn.name or key), function()
+        liaItemDermaMenu:AddOption(fn.name or key, function()
             if fn.sound then surface.PlaySound(fn.sound) end
             if not fn.onClick or fn.onClick(tempItem) ~= false then
                 net.Start("liaInvAct")
@@ -1163,7 +1117,7 @@ function GM:CharLoaded(character)
 end
 
 function GM:PrePlayerDraw(client)
-    if lia.view.shouldHidePlayer(client) then
+    if lia.camera.shouldHidePlayer(client) then
         client:DrawShadow(false)
         return true
     end

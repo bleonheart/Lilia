@@ -1,4 +1,4 @@
-local function closeAdminStickMenu()
+﻿local function closeAdminStickMenu()
     if AdminStickIsOpen and IsValid(AdminStickMenu) then AdminStickMenu:Remove() end
 end
 
@@ -85,6 +85,26 @@ end
 
 local function canUseDebugMode(client)
     return IsValid(client) and (client:hasPrivilege("developmentHUD") or client:hasPrivilege("staffHUD"))
+end
+
+local DEBUG_TRACE_HULL_MINS = Vector(-6, -6, -6)
+local DEBUG_TRACE_HULL_MAXS = Vector(6, 6, 6)
+local function getDebugTrace(client)
+    local trace = client:GetEyeTrace()
+    if IsValid(trace.Entity) then return trace end
+    local startPos = client:GetShootPos()
+    local endPos = startPos + client:GetAimVector() * 32768
+    local hullTrace = util.TraceHull({
+        start = startPos,
+        endpos = endPos,
+        mins = DEBUG_TRACE_HULL_MINS,
+        maxs = DEBUG_TRACE_HULL_MAXS,
+        filter = client,
+        mask = MASK_SHOT
+    })
+
+    if IsValid(hullTrace.Entity) then return hullTrace end
+    return trace
 end
 
 local function formatDebugVector(vector)
@@ -257,7 +277,7 @@ local function openRemovalMenu(weapon)
         button:DockMargin(0, 15, 10, 15)
         button.DoClick = function()
             lia.util.removeFeaturePosition(point.pos, typeInfo.id)
-            LocalPlayer():notifySuccessLocalized("Successfully removed %s", point.label or string.format("Point %s", index))
+            LocalPlayer():notifySuccess(string.format("Successfully removed %s", point.label or string.format("Point %s", index)))
             frame:Close()
             refreshPositions(weapon, typeInfo.id)
         end
@@ -275,7 +295,7 @@ SWEP:RegisterMode("admin", {
         if IsValid(target) and target:IsPlayer() and target ~= client then
             lia.admin.execCommand(target:IsFrozen() and "unfreeze" or "freeze", target:IsBot() and target:Name() or target:SteamID())
         else
-            client:notifyErrorLocalized("You cannot freeze this!")
+            client:notifyError("You cannot freeze this!")
         end
     end,
     Reload = function(_, client)
@@ -337,9 +357,26 @@ SWEP:RegisterMode("debug", {
     name = function() return "Debug Mode" end,
     CanUse = canUseDebugMode,
     PrimaryAttack = function(_, client)
-        local trace = client:GetEyeTrace()
+        local trace = getDebugTrace(client)
         if IsValid(trace.Entity) then properties.OpenEntityMenu(trace.Entity, trace) end
     end
+})
+
+SWEP:RegisterMode("quick", {
+    name = function() return "Quick Mode" end,
+    CanUse = function(client) return IsValid(client) and (client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty()) end,
+    PrimaryAttack = function(_, client)
+        local target = isSelfSelectHeld(client) and client or client:GetEyeTrace().Entity
+        if not IsValid(target) then return end
+        closeAdminStickMenu()
+        client.AdminStickTarget = target
+        hook.Run("OpenAdminStickQuickMenu", target)
+    end,
+    Reload = function(_, client)
+        closeAdminStickMenu()
+        client.AdminStickTarget = nil
+    end,
+    OnExit = function() closeAdminStickMenu() end
 })
 
 function SWEP:GetDebugHUDInfo()
@@ -352,7 +389,7 @@ local function drawTopRightModeHUD(title, rows)
     lia.derma.drawBoxWithText(nil, ScrW() - 24, 24, {
         title = title,
         rows = rows,
-        font = "HUDFont.18",
+        font = "LiliaHUDFont.18",
         textColor = lia.color.theme.text or Color(235, 240, 242),
         textAlignX = TEXT_ALIGN_RIGHT,
         textAlignY = TEXT_ALIGN_TOP,
@@ -387,8 +424,10 @@ function SWEP:DrawHUD()
         return
     end
 
-    if mode ~= "admin" then return end
-    local _, entityRows = self:GetAdminStickHUDInfo()
+    if mode ~= "admin" and mode ~= "quick" then return end
+    local client = LocalPlayer()
+    local target = IsValid(client.AdminStickTarget) and client.AdminStickTarget or client:GetEyeTrace().Entity
+    local entityRows = IsValid(target) and buildAdminStickHUDRows(client, target) or nil
     local rows = entityRows or {}
     if #rows > 0 then
         rows[#rows + 1] = {
@@ -398,10 +437,17 @@ function SWEP:DrawHUD()
 
     rows[#rows + 1] = {
         label = "Reload",
-        value = "Reload: Switch tool section":gsub("^.-:%s*", "")
+        value = ("Reload: Switch tool section"):gsub("^.-:%s*", "")
     }
 
-    drawTopRightModeHUD("Administrative Mode", rows)
+    if mode == "quick" then
+        rows[#rows + 1] = {
+            label = "Left Click",
+            value = "Open options"
+        }
+    end
+
+    drawTopRightModeHUD(mode == "quick" and "Quick Mode" or "Administrative Mode", rows)
 end
 
 function SWEP:GetAdminStickHUDInfo()

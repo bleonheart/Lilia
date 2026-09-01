@@ -84,13 +84,13 @@ function generateStackableItem() {
   const model = (document.getElementById('item-model').value || '').trim() || 'models/props_junk/garbage_metalcan002a.mdl';
   const width = document.getElementById('item-width').value || '1';
   const height = document.getElementById('item-height').value || '1';
-  const maxQuantity = document.getElementById('max-stacks').value || '16';
+  const maxStack = document.getElementById('max-stacks').value || '16';
   const canSplit = document.getElementById('can-split').checked;
 
   const properties = [
     `    name = ${JSON.stringify(name)},`,
     `    model = ${JSON.stringify(model)},`,
-    `    maxQuantity = ${maxQuantity}`
+    `    maxStack = ${maxStack}`
   ];
 
   if (width !== '1') properties.splice(3, 0, `    width = ${width},`);
@@ -98,7 +98,7 @@ function generateStackableItem() {
   if (!canSplit) properties.push('    canSplit = false');
 
   const lines = [
-  `lia.item.registerItem(${JSON.stringify(uniqueId)}, "base_stackable", {`,
+  `lia.item.registerItem(${JSON.stringify(uniqueId)}, nil, {`,
   ...properties,
   '})'
   ];

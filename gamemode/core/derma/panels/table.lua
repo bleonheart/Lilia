@@ -551,7 +551,7 @@ function PANEL:CreateRow(rowIndex, rowData)
         if not self.multiSelect then self.selectedRow = rowIndex end
         self:OnRowRightClick(rowIndex, rowData)
         if self.OnRightClick then self:OnRightClick(rowData) end
-        local menu = lia.derma.dermaMenu()
+        local menu = DermaMenu()
         local addedAny = false
         for _, option in ipairs(self.customMenuOptions) do
             local canShow = true

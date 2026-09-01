@@ -186,7 +186,7 @@ function PANEL:Rebuild()
             end)
 
             btnTab.DoRightClick = function()
-                local dm = lia.derma.dermaMenu()
+                local dm = DermaMenu()
                 for k, v in pairs(self.tabs) do
                     dm:AddOption(v.name, function() self:SetActiveTab(k) end, v.icon)
                 end

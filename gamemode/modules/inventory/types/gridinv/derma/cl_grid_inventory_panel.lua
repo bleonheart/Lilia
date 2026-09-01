@@ -1,19 +1,13 @@
 ﻿local PANEL = {}
 local SLOT_GAP = 6
 local SLOT_RADIUS = 6
-local function getThemeColors()
-    local theme = lia.color and lia.color.theme or {}
-    local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
-    return accent, theme.text or Color(232, 240, 240)
-end
-
 local function drawPanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
 end
 
 local function drawSlot(x, y, w, h, highlighted)
-    local accent = select(1, getThemeColors())
+    local accent = lia.color.theme.accent
     local background = highlighted and Color(255, 255, 255, 7) or Color(2, 14, 18, 130)
     local outline = highlighted and Color(accent.r, accent.g, accent.b, 100) or Color(accent.r, accent.g, accent.b, 30)
     drawPanel(x, y, w, h, SLOT_RADIUS, background, outline)

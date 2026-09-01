@@ -138,7 +138,7 @@ The item meta table wraps a registered or instanced item and exposes helpers for
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Returns</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">number</a></span> The item quantity, or `maxQuantity` for non-instanced items.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">number</a></span> The item quantity, or `maxStack` for non-instanced items.</p>
 </div>
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
@@ -1404,4 +1404,3 @@ The item meta table wraps a registered or instanced item and exposes helpers for
 </details>
 
 ---
-

@@ -56,12 +56,15 @@ nav:
           - Administration - Tickets: developer/hooks/administration-tickets.md
           - Administration - Warnings: developer/hooks/administration-warnings.md
           - Attributes: developer/hooks/attributes.md
+          - Bars: developer/hooks/bars.md
           - Camera: developer/hooks/camera.md
           - Character: developer/hooks/character.md
           - Chat: developer/hooks/chat.md
           - Chatbox: developer/hooks/chatbox.md
+          - Classes: developer/hooks/classes.md
           - Color: developer/hooks/color.md
           - Combat: developer/hooks/combat.md
+          - Commands: developer/hooks/commands.md
           - Compatibility: developer/hooks/compatibility.md
           - Configuration: developer/hooks/configuration.md
           - DarkRP: developer/hooks/darkrp.md
@@ -71,27 +74,36 @@ nav:
           - Dialog: developer/hooks/dialog.md
           - Doors: developer/hooks/doors.md
           - Economy: developer/hooks/economy.md
+          - Factions: developer/hooks/factions.md
+          - Fonts: developer/hooks/fonts.md
           - HUD: developer/hooks/hud.md
           - Initialization: developer/hooks/initialization.md
           - Interaction: developer/hooks/interaction.md
           - Inventory: developer/hooks/inventory.md
           - Items: developer/hooks/items.md
           - Keybinds: developer/hooks/keybinds.md
+          - Languages: developer/hooks/languages.md
           - Loader: developer/hooks/loader.md
+          - Logging: developer/hooks/logging.md
           - Main Menu: developer/hooks/main-menu.md
+          - Modularity: developer/hooks/modularity.md
           - Networking: developer/hooks/networking.md
+          - Notices: developer/hooks/notices.md
           - Options: developer/hooks/options.md
           - Persistence: developer/hooks/persistence.md
           - Player Interaction: developer/hooks/player-interaction.md
           - Protection: developer/hooks/protection.md
           - Recognition: developer/hooks/recognition.md
           - Salary: developer/hooks/salary.md
+          - Scoreboard: developer/hooks/scoreboard.md
+          - Sitting: developer/hooks/sitting.md
           - Spawns: developer/hooks/spawns.md
           - Teams: developer/hooks/teams.md
+          - temp: developer/hooks/temp.md
           - UI: developer/hooks/ui.md
           - Vendor: developer/hooks/vendor.md
           - Voice: developer/hooks/voice.md
-          - Web Image: developer/hooks/web-image.md
+          - Weapon Selector: developer/hooks/weapon-selector.md
           - Web Sound: developer/hooks/web-sound.md
           # AUTO-GENERATED: HOOKS END
       - Libraries:
@@ -100,12 +112,17 @@ nav:
           - Admin: developer/libraries/lia.admin.md
           - Attributes: developer/libraries/lia.attribs.md
           - Bar: developer/libraries/lia.bar.md
+          - Bar: developer/libraries/lia.bars.md
           - Camera: developer/libraries/lia.camera.md
           - Character: developer/libraries/lia.char.md
+          - Character: developer/libraries/lia.character.md
           - Chat: developer/libraries/lia.chat.md
+          - Chat: developer/libraries/lia.chatbox.md
           - Class: developer/libraries/lia.class.md
+          - Class: developer/libraries/lia.classes.md
           - Color: developer/libraries/lia.color.md
           - Command: developer/libraries/lia.command.md
+          - Command: developer/libraries/lia.commands.md
           - Configuration: developer/libraries/lia.config.md
           - Currency: developer/libraries/lia.currency.md
           - DarkRP: developer/libraries/lia.darkrp.md
@@ -115,20 +132,27 @@ nav:
           - Dialog: developer/libraries/lia.dialog.md
           - Doors: developer/libraries/lia.doors.md
           - Faction: developer/libraries/lia.faction.md
+          - Faction: developer/libraries/lia.factions.md
           - Flags: developer/libraries/lia.flag.md
           - Font: developer/libraries/lia.font.md
+          - Font: developer/libraries/lia.fonts.md
           - Inventory: developer/libraries/lia.inventory.md
           - Item: developer/libraries/lia.item.md
           - Keybind: developer/libraries/lia.keybind.md
           - Language: developer/libraries/lia.lang.md
+          - Language: developer/libraries/lia.languages.md
           - Loader: developer/libraries/lia.loader.md
           - Log: developer/libraries/lia.log.md
+          - Log: developer/libraries/lia.logger.md
           - Menu: developer/libraries/lia.menu.md
+          - Module: developer/libraries/lia.modularity.md
           - Module: developer/libraries/lia.module.md
           - Net: developer/libraries/lia.net.md
+          - Notices: developer/libraries/lia.notice.md
           - Notices: developer/libraries/lia.notices.md
           - Option: developer/libraries/lia.option.md
           - Player Interactions: developer/libraries/lia.playerinteract.md
+          - Sit: developer/libraries/lia.sit.md
           - Time: developer/libraries/lia.time.md
           - Utility: developer/libraries/lia.util.md
           - Vendor: developer/libraries/lia.vendor.md

@@ -1,6 +1,8 @@
 ﻿MODULE.name = "Storage"
 MODULE.author = "Samael"
-MODULE.NetworkStrings = {"liaStorageExit", "liaStorageSetPassword", "liaStorageTransfer", "liaStorageUnlock", "liaTrunkInitStorage",}
+MODULE.discord = "liliaplayer"
+MODULE.desc = "Adds persistent storage containers and player vaults that integrate with the inventory for item management."
+MODULE.NetworkStrings = {"liaStorageExit", "liaStorageSetPassword", "liaStorageUnlock",}
 MODULE.Privileges = {
     ["canSpawnStorage"] = {
         Name = "Can Spawn Storage",

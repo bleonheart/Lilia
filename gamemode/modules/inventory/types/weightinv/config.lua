@@ -30,7 +30,7 @@ lia.config.add("invW", "Inventory Width", 6, function(_, newW)
     end
 
     local json = util.TableToJSON({newW})
-    lia.db.query("UPDATE lia_invdata SET value = '" .. lia.db.escape(json) .. "' WHERE key = 'w' AND invID IN (SELECT invID FROM lia_inventories WHERE charID IS NOT NULL)")
+    lia.db.query("UPDATE `lia_invdata` SET `value` = '" .. lia.db.escape(json) .. "' WHERE `key` = 'w' AND `invID` IN (SELECT `invID` FROM `lia_inventories` WHERE `charID` IS NOT NULL)")
 end, {
     desc = "Defines the width of the default inventory.",
     category = "Core",
@@ -57,7 +57,7 @@ lia.config.add("invH", "Inventory Height", 4, function(_, newH)
     end
 
     local json = util.TableToJSON({newH})
-    lia.db.query("UPDATE lia_invdata SET value = '" .. lia.db.escape(json) .. "' WHERE key = 'h' AND invID IN (SELECT invID FROM lia_inventories WHERE charID IS NOT NULL)")
+    lia.db.query("UPDATE `lia_invdata` SET `value` = '" .. lia.db.escape(json) .. "' WHERE `key` = 'h' AND `invID` IN (SELECT `invID` FROM `lia_inventories` WHERE `charID` IS NOT NULL)")
 end, {
     desc = "Defines the height of the default inventory.",
     category = "Core",

@@ -203,14 +203,14 @@ end
 function GM:OnPickupMoney(client, moneyEntity)
     if moneyEntity and IsValid(moneyEntity) then
         local amount = moneyEntity:getAmount()
-        client:notifyMoneyLocalized("You picked up %s.", lia.currency.get(amount))
+        client:notifyMoney(string.format("You picked up %s.", lia.currency.get(amount)))
         lia.log.add(client, "moneyPickedUp", amount)
     end
 end
 
 function GM:CanItemBeTransfered(item, curInv, inventory)
     if item.isBag and curInv ~= inventory and item.getInv and item:getInv() and table.Count(item:getInv():getItems()) > 0 then
-        lia.char.getCharacter(curInv.client, nil, function(character) if character then character:getPlayer():notifyErrorLocalized("You can't perform this action from storage.") end end)
+        lia.char.getCharacter(curInv.client, nil, function(character) if character then character:getPlayer():notifyError("You can't perform this action from storage.") end end)
         return false
     end
 
@@ -236,7 +236,7 @@ function GM:CanPlayerInteractItem(client, action, item)
                 timer.Create("DropDelay." .. client:SteamID64(), lia.config.get("DropDelay"), 1, function() if IsValid(client) then client.dropDelay = nil end end)
                 return true
             else
-                client:notifyWarningLocalized("You are on cooldown!")
+                client:notifyWarning("You are on cooldown!")
                 return false
             end
         else
@@ -251,7 +251,7 @@ function GM:CanPlayerInteractItem(client, action, item)
                 timer.Create("TakeDelay." .. client:SteamID64(), lia.config.get("TakeDelay"), 1, function() if IsValid(client) then client.takeDelay = nil end end)
                 return true
             else
-                client:notifyWarningLocalized("You are on cooldown!")
+                client:notifyWarning("You are on cooldown!")
                 return false
             end
         else
@@ -266,7 +266,7 @@ function GM:CanPlayerInteractItem(client, action, item)
                 timer.Create("EquipDelay." .. client:SteamID64(), lia.config.get("EquipDelay"), 1, function() if IsValid(client) then client.equipDelay = nil end end)
                 return true
             else
-                client:notifyWarningLocalized("You are on cooldown!")
+                client:notifyWarning("You are on cooldown!")
                 return false
             end
         else
@@ -281,7 +281,7 @@ function GM:CanPlayerInteractItem(client, action, item)
                 timer.Create("UnequipDelay." .. client:SteamID64(), lia.config.get("UnequipDelay"), 1, function() if IsValid(client) then client.unequipDelay = nil end end)
                 return true
             else
-                client:notifyWarningLocalized("You are on cooldown!")
+                client:notifyWarning("You are on cooldown!")
                 return false
             end
         else
@@ -299,11 +299,11 @@ function GM:CanPlayerEquipItem(client, item)
     print("[LILIA DEBUG][CanPlayerEquipItem]", "client=", IsValid(client) and client:Nick() or "nil", "item=", item and item.uniqueID or "nil", "invID=", item and item.invID or "nil", "inventoryType=", inventory and inventory.typeID or "nil", "isStorage=", inventory and tostring(inventory.isStorage) or "nil", "isExternalInventory=", inventory and tostring(inventory.isExternalInventory) or "nil", "isBag=", inventory and tostring(inventory.isBag) or "nil", "bagItemID=", tostring(bagItemID), "derivedBagInventory=", tostring(isBagInventory), "char=", inventory and tostring(inventory:getData("char")) or "nil")
     if client.equipDelay ~= nil then
         print("[LILIA DEBUG][CanPlayerEquipItem]", "blockedReason=", "equipDelay")
-        client:notifyWarningLocalized("You are on cooldown!")
+        client:notifyWarning("You are on cooldown!")
         return false
     elseif inventory and (isBagInventory or inventory.isExternalInventory or inventory.isStorage) then
         print("[LILIA DEBUG][CanPlayerEquipItem]", "blockedReason=", "forbiddenActionStorage")
-        client:notifyErrorLocalized("You can't perform this action from storage.")
+        client:notifyError("You can't perform this action from storage.")
         return false
     end
 
@@ -313,13 +313,13 @@ end
 function GM:CanPlayerTakeItem(client, item)
     local inventory = lia.inventory.instances[item.invID]
     if client.takeDelay ~= nil then
-        client:notifyWarningLocalized("You are on cooldown!")
+        client:notifyWarning("You are on cooldown!")
         return false
     elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyErrorLocalized("You can't perform this action from storage.")
+        client:notifyError("You can't perform this action from storage.")
         return false
     elseif client:isFamilySharedAccount() then
-        client:notifyErrorLocalized("You cannot pick up items with a family-shared account")
+        client:notifyError("You cannot pick up items with a family-shared account")
         return false
     elseif IsValid(item.entity) then
         local character = client:getChar()
@@ -334,18 +334,18 @@ end
 function GM:CanPlayerDropItem(client, item)
     local inventory = lia.inventory.instances[item.invID]
     if client.dropDelay ~= nil then
-        client:notifyWarningLocalized("You are on cooldown!")
+        client:notifyWarning("You are on cooldown!")
         return false
     elseif item.isBag and item:getInv() then
         local items = item:getInv():getItems()
         for _, otheritem in pairs(items) do
             if not otheritem.ignoreEquipCheck and otheritem:getData("equip", false) then
-                client:notifyErrorLocalized("You can't drop a bag with equipped items inside.")
+                client:notifyError("You can't drop a bag with equipped items inside.")
                 return false
             end
         end
     elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyErrorLocalized("You can't perform this action from storage.")
+        client:notifyError("You can't perform this action from storage.")
         return false
     end
     return true
@@ -371,7 +371,7 @@ function GM:PlayerSay(client, message)
     message = parsedMessage
     if chatType == "ic" and lia.command.parse(client, message) then return "" end
     if utf8.len(message) > lia.config.get("MaxChatLength") then
-        client:notifyErrorLocalized("Your message is too long and has not been sent.")
+        client:notifyError("Your message is too long and has not been sent.")
         return ""
     end
 
@@ -1249,7 +1249,7 @@ function GM:CreateSalaryTimers()
                                 local finalPay = hook.Run("OnSalaryGiven", client, char, pay, charFaction, class)
                                 if isnumber(finalPay) then pay = finalPay end
                                 char:giveMoney(pay)
-                                client:notifyMoneyLocalized("You have received %s from your %s.", lia.currency.get(pay), "Salary")
+                                client:notifyMoney(string.format("You have received %s from your %s.", lia.currency.get(pay), "Salary"))
                             end
                         end
                     end

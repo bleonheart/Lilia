@@ -14,14 +14,15 @@ function ENT:onDrawEntityInfo(alpha)
     item.entity, item.data = self, self:getNetVar("data") or oldD
     local infoTable = {
         {
-            text = L(item.getName and item:getName() or item.name),
+            text = item.getName and item:getName() or item.name,
             yOffset = 0
         }
     }
 
     hook.Run("DrawItemEntityInfo", self, item, infoTable, alpha)
     for i, info in ipairs(infoTable) do
-        lia.util.drawEntText(self, info.text, (i - 1) * 50, alpha)
+        local text = isfunction(info.text) and info.text(self) or info.text
+        lia.util.drawEntText(self, text, info.posY or (i - 1) * 50, alpha)
     end
 
     item.data, item.entity = oldD, oldE

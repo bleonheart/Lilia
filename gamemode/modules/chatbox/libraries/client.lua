@@ -136,7 +136,7 @@ local function openAddFilteredWordPrompt()
         if value == false then return end
         value = string.Trim(tostring(value or ""))
         if value == "" then
-            LocalPlayer():notifyErrorLocalized("Enter a valid word first.")
+            LocalPlayer():notifyError("Enter a valid word first.")
             return
         end
 
@@ -521,7 +521,7 @@ function MODULE:PopulateAdminTabs(pages)
     if not IsValid(client) or not client:hasPrivilege("manageChatFilter") then return end
     pages[#pages + 1] = {
         name = "Chat Filter",
-        icon = "icon16/comments.png",
+        icon = "chatfilter.png",
         drawFunc = function(panel)
             buildFilteredWordsAdminPanel(panel)
             net.Start("liaChatboxRequestFilteredWords")

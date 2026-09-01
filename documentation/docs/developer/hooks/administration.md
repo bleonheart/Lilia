@@ -67,6 +67,39 @@ This page documents hooks in the administration category.
 
 ---
 
+<details class="realm-client" id="function-adminprivilegesupdated">
+<summary><span class="summary-main"><a id="AdminPrivilegesUpdated"></a>AdminPrivilegesUpdated()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/admin.lua#L95" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<div class="details-content">
+<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="adminprivilegesupdated"></a>Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Runs after the client receives a refreshed admin privilege table from the admin system sync.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Category</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Administration</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Client</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<pre><code class="language-lua">  hook.Add("AdminPrivilegesUpdated", "liaExampleAdminPrivilegesUpdated", function()
+      if IsValid(lia.gui.character) then
+          lia.gui.character:createStartButton()
+      end
+  end)
+</code></pre>
+</div>
+
+</div>
+</details>
+
+---
+
 <details class="realm-client" id="function-adminstickaddmodels">
 <summary><span class="summary-main"><a id="AdminStickAddModels"></a>AdminStickAddModels(modList)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/submodules/adminstick/libraries/client.lua#L172" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
@@ -106,47 +139,8 @@ This page documents hooks in the administration category.
 
 ---
 
-<details class="realm-client" id="function-charlistcolumns">
-<summary><span class="summary-main"><a id="CharListColumns"></a>CharListColumns(columns)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
-<div class="details-content">
-<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="charlistcolumns"></a>Purpose</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-  <p>Allows code to add extra columns to the administration character list.</p>
-</div>
-
-<h3 style="margin-bottom: 5px; font-weight: 700;">Category</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-  <p>Administration</p>
-</div>
-
-<h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-  <p>Client</p>
-</div>
-
-<h3 style="margin-bottom: 5px; font-weight: 700;">Parameters</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">table</a></span> <span class="parameter">columns</span> The mutable list of character list column definitions.</p>
-</div>
-
-<h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-<pre><code class="language-lua">  hook.Add("CharListColumns", "liaExampleCharListColumns", function(columns)
-      columns[#columns + 1] = {
-          name = "SteamID",
-          field = "steamID"
-      }
-  end)
-</code></pre>
-</div>
-
-</div>
-</details>
-
----
-
 <details class="realm-server" id="function-charlistentry">
-<summary><span class="summary-main"><a id="CharListEntry"></a>CharListEntry(entry, row)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L31" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="CharListEntry"></a>CharListEntry(entry, row)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="charlistentry"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -184,7 +178,7 @@ This page documents hooks in the administration category.
 ---
 
 <details class="realm-client" id="function-getadminesptarget">
-<summary><span class="summary-main"><a id="GetAdminESPTarget"></a>GetAdminESPTarget(ent, client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L62" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetAdminESPTarget"></a>GetAdminESPTarget(ent, client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L32" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getadminesptarget"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -277,6 +271,49 @@ This page documents hooks in the administration category.
 
 ---
 
+<details class="realm-shared" id="function-getusergroupicon">
+<summary><span class="summary-main"><a id="GetUsergroupIcon"></a>GetUsergroupIcon(groupName, groupData, groupOrPlayer)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/admin.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<div class="details-content">
+<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getusergroupicon"></a>Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Allows plugins or modules to override the icon path used for a usergroup in admin-related UI.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Category</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Administration</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Shared</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Parameters</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">string</a></span> <span class="parameter">groupName</span> The normalized usergroup name being resolved.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">table</a></span> <span class="parameter">groupData</span> <span class="optional">optional</span> The stored group data for the usergroup, if available.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">string|Player</a></span> <span class="parameter">groupOrPlayer</span> The original argument passed into `lia.admin.getUsergroupIcon`.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">string|nil</a></span> Return a string icon path to override the default icon resolution. Return nil to continue normal behavior.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<pre><code class="language-lua">  hook.Add("GetUsergroupIcon", "liaExampleGetUsergroupIcon", function(groupName, groupData, groupOrPlayer)
+      return "Example Value"
+  end)
+</code></pre>
+</div>
+
+</div>
+</details>
+
+---
+
 <details class="realm-client" id="function-onadminstickmenuclosed">
 <summary><span class="summary-main"><a id="OnAdminStickMenuClosed"></a>OnAdminStickMenuClosed()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/submodules/adminstick/libraries/client.lua#L146" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
@@ -308,12 +345,12 @@ This page documents hooks in the administration category.
 
 ---
 
-<details class="realm-server" id="function-onadminsystemloaded">
-<summary><span class="summary-main"><a id="OnAdminSystemLoaded"></a>OnAdminSystemLoaded(groups, privileges)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L94" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<details class="realm-shared" id="function-onadminsystemloaded">
+<summary><span class="summary-main"><a id="OnAdminSystemLoaded"></a>OnAdminSystemLoaded(groups, privileges)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/admin.lua#L35" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onadminsystemloaded"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-  <p>Called after the administration system finishes loading usergroups and privileges.</p>
+  <p>Runs after the admin system finishes loading groups and privileges from storage.</p>
 </div>
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Category</h3>
@@ -323,13 +360,13 @@ This page documents hooks in the administration category.
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-  <p>Server</p>
+  <p>Shared</p>
 </div>
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Parameters</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">table</a></span> <span class="parameter">groups</span> The registered administration groups.</p>
-<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">table</a></span> <span class="parameter">privileges</span> The registered privilege definitions.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">table</a></span> <span class="parameter">groups</span> The normalized admin usergroup table.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">table</a></span> <span class="parameter">privileges</span> The rebuilt privilege minimum-access table.</p>
 </div>
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
@@ -382,7 +419,7 @@ This page documents hooks in the administration category.
 ---
 
 <details class="realm-server" id="function-onprivilegeregistered">
-<summary><span class="summary-main"><a id="OnPrivilegeRegistered"></a>OnPrivilegeRegistered(privilege)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L124" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnPrivilegeRegistered"></a>OnPrivilegeRegistered(privilege)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L64" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onprivilegeregistered"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -418,7 +455,7 @@ This page documents hooks in the administration category.
 ---
 
 <details class="realm-server" id="function-onprivilegeunregistered">
-<summary><span class="summary-main"><a id="OnPrivilegeUnregistered"></a>OnPrivilegeUnregistered(privilege)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L151" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnPrivilegeUnregistered"></a>OnPrivilegeUnregistered(privilege)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L91" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onprivilegeunregistered"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -454,7 +491,7 @@ This page documents hooks in the administration category.
 ---
 
 <details class="realm-server" id="function-onsetusergroup">
-<summary><span class="summary-main"><a id="OnSetUsergroup"></a>OnSetUsergroup(sid, newGroup, source, player)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L178" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnSetUsergroup"></a>OnSetUsergroup(sid, newGroup, source, player)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L118" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onsetusergroup"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -493,7 +530,7 @@ This page documents hooks in the administration category.
 ---
 
 <details class="realm-server" id="function-onusergroupcreated">
-<summary><span class="summary-main"><a id="OnUsergroupCreated"></a>OnUsergroupCreated(groupName, groupData)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L214" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnUsergroupCreated"></a>OnUsergroupCreated(groupName, groupData)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L154" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onusergroupcreated"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -531,7 +568,7 @@ This page documents hooks in the administration category.
 ---
 
 <details class="realm-server" id="function-onusergrouppermissionschanged">
-<summary><span class="summary-main"><a id="OnUsergroupPermissionsChanged"></a>OnUsergroupPermissionsChanged(groupName, groupData)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L245" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnUsergroupPermissionsChanged"></a>OnUsergroupPermissionsChanged(groupName, groupData)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L185" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onusergrouppermissionschanged"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -569,7 +606,7 @@ This page documents hooks in the administration category.
 ---
 
 <details class="realm-server" id="function-onusergroupremoved">
-<summary><span class="summary-main"><a id="OnUsergroupRemoved"></a>OnUsergroupRemoved(groupName)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L276" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnUsergroupRemoved"></a>OnUsergroupRemoved(groupName)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L216" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onusergroupremoved"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -605,7 +642,7 @@ This page documents hooks in the administration category.
 ---
 
 <details class="realm-server" id="function-onusergrouprenamed">
-<summary><span class="summary-main"><a id="OnUsergroupRenamed"></a>OnUsergroupRenamed(oldName, newName)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L303" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnUsergroupRenamed"></a>OnUsergroupRenamed(oldName, newName)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L243" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onusergrouprenamed"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -632,6 +669,42 @@ This page documents hooks in the administration category.
 <div style="margin-left: 20px; margin-bottom: 20px;">
 <pre><code class="language-lua">  hook.Add("OnUsergroupRenamed", "liaExampleOnUsergroupRenamed", function(oldName, newName)
       print("[MyModule] handled OnUsergroupRenamed")
+  end)
+</code></pre>
+</div>
+
+</div>
+</details>
+
+---
+
+<details class="realm-client" id="function-openadminstickquickmenu">
+<summary><span class="summary-main"><a id="OpenAdminStickQuickMenu"></a>OpenAdminStickQuickMenu(target)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/submodules/adminstick/libraries/client.lua#L202" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<div class="details-content">
+<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="openadminstickquickmenu"></a>Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Opens the clientside admin-stick quick menu for a targeted player or door when the local player has permission.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Category</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Administration</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Client</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Parameters</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="/developer/meta/entity/">Entity</a></span> <span class="parameter">target</span> The player or door entity targeted by the admin stick.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<pre><code class="language-lua">  hook.Add("OpenAdminStickQuickMenu", "liaExampleOpenAdminStickQuickMenu", function(target)
+      if IsValid(target) then print("Opening quick menu for", target) end
   end)
 </code></pre>
 </div>
@@ -680,7 +753,7 @@ This page documents hooks in the administration category.
 ---
 
 <details class="realm-server" id="function-playergagged">
-<summary><span class="summary-main"><a id="PlayerGagged"></a>PlayerGagged(target, admin)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L333" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="PlayerGagged"></a>PlayerGagged(target, admin)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L273" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="playergagged"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -718,7 +791,7 @@ This page documents hooks in the administration category.
 ---
 
 <details class="realm-server" id="function-playermuted">
-<summary><span class="summary-main"><a id="PlayerMuted"></a>PlayerMuted(target, admin)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L364" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="PlayerMuted"></a>PlayerMuted(target, admin)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L304" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="playermuted"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -756,7 +829,7 @@ This page documents hooks in the administration category.
 ---
 
 <details class="realm-server" id="function-playerungagged">
-<summary><span class="summary-main"><a id="PlayerUngagged"></a>PlayerUngagged(target, admin)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L395" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="PlayerUngagged"></a>PlayerUngagged(target, admin)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L335" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="playerungagged"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -794,7 +867,7 @@ This page documents hooks in the administration category.
 ---
 
 <details class="realm-server" id="function-playerunmuted">
-<summary><span class="summary-main"><a id="PlayerUnmuted"></a>PlayerUnmuted(target, admin)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L426" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="PlayerUnmuted"></a>PlayerUnmuted(target, admin)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L366" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="playerunmuted"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -873,8 +946,47 @@ This page documents hooks in the administration category.
 
 ---
 
+<details class="realm-client" id="function-populateadmintabs">
+<summary><span class="summary-main"><a id="PopulateAdminTabs"></a>PopulateAdminTabs(pages)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/admin.lua#L65" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<div class="details-content">
+<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="populateadmintabs"></a>Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Allows modules to add pages to the admin menu, including the usergroup management panel defined in this file.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Category</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Administration</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Client</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Parameters</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">table</a></span> <span class="parameter">pages</span> The mutable page definition array used to build the admin interface.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<pre><code class="language-lua">  hook.Add("PopulateAdminTabs", "liaExamplePopulateAdminTabs", function(pages)
+      pages[#pages + 1] = {
+          name = "MyModule",
+          icon = "icon16/plugin.png"
+      }
+  end)
+</code></pre>
+</div>
+
+</div>
+</details>
+
+---
+
 <details class="realm-client" id="function-runadminsystemcommand">
-<summary><span class="summary-main"><a id="RunAdminSystemCommand"></a>RunAdminSystemCommand(cmd, victim, dur, reason)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L457" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="RunAdminSystemCommand"></a>RunAdminSystemCommand(cmd, victim, dur, reason)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/module.lua#L397" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="runadminsystemcommand"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

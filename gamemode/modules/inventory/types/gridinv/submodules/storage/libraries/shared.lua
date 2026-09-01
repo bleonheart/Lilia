@@ -34,7 +34,7 @@ function MODULE:InitializeStorage(entity)
         if not def and entity:IsVehicle() and lia.inventory.storage then def = lia.inventory.storage["vehicle"] end
         if not def then
             def = {
-                name = lia.lang.resolveToken("Storage Container"),
+                name = "Storage Container",
                 invType = "GridInv",
                 invData = {
                     w = 4,

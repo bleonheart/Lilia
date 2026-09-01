@@ -188,7 +188,7 @@ if SERVER then
         if data then
             local quantity = tonumber(xOrQuantity) or 1
             if quantity > 1 then
-                if item.isStackable then
+                if item.maxStack > 1 then
                     data = table.Copy(data)
                     data.quantity = tonumber(data.quantity) or quantity
                     xOrQuantity = data.quantity
@@ -238,14 +238,15 @@ if SERVER then
         end
 
         if not x or not y then return d:reject("No space available for the item.") end
-        if isStackCommand and item.isStackable ~= true then isStackCommand = false end
+        if isStackCommand and item.maxStack <= 1 then isStackCommand = false end
         local targetAssignments, remainingQuantity = {}, xOrQuantity
         if isStackCommand then
             local existing = targetInventory:getItemsOfType(itemTypeOrItem)
             if existing then
                 for _, targetItem in pairs(existing) do
                     if remainingQuantity == 0 then break end
-                    local freeSpace = targetItem.maxQuantity - targetItem:getQuantity()
+                    local canCombine = item.canCombine and item:canCombine(targetItem)
+                    local freeSpace = canCombine and targetItem.maxStack - targetItem:getQuantity() or 0
                     if freeSpace > 0 then
                         local filler = freeSpace - remainingQuantity
                         if filler > 0 then
@@ -322,7 +323,7 @@ if SERVER then
                     targetItem:addQuantity(assignedQuantity)
                 end
 
-                local overStacks = math.ceil(remainingQuantity / returnedItem.maxQuantity) - 1
+                local overStacks = math.ceil(remainingQuantity / returnedItem.maxStack) - 1
                 if overStacks > 0 then
                     local items = {}
                     for i = 1, overStacks do
@@ -330,7 +331,7 @@ if SERVER then
                     end
 
                     deferred.all(items):next(nil, function() hook.Run("OnPlayerLostStackItem", itemTypeOrItem) end)
-                    returnedItem:setQuantity(remainingQuantity - returnedItem.maxQuantity * overStacks)
+                    returnedItem:setQuantity(remainingQuantity - returnedItem.maxStack * overStacks)
                     targetInventory:addItem(returnedItem, noReplicate)
                     return d:resolve(items)
                 end

@@ -1,6 +1,8 @@
 ﻿MODULE.Name = "Warnings"
 MODULE.author = "Samael"
-MODULE.NetworkStrings = {"liaAllWarnings", "liaPlayerWarnings", "liaRequestAllWarnings", "liaRequestRemoveWarning", "liaRequestWarningsCount", "liaWarningsCount",}
+MODULE.discord = "liliaplayer"
+MODULE.desc = "Warnings"
+MODULE.NetworkStrings = {"liaRequestRemoveWarning",}
 MODULE.Privileges = {
     ["viewPlayerWarnings"] = {
         Name = "View Player Warnings",

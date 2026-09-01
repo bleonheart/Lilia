@@ -1,0 +1,554 @@
+﻿lia.net = lia.net or {}
+lia.NetProfiler = lia.NetProfiler or false
+lia.net.sendq = lia.net.sendq or {}
+lia.net.cache = lia.net.cache or {}
+lia.net.locals = lia.net.locals or {}
+lia.net.globals = lia.net.globals or {}
+lia.net.buffers = lia.net.buffers or {}
+lia.net.profiler = lia.net.profiler or {}
+lia.net.registry = lia.net.registry or {}
+lia.net.profiler.sessionTracker = lia.net.profiler.sessionTracker or {}
+lia.net.profiler.loggedMessages = lia.net.profiler.loggedMessages or {}
+lia.net.profiler.messageCounts = lia.net.profiler.messageCounts or {}
+lia.net.profiler.currentMessage = lia.net.profiler.currentMessage or nil
+lia.net.profiler.snapshotInterval = lia.net.profiler.snapshotInterval or 5
+lia.net.profiler.snapshotTimer = lia.net.profiler.snapshotTimer or "liaNetProfilerSnapshot"
+lia.net.profiler.snapshotDir = lia.net.profiler.snapshotDir or "netprof"
+local chunkTime = 0.05
+local CACHE_TTL = 30
+local MAX_CACHE_SIZE = 1000
+local function getProfilerPlayerIdentity(client, fallbackID, fallbackName)
+    if IsValid(client) and client:IsPlayer() then return client:SteamID64(), client:SteamID(), client:Nick(), true end
+    return fallbackID or "UNKNOWN", fallbackID or "UNKNOWN", fallbackName or "Unknown", false
+end
+
+local function recordProfilerPlayerEntry(client, fallbackID, fallbackName, direction, messageName, bytes, timestamp)
+    lia.net.profiler.sessionTracker.players = lia.net.profiler.sessionTracker.players or {}
+    lia.net.profiler.sessionTracker.uniquePlayers = lia.net.profiler.sessionTracker.uniquePlayers or {}
+    local steamID64, steamID, playerName, online = getProfilerPlayerIdentity(client, fallbackID, fallbackName)
+    local playerData = lia.net.profiler.sessionTracker.players[steamID64]
+    if not playerData then
+        playerData = {
+            steamID64 = steamID64,
+            steamID = steamID,
+            playerName = playerName,
+            online = online,
+            firstAt = timestamp,
+            lastAt = timestamp,
+            totalCalls = 0,
+            totalBytes = 0,
+            messages = {}
+        }
+
+        lia.net.profiler.sessionTracker.players[steamID64] = playerData
+    end
+
+    playerData.steamID = steamID
+    playerData.playerName = playerName
+    playerData.online = online
+    playerData.lastAt = timestamp
+    playerData.totalCalls = playerData.totalCalls + 1
+    playerData.totalBytes = playerData.totalBytes + bytes
+    lia.net.profiler.sessionTracker.uniquePlayers[steamID64] = true
+    local key = direction .. "|" .. messageName
+    local entry = playerData.messages[key]
+    if not entry then
+        lia.net.profiler.sessionTracker.playerEntryCount = lia.net.profiler.sessionTracker.playerEntryCount or 0
+        lia.net.profiler.sessionTracker.droppedPlayerEntries = lia.net.profiler.sessionTracker.droppedPlayerEntries or 0
+        if lia.net.profiler.sessionTracker.playerEntryCount >= 20000 then
+            lia.net.profiler.sessionTracker.droppedPlayerEntries = lia.net.profiler.sessionTracker.droppedPlayerEntries + 1
+            return
+        end
+
+        lia.net.profiler.sessionTracker.playerEntryCount = lia.net.profiler.sessionTracker.playerEntryCount + 1
+        entry = {
+            id = steamID64 .. "|" .. key,
+            steamID64 = steamID64,
+            steamID = steamID,
+            playerName = playerName,
+            online = online,
+            message = messageName,
+            direction = direction,
+            calls = 0,
+            totalBytes = 0,
+            minBytes = bytes,
+            maxBytes = bytes,
+            firstAt = timestamp,
+            lastAt = timestamp
+        }
+
+        playerData.messages[key] = entry
+    end
+
+    entry.steamID = steamID
+    entry.playerName = playerName
+    entry.online = online
+    entry.calls = entry.calls + 1
+    entry.totalBytes = entry.totalBytes + bytes
+    entry.minBytes = math.min(entry.minBytes, bytes)
+    entry.maxBytes = math.max(entry.maxBytes, bytes)
+    entry.lastAt = timestamp
+    entry.avgBytes = entry.calls > 0 and entry.totalBytes / entry.calls or 0
+end
+
+function lia.net.profiler.recordSessionEntry(direction, messageName, rawSize, sender, receiver)
+    lia.net.profiler.sessionTracker.messages = lia.net.profiler.sessionTracker.messages or {}
+    lia.net.profiler.sessionTracker.directionTotals = lia.net.profiler.sessionTracker.directionTotals or {
+        ["C->S"] = {
+            calls = 0,
+            bytes = 0
+        },
+        ["S->C"] = {
+            calls = 0,
+            bytes = 0
+        }
+    }
+
+    lia.net.profiler.sessionTracker.totalCalls = lia.net.profiler.sessionTracker.totalCalls or 0
+    lia.net.profiler.sessionTracker.totalBytes = lia.net.profiler.sessionTracker.totalBytes or 0
+    local timestamp = os.time()
+    local bytes = math.max(math.floor(tonumber(rawSize) or 0), 0)
+    if direction == "C->S" then bytes = math.ceil(bytes / 8) end
+    local key = direction .. "|" .. messageName
+    local messageData = lia.net.profiler.sessionTracker.messages[key]
+    if not messageData then
+        messageData = {
+            id = "live|" .. key,
+            key = key,
+            message = messageName,
+            direction = direction,
+            source = "live",
+            calls = 0,
+            totalBytes = 0,
+            minBytes = bytes,
+            maxBytes = bytes,
+            firstAt = timestamp,
+            lastAt = timestamp
+        }
+
+        lia.net.profiler.sessionTracker.messages[key] = messageData
+    end
+
+    local recipientCount = direction == "S->C" and receiver == "ALL" and math.max(#player.GetHumans(), 1) or 1
+    local bandwidthBytes = bytes * recipientCount
+    lia.net.profiler.sessionTracker.totalCalls = lia.net.profiler.sessionTracker.totalCalls + 1
+    lia.net.profiler.sessionTracker.totalBytes = lia.net.profiler.sessionTracker.totalBytes + bandwidthBytes
+    local directionData = lia.net.profiler.sessionTracker.directionTotals[direction]
+    if not directionData then
+        directionData = {
+            calls = 0,
+            bytes = 0
+        }
+
+        lia.net.profiler.sessionTracker.directionTotals[direction] = directionData
+    end
+
+    directionData.calls = directionData.calls + 1
+    directionData.bytes = directionData.bytes + bandwidthBytes
+    messageData.calls = messageData.calls + 1
+    messageData.totalBytes = messageData.totalBytes + bandwidthBytes
+    messageData.minBytes = math.min(messageData.minBytes, bytes)
+    messageData.maxBytes = math.max(messageData.maxBytes, bytes)
+    messageData.lastAt = timestamp
+    messageData.avgBytes = messageData.calls > 0 and messageData.totalBytes / messageData.calls or 0
+    if direction == "C->S" and IsValid(sender) and sender:IsPlayer() then
+        recordProfilerPlayerEntry(sender, nil, nil, direction, messageName, bytes, timestamp)
+    elseif direction == "S->C" then
+        if IsValid(receiver) and receiver:IsPlayer() then
+            recordProfilerPlayerEntry(receiver, nil, nil, direction, messageName, bytes, timestamp)
+        elseif receiver == "ALL" then
+            for _, client in ipairs(player.GetHumans()) do
+                recordProfilerPlayerEntry(client, nil, nil, direction, messageName, bytes, timestamp)
+            end
+        end
+    end
+end
+
+local function getChunkInterval()
+    return (lia.reloadInProgress and chunkTime * 2) or chunkTime
+end
+
+local function generateCacheKey(name, args)
+    local key = name .. "|"
+    for i, arg in ipairs(args) do
+        key = key .. tostring(arg) .. (i < #args and "|" or "")
+    end
+    return util.CRC(key)
+end
+
+local function cleanupCache()
+    local currentTime = CurTime()
+    local expired = {}
+    for key, entry in pairs(lia.net.cache) do
+        if currentTime - entry.timestamp > CACHE_TTL then table.insert(expired, key) end
+    end
+
+    for _, key in ipairs(expired) do
+        lia.net.cache[key] = nil
+    end
+
+    local cacheSize = table.Count(lia.net.cache)
+    if cacheSize > MAX_CACHE_SIZE then
+        local sorted = {}
+        for key, entry in pairs(lia.net.cache) do
+            table.insert(sorted, {
+                key = key,
+                timestamp = entry.timestamp
+            })
+        end
+
+        table.sort(sorted, function(a, b) return a.timestamp < b.timestamp end)
+        local toRemove = cacheSize - MAX_CACHE_SIZE
+        for i = 1, math.min(toRemove, #sorted) do
+            lia.net.cache[sorted[i].key] = nil
+        end
+    end
+end
+
+function lia.net.readBigTable(netStr, callback)
+    lia.net.buffers[netStr] = lia.net.buffers[netStr] or {}
+    net.Receive(netStr, function(_, ply)
+        local sid = net.ReadUInt(32)
+        local total = net.ReadUInt(16)
+        local idx = net.ReadUInt(16)
+        local clen = net.ReadUInt(16)
+        local chunk = net.ReadData(clen)
+        if not lia.net.buffers[netStr] then lia.net.buffers[netStr] = {} end
+        local buffers = lia.net.buffers[netStr]
+        local state = buffers[sid]
+        if not state then
+            state = {
+                total = total,
+                count = 0,
+                parts = {}
+            }
+
+            buffers[sid] = state
+        end
+
+        if not state.parts[idx] then
+            state.parts[idx] = chunk
+            state.count = state.count + 1
+        end
+
+        if CLIENT then
+            net.Start("liaBigTableAck")
+            net.WriteUInt(sid, 32)
+            net.WriteUInt(idx, 16)
+            net.SendToServer()
+        end
+
+        if state.count == state.total then
+            buffers[sid] = nil
+            local full = table.concat(state.parts, "", 1, total)
+            local decomp = util.Decompress(full)
+            local tbl = decomp and util.JSONToTable(decomp) or nil
+            if SERVER then
+                if callback then callback(ply, tbl) end
+            else
+                if callback then callback(tbl) end
+            end
+        end
+    end)
+end
+
+if SERVER then
+    local function sendChunk(ply, s, sid, idx)
+        if not IsValid(ply) then
+            if lia.net.sendq[ply] then lia.net.sendq[ply][sid] = nil end
+            return
+        end
+
+        local part = s.chunks[idx]
+        if not part then
+            if lia.net.sendq[ply] then lia.net.sendq[ply][sid] = nil end
+            return
+        end
+
+        s.idx = idx
+        net.Start(s.netStr)
+        net.WriteUInt(sid, 32)
+        net.WriteUInt(s.total, 16)
+        net.WriteUInt(idx, 16)
+        net.WriteUInt(#part, 16)
+        net.WriteData(part, #part)
+        net.Send(ply)
+        if idx == s.total and lia.net.sendq[ply] then lia.net.sendq[ply][sid] = nil end
+    end
+
+    local function beginStream(ply, netStr, chunks, sid)
+        lia.net.sendq[ply] = lia.net.sendq[ply] or {}
+        local s = {
+            netStr = netStr,
+            chunks = chunks,
+            total = #chunks,
+            idx = 0
+        }
+
+        lia.net.sendq[ply][sid] = s
+        timer.Simple(getChunkInterval(), function()
+            if not IsValid(ply) then return end
+            local q = lia.net.sendq[ply]
+            if not q then return end
+            local ss = q[sid]
+            if not ss then return end
+            sendChunk(ply, ss, sid, 1)
+        end)
+    end
+
+function lia.net.writeBigTable(targets, netStr, tbl, chunkSize)
+        if not istable(tbl) then return end
+        local json = util.TableToJSON(tbl)
+        if not json then return end
+        local data = util.Compress(json)
+        if not data or #data == 0 then return end
+        local isReload = lia.reloadInProgress or false
+        local size = isReload and math.max(128, math.min(1024, chunkSize or 512)) or math.max(256, math.min(4096, chunkSize or 2048))
+        local chunks = {}
+        local pos = 1
+        while pos <= #data do
+            local part = string.sub(data, pos, pos + size - 1)
+            chunks[#chunks + 1] = part
+            pos = pos + size
+        end
+
+        local sid = (tonumber(util.CRC(tostring(SysTime()) .. json)) or 0) % 4294967296
+        local delay = 0
+        local function schedule(ply)
+            if not IsValid(ply) then return end
+            timer.Simple(delay, function() if IsValid(ply) then beginStream(ply, netStr, chunks, sid) end end)
+            delay = delay + getChunkInterval()
+        end
+
+        if istable(targets) then
+            local validTargets = 0
+            for i = #targets, 1, -1 do
+                if IsValid(targets[i]) then
+                    schedule(targets[i])
+                    validTargets = validTargets + 1
+                end
+            end
+
+            if validTargets == 0 then
+                for _, ply in ipairs(player.GetHumans()) do
+                    schedule(ply)
+                end
+            end
+        elseif IsValid(targets) then
+            schedule(targets)
+        else
+            for _, ply in ipairs(player.GetHumans()) do
+                schedule(ply)
+            end
+        end
+    end
+
+    function lia.net.checkBadType(name, object)
+        if isfunction(object) then
+            lia.error(string.format("Net var '%s' contains a bad object type!", name))
+            return true
+        elseif istable(object) then
+            for k, v in pairs(object) do
+                if lia.net.checkBadType(name, k) or lia.net.checkBadType(name, v) then return true end
+            end
+        end
+    end
+
+    hook.Add("EntityRemoved", "liaNetworkingCleanup", function(entity) entity:clearNetVars() end)
+    hook.Add("PlayerInitialSpawn", "liaNetworkingSync", function(client) client:syncVars() end)
+end
+
+if SERVER then
+    net.Receive("liaBigTableAck", function(_, ply)
+        if not IsValid(ply) then return end
+        local sid = net.ReadUInt(32)
+        local last = net.ReadUInt(16)
+        local q = lia.net.sendq[ply]
+        if not q then return end
+        local s = q[sid]
+        if not s or last ~= s.idx then return end
+        if s.idx >= s.total then q[sid] = nil return end
+        timer.Simple(getChunkInterval(), function()
+            if not IsValid(ply) then return end
+            local qq = lia.net.sendq[ply]
+            local ss = qq and qq[sid]
+            if ss then sendChunk(ply, ss, sid, ss.idx + 1) end
+        end)
+    end)
+end
+
+function lia.net.getNetVar(key, default)
+    local value = lia.net.globals[key]
+    return value ~= nil and value or default
+end
+
+if not lia.net.profiler.originalNetStart then
+    lia.net.profiler.originalNetStart = net.Start
+    lia.net.profiler.originalNetSend = net.Send
+    lia.net.profiler.originalNetBroadcast = net.Broadcast
+    lia.net.profiler.originalNetSendToServer = net.SendToServer
+    lia.net.profiler.originalNetReceive = net.Receive
+end
+
+local function buildProfilerSnapshot()
+    local snapshot = {
+        capturedAt = os.time(),
+        active = true,
+        totals = {
+            uniqueLogs = table.Count(lia.net.profiler.loggedMessages),
+            trackedMessages = 0
+        },
+        topMessages = {}
+    }
+
+    local ranked = {}
+    for messageKey, count in pairs(lia.net.profiler.messageCounts) do
+        snapshot.totals.trackedMessages = snapshot.totals.trackedMessages + count
+        ranked[#ranked + 1] = {
+            message = messageKey,
+            count = count
+        }
+    end
+
+    table.sort(ranked, function(a, b) return a.count > b.count end)
+    for i = 1, math.min(#ranked, 25) do
+        snapshot.topMessages[#snapshot.topMessages + 1] = ranked[i]
+    end
+    return snapshot
+end
+
+local function writeProfilerSnapshot()
+    if not SERVER then return end
+    file.CreateDir(lia.net.profiler.snapshotDir)
+    local snapshot = buildProfilerSnapshot()
+    file.Write(lia.net.profiler.snapshotDir .. "/latest_snapshot.json", util.TableToJSON(snapshot, true) or "{}")
+end
+
+local function startProfilerSnapshots()
+    if not SERVER then return end
+    timer.Create(lia.net.profiler.snapshotTimer, lia.net.profiler.snapshotInterval, 0, writeProfilerSnapshot)
+end
+
+function lia.net.profiler.log(direction, messageName, size, sender, receiver)
+    local senderStr = "Unknown"
+    local receiverStr = "Unknown"
+    if SERVER then
+        if sender == "SERVER" then
+            senderStr = "SERVER"
+        elseif IsValid(sender) then
+            senderStr = sender:Nick() .. " (" .. sender:SteamID() .. ")"
+        end
+
+        if receiver == "ALL" then
+            receiverStr = "ALL"
+        elseif IsValid(receiver) then
+            receiverStr = receiver:Nick() .. " (" .. receiver:SteamID() .. ")"
+        end
+    else
+        if sender == "CLIENT" then
+            senderStr = "CLIENT"
+        elseif IsValid(sender) then
+            senderStr = sender:Nick() .. " (" .. sender:SteamID() .. ")"
+        end
+
+        if receiver == "SERVER" then receiverStr = "SERVER" end
+    end
+
+    local timeStr = string.format("%.3f", CurTime())
+    local sizeStr = tostring(size) .. " bytes"
+    local senderID = IsValid(sender) and sender:SteamID() or (sender == "SERVER" and "SERVER" or (sender == "CLIENT" and "CLIENT" or "Unknown"))
+    local receiverID = IsValid(receiver) and receiver:SteamID() or (receiver == "SERVER" and "SERVER" or (receiver == "ALL" and "ALL" or (receiver == "CLIENT" and "CLIENT" or "Unknown")))
+    local logKey = string.format("%.2f|%s|%s|%s|%s|%d", math.floor(CurTime() * 100) / 100, direction, messageName, senderID, receiverID, size)
+    if lia.net.profiler.loggedMessages[logKey] then return end
+    lia.net.profiler.loggedMessages[logKey] = true
+    local countKey = direction .. "|" .. messageName
+    lia.net.profiler.messageCounts[countKey] = (lia.net.profiler.messageCounts[countKey] or 0) + 1
+    if isfunction(lia.net.profiler.recordSessionEntry) then lia.net.profiler.recordSessionEntry(direction, messageName, size, sender, receiver) end
+    timer.Simple(0.05, function() lia.net.profiler.loggedMessages[logKey] = nil end)
+    if lia.NetProfiler then print(string.format("[Net Profiler] [%s] %s | %s | Size: %s | From: %s | To: %s", timeStr, direction, messageName, sizeStr, senderStr, receiverStr)) end
+end
+
+function net.Start(messageName)
+    lia.net.profiler.currentMessage = messageName
+    return lia.net.profiler.originalNetStart(messageName)
+end
+
+if SERVER then
+    function net.Send(receiver)
+        if lia.net.profiler.currentMessage then
+            local size = net.BytesWritten() or 0
+            if IsValid(receiver) then
+                lia.net.profiler.log("S->C", lia.net.profiler.currentMessage, size, "SERVER", receiver)
+            elseif istable(receiver) then
+                for _, ply in ipairs(receiver) do
+                    if IsValid(ply) then lia.net.profiler.log("S->C", lia.net.profiler.currentMessage, size, "SERVER", ply) end
+                end
+            end
+        end
+
+        lia.net.profiler.currentMessage = nil
+        return lia.net.profiler.originalNetSend(receiver)
+    end
+
+    function net.Broadcast()
+        if lia.net.profiler.currentMessage then
+            local size = net.BytesWritten() or 0
+            lia.net.profiler.log("S->C", lia.net.profiler.currentMessage, size, "SERVER", "ALL")
+        end
+
+        lia.net.profiler.currentMessage = nil
+        return lia.net.profiler.originalNetBroadcast()
+    end
+else
+    function net.SendToServer()
+        if lia.net.profiler.currentMessage then
+            local size = net.BytesWritten() or 0
+            local sender = LocalPlayer()
+            lia.net.profiler.log("C->S", lia.net.profiler.currentMessage, size, sender, "SERVER")
+        end
+
+        lia.net.profiler.currentMessage = nil
+        return lia.net.profiler.originalNetSendToServer()
+    end
+end
+
+function net.Receive(messageName, callback)
+    if SERVER then
+        return lia.net.profiler.originalNetReceive(messageName, function(len, ply)
+            if IsValid(ply) then
+                local size = len or 0
+                lia.net.profiler.log("C->S", messageName, size, ply, "SERVER")
+            end
+
+            if callback then callback(len, ply) end
+        end)
+    else
+        return lia.net.profiler.originalNetReceive(messageName, function(len, ply)
+            local size = len or 0
+            lia.net.profiler.log("S->C", messageName, size, "SERVER", "CLIENT")
+            if callback then callback(len, ply) end
+        end)
+    end
+end
+
+if SERVER then
+    concommand.Add("lia_net_profiler", function(ply, cmd, args)
+        if IsValid(ply) then
+            ply:notifyError("This command can only be run from the server console.")
+            return
+        end
+
+        local mode = string.lower(tostring(args[1] or "status"))
+        if mode == "reset" or mode == "clear" then
+            lia.net.profiler.messageCounts = {}
+            lia.net.profiler.loggedMessages = {}
+            startProfilerSnapshots()
+            writeProfilerSnapshot()
+            if lia.NetProfiler then print("[Net Profiler] Reset captured message counts and refreshed the latest snapshot") end
+        else
+            startProfilerSnapshots()
+            writeProfilerSnapshot()
+            if lia.NetProfiler then print(string.format("[Net Profiler] Always enabled - snapshots will be written every %d seconds", lia.net.profiler.snapshotInterval)) end
+        end
+    end)
+end

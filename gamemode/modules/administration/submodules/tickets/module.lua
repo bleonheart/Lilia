@@ -1,6 +1,8 @@
 ﻿MODULE.Name = "Tickets"
 MODULE.author = "Samael"
-MODULE.NetworkStrings = {"liaActiveTickets", "liaClearAllTicketFrames", "liaRequestActiveTickets", "liaRequestTicketsCount", "liaTicketsCount", "liaTicketSystem", "liaTicketSystemClaim", "liaTicketSystemClose", "liaViewClaims",}
+MODULE.discord = "liliaplayer"
+MODULE.desc = "Sends a support ticket to staff."
+MODULE.NetworkStrings = {"liaClearAllTicketFrames", "liaTicketSystem", "liaTicketSystemClaim", "liaTicketSystemClose", "liaViewClaims",}
 MODULE.Privileges = {
     ["alwaysSeeTickets"] = {
         Name = "Always See Tickets",

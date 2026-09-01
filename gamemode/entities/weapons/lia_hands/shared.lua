@@ -5,7 +5,7 @@ SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 SWEP.Author = "liliaplayer"
 SWEP.Contact = "liliaplayer"
-SWEP.Instructions = "Primary Fire: Throw/Punch\nSecondary Fire: Knock/Pickup\nSecondary Fire + Mouse: Rotate Object\nReload: Drop"
+SWEP.Instructions = "Primary Fire: Throw/Punch\\nSecondary Fire: Knock/Pickup\\nSecondary Fire + Mouse: Rotate Object\\nReload: Drop"
 SWEP.Drop = false
 SWEP.ViewModelFOV = 45
 SWEP.ViewModelFlip = false
@@ -249,7 +249,7 @@ function SWEP:PrimaryAttack()
 
     local canPunch, reason = hook.Run("CanPlayerThrowPunch", self:GetOwner())
     if canPunch == false then
-        if SERVER and reason and isstring(reason) then self:GetOwner():notifyErrorLocalized(reason) end
+        if SERVER and reason and isstring(reason) then self:GetOwner():notifyError(reason) end
         return
     end
 

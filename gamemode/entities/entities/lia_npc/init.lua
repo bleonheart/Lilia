@@ -59,7 +59,7 @@ function ENT:Use(client)
             net.WriteTable(npcOptions)
             net.Send(client)
         else
-            client:notifyErrorLocalized("No NPC types available! The server may still be loading modules. Please try again in a moment.")
+            client:notifyError("No NPC types available! The server may still be loading modules. Please try again in a moment.")
         end
     end)
 end

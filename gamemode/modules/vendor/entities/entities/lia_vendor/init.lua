@@ -12,7 +12,7 @@ end
 
 function ENT:Use(activator)
     if not hook.Run("CanPlayerAccessVendor", activator, self) then
-        if self.messages[VENDOR_NOTRADE] then activator:notifyErrorLocalized("%s: %s", lia.vendor.getVendorProperty(self, "name"), L(self.messages[VENDOR_NOTRADE], activator)) end
+        if self.messages[VENDOR_NOTRADE] then activator:notifyError(string.format("%s: %s", lia.vendor.getVendorProperty(self, "Name"), self.messages[VENDOR_NOTRADE])) end
         return
     end
 

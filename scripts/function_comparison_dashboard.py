@@ -9,11 +9,13 @@ import threading
 import time
 import traceback
 import webbrowser
-from datetime import datetime
+from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 from urllib.parse import urlparse
+
+DASHBOARD_VERSION = "v1.1.1"
 
 
 
@@ -23,7 +25,7 @@ import json
 import re
 import argparse
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass
 from collections import defaultdict
@@ -1767,10 +1769,8 @@ def _generate_localization_summary(data: Dict) -> List[str]:
 
 DEFAULT_FRAMEWORK_GAMEMODE_DIR = r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode"
 DEFAULT_LANGUAGE_FILE = r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua"
-DEFAULT_MODULES_PATHS = [
-    r"D:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules",
-    r"D:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"
-]
+DEFAULT_SAMS_MODULES_PATH = r"D:\GMOD\Server\garrysmod\gamemodes\lilia_rp\modules\done"
+DEFAULT_MODULES_PATHS = [DEFAULT_SAMS_MODULES_PATH]
 
 
 
@@ -2329,6 +2329,9 @@ class FunctionComparisonReportGenerator:
 
         Returns list of dicts: {file, line, field, key, context}
         """
+        if not Path(str(self.language_file)).is_file():
+            return []
+
         defined_keys: Set[str] = self._extract_language_keys(str(self.language_file))
 
         def normalize(v: str) -> str:
@@ -2472,12 +2475,11 @@ class FunctionComparisonReportGenerator:
         return sorted(undefined, key=lambda e: (e["field"], e["file"], e["line"]))
 
     def _scan_all_language_files(self) -> Dict[str, Set[str]]:
-        """Scan all language files and extract their keys"""
+        """Scan all available framework language files and extract their keys."""
         language_keys = {}
         languages_dir = self.base_path / "languages"
 
-        if not languages_dir.exists():
-            print(f"Warning: Languages directory not found: {languages_dir}")
+        if not languages_dir.is_dir():
             return language_keys
 
         
@@ -2992,7 +2994,6 @@ class FunctionComparisonReportGenerator:
         language_keys = self._scan_all_language_files()
 
         if len(language_keys) < 2:
-            print(f"Warning: Need at least 2 language files to compare, found {len(language_keys)}")
             return {}
 
         
@@ -3880,7 +3881,7 @@ class FunctionComparisonReportGenerator:
         module_reports = self._privilege_build_module_reports(framework_registered, localizations)
 
         return {
-            "generated_at": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+            "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
             "repo_root": str(self.base_path.parent),
             "framework": framework_report,
             "modules": module_reports,
@@ -3900,6 +3901,539 @@ class FunctionComparisonReportGenerator:
         comparator = FunctionComparator(str(self.base_path))
         comparator.lilia_rp_path = self.lilia_rp_path
         return comparator._find_lilia_rp_cross_usage(function_comparison)
+
+    def _extract_lua_literal_string(self, expression: str) -> Optional[str]:
+        value = (expression or "").strip()
+        if len(value) >= 2 and value[0] in {'"', "'"} and value[-1] == value[0]:
+            return value[1:-1]
+        if value.startswith("[[") and value.endswith("]]" ) and len(value) >= 4:
+            return value[2:-2]
+        return None
+
+    def _lua_literal_type(self, expression: str) -> str:
+        value = (expression or "").strip()
+        if not value:
+            return "unknown"
+        if self._extract_lua_literal_string(value) is not None:
+            return "string"
+        if re.fullmatch(r'[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?', value):
+            return "number"
+        if value in {"true", "false"}:
+            return "boolean"
+        if value == "nil":
+            return "nil"
+        if value.startswith("{"):
+            return "table"
+        return "dynamic"
+
+    def _split_lua_arguments(self, body: str) -> List[str]:
+        args: List[str] = []
+        start = 0
+        paren = brace = bracket = 0
+        quote: Optional[str] = None
+        escaped = False
+        long_string = False
+        index = 0
+        while index < len(body):
+            char = body[index]
+            if long_string:
+                if body.startswith("]]", index):
+                    long_string = False
+                    index += 2
+                    continue
+                index += 1
+                continue
+            if quote:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == quote:
+                    quote = None
+                index += 1
+                continue
+            if body.startswith("[[", index):
+                long_string = True
+                index += 2
+                continue
+            if char in {'"', "'"}:
+                quote = char
+            elif char == "(":
+                paren += 1
+            elif char == ")":
+                paren = max(0, paren - 1)
+            elif char == "{":
+                brace += 1
+            elif char == "}":
+                brace = max(0, brace - 1)
+            elif char == "[":
+                bracket += 1
+            elif char == "]":
+                bracket = max(0, bracket - 1)
+            elif char == "," and paren == 0 and brace == 0 and bracket == 0:
+                args.append(body[start:index].strip())
+                start = index + 1
+            index += 1
+        tail = body[start:].strip()
+        if tail or args:
+            args.append(tail)
+        return args
+
+    def _iter_lua_calls(self, content: str, function_name: str) -> Iterable[Dict[str, Any]]:
+        pattern = re.compile(rf'(?<![\w\.]){re.escape(function_name)}\s*\(', re.IGNORECASE)
+        for match in pattern.finditer(content):
+            open_index = content.find("(", match.start(), match.end() + 1)
+            if open_index < 0:
+                continue
+            depth = 1
+            quote: Optional[str] = None
+            escaped = False
+            long_string = False
+            index = open_index + 1
+            while index < len(content) and depth > 0:
+                char = content[index]
+                if long_string:
+                    if content.startswith("]]", index):
+                        long_string = False
+                        index += 2
+                        continue
+                    index += 1
+                    continue
+                if quote:
+                    if escaped:
+                        escaped = False
+                    elif char == "\\":
+                        escaped = True
+                    elif char == quote:
+                        quote = None
+                    index += 1
+                    continue
+                if content.startswith("[[", index):
+                    long_string = True
+                    index += 2
+                    continue
+                if char in {'"', "'"}:
+                    quote = char
+                elif char == "(":
+                    depth += 1
+                elif char == ")":
+                    depth -= 1
+                index += 1
+            if depth != 0:
+                continue
+            close_index = index - 1
+            body = content[open_index + 1:close_index]
+            yield {
+                "start": match.start(),
+                "end": close_index + 1,
+                "line": content[:match.start()].count("\n") + 1,
+                "body": body,
+                "args": self._split_lua_arguments(body),
+            }
+
+    def _make_audit_issue(self, rule: str, severity: str, message: str, file_ref: str, line: int = 0, **extra: Any) -> Dict[str, Any]:
+        return {
+            "rule": rule,
+            "severity": severity,
+            "message": message,
+            "file": file_ref,
+            "line": int(line or 0),
+            **extra,
+        }
+
+    def _run_extended_static_audits(self) -> Dict[str, Any]:
+        sources: List[Dict[str, Any]] = []
+        module_roots = self._discover_module_roots()
+        for lua_file in self._scan_lua_files_for_net_analysis():
+            try:
+                raw = lua_file.read_text(encoding="utf-8", errors="ignore")
+            except Exception:
+                continue
+            content = self._remove_lua_comments(raw)
+            owner = self._module_owner_for_path(lua_file, module_roots)
+            sources.append({
+                "path": lua_file,
+                "file": self._path_ref_for_report(lua_file),
+                "content": content,
+                "module_name": owner.get("name") if owner else None,
+                "module_path": str(owner.get("path")) if owner else None,
+            })
+
+        configuration_issues: List[Dict[str, Any]] = []
+        config_registrations: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+        config_gets: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+        for source in sources:
+            for call in self._iter_lua_calls(source["content"], "lia.config.add"):
+                args = call["args"]
+                if not args:
+                    continue
+                key = self._extract_lua_literal_string(args[0])
+                if not key:
+                    continue
+                default_expr = args[2] if len(args) > 2 else ""
+                config_registrations[key].append({
+                    "file": source["file"], "line": call["line"], "default": default_expr[:200],
+                    "default_type": self._lua_literal_type(default_expr), "module_name": source["module_name"],
+                    "module_path": source["module_path"],
+                })
+            for call in self._iter_lua_calls(source["content"], "lia.config.get"):
+                args = call["args"]
+                if not args:
+                    continue
+                key = self._extract_lua_literal_string(args[0])
+                if not key:
+                    continue
+                fallback_expr = args[1] if len(args) > 1 else ""
+                config_gets[key].append({
+                    "file": source["file"], "line": call["line"], "fallback": fallback_expr[:200],
+                    "fallback_type": self._lua_literal_type(fallback_expr) if fallback_expr else None,
+                    "module_name": source["module_name"], "module_path": source["module_path"],
+                })
+
+        for key, registrations in config_registrations.items():
+            if len(registrations) > 1:
+                defaults = {(entry.get("default_type"), entry.get("default")) for entry in registrations}
+                severity = "error" if len(defaults) > 1 else "warning"
+                first = registrations[0]
+                configuration_issues.append(self._make_audit_issue(
+                    "config.duplicate_registration", severity,
+                    f'Configuration "{key}" is registered {len(registrations)} times' + (" with conflicting defaults" if len(defaults) > 1 else ""),
+                    first["file"], first["line"], key=key, sites=registrations,
+                ))
+            if key not in config_gets:
+                first = registrations[0]
+                configuration_issues.append(self._make_audit_issue(
+                    "config.unused", "info", f'Configuration "{key}" is registered but never read with lia.config.get',
+                    first["file"], first["line"], key=key,
+                ))
+        for key, gets in config_gets.items():
+            if key not in config_registrations:
+                first = gets[0]
+                configuration_issues.append(self._make_audit_issue(
+                    "config.undefined", "error", f'Configuration "{key}" is read but never registered with lia.config.add',
+                    first["file"], first["line"], key=key, sites=gets,
+                ))
+                continue
+            registered_types = {entry.get("default_type") for entry in config_registrations[key]} - {"dynamic", "unknown", "nil"}
+            if len(registered_types) == 1:
+                expected_type = next(iter(registered_types))
+                for get_site in gets:
+                    fallback_type = get_site.get("fallback_type")
+                    if fallback_type and fallback_type not in {"dynamic", "unknown", "nil", expected_type}:
+                        configuration_issues.append(self._make_audit_issue(
+                            "config.fallback_type", "warning",
+                            f'Configuration "{key}" has a {fallback_type} fallback but is registered as {expected_type}',
+                            get_site["file"], get_site["line"], key=key, expected_type=expected_type, fallback_type=fallback_type,
+                        ))
+
+        command_issues: List[Dict[str, Any]] = []
+        commands: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+        aliases: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+        for source in sources:
+            for call in self._iter_lua_calls(source["content"], "lia.command.add"):
+                args = call["args"]
+                if not args:
+                    continue
+                command_name = self._extract_lua_literal_string(args[0])
+                if not command_name:
+                    continue
+                data_expr = args[1] if len(args) > 1 else ""
+                entry = {
+                    "name": command_name, "file": source["file"], "line": call["line"],
+                    "module_name": source["module_name"], "module_path": source["module_path"],
+                }
+                commands[command_name.lower()].append(entry)
+                if data_expr.lstrip().startswith("{") and not re.search(r'\bdesc\s*=', data_expr):
+                    command_issues.append(self._make_audit_issue(
+                        "command.missing_description", "warning", f'Command "{command_name}" has no desc field',
+                        source["file"], call["line"], command=command_name,
+                    ))
+                alias_match = re.search(r'\balias\s*=\s*(\{.*?\}|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\')', data_expr, re.DOTALL)
+                if alias_match:
+                    alias_expr = alias_match.group(1)
+                    alias_values = self._extract_lua_string_literals(alias_expr)
+                    for alias in alias_values:
+                        aliases[alias.lower()].append({**entry, "alias": alias})
+                privilege_match = re.search(r'\bprivilege\s*=\s*["\']([^"\']+)["\']', data_expr)
+                if privilege_match:
+                    entry["privilege"] = privilege_match.group(1)
+        for normalized, sites in commands.items():
+            if len(sites) > 1:
+                first = sites[0]
+                command_issues.append(self._make_audit_issue(
+                    "command.duplicate", "error", f'Command "{first["name"]}" is registered {len(sites)} times',
+                    first["file"], first["line"], command=first["name"], sites=sites,
+                ))
+        command_names = set(commands)
+        for normalized, sites in aliases.items():
+            first = sites[0]
+            if normalized in command_names:
+                command_issues.append(self._make_audit_issue(
+                    "command.alias_collision", "error", f'Alias "{first["alias"]}" collides with a command name',
+                    first["file"], first["line"], alias=first["alias"], sites=sites,
+                ))
+            if len(sites) > 1:
+                command_issues.append(self._make_audit_issue(
+                    "command.duplicate_alias", "warning", f'Alias "{first["alias"]}" is assigned to multiple commands',
+                    first["file"], first["line"], alias=first["alias"], sites=sites,
+                ))
+
+        entity_issues: List[Dict[str, Any]] = []
+        entity_classes: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+        weapon_classes: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+        entity_references: List[Dict[str, Any]] = []
+        base_references: List[Dict[str, Any]] = []
+        known_builtin_entity_bases = {"base_anim", "base_ai", "base_entity", "base_gmodentity", "base_brush", "base_point"}
+        known_builtin_weapon_bases = {"weapon_base", "weapon_fists", "weapon_physgun", "weapon_physcannon", "gmod_tool"}
+        for source in sources:
+            path = source["path"]
+            parts = list(path.parts)
+            lowered = [part.lower() for part in parts]
+            class_name = None
+            class_kind = None
+            if "entities" in lowered:
+                for index in range(len(lowered) - 2):
+                    if lowered[index] == "entities" and lowered[index + 1] == "entities":
+                        class_name = parts[index + 2]
+                        class_kind = "entity"
+                        break
+            if "weapons" in lowered:
+                try:
+                    index = lowered.index("weapons")
+                    if index + 1 < len(parts):
+                        class_name = parts[index + 1]
+                        class_kind = "weapon"
+                except ValueError:
+                    pass
+            if class_name and path.suffix.lower() == ".lua":
+                bucket = entity_classes if class_kind == "entity" else weapon_classes
+                site = {"class": class_name, "file": source["file"], "line": 1, "module_name": source["module_name"], "module_path": source["module_path"]}
+                if not any(existing["file"] == site["file"] for existing in bucket[class_name.lower()]):
+                    bucket[class_name.lower()].append(site)
+
+            for pattern, kind in [
+                (r'ents\.Create\s*\(\s*["\']([^"\']+)["\']', "entity"),
+                (r'weapons\.GetStored\s*\(\s*["\']([^"\']+)["\']', "weapon"),
+            ]:
+                for match in re.finditer(pattern, source["content"], re.IGNORECASE):
+                    entity_references.append({
+                        "class": match.group(1), "kind": kind, "file": source["file"],
+                        "line": source["content"][:match.start()].count("\n") + 1,
+                    })
+            for match in re.finditer(r'\b(ENT|SWEP)\.Base\s*=\s*["\']([^"\']+)["\']', source["content"]):
+                base_references.append({
+                    "owner_kind": "entity" if match.group(1) == "ENT" else "weapon", "base": match.group(2),
+                    "file": source["file"], "line": source["content"][:match.start()].count("\n") + 1,
+                })
+        for class_key, sites in entity_classes.items():
+            roots = {str(Path(site["file"]).parent).lower() for site in sites}
+            if len(roots) > 1:
+                first = sites[0]
+                entity_issues.append(self._make_audit_issue(
+                    "entity.duplicate_class", "error", f'Entity class "{first["class"]}" exists in multiple locations',
+                    first["file"], first["line"], entity_class=first["class"], sites=sites,
+                ))
+        for class_key, sites in weapon_classes.items():
+            roots = {str(Path(site["file"]).parent).lower() for site in sites}
+            if len(roots) > 1:
+                first = sites[0]
+                entity_issues.append(self._make_audit_issue(
+                    "entity.duplicate_weapon", "error", f'Weapon class "{first["class"]}" exists in multiple locations',
+                    first["file"], first["line"], entity_class=first["class"], sites=sites,
+                ))
+        for ref in entity_references:
+            normalized = ref["class"].lower()
+            known = normalized in (entity_classes if ref["kind"] == "entity" else weapon_classes)
+            if not known and normalized.startswith("lia_"):
+                entity_issues.append(self._make_audit_issue(
+                    "entity.missing_reference", "error", f'{ref["kind"].title()} class "{ref["class"]}" is referenced but was not discovered',
+                    ref["file"], ref["line"], entity_class=ref["class"], entity_kind=ref["kind"],
+                ))
+        for ref in base_references:
+            normalized = ref["base"].lower()
+            if ref["owner_kind"] == "entity":
+                known = normalized in known_builtin_entity_bases or normalized in entity_classes
+            else:
+                known = normalized in known_builtin_weapon_bases or normalized in weapon_classes
+            if not known and normalized.startswith("lia_"):
+                entity_issues.append(self._make_audit_issue(
+                    "entity.missing_base", "error", f'{ref["owner_kind"].title()} base "{ref["base"]}" was not discovered',
+                    ref["file"], ref["line"], base=ref["base"], entity_kind=ref["owner_kind"],
+                ))
+
+        timer_issues: List[Dict[str, Any]] = []
+        timer_creates: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+        timer_removes: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+        timer_simple_count = 0
+        for source in sources:
+            for call in self._iter_lua_calls(source["content"], "timer.Create"):
+                args = call["args"]
+                if len(args) < 3:
+                    continue
+                timer_name = self._extract_lua_literal_string(args[0])
+                delay_expr = args[1]
+                reps_expr = args[2]
+                site = {"file": source["file"], "line": call["line"], "name": timer_name, "delay": delay_expr[:80], "repetitions": reps_expr[:80]}
+                if timer_name:
+                    timer_creates[timer_name].append(site)
+                try:
+                    delay = float(delay_expr)
+                    reps = int(float(reps_expr))
+                except (TypeError, ValueError):
+                    delay = None
+                    reps = None
+                if delay is not None and delay <= 0.05 and (reps is None or reps == 0 or reps > 20):
+                    timer_issues.append(self._make_audit_issue(
+                        "timer.hot_interval", "warning", f'Timer "{timer_name or "<dynamic>"}" repeats every {delay:g}s',
+                        source["file"], call["line"], timer=timer_name, delay=delay, repetitions=reps,
+                    ))
+            for call in self._iter_lua_calls(source["content"], "timer.Remove"):
+                args = call["args"]
+                if not args:
+                    continue
+                timer_name = self._extract_lua_literal_string(args[0])
+                if timer_name:
+                    timer_removes[timer_name].append({"file": source["file"], "line": call["line"], "name": timer_name})
+            timer_simple_count += sum(1 for _ in self._iter_lua_calls(source["content"], "timer.Simple"))
+        for timer_name, sites in timer_creates.items():
+            if len(sites) > 1:
+                first = sites[0]
+                timer_issues.append(self._make_audit_issue(
+                    "timer.duplicate_name", "warning", f'Timer "{timer_name}" is created in {len(sites)} locations',
+                    first["file"], first["line"], timer=timer_name, sites=sites,
+                ))
+        for timer_name, sites in timer_removes.items():
+            if timer_name not in timer_creates:
+                first = sites[0]
+                timer_issues.append(self._make_audit_issue(
+                    "timer.remove_unknown", "info", f'timer.Remove targets "{timer_name}" but no literal timer.Create was discovered',
+                    first["file"], first["line"], timer=timer_name, sites=sites,
+                ))
+        for timer_name, sites in timer_creates.items():
+            repeating = [site for site in sites if str(site.get("repetitions", "")).strip() == "0"]
+            if repeating and timer_name not in timer_removes:
+                first = repeating[0]
+                timer_issues.append(self._make_audit_issue(
+                    "timer.repeating_without_cleanup", "info", f'Repeating timer "{timer_name}" has no literal timer.Remove call',
+                    first["file"], first["line"], timer=timer_name, sites=repeating,
+                ))
+
+        performance_issues: List[Dict[str, Any]] = []
+        hot_hooks = {"think", "tick", "hudpaint", "preplayerdraw", "postplayerdraw", "predrawopaqueRenderables".lower(), "postdrawopaqueRenderables".lower(), "predrawtranslucentRenderables".lower(), "postdrawtranslucentRenderables".lower()}
+        expensive_patterns = [
+            ("player.GetAll", re.compile(r'\bplayer\.GetAll\s*\('), "player.GetAll() inside a hot hook"),
+            ("ents.GetAll", re.compile(r'\bents\.GetAll\s*\('), "ents.GetAll() inside a hot hook"),
+            ("ents.FindByClass", re.compile(r'\bents\.FindByClass\s*\('), "ents.FindByClass() inside a hot hook"),
+            ("ents.FindInSphere", re.compile(r'\bents\.FindInSphere\s*\('), "ents.FindInSphere() inside a hot hook"),
+            ("Material", re.compile(r'(?<![\w\.])Material\s*\('), "Material() allocation inside a hot hook"),
+            ("Color", re.compile(r'(?<![\w\.])Color\s*\('), "Color() allocation inside a hot hook"),
+            ("file.Read", re.compile(r'\bfile\.Read\s*\('), "Filesystem read inside a hot hook"),
+            ("file.Find", re.compile(r'\bfile\.Find\s*\('), "Filesystem search inside a hot hook"),
+            ("table.Copy", re.compile(r'\btable\.Copy\s*\('), "table.Copy() inside a hot hook"),
+            ("net.Start", re.compile(r'\bnet\.Start\s*\('), "Network send construction inside a hot hook"),
+            ("net.WriteTable", re.compile(r'\bnet\.WriteTable\s*\('), "net.WriteTable() inside a hot hook"),
+            ("lia.db", re.compile(r'\blia\.db\.[A-Za-z_]\w*\s*\('), "Database operation inside a hot hook"),
+        ]
+        for source in sources:
+            content = source["content"]
+            for call in self._iter_lua_calls(content, "hook.Add"):
+                args = call["args"]
+                if len(args) < 3:
+                    continue
+                hook_name = self._extract_lua_literal_string(args[0])
+                if not hook_name or hook_name.lower() not in hot_hooks:
+                    continue
+                callback = args[2]
+                callback_lines = callback.count("\n") + 1
+                if callback_lines >= 120:
+                    performance_issues.append(self._make_audit_issue(
+                        "performance.large_hot_hook", "warning", f'{hook_name} callback is {callback_lines} lines long',
+                        source["file"], call["line"], hook=hook_name, heuristic=True,
+                    ))
+                for op_name, pattern, message in expensive_patterns:
+                    if pattern.search(callback):
+                        performance_issues.append(self._make_audit_issue(
+                            "performance.hot_hook_operation", "warning", f'{message} ({hook_name})',
+                            source["file"], call["line"], hook=hook_name, operation=op_name, heuristic=True,
+                        ))
+            for match in re.finditer(r'\bnet\.WriteTable\s*\(', content):
+                line = content[:match.start()].count("\n") + 1
+                performance_issues.append(self._make_audit_issue(
+                    "performance.net_write_table", "info", "net.WriteTable() can create large network payloads; prefer explicit fields for hot/frequent messages",
+                    source["file"], line, operation="net.WriteTable", heuristic=True,
+                ))
+
+        for issue in timer_issues:
+            if issue.get("rule") == "timer.hot_interval":
+                performance_issues.append(self._make_audit_issue(
+                    "performance.hot_timer", "warning", issue["message"], issue["file"], issue["line"],
+                    timer=issue.get("timer"), delay=issue.get("delay"), heuristic=True,
+                ))
+
+        severity_order = {"critical": 0, "error": 1, "warning": 2, "info": 3}
+        for bucket in (configuration_issues, command_issues, entity_issues, timer_issues, performance_issues):
+            bucket.sort(key=lambda item: (severity_order.get(str(item.get("severity", "info")).lower(), 9), str(item.get("file", "")).lower(), int(item.get("line", 0))))
+
+        return {
+            "configuration": {"issues": configuration_issues, "registered": self._json_safe(config_registrations), "used": self._json_safe(config_gets)},
+            "commands": {"issues": command_issues, "registered": self._json_safe(commands), "aliases": self._json_safe(aliases)},
+            "entities": {"issues": entity_issues, "entities": self._json_safe(entity_classes), "weapons": self._json_safe(weapon_classes), "references": self._json_safe(entity_references)},
+            "timers": {"issues": timer_issues, "created": self._json_safe(timer_creates), "removed": self._json_safe(timer_removes), "simple_count": timer_simple_count},
+            "performance": {"issues": performance_issues, "heuristic": True},
+        }
+
+    def _build_ui_audit_payload(self, data: CombinedReportData) -> Dict[str, Any]:
+        issues: List[Dict[str, Any]] = []
+        by_panel: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+        for panel in getattr(data, "derma_panels_defined", []) or []:
+            if panel.get("panel"):
+                by_panel[str(panel["panel"])].append(panel)
+        known_controls = {
+            "Panel", "DPanel", "DFrame", "DButton", "DLabel", "DTextEntry", "DScrollPanel", "DListView",
+            "DComboBox", "DCheckBox", "DCheckBoxLabel", "DNumSlider", "DIconLayout", "DModelPanel", "DImage",
+            "DImageButton", "DPropertySheet", "DColumnSheet", "DCategoryList", "DMenu", "DMenuOption", "DProgress",
+            "DTree", "DTree_Node", "DColorMixer", "DHTML", "EditablePanel", "AvatarImage", "SpawnIcon", "RichText",
+        }
+        defined_names = set(by_panel)
+        for panel_name, sites in by_panel.items():
+            if len(sites) > 1:
+                first = sites[0]
+                issues.append(self._make_audit_issue(
+                    "ui.duplicate_panel", "error", f'Panel "{panel_name}" is registered {len(sites)} times',
+                    first.get("file", ""), first.get("line", 0), panel=panel_name, sites=sites,
+                ))
+            for site in sites:
+                base_panel = site.get("base_panel")
+                if base_panel and base_panel not in known_controls and base_panel not in defined_names:
+                    issues.append(self._make_audit_issue(
+                        "ui.unknown_base", "warning", f'Panel "{panel_name}" uses unknown base panel "{base_panel}"',
+                        site.get("file", ""), site.get("line", 0), panel=panel_name, base_panel=base_panel,
+                    ))
+                if self._infer_lua_site_side({"file": site.get("file", "")}) == "server":
+                    issues.append(self._make_audit_issue(
+                        "ui.server_realm", "error", f'Panel "{panel_name}" is registered from a server-side file',
+                        site.get("file", ""), site.get("line", 0), panel=panel_name,
+                    ))
+        for panel in getattr(data, "derma_panels_unused", []) or []:
+            issues.append(self._make_audit_issue(
+                "ui.unused_panel", "info", f'Panel "{panel.get("panel", "?")}" is registered but never instantiated',
+                panel.get("file", ""), panel.get("line", 0), panel=panel.get("panel"),
+            ))
+        for issue in getattr(data, "module_derma_panels_outside_folder", []) or []:
+            issues.append(self._make_audit_issue(
+                "ui.module_placement", "warning", issue.get("reason") or "Module Derma panel is outside its derma folder",
+                issue.get("file", ""), issue.get("line", 0), panel=issue.get("panel"), module_name=issue.get("module_name"),
+            ))
+        for font_name in sorted(getattr(data, "fonts_unregistered", set()) or set(), key=str.lower):
+            file_refs = []
+            for file_ref, names in (getattr(data, "fonts_file_usages", {}) or {}).items():
+                if font_name in names:
+                    file_refs.append(file_ref)
+            issues.append(self._make_audit_issue(
+                "ui.unregistered_font", "warning", f'Font "{font_name}" is used but not registered with lia.font.register',
+                file_refs[0] if file_refs else "", 0, font=font_name, files=file_refs,
+            ))
+        return {"issues": issues, "registered_panels": self._json_safe(data.derma_panels_defined), "used_panels": self._json_safe(data.derma_panels_used)}
 
     def run_all_analyses(self) -> CombinedReportData:
         """Run all three analyses and combine results"""
@@ -3931,7 +4465,7 @@ class FunctionComparisonReportGenerator:
         
         modules_scan = []
         if self.generate_module_docs:
-            print("Scanning external modules for undocumented items...")
+            print("Scanning Sam's Modules for undocumented items...")
             modules_scan = self._scan_modules_for_undocumented()
 
         
@@ -3965,6 +4499,9 @@ class FunctionComparisonReportGenerator:
         
         print("Analyzing privileges...")
         privilege_report = self._run_privilege_analysis()
+
+        print("Analyzing configuration, commands, entities, timers, and performance...")
+        self.extended_audits = self._run_extended_static_audits()
 
         
         undefined_inferred_loc_keys = []
@@ -4693,15 +5230,23 @@ class FunctionComparisonReportGenerator:
         return all(re.match(r'^arg\d+$', n) for n in names)
 
     def _run_localization_analysis(self) -> Tuple[Dict, List, Dict[str, List[Dict[str, str]]]]:
-        """Run localization analysis and detect conflicting module localization keys"""
+        """Run localization analysis and detect conflicting module localization keys."""
         try:
-            
-            
             lang_file_str = str(self.language_file)
-            
             if lang_file_str.startswith(r'E:\Server'):
                 lang_file_str = lang_file_str.replace(r'E:\Server', r'D:\GMOD\Server')
-            framework_data = analyze_data(lang_file_str, str(self.base_path))
+
+            language_source_available = Path(lang_file_str).is_file()
+            if language_source_available:
+                framework_data = analyze_data(lang_file_str, str(self.base_path))
+            else:
+                usage_data = _scan_localization_usage(str(self.base_path))
+                framework_data = _analyze_localization_data({}, {}, {}, str(self.base_path))
+                framework_data["usage_data"] = usage_data
+                framework_data["total_hits"] = sum(len(usages) for usages in usage_data.values())
+                framework_data["source_available"] = False
+                framework_data["source_file"] = lang_file_str
+                print(f"[localization] reference language file not found; key validation skipped: {lang_file_str}")
 
             
             modules: List[Dict] = []
@@ -4728,9 +5273,6 @@ class FunctionComparisonReportGenerator:
 
                         lang_file = module_dir / "languages" / f"{lang_name}.lua"
                         
-                        if 'gitmodules' not in str(base_path).lower():
-                            continue
-
                         if not lang_file.exists():
                             continue
 
@@ -5716,6 +6258,9 @@ class FunctionComparisonReportGenerator:
                 undoc_functions: Set[str] = set()
                 undoc_hooks: Set[str] = set()
                 undoc_meta_functions: Set[str] = set()
+                found_functions: Set[str] = set()
+                found_hooks: Set[str] = set()
+                found_meta_functions: Set[str] = set()
                 hook_locations: Dict[str, List[Dict[str, str]]] = {}
 
                 for root, _, files in os.walk(module_dir):
@@ -5744,6 +6289,7 @@ class FunctionComparisonReportGenerator:
                         for m in re.finditer(r'\b(function\s+([A-Za-z_][\w\.]*?)\s*\(|([A-Za-z_][\w\.]*?)\s*=\s*function\s*\()', content):
                             name = m.group(2) or m.group(3)
                             if name and name.startswith('lia.') and name.count('.') >= 2:
+                                found_functions.add(name)
                                 if name not in documented_functions and name not in documented_module_functions:
                                     undoc_functions.add(name)
 
@@ -5751,12 +6297,14 @@ class FunctionComparisonReportGenerator:
                         
                         for m in re.finditer(r'^\s*function\s+([A-Za-z_]*Meta):([A-Za-z_][\w]*)\s*\(([^)]*)\)', content, re.MULTILINE):
                             meta_name = f"{m.group(1)}:{m.group(2)}"
+                            found_meta_functions.add(meta_name)
                             if meta_name not in documented_functions and meta_name not in documented_module_functions:
                                 undoc_meta_functions.add(meta_name)
 
                         
                         for m in re.finditer(r'hook\s*\.\s*Add\s*\(\s*(["\'])\s*([^"\']+)\1', content):
                             hook_name = m.group(2)
+                            found_hooks.add(hook_name)
                             if (hook_name not in documented_hooks and
                                 hook_name not in documented_module_hooks and
                                 hook_name not in GMOD_HOOKS_BLACKLIST):
@@ -5768,6 +6316,7 @@ class FunctionComparisonReportGenerator:
                                 )
                         for m in re.finditer(r'hook\s*\.\s*Run\s*\(\s*(["\'])\s*([^"\']+)\1', content):
                             hook_name = m.group(2)
+                            found_hooks.add(hook_name)
                             if (hook_name not in documented_hooks and
                                 hook_name not in documented_module_hooks and
                                 hook_name not in GMOD_HOOKS_BLACKLIST):
@@ -5779,6 +6328,7 @@ class FunctionComparisonReportGenerator:
                                 )
                         for m in re.finditer(r'hook\s*\.\s*Call\s*\(\s*(["\'])\s*([^"\']+)\1', content):
                             hook_name = m.group(2)
+                            found_hooks.add(hook_name)
                             if (hook_name not in documented_hooks and
                                 hook_name not in documented_module_hooks and
                                 hook_name not in GMOD_HOOKS_BLACKLIST):
@@ -5797,6 +6347,10 @@ class FunctionComparisonReportGenerator:
                     'hook_locations': hook_locations,
                     'undoc_functions': sorted(undoc_functions, key=str.lower),
                     'undoc_meta_functions': sorted(undoc_meta_functions, key=str.lower),
+                    'total_functions': len(found_functions),
+                    'total_hooks': len(found_hooks),
+                    'total_meta_functions': len(found_meta_functions),
+                    'total_audited_items': len(found_functions) + len(found_hooks) + len(found_meta_functions),
                 })
 
                 
@@ -5805,6 +6359,9 @@ class FunctionComparisonReportGenerator:
                     submod_undoc_functions: Set[str] = set()
                     submod_undoc_hooks: Set[str] = set()
                     submod_undoc_meta_functions: Set[str] = set()
+                    submod_found_functions: Set[str] = set()
+                    submod_found_hooks: Set[str] = set()
+                    submod_found_meta_functions: Set[str] = set()
                     submod_hook_locations: Dict[str, List[Dict[str, str]]] = {}
 
                     for root, _, files in os.walk(submod_dir):
@@ -5828,17 +6385,20 @@ class FunctionComparisonReportGenerator:
                             for m in re.finditer(r'\b(function\s+([A-Za-z_][\w\.]*?)\s*\(|([A-Za-z_][\w\.]*?)\s*=\s*function\s*\()', content):
                                 name = m.group(2) or m.group(3)
                                 if name and name.startswith('lia.') and name.count('.') >= 2:
+                                    submod_found_functions.add(name)
                                     if name not in documented_functions and name not in submod_documented_functions:
                                         submod_undoc_functions.add(name)
 
                             for m in re.finditer(r'^\s*function\s+([A-Za-z_]*Meta):([A-Za-z_][\w]*)\s*\(([^)]*)\)', content, re.MULTILINE):
                                 meta_name = f"{m.group(1)}:{m.group(2)}"
+                                submod_found_meta_functions.add(meta_name)
                                 if meta_name not in documented_functions and meta_name not in submod_documented_functions:
                                     submod_undoc_meta_functions.add(meta_name)
 
                             
                             for m in re.finditer(r'hook\s*\.\s*Add\s*\(\s*(["\'])\s*([^"\']+)\1', content):
                                 hook_name = m.group(2)
+                                submod_found_hooks.add(hook_name)
                                 if (hook_name not in documented_hooks and
                                     hook_name not in submod_documented_hooks and
                                     hook_name not in GMOD_HOOKS_BLACKLIST):
@@ -5850,6 +6410,7 @@ class FunctionComparisonReportGenerator:
                                     )
                             for m in re.finditer(r'hook\s*\.\s*Run\s*\(\s*(["\'])\s*([^"\']+)\1', content):
                                 hook_name = m.group(2)
+                                submod_found_hooks.add(hook_name)
                                 if (hook_name not in documented_hooks and
                                     hook_name not in submod_documented_hooks and
                                     hook_name not in GMOD_HOOKS_BLACKLIST):
@@ -5861,6 +6422,7 @@ class FunctionComparisonReportGenerator:
                                     )
                             for m in re.finditer(r'hook\s*\.\s*Call\s*\(\s*(["\'])\s*([^"\']+)\1', content):
                                 hook_name = m.group(2)
+                                submod_found_hooks.add(hook_name)
                                 if (hook_name not in documented_hooks and
                                     hook_name not in submod_documented_hooks and
                                     hook_name not in GMOD_HOOKS_BLACKLIST):
@@ -5879,6 +6441,10 @@ class FunctionComparisonReportGenerator:
                         'hook_locations': submod_hook_locations,
                         'undoc_functions': sorted(submod_undoc_functions, key=str.lower),
                         'undoc_meta_functions': sorted(submod_undoc_meta_functions, key=str.lower),
+                        'total_functions': len(submod_found_functions),
+                        'total_hooks': len(submod_found_hooks),
+                        'total_meta_functions': len(submod_found_meta_functions),
+                        'total_audited_items': len(submod_found_functions) + len(submod_found_hooks) + len(submod_found_meta_functions),
                     })
 
         return results
@@ -5957,7 +6523,7 @@ class FunctionComparisonReportGenerator:
         if modules_scan is None:
             return lines
 
-        lines.append("# Modules")
+        lines.append("# Sam's Modules")
         lines.append("")
 
         
@@ -6946,10 +7512,218 @@ class FunctionComparisonReportGenerator:
             },
         }
 
+    def _dashboard_function_stats(self, function_comparison: Dict[str, Dict], prefixes: List[str]) -> Dict[str, Any]:
+        normalized_prefixes = [prefix.replace("\\", "/").strip("/").lower() for prefix in prefixes]
+        entries = []
+        for file_path, file_data in (function_comparison or {}).items():
+            normalized = str(file_path).replace("\\", "/").strip("/").lower()
+            if any(normalized == prefix or normalized.startswith(prefix + "/") for prefix in normalized_prefixes):
+                entries.append(file_data)
+
+        total = sum(entry.get("total_functions", 0) for entry in entries)
+        documented = sum(entry.get("documented_functions", 0) for entry in entries)
+        missing = sum(entry.get("missing_functions_count", len(entry.get("missing_functions", []))) for entry in entries)
+        unused = sum(entry.get("unused_functions_count", len(entry.get("unused_functions", []))) for entry in entries)
+        coverage = round((documented / total) * 100, 2) if total else None
+        return {
+            "total_functions": total,
+            "documented_functions": documented,
+            "missing_functions": missing,
+            "unused_functions": unused,
+            "coverage_percent": coverage,
+        }
+
+    def _dashboard_lua_file_count(self, root: Path) -> int:
+        if not root.exists():
+            return 0
+        return sum(1 for file_path in root.rglob("*.lua") if "_disabled" not in file_path.parts and "addons" not in file_path.parts)
+
+    def _build_dashboard_hierarchy(self, data: CombinedReportData) -> Dict[str, Any]:
+        function_comparison = data.function_comparison or {}
+        libraries_root = self.base_path / "core" / "libraries"
+        modules_root = self.base_path / "modules"
+
+        library_items = []
+        if libraries_root.exists():
+            for file_path in sorted(libraries_root.rglob("*.lua"), key=lambda item: str(item).lower()):
+                relative = file_path.relative_to(self.base_path).as_posix()
+                library_name = file_path.relative_to(libraries_root).with_suffix("").as_posix()
+                stats = self._dashboard_function_stats(function_comparison, [relative])
+                library_items.append({
+                    "id": f"lilia-library-{library_name.replace('/', '-')}",
+                    "name": library_name,
+                    "kind": "library",
+                    "path": relative,
+                    "files": 1,
+                    **stats,
+                    "findings": stats["missing_functions"],
+                })
+
+        core_module_items = []
+        if modules_root.exists():
+            for module_dir in sorted((item for item in modules_root.iterdir() if item.is_dir()), key=lambda item: item.name.lower()):
+                relative = module_dir.relative_to(self.base_path).as_posix()
+                stats = self._dashboard_function_stats(function_comparison, [relative])
+                core_module_items.append({
+                    "id": f"lilia-module-{module_dir.name}",
+                    "name": module_dir.name,
+                    "kind": "core_module",
+                    "path": relative,
+                    "files": self._dashboard_lua_file_count(module_dir),
+                    **stats,
+                    "findings": stats["missing_functions"],
+                })
+
+        excluded_prefixes = ["core/libraries", "modules"]
+        other_files = []
+        if self.base_path.exists():
+            for file_path in self.base_path.rglob("*.lua"):
+                relative = file_path.relative_to(self.base_path).as_posix()
+                normalized = relative.lower()
+                if any(normalized == prefix or normalized.startswith(prefix + "/") for prefix in excluded_prefixes):
+                    continue
+                other_files.append(relative)
+
+        other_stats = self._dashboard_function_stats(function_comparison, other_files)
+        other_item = {
+            "id": "lilia-other",
+            "name": "Other",
+            "kind": "other",
+            "path": ".",
+            "files": len(other_files),
+            **other_stats,
+            "findings": other_stats["missing_functions"],
+        }
+
+        lilia_stats = self._dashboard_function_stats(function_comparison, [""])
+        if not lilia_stats["total_functions"]:
+            total = sum(entry.get("total_functions", 0) for entry in function_comparison.values())
+            documented = sum(entry.get("documented_functions", 0) for entry in function_comparison.values())
+            missing = sum(entry.get("missing_functions_count", len(entry.get("missing_functions", []))) for entry in function_comparison.values())
+            unused = sum(entry.get("unused_functions_count", len(entry.get("unused_functions", []))) for entry in function_comparison.values())
+            lilia_stats = {
+                "total_functions": total,
+                "documented_functions": documented,
+                "missing_functions": missing,
+                "unused_functions": unused,
+                "coverage_percent": round((documented / total) * 100, 2) if total else None,
+            }
+
+        module_scan = getattr(data, "modules_scan", []) or []
+        top_level_modules = [entry for entry in module_scan if entry.get("module_scope") != "submodule"]
+        submodules = [entry for entry in module_scan if entry.get("module_scope") == "submodule"]
+        sams_items = []
+        for entry in sorted(top_level_modules, key=lambda item: str(item.get("module_name", "")).lower()):
+            module_path = Path(entry.get("module_path", ""))
+            undocumented_hooks = entry.get("undoc_hooks", []) or []
+            undocumented_functions = entry.get("undoc_functions", []) or []
+            undocumented_meta = entry.get("undoc_meta_functions", []) or []
+            findings = len(undocumented_hooks) + len(undocumented_functions) + len(undocumented_meta)
+            total_audited = int(entry.get("total_audited_items", 0) or 0)
+            documented_audited = max(0, total_audited - findings)
+            coverage = round((documented_audited / total_audited) * 100, 2) if total_audited else None
+            child_entries = []
+            module_path_text = str(module_path)
+            for submodule in submodules:
+                submodule_path = str(submodule.get("module_path", ""))
+                try:
+                    belongs = Path(submodule_path).is_relative_to(module_path)
+                except (TypeError, ValueError):
+                    belongs = submodule_path.startswith(module_path_text)
+                if not belongs:
+                    continue
+                child_findings = len(submodule.get("undoc_hooks", []) or []) + len(submodule.get("undoc_functions", []) or []) + len(submodule.get("undoc_meta_functions", []) or [])
+                child_entries.append({
+                    "id": f"sams-submodule-{entry.get('module_name', '')}-{submodule.get('module_name', '')}",
+                    "name": submodule.get("module_name", "Unknown"),
+                    "kind": "sam_submodule",
+                    "path": submodule_path,
+                    "files": self._dashboard_lua_file_count(Path(submodule_path)),
+                    "findings": child_findings,
+                    "undocumented_hooks": len(submodule.get("undoc_hooks", []) or []),
+                    "undocumented_functions": len(submodule.get("undoc_functions", []) or []),
+                    "undocumented_meta_functions": len(submodule.get("undoc_meta_functions", []) or []),
+                })
+
+            sams_items.append({
+                "id": f"sams-module-{entry.get('module_name', '')}",
+                "name": entry.get("module_name", "Unknown"),
+                "kind": "sam_module",
+                "path": str(module_path),
+                "files": self._dashboard_lua_file_count(module_path),
+                "findings": findings,
+                "total_audited_items": total_audited,
+                "documented_audited_items": documented_audited,
+                "coverage_percent": coverage,
+                "undocumented_hooks": len(undocumented_hooks),
+                "undocumented_functions": len(undocumented_functions),
+                "undocumented_meta_functions": len(undocumented_meta),
+                "children": child_entries,
+            })
+
+        sams_findings = sum(item["findings"] for item in sams_items)
+        sams_files = sum(item["files"] for item in sams_items)
+        sams_total = sum(item["total_audited_items"] for item in sams_items)
+        sams_documented = sum(item["documented_audited_items"] for item in sams_items)
+        sams_coverage = round((sams_documented / sams_total) * 100, 2) if sams_total else None
+
+        return {
+            "lilia": {
+                "id": "lilia",
+                "name": "Lilia",
+                "kind": "framework",
+                "path": str(self.base_path),
+                "files": self._dashboard_lua_file_count(self.base_path),
+                **lilia_stats,
+                "findings": lilia_stats["missing_functions"],
+                "groups": [
+                    {
+                        "id": "lilia-libraries",
+                        "name": "Libraries",
+                        "kind": "libraries",
+                        "items": library_items,
+                    },
+                    {
+                        "id": "lilia-modules",
+                        "name": "Module",
+                        "kind": "core_modules",
+                        "items": core_module_items,
+                    },
+                    {
+                        "id": "lilia-other-group",
+                        "name": "Other",
+                        "kind": "other",
+                        "items": [other_item],
+                    },
+                ],
+            },
+            "sams_modules": {
+                "id": "sams-modules",
+                "name": "Sam's Modules",
+                "kind": "external_modules",
+                "paths": [str(path) for path in self.modules_paths],
+                "files": sams_files,
+                "modules": len(sams_items),
+                "findings": sams_findings,
+                "total_audited_items": sams_total,
+                "documented_audited_items": sams_documented,
+                "coverage_percent": sams_coverage,
+                "groups": [
+                    {
+                        "id": "sams-module-group",
+                        "name": "Module",
+                        "kind": "sam_modules",
+                        "items": sams_items,
+                    }
+                ],
+            },
+        }
+
     def build_dashboard_snapshot(self, data: CombinedReportData, metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Return a stable JSON snapshot for the local dashboard."""
         metadata = dict(metadata or {})
         metadata.setdefault("schema_version", 1)
+        metadata.setdefault("dashboard_version", DASHBOARD_VERSION)
         metadata.setdefault("generated_at", data.generated_at)
         metadata.setdefault("report_generated_at", data.generated_at)
 
@@ -6975,6 +7749,7 @@ class FunctionComparisonReportGenerator:
         snapshot = {
             "metadata": self._json_safe(metadata),
             "summary": self._build_executive_summary_payload(data),
+            "hierarchy": self._build_dashboard_hierarchy(data),
             "sections": {
                 "functions": {
                     "missing_library_functions": self._json_safe(data.missing_library_functions),
@@ -7031,7 +7806,13 @@ class FunctionComparisonReportGenerator:
                 },
                 "config": {
                     "undefined_get_calls": self._json_safe(data.config_undefined_get_calls),
+                    **self._json_safe((getattr(self, "extended_audits", {}) or {}).get("configuration", {})),
                 },
+                "commands": self._json_safe((getattr(self, "extended_audits", {}) or {}).get("commands", {})),
+                "entities": self._json_safe((getattr(self, "extended_audits", {}) or {}).get("entities", {})),
+                "timers": self._json_safe((getattr(self, "extended_audits", {}) or {}).get("timers", {})),
+                "performance": self._json_safe((getattr(self, "extended_audits", {}) or {}).get("performance", {})),
+                "ui": self._json_safe(self._build_ui_audit_payload(data)),
                 "fonts": {
                     "registered": self._json_safe(data.fonts_registered),
                     "used": self._json_safe(data.fonts_used),
@@ -7096,7 +7877,7 @@ WATCH_POLL_SECONDS = 1.0
 
 
 def utc_now_iso() -> str:
-    return datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def safe_json(data: Any) -> bytes:
@@ -7114,6 +7895,7 @@ class DashboardState:
         include_modules: bool,
         refresh_seconds: int,
         quiet: bool = False,
+        modules_paths: Optional[List[Path]] = None,
     ):
         self.base_path = base_path
         self.docs_path = docs_path
@@ -7121,6 +7903,7 @@ class DashboardState:
         self.include_modules = include_modules
         self.refresh_seconds = refresh_seconds
         self.quiet = quiet
+        self.modules_paths = [Path(path) for path in (modules_paths or [Path(DEFAULT_SAMS_MODULES_PATH)])]
         self.lock = threading.RLock()
         self.snapshot: Optional[Dict[str, Any]] = None
         self.snapshot_json: Optional[bytes] = None
@@ -7133,13 +7916,155 @@ class DashboardState:
         self.last_error_at: Optional[str] = None
         self.last_trigger_reason: str = "startup"
         self.build_count = 0
-        self.watched_scope = "Lilia only"
+        self.watched_scope = "Lilia + Sam's Modules" if self.include_modules else "Lilia only"
         self.pending_rebuild_at: Optional[float] = None
         self.pending_reason: Optional[str] = None
         self._stop_event = threading.Event()
         self._wake_event = threading.Event()
         self._watch_roots = self._build_watch_roots()
         self._watch_files: Dict[str, float] = {}
+        self.snapshot = self._build_bootstrap_snapshot()
+        self.snapshot_json = safe_json(self.snapshot)
+
+    def _bootstrap_lua_file_count(self, root: Path) -> int:
+        if not root.is_dir():
+            return 0
+        return sum(
+            1
+            for file_path in root.rglob("*.lua")
+            if "_disabled" not in {part.lower() for part in file_path.parts}
+            and "addons" not in {part.lower() for part in file_path.parts}
+        )
+
+    def _build_bootstrap_hierarchy(self) -> Dict[str, Any]:
+        libraries_root = self.base_path / "core" / "libraries"
+        modules_root = self.base_path / "modules"
+
+        library_items: List[Dict[str, Any]] = []
+        if libraries_root.is_dir():
+            for file_path in sorted(libraries_root.rglob("*.lua"), key=lambda item: str(item).lower()):
+                relative = file_path.relative_to(self.base_path).as_posix()
+                library_name = file_path.relative_to(libraries_root).with_suffix("").as_posix()
+                library_items.append({
+                    "id": f"lilia-library-{library_name.replace('/', '-')}",
+                    "name": library_name,
+                    "kind": "library",
+                    "path": relative,
+                    "files": 1,
+                    "findings": 0,
+                    "coverage_percent": None,
+                    "analysis_pending": True,
+                })
+
+        core_module_items: List[Dict[str, Any]] = []
+        if modules_root.is_dir():
+            for module_dir in sorted((item for item in modules_root.iterdir() if item.is_dir()), key=lambda item: item.name.lower()):
+                core_module_items.append({
+                    "id": f"lilia-module-{module_dir.name}",
+                    "name": module_dir.name,
+                    "kind": "core_module",
+                    "path": module_dir.relative_to(self.base_path).as_posix(),
+                    "files": self._bootstrap_lua_file_count(module_dir),
+                    "findings": 0,
+                    "coverage_percent": None,
+                    "analysis_pending": True,
+                })
+
+        other_files = []
+        if self.base_path.is_dir():
+            for file_path in self.base_path.rglob("*.lua"):
+                relative = file_path.relative_to(self.base_path).as_posix()
+                lowered = relative.lower()
+                if lowered.startswith("core/libraries/") or lowered.startswith("modules/"):
+                    continue
+                other_files.append(relative)
+
+        sams_items: List[Dict[str, Any]] = []
+        seen_paths = set()
+        for modules_path in self.modules_paths if self.include_modules else []:
+            if not modules_path.is_dir():
+                continue
+            for module_dir in sorted((item for item in modules_path.iterdir() if item.is_dir()), key=lambda item: item.name.lower()):
+                if module_dir.name.lower() == "_disabled":
+                    continue
+                resolved_key = str(module_dir.resolve()).lower()
+                if resolved_key in seen_paths:
+                    continue
+                seen_paths.add(resolved_key)
+                sams_items.append({
+                    "id": f"sams-module-{module_dir.name}",
+                    "name": module_dir.name,
+                    "kind": "sam_module",
+                    "path": str(module_dir),
+                    "files": self._bootstrap_lua_file_count(module_dir),
+                    "findings": 0,
+                    "coverage_percent": None,
+                    "analysis_pending": True,
+                    "children": [],
+                })
+
+        lilia_files = self._bootstrap_lua_file_count(self.base_path)
+        sams_files = sum(item["files"] for item in sams_items)
+        return {
+            "lilia": {
+                "id": "lilia",
+                "name": "Lilia",
+                "kind": "framework",
+                "path": str(self.base_path),
+                "files": lilia_files,
+                "findings": 0,
+                "coverage_percent": None,
+                "analysis_pending": True,
+                "groups": [
+                    {"id": "lilia-libraries", "name": "Libraries", "kind": "libraries", "items": library_items},
+                    {"id": "lilia-modules", "name": "Module", "kind": "core_modules", "items": core_module_items},
+                    {
+                        "id": "lilia-other-group",
+                        "name": "Other",
+                        "kind": "other",
+                        "items": [{
+                            "id": "lilia-other",
+                            "name": "Other",
+                            "kind": "other",
+                            "path": ".",
+                            "files": len(other_files),
+                            "findings": 0,
+                            "coverage_percent": None,
+                            "analysis_pending": True,
+                        }],
+                    },
+                ],
+            },
+            "sams_modules": {
+                "id": "sams-modules",
+                "name": "Sam's Modules",
+                "kind": "external_modules",
+                "paths": [str(path) for path in self.modules_paths],
+                "files": sams_files,
+                "modules": len(sams_items),
+                "findings": 0,
+                "coverage_percent": None,
+                "analysis_pending": True,
+                "groups": [{"id": "sams-module-group", "name": "Module", "kind": "sam_modules", "items": sams_items}],
+            },
+        }
+
+    def _build_bootstrap_snapshot(self) -> Dict[str, Any]:
+        return {
+            "metadata": {
+                "schema_version": 1,
+                "dashboard_version": DASHBOARD_VERSION,
+                "generated_at": utc_now_iso(),
+                "status": "booting",
+                "refresh_seconds": self.refresh_seconds,
+                "watched_scope": self.watched_scope,
+                "include_modules": self.include_modules,
+                "analysis_pending": True,
+            },
+            "summary": {},
+            "hierarchy": self._build_bootstrap_hierarchy(),
+            "sections": {},
+        }
 
     def _log(self, message: str):
         if not self.quiet:
@@ -7152,7 +8077,7 @@ class DashboardState:
             self.docs_path / "docs" / "definitions",
         ]
         if self.include_modules:
-            for modules_path in DEFAULT_MODULES_PATHS:
+            for modules_path in self.modules_paths:
                 path_obj = Path(modules_path)
                 if path_obj.exists():
                     roots.append(path_obj)
@@ -7173,15 +8098,14 @@ class DashboardState:
                 yield md_file
 
         if self.include_modules:
-            for modules_path in DEFAULT_MODULES_PATHS:
+            for modules_path in self.modules_paths:
                 path_obj = Path(modules_path)
                 if not path_obj.exists():
                     continue
                 for lua_file in path_obj.rglob("*.lua"):
                     yield lua_file
-                docs_dir = path_obj / "docs"
-                if docs_dir.exists():
-                    for md_file in docs_dir.rglob("*.md"):
+                for md_file in path_obj.rglob("*.md"):
+                    if "docs" in {part.lower() for part in md_file.parts}:
                         yield md_file
 
     def prime_watch_index(self):
@@ -7211,7 +8135,7 @@ class DashboardState:
         started = time.perf_counter()
 
         try:
-            modules_paths = [str(path) for path in DEFAULT_MODULES_PATHS] if self.include_modules else []
+            modules_paths = [str(path) for path in self.modules_paths] if self.include_modules else []
             generator = FunctionComparisonReportGenerator(
                 str(self.base_path),
                 str(self.docs_path),
@@ -7220,10 +8144,10 @@ class DashboardState:
                 generate_module_docs=self.include_modules,
             )
             data = generator.run_all_analyses()
-            report_files = generator.save_reports(data)
             duration_ms = int((time.perf_counter() - started) * 1000)
             metadata = {
                 "schema_version": 1,
+                "dashboard_version": DASHBOARD_VERSION,
                 "generated_at": utc_now_iso(),
                 "report_generated_at": data.generated_at,
                 "build_duration_ms": duration_ms,
@@ -7232,23 +8156,34 @@ class DashboardState:
                 "include_modules": self.include_modules,
                 "status": "ready",
                 "last_trigger_reason": reason,
-                "report_files": report_files,
+                "report_files": [],
             }
             snapshot = generator.build_dashboard_snapshot(data, metadata=metadata)
             snapshot_json = safe_json(snapshot)
+            finished_at = utc_now_iso()
 
             with self.lock:
                 self.snapshot = snapshot
                 self.snapshot_json = snapshot_json
                 self.last_build_duration_ms = duration_ms
-                self.last_build_finished_at = utc_now_iso()
-                self.last_success_at = self.last_build_finished_at
+                self.last_build_finished_at = finished_at
+                self.last_success_at = finished_at
                 self.last_error = None
                 self.last_error_at = None
                 self.is_building = False
                 self.build_count += 1
 
-            self._log(f"[dashboard] analysis build completed in {duration_ms} ms")
+            self._log(f"[dashboard] analysis snapshot published in {duration_ms} ms")
+
+            try:
+                report_file = generator.save_report(data)
+                snapshot["metadata"]["report_files"] = [report_file]
+                with self.lock:
+                    self.snapshot = snapshot
+                    self.snapshot_json = safe_json(snapshot)
+                self._log(f"[dashboard] report exported: {report_file}")
+            except Exception as report_error:
+                self._log(f"[dashboard] report export skipped: {report_error}")
         except Exception:
             error_text = traceback.format_exc()
             with self.lock:
@@ -7328,6 +8263,7 @@ class DashboardState:
             stale = bool(self.last_error and self.snapshot is not None)
             return {
                 "status": "updating" if self.is_building else ("error" if self.last_error and self.snapshot is None else "ready"),
+                "dashboard_version": DASHBOARD_VERSION,
                 "has_snapshot": self.snapshot is not None,
                 "showing_last_successful_snapshot": stale,
                 "refresh_seconds": self.refresh_seconds,
@@ -7349,13 +8285,15 @@ class DashboardState:
                 return {
                     "metadata": {
                         "schema_version": 1,
-                        "generated_at": utc_now_iso(),
+                        "dashboard_version": DASHBOARD_VERSION,
+                "generated_at": utc_now_iso(),
                         "status": "booting",
                         "refresh_seconds": self.refresh_seconds,
                         "watched_scope": self.watched_scope,
                         "include_modules": self.include_modules,
                     },
                     "summary": {},
+                    "hierarchy": self._build_bootstrap_hierarchy(),
                     "sections": {},
                 }
             return self.snapshot
@@ -7368,688 +8306,134 @@ class DashboardState:
 
 
 def render_index_html(refresh_seconds: int) -> str:
-    return f"""<!doctype html>
+    html = """<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lilia Audit Dashboard</title>
+  <title>Lilia Audit __DASHBOARD_VERSION__</title>
   <style>
-    :root {{
-      --bg: #07111b;
-      --bg-deep: #030812;
-      --ink: #e8f0fb;
-      --muted: #91a5bd;
-      --panel: rgba(10, 20, 33, 0.88);
-      --panel-strong: rgba(7, 15, 25, 0.98);
-      --line: rgba(145, 165, 189, 0.18);
-      --accent: #67e8f9;
-      --accent-soft: rgba(103, 232, 249, 0.12);
-      --warn: #f59e0b;
-      --warn-soft: rgba(245, 158, 11, 0.14);
-      --danger: #fb7185;
-      --danger-soft: rgba(251, 113, 133, 0.14);
-      --ok: #34d399;
-      --ok-soft: rgba(52, 211, 153, 0.14);
-      --shadow: 0 26px 80px rgba(0, 0, 0, 0.34);
-      --radius: 22px;
-    }}
-    * {{ box-sizing: border-box; }}
-    body {{
-      margin: 0;
-      color: var(--ink);
-      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(103, 232, 249, 0.12), transparent 26%),
-        radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 24%),
-        radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.08), transparent 22%),
-        linear-gradient(180deg, #09111c 0%, var(--bg) 48%, var(--bg-deep) 100%);
-    }}
-    .shell {{
-      max-width: 1380px;
-      margin: 0 auto;
-      padding: 28px 20px 80px;
-    }}
-    .hero {{
-      background: linear-gradient(135deg, rgba(8, 18, 30, 0.92), rgba(9, 25, 40, 0.98));
-      border: 1px solid rgba(103, 232, 249, 0.12);
-      border-radius: calc(var(--radius) + 8px);
-      box-shadow: var(--shadow);
-      padding: 28px;
-      position: relative;
-      overflow: hidden;
-    }}
-    .hero::after {{
-      content: "";
-      position: absolute;
-      inset: auto -80px -110px auto;
-      width: 260px;
-      height: 260px;
-      background: radial-gradient(circle, rgba(103, 232, 249, 0.22), transparent 70%);
-      pointer-events: none;
-    }}
-    h1, h2, h3 {{ margin: 0; font-weight: 700; }}
-    h1 {{ font-size: clamp(2rem, 3vw, 3.4rem); letter-spacing: -0.04em; }}
-    h2 {{ font-size: 1.2rem; margin-bottom: 12px; }}
-    p {{ margin: 0; color: var(--muted); line-height: 1.6; }}
-    .hero-top {{
-      display: flex;
-      gap: 18px;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }}
-    .hero-copy {{
-      max-width: 760px;
-      display: grid;
-      gap: 12px;
-    }}
-    .status-strip {{
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-    }}
-    .badge {{
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      padding: 9px 14px;
-      font-size: 0.92rem;
-      border: 1px solid transparent;
-      background: rgba(12, 24, 39, 0.94);
-      color: var(--ink);
-      backdrop-filter: blur(8px);
-    }}
-    .badge.ok {{ background: var(--ok-soft); color: var(--ok); border-color: rgba(22, 101, 52, 0.18); }}
-    .badge.warn {{ background: var(--warn-soft); color: var(--warn); border-color: rgba(180, 83, 9, 0.18); }}
-    .badge.danger {{ background: var(--danger-soft); color: var(--danger); border-color: rgba(180, 35, 24, 0.18); }}
-    .grid {{
-      display: grid;
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: 18px;
-      margin-top: 22px;
-    }}
-    .card {{
-      grid-column: span 12;
-      background: var(--panel);
-      border: 1px solid rgba(103, 232, 249, 0.08);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 22px;
-      backdrop-filter: blur(10px);
-    }}
-    .summary-grid {{
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
-      margin-top: 22px;
-    }}
-    .summary-card {{
-      background: rgba(14, 28, 45, 0.84);
-      border: 1px solid rgba(103, 232, 249, 0.08);
-      border-radius: 18px;
-      padding: 16px;
-      display: grid;
-      gap: 8px;
-    }}
-    .summary-card .label {{
-      color: var(--muted);
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }}
-    .summary-card .value {{
-      font-size: 1.9rem;
-      font-weight: 700;
-      letter-spacing: -0.04em;
-    }}
-    .summary-card .sub {{
-      color: var(--muted);
-      font-size: 0.92rem;
-    }}
-    .two-up {{
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-    }}
-    .span-6 {{ grid-column: span 6; }}
-    .span-4 {{ grid-column: span 4; }}
-    .span-8 {{ grid-column: span 8; }}
-    .toolbar {{
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-bottom: 16px;
-    }}
-    .toolbar input {{
-      width: min(320px, 100%);
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      padding: 11px 13px;
-      font: inherit;
-      background: rgba(8, 18, 30, 0.92);
-      color: var(--ink);
-    }}
-    .table-wrap {{
-      overflow: auto;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: var(--panel-strong);
-    }}
-    table {{
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 680px;
-    }}
-    th, td {{
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
-      text-align: left;
-      vertical-align: top;
-      font-size: 0.95rem;
-    }}
-    th {{
-      color: var(--muted);
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      background: rgba(9, 18, 30, 0.96);
-      position: sticky;
-      top: 0;
-      cursor: pointer;
-    }}
-    tr:last-child td {{ border-bottom: none; }}
-    code {{
-      font-family: "IBM Plex Mono", Consolas, monospace;
-      background: rgba(103, 232, 249, 0.10);
-      padding: 2px 6px;
-      border-radius: 8px;
-      font-size: 0.9em;
-    }}
-    .section-meta {{
-      margin-top: 8px;
-      margin-bottom: 18px;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }}
-    details {{
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: rgba(10, 22, 36, 0.72);
-      padding: 0 16px;
-    }}
-    details + details {{ margin-top: 12px; }}
-    summary {{
-      cursor: pointer;
-      list-style: none;
-      padding: 16px 0;
-      font-weight: 600;
-    }}
-    summary::-webkit-details-marker {{ display: none; }}
-    .mono-list {{
-      display: grid;
-      gap: 8px;
-      padding-bottom: 16px;
-    }}
-    .mono-list div {{
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(8, 18, 30, 0.82);
-      border: 1px solid rgba(103, 232, 249, 0.08);
-      font-family: "IBM Plex Mono", Consolas, monospace;
-      font-size: 0.9rem;
-      word-break: break-word;
-    }}
-    .banner {{
-      margin-top: 18px;
-      padding: 14px 16px;
-      border-radius: 16px;
-      border: 1px solid rgba(180, 35, 24, 0.18);
-      background: var(--danger-soft);
-      color: var(--danger);
-      display: none;
-      white-space: pre-wrap;
-    }}
-    .muted {{ color: var(--muted); }}
-    a {{ color: var(--accent); }}
-    @media (max-width: 1040px) {{
-      .span-6, .span-4, .span-8 {{ grid-column: span 12; }}
-      .two-up {{ grid-template-columns: 1fr; }}
-    }}
-    @media (max-width: 720px) {{
-      .shell {{ padding: 16px 14px 48px; }}
-      .hero, .card {{ padding: 18px; border-radius: 18px; }}
-      table {{ min-width: 560px; }}
-      h1 {{ font-size: 2rem; }}
-    }}
+    :root {
+      --bg:#050b12; --sidebar:#07101a; --panel:#09131f; --panel2:#0b1725; --line:#1a2a3a;
+      --text:#e8eef7; --muted:#8ea0b5; --cyan:#13c8ff; --purple:#bc72ff; --green:#48e06c;
+      --yellow:#ffb414; --red:#ff5147; --radius:8px;
+    }
+    *{box-sizing:border-box} html{color-scheme:dark} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI",sans-serif;min-height:100vh}
+    button,input,select{font:inherit}.app{min-height:100vh;display:grid;grid-template-columns:270px minmax(0,1fr)}
+    .sidebar{position:sticky;top:0;height:100vh;overflow:auto;background:linear-gradient(180deg,#07111c 0%,#050b12 100%);border-right:1px solid var(--line);padding:18px 14px}
+    .brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;padding:0 2px 16px;border-bottom:1px solid var(--line)}
+    .brand-mark{color:var(--cyan);font-family:Consolas,monospace;font-size:22px}.side-label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin:16px 4px 8px}
+    .scope-select,.search,.sort-select{width:100%;border:1px solid var(--line);background:#07111c;color:var(--text);border-radius:7px;padding:9px 11px;outline:none}
+    .tree{margin-top:12px;display:grid;gap:3px}.tree-node,.tree-group,.tree-leaf{min-width:0;display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:6px;cursor:pointer;user-select:none}
+    .tree-node:hover,.tree-group:hover,.tree-leaf:hover{background:rgba(255,255,255,.035)}
+    .tree-node.active,.tree-group.active,.tree-leaf.active{background:rgba(19,200,255,.07);box-shadow:inset 2px 0 var(--cyan);color:var(--text)}
+    .tree-node.sam.active,.tree-group.sam.active,.tree-leaf.sam.active{background:rgba(188,114,255,.07);box-shadow:inset 2px 0 var(--purple)}
+    .tree-children{margin-left:15px;padding-left:7px;border-left:1px solid var(--line)}.tree-children.collapsed{display:none}.tree-group{color:#c7d1df;font-size:13px}.tree-leaf{color:#aebdce;font-size:12.5px;justify-content:space-between}
+    .tree-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chev{color:#728399;width:11px;font-size:10px}.ico{color:var(--cyan);width:15px;text-align:center}.sam .ico,.sam-text{color:var(--purple)}
+    .pill{margin-left:auto;border-radius:999px;padding:2px 7px;font-size:11px;background:#101e2d;color:#dce6f2;white-space:nowrap}.pill.ok{color:var(--green);background:rgba(72,224,108,.09)}.pill.warn{color:var(--yellow);background:rgba(255,180,20,.09)}.pill.danger{color:var(--red);background:rgba(255,81,71,.09)}.pill.info{color:#9db5cc;background:#102033}
+    .health-legend{margin:18px 4px 0;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:11px;color:var(--muted)}.legend-row{display:flex;align-items:center;gap:7px;padding:5px 0}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block}.dot.warn{background:var(--yellow)}.dot.danger{background:var(--red)}
+    .main{min-width:0;padding:0 20px 48px}.topbar{height:78px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line)}.title h1{font-size:21px;margin:0;letter-spacing:-.02em}.title p{margin:4px 0 0;color:var(--muted);font-size:13px}.status{display:flex;align-items:center;gap:16px;font-size:12px;color:var(--muted)}.status-ready{color:var(--text);display:inline-flex;align-items:center;gap:7px}.build-button{border:1px solid var(--line);background:#07111c;color:var(--text);border-radius:7px;padding:9px 12px;cursor:pointer}
+    .error{display:none;white-space:pre-wrap;margin:14px 0 0;padding:12px;border:1px solid rgba(255,81,71,.4);background:rgba(255,81,71,.08);color:#ff9c96;border-radius:7px;font:12px Consolas,monospace}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px}.metric{min-height:112px;border:1px solid var(--line);background:linear-gradient(135deg,var(--panel),#07111c);border-radius:var(--radius);padding:15px}.metric.primary{border-color:rgba(19,200,255,.35)}.metric-label{font-size:12px;font-weight:600}.metric-value{font-size:27px;font-weight:700;margin-top:13px;letter-spacing:-.04em}.metric-value.red{color:var(--red)}.metric-value.yellow{color:var(--yellow)}.metric-value.cyan{color:var(--cyan)}.metric-sub{color:var(--muted);font-size:11px;margin-top:5px}.progress{height:5px;background:#112131;border-radius:999px;overflow:hidden;margin-top:10px}.progress>span{display:block;height:100%;background:var(--cyan);border-radius:inherit}
+    .panel{border:1px solid var(--line);background:rgba(8,18,29,.82);border-radius:var(--radius);margin-top:14px;overflow:hidden}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 13px;border-bottom:1px solid var(--line)}.panel-title{color:#b6c4d4;font-size:11px;text-transform:uppercase;letter-spacing:.05em}.panel-sub{color:var(--muted);font-size:11px;margin-top:3px}
+    .toolbar{padding:10px 12px;display:block;border-bottom:1px solid var(--line)}.toolbar .finding-search{width:100%}
+    .table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{border-bottom:1px solid var(--line);text-align:left;padding:9px 11px;font-size:12px;vertical-align:middle}th{color:var(--muted);font-size:10.5px;font-weight:500;background:#08121d}td code{font-family:Consolas,monospace;color:#b9c7d6}.target-name{font-weight:600}.target-type{background:#101d2b;border:1px solid #18293a;border-radius:6px;padding:4px 7px;width:fit-content;color:#b8c5d4}.inline-progress{display:flex;align-items:center;gap:8px}.inline-progress .bar{width:105px;max-width:45%;height:5px;background:#112131;border-radius:999px;overflow:hidden}.inline-progress .bar span{display:block;height:100%;background:var(--cyan)}
+    .status-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-size:11px;background:rgba(72,224,108,.08);color:var(--green)}.status-pill.warn{background:rgba(255,180,20,.08);color:var(--yellow)}.status-pill.danger{background:rgba(255,81,71,.08);color:var(--red)}
+    .audit-stack{padding:10px;display:grid;gap:7px;border-top:1px solid var(--line)}.audit-category{border:1px solid var(--line);border-radius:7px;background:#07111c;padding:0;overflow:hidden}.audit-category>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:22px minmax(150px,.55fr) minmax(220px,1fr) auto;gap:9px;align-items:center;padding:10px 12px}.audit-category>summary::-webkit-details-marker{display:none}.audit-category[open]>summary{border-bottom:1px solid var(--line);background:#091522}.audit-chevron{color:#728399;font-size:11px}.audit-category[open] .audit-chevron{transform:rotate(90deg)}.audit-name{font-size:12px;font-weight:700}.audit-desc{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.audit-count{display:flex;align-items:center;gap:6px}.audit-body{padding:8px 10px 10px}.issue-list{display:grid;gap:5px}.issue{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:9px;align-items:start;border:1px solid #142536;background:#081522;border-radius:6px;padding:8px 9px;font-size:11px}.issue-severity{text-transform:uppercase;font-size:9.5px;font-weight:700;letter-spacing:.04em}.sev-error,.sev-critical{color:var(--red)}.sev-warning{color:var(--yellow)}.sev-info{color:#8eb4d3}.issue-message{min-width:0}.issue-location{color:var(--muted);font:10.5px Consolas,monospace;text-align:right;max-width:440px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.empty{color:var(--muted);font-size:11px;padding:8px 2px}.category-table{overflow:auto}.category-table table{min-width:640px}.section-divider{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 4px;color:#aab8c9;font-size:11px;text-transform:uppercase;letter-spacing:.05em}.count-summary{color:var(--muted);text-transform:none;letter-spacing:0}
+    .hidden{display:none!important}
+    @media(max-width:1050px){.app{grid-template-columns:220px minmax(0,1fr)}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.audit-category>summary{grid-template-columns:20px minmax(130px,1fr) auto}.audit-desc{display:none}}
+    @media(max-width:760px){.app{display:block}.sidebar{position:relative;height:auto}.main{padding:0 12px 32px}.metrics{grid-template-columns:1fr}.topbar{height:auto;padding:16px 0;align-items:flex-start}.status{flex-wrap:wrap;justify-content:flex-end}.audit-category>summary{grid-template-columns:20px 1fr auto}.issue{grid-template-columns:64px 1fr}.issue-location{grid-column:2;text-align:left;max-width:none}}
   </style>
 </head>
 <body>
-  <div class="shell">
-    <section class="hero">
-      <div class="hero-top">
-        <div class="hero-copy">
-          <p class="muted">Live local audit view for Lilia documentation coverage and structural health.</p>
-          <h1>Lilia Function Comparison Dashboard</h1>
-          <p>This page refreshes itself every {refresh_seconds} seconds and keeps showing the last successful snapshot if a rebuild fails.</p>
-        </div>
-        <div class="status-strip">
-          <span id="status-badge" class="badge">Starting up</span>
-          <span id="updated-badge" class="badge">Waiting for first analysis</span>
-        </div>
-      </div>
-      <div id="error-banner" class="banner"></div>
-      <div id="summary-grid" class="summary-grid"></div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">&lt;/&gt;</span><span>Lilia Audit <span style="color:var(--muted);font-size:12px;font-weight:700">__DASHBOARD_VERSION__</span></span></div>
+    <div class="side-label">Scope</div>
+    <select id="scope-select" class="scope-select"><option value="all">All</option><option value="lilia">Lilia</option><option value="sams">Sam's Modules</option></select>
+    <div id="tree" class="tree"></div>
+    <div class="health-legend"><div class="side-label" style="margin:0 0 5px">Severity</div><div class="legend-row"><span class="dot"></span><span style="color:var(--green)">Healthy</span><span style="margin-left:auto">No findings</span></div><div class="legend-row"><span class="dot warn"></span><span style="color:var(--yellow)">Warning</span><span style="margin-left:auto">Review</span></div><div class="legend-row"><span class="dot danger"></span><span style="color:var(--red)">Error</span><span style="margin-left:auto">Action</span></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div class="title"><h1 id="view-title">Overview</h1><p id="view-subtitle">Unified audit across Lilia and Sam's Modules</p></div><div class="status"><span id="status-ready" class="status-ready"><span class="dot"></span>Starting</span><span id="updated">Waiting for first audit</span><button id="build-details" class="build-button">Build details</button></div></header>
+    <div id="error" class="error"></div>
+    <section id="metrics" class="metrics"></section>
+    <section class="panel">
+      <div class="panel-head"><div><div class="panel-title">Audit Workspace</div><div class="panel-sub">Every audit category for the selected scope</div></div><span id="scope-summary" class="pill info">All</span></div>
+      <div class="toolbar"><input id="finding-search" class="search finding-search" placeholder="Search all audit findings..."></div>
+      <div class="section-divider"><span>Audit Checks</span><span id="audit-count-summary" class="count-summary"></span></div>
+      <div id="audit-sections" class="audit-stack"></div>
     </section>
-
-    <section class="grid">
-      <article class="card span-8">
-        <h2>Function Documentation Coverage</h2>
-        <p class="section-meta">Which Lua files still contain undocumented functions.</p>
-        <div class="toolbar">
-          <input id="functions-filter" type="search" placeholder="Filter files or function names">
-        </div>
-        <div class="table-wrap">
-          <table id="functions-table">
-            <thead>
-              <tr>
-                <th data-sort-key="file">File</th>
-                <th data-sort-key="coverage">Coverage</th>
-                <th data-sort-key="missing">Missing</th>
-                <th data-sort-key="documented">Documented</th>
-                <th data-sort-key="total">Total</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </article>
-
-      <article class="card span-4">
-        <h2>Build Status</h2>
-        <p class="section-meta">Server health and live refresh details.</p>
-        <div id="build-status" class="mono-list"></div>
-      </article>
-
-      <article class="card span-6">
-        <h2>Hooks</h2>
-        <p class="section-meta">Undocumented hooks and documented hooks that no longer appear in runtime code.</p>
-        <div id="hooks-details"></div>
-      </article>
-
-      <article class="card span-6">
-        <h2>Localization</h2>
-        <p class="section-meta">Plain-language counts first, then the concrete issues behind them.</p>
-        <div id="localization-details"></div>
-      </article>
-
-      <article class="card span-6">
-        <h2>Net Messages</h2>
-        <p class="section-meta">Definitions, usage drift, and same-side message flow problems.</p>
-        <div id="net-details"></div>
-      </article>
-
-      <article class="card span-6">
-        <h2>Privileges</h2>
-        <p class="section-meta">Privilege IDs used in code versus what is actually registered in framework and module space.</p>
-        <div id="privilege-details"></div>
-      </article>
-
-      <article class="card span-6">
-        <h2>Duplicate Keys</h2>
-        <p class="section-meta">Duplicate language-key findings powered by the cleanup tools, shown in dry-run form for safe review.</p>
-        <div id="duplicate-details"></div>
-      </article>
-
-      <article class="card span-6">
-        <h2>Derma and Placement</h2>
-        <p class="section-meta">Unused panels and module files living outside the expected folders.</p>
-        <div id="placement-details"></div>
-      </article>
-
-      <article class="card span-12">
-        <h2>Raw Drill-Down</h2>
-        <p class="section-meta">Expandable technical lists for deeper review without overwhelming casual readers.</p>
-        <div id="drilldown"></div>
-      </article>
-    </section>
-  </div>
-
-  <script>
-    const refreshMs = {refresh_seconds} * 1000;
-    let reportData = null;
-    let statusData = null;
-    const tableSort = {{}};
-    let openDetailKeys = new Set();
-
-    function escapeHtml(value) {{
-      return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    }}
-
-    function metricCard(label, value, sub) {{
-      return `<div class="summary-card"><div class="label">${{escapeHtml(label)}}</div><div class="value">${{escapeHtml(value)}}</div><div class="sub">${{escapeHtml(sub || "")}}</div></div>`;
-    }}
-
-    function formatPercent(value) {{
-      if (value === null || value === undefined || Number.isNaN(value)) return "N/A";
-      return `${{Number(value).toFixed(1)}}%`;
-    }}
-
-    function setStatusBadge(status, showingLastSnapshot) {{
-      const badge = document.getElementById("status-badge");
-      const updated = document.getElementById("updated-badge");
-      badge.className = "badge";
-      updated.className = "badge";
-
-      if (status === "updating") {{
-        badge.classList.add("warn");
-        badge.textContent = "Updating";
-      }} else if (status === "ready") {{
-        badge.classList.add("ok");
-        badge.textContent = showingLastSnapshot ? "Ready with stale snapshot" : "Ready";
-      }} else {{
-        badge.classList.add("danger");
-        badge.textContent = "Waiting for first successful analysis";
-      }}
-
-      if (statusData?.last_success_at) {{
-        updated.textContent = `Last updated ${{statusData.last_success_at}}`;
-        updated.classList.add("ok");
-      }} else {{
-        updated.textContent = "No successful build yet";
-      }}
-    }}
-
-    function renderSummary() {{
-      const summary = reportData?.summary || {{}};
-      const grid = document.getElementById("summary-grid");
-      grid.innerHTML = [
-        metricCard("Function Coverage", formatPercent(summary.functions?.coverage_percent), `${{summary.functions?.documented ?? 0}} documented of ${{summary.functions?.total ?? 0}}; ${{summary.functions?.unused_lilia ?? 0}} unused`),
-        metricCard("Missing Hooks", summary.hooks?.missing ?? 0, `${{summary.hooks?.unused ?? 0}} documented but unused`),
-        metricCard("Localization Issues", (summary.localization?.undefined_calls ?? 0) + (summary.localization?.argument_mismatches ?? 0), `${{summary.localization?.undefined_calls ?? 0}} undefined calls, ${{summary.localization?.argument_mismatches ?? 0}} mismatches`),
-        metricCard("Net Message Risk", (summary.net_messages?.used_but_undefined ?? 0) + (summary.net_messages?.direction_issues ?? 0), `${{summary.net_messages?.used_but_undefined ?? 0}} undefined, ${{summary.net_messages?.direction_issues ?? 0}} flow issues`),
-        metricCard("Privilege Gaps", summary.privileges?.framework_missing ?? 0, `${{summary.privileges?.modules_with_missing_registrations ?? 0}} modules with missing privilege registrations`),
-        metricCard("Duplicate Keys", summary.duplicates?.duplicate_entries ?? 0, `${{summary.duplicates?.language_files_with_duplicates ?? 0}} language files with duplicates`),
-        metricCard("Derma Drift", summary.derma?.unused ?? 0, `${{summary.derma?.outside_folder ?? 0}} module panels outside folder`),
-        metricCard("Placement Issues", summary.file_placement?.issues ?? 0, `${{summary.config?.undefined_get_calls ?? 0}} undefined config lookups`),
-      ].join("");
-    }}
-
-    function renderStatusPanel() {{
-      const panel = document.getElementById("build-status");
-      if (!statusData) {{
-        panel.innerHTML = "<div>Waiting for status...</div>";
-        return;
-      }}
-      const lines = [
-        `Watched scope: ${{statusData.watched_scope || "unknown"}}`,
-        `Refresh interval: ${{statusData.refresh_seconds || "?"}} seconds`,
-        `Build count: ${{statusData.build_count || 0}}`,
-        `Last trigger: ${{statusData.last_trigger_reason || "startup"}}`,
-        `Last build started: ${{statusData.last_build_started_at || "n/a"}}`,
-        `Last build finished: ${{statusData.last_build_finished_at || "n/a"}}`,
-        `Last build duration: ${{statusData.last_build_duration_ms ?? "n/a"}} ms`,
-      ];
-      panel.innerHTML = lines.map(line => `<div>${{escapeHtml(line)}}</div>`).join("");
-    }}
-
-    function renderFunctionsTable() {{
-      const tbody = document.querySelector("#functions-table tbody");
-      const files = [...(reportData?.sections?.functions?.files || [])];
-      const query = document.getElementById("functions-filter").value.trim().toLowerCase();
-      const sortState = tableSort.functions || {{ key: "missing", dir: "desc" }};
-
-      const filtered = files.filter(entry => {{
-        if (!query) return true;
-        const haystack = [
-          entry.file,
-          ...(entry.missing_functions || []),
-        ].join(" ").toLowerCase();
-        return haystack.includes(query);
-      }});
-
-      filtered.sort((a, b) => {{
-        const av = sortValue(a, sortState.key);
-        const bv = sortValue(b, sortState.key);
-        if (av < bv) return sortState.dir === "asc" ? -1 : 1;
-        if (av > bv) return sortState.dir === "asc" ? 1 : -1;
-        return 0;
-      }});
-
-      tbody.innerHTML = filtered.map(entry => {{
-        const coverage = entry.total_functions ? ((entry.documented_functions / entry.total_functions) * 100) : 0;
-        return `<tr>
-          <td><code>${{escapeHtml(entry.file)}}</code></td>
-          <td>${{formatPercent(coverage)}}</td>
-          <td>${{entry.missing_functions_count ?? 0}}</td>
-          <td>${{entry.documented_functions ?? 0}}</td>
-          <td>${{entry.total_functions ?? 0}}</td>
-        </tr>`;
-      }}).join("");
-    }}
-
-    function sortValue(entry, key) {{
-      if (key === "file") return String(entry.file || "");
-      if (key === "coverage") return entry.total_functions ? (entry.documented_functions / entry.total_functions) : 0;
-      if (key === "missing") return entry.missing_functions_count || 0;
-      if (key === "documented") return entry.documented_functions || 0;
-      if (key === "total") return entry.total_functions || 0;
-      return "";
-    }}
-
-    function detailsBlock(title, items, formatter, keyOverride) {{
-      const safeItems = items || [];
-      const count = safeItems.length;
-      const detailKey = keyOverride || title;
-      const inner = count
-        ? `<div class="mono-list">${{safeItems.map(item => `<div>${{formatter(item)}}</div>`).join("")}}</div>`
-        : `<p class="muted">No items in this section.</p>`;
-      return `<details data-details-key="${{escapeHtml(detailKey)}}"><summary>${{escapeHtml(title)}} (${{count}})</summary>${{inner}}</details>`;
-    }}
-
-    function captureOpenDetails() {{
-      openDetailKeys = new Set(
-        Array.from(document.querySelectorAll("details[data-details-key][open]"))
-          .map(node => node.getAttribute("data-details-key"))
-          .filter(Boolean)
-      );
-    }}
-
-    function restoreOpenDetails() {{
-      document.querySelectorAll("details[data-details-key]").forEach(node => {{
-        const key = node.getAttribute("data-details-key");
-        if (key && openDetailKeys.has(key)) {{
-          node.open = true;
-        }}
-      }});
-    }}
-
-    function renderHooks() {{
-      const hooks = reportData?.sections?.hooks || {{}};
-      const target = document.getElementById("hooks-details");
-      target.innerHTML = [
-        detailsBlock("Undocumented hooks", hooks.missing, item => `<code>${{escapeHtml(item)}}</code>`),
-        detailsBlock("Documented but unused hooks", hooks.unused, item => `<code>${{escapeHtml(item)}}</code>`),
-      ].join("");
-    }}
-
-    function renderLocalization() {{
-      const loc = reportData?.sections?.localization || {{}};
-      const overview = loc.overview || {{}};
-      const target = document.getElementById("localization-details");
-      const summaryLine = `
-        <div class="mono-list">
-          <div>Undefined calls: ${{overview.undefined_count ?? (overview.undefined_rows?.length || 0)}}</div>
-          <div>@token patterns: ${{overview.at_pattern_count ?? (overview.at_pattern_rows?.length || 0)}}</div>
-          <div>Argument mismatches: ${{loc.argument_mismatches?.length || 0}}</div>
-          <div>Module key conflicts: ${{Object.keys(loc.module_conflicts || {{}}).length}}</div>
-        </div>`;
-      target.innerHTML = summaryLine + [
-        detailsBlock("Undefined localization rows", overview.undefined_rows, item => `<code>${{escapeHtml(item.file || "unknown")}}</code> line ${{escapeHtml(item.line || "?")}}: ${{escapeHtml(item.key || item.raw || JSON.stringify(item))}}`),
-        detailsBlock("Argument mismatches", loc.argument_mismatches, item => `<code>${{escapeHtml(item.file || "unknown")}}</code> line ${{escapeHtml(item.line || "?")}}: expected ${{escapeHtml(item.expected_args ?? "?")}}, got ${{escapeHtml(item.actual_args ?? "?")}} for ${{escapeHtml(item.key || "?")}}`),
-      ].join("");
-    }}
-
-    function renderNet() {{
-      const net = reportData?.sections?.net_messages || {{}};
-      const target = document.getElementById("net-details");
-      target.innerHTML = [
-        detailsBlock("Used but undefined messages", net.used_but_undefined, item => `<code>${{escapeHtml(item)}}</code>`),
-        detailsBlock("Defined but unused messages", net.unused_defined, item => `<code>${{escapeHtml(item)}}</code>`),
-        detailsBlock("Direction issues", net.direction_issues, item => `<code>${{escapeHtml(item.message || "?")}}</code>: ${{escapeHtml(item.reason || "")}}`),
-      ].join("");
-    }}
-
-    function renderPrivileges() {{
-      const privileges = reportData?.sections?.privileges || {{}};
-      const framework = privileges.framework || {{}};
-      const counts = framework.counts || {{}};
-      const modules = privileges.modules || [];
-      const target = document.getElementById("privilege-details");
-      const summaryLine = `
-        <div class="mono-list">
-          <div>Framework privileges used in code: ${{counts.used_in_code ?? 0}}</div>
-          <div>Framework registered privileges: ${{counts.registered ?? 0}}</div>
-          <div>Framework missing registrations: ${{counts.used_but_not_registered ?? 0}}</div>
-          <div>Modules scanned: ${{privileges.counts?.modules_scanned ?? modules.length}}</div>
-        </div>`;
-      target.innerHTML = summaryLine + [
-        detailsBlock("Framework used but not registered", framework.used_but_not_registered, item => `<code>${{escapeHtml(item.id || "?")}}</code>${{item.name ? `: ${{escapeHtml(item.name)}}` : ""}}`),
-        detailsBlock("Framework registered but not used", framework.registered_but_not_used, item => `<code>${{escapeHtml(item.id || "?")}}</code>${{item.name ? `: ${{escapeHtml(item.name)}}` : ""}}`),
-        detailsBlock("Modules with missing privilege registrations", modules.filter(item => (item.counts?.missing_registrations || 0) > 0), item => `<code>${{escapeHtml(item.name || "?")}}</code>: ${{item.counts?.missing_registrations || 0}} missing registrations`),
-      ].join("");
-    }}
-
-    function renderDuplicates() {{
-      const duplicates = reportData?.sections?.duplicates || {{}};
-      const language = duplicates.language_duplicates || {{}};
-      const generic = duplicates.generic_duplicates || {{}};
-      const target = document.getElementById("duplicate-details");
-      const summaryLine = `
-        <div class="mono-list">
-          <div>Language duplicate entries: ${{language.total_duplicates ?? 0}}</div>
-          <div>Language files with duplicates: ${{language.files_with_duplicates ?? 0}}</div>
-          <div>Generic duplicate candidates: ${{generic.total_duplicates ?? 0}}</div>
-          <div>Mode: dry-run audit only</div>
-        </div>`;
-      target.innerHTML = summaryLine + [
-        detailsBlock("Language duplicate files", language.files, item => `<code>${{escapeHtml(item.file || "?")}}</code>: ${{item.duplicate_count || 0}} duplicates`),
-        detailsBlock("Generic duplicate files", generic.files, item => `<code>${{escapeHtml(item.file || "?")}}</code>: ${{item.duplicate_count || 0}} duplicate keyed entries`),
-      ].join("");
-    }}
-
-    function renderPlacement() {{
-      const derma = reportData?.sections?.derma || {{}};
-      const placement = reportData?.sections?.file_placement || {{}};
-      const target = document.getElementById("placement-details");
-      target.innerHTML = [
-        detailsBlock("Unused Derma panels", derma.unused, item => `<code>${{escapeHtml(item.panel || "?")}}</code> in <code>${{escapeHtml(item.file || "unknown")}}</code>`),
-        detailsBlock("Panels outside module derma folder", derma.outside_folder, item => `<code>${{escapeHtml(item.panel || "?")}}</code>: ${{escapeHtml(item.reason || "")}}`),
-        detailsBlock("Module file placement issues", placement.issues, item => `<code>${{escapeHtml(item.file || "unknown")}}</code>: ${{escapeHtml(item.reason || "")}}`),
-      ].join("");
-    }}
-
-    function renderDrilldown() {{
-      const sections = reportData?.sections || {{}};
-      const drilldown = document.getElementById("drilldown");
-      const missingLibraries = sections.functions?.missing_library_functions || [];
-      const missingMeta = sections.functions?.missing_meta_functions || [];
-      const unusedLilia = sections.functions?.unused_lilia_functions || [];
-      const liliaRpCrossUsage = sections.functions?.lilia_rp_cross_usage || [];
-      const configIssues = sections.config?.undefined_get_calls || [];
-      const duplicateFiles = sections.duplicates?.language_duplicates?.files || [];
-      const privilegeModules = sections.privileges?.modules || [];
-
-      drilldown.innerHTML = [
-        detailsBlock("Missing library functions", missingLibraries, item => `<code>${{escapeHtml(item.name || "?")}}</code>`),
-        detailsBlock("Missing meta functions", missingMeta, item => `<code>${{escapeHtml(item.name || "?")}}</code>`),
-        detailsBlock("Unused Lilia functions", unusedLilia, item => `<code>${{escapeHtml(item)}}</code>`),
-        detailsBlock("Unused in Lilia, used in lilia_rp", liliaRpCrossUsage, item => `<code>${{escapeHtml(item.function || "?")}}</code> — ${{(item.lilia_rp_usages || []).slice(0, 5).map(usage => `<code>${{escapeHtml(usage.file || "?")}}:${{escapeHtml(usage.line || "?")}}</code>`).join(", ")}}`),
-        detailsBlock("Undefined config get calls", configIssues, item => `<code>${{escapeHtml(item.file || "unknown")}}</code> line ${{escapeHtml(item.line || "?")}}: ${{escapeHtml(item.key || JSON.stringify(item))}}`),
-        detailsBlock("Duplicate language entries", duplicateFiles.flatMap(item => (item.duplicates || []).map(dup => ({{
-          file: item.file,
-          language: item.language,
-          key: dup.key,
-          line: dup.line,
-          first_line: dup.first_line,
-        }}))), item => `<code>${{escapeHtml(item.file || "?")}}</code> [${{escapeHtml(item.language || "?")}}] key <code>${{escapeHtml(item.key || "?")}}</code> duplicates line ${{escapeHtml(item.first_line || "?")}} at line ${{escapeHtml(item.line || "?")}}`),
-        detailsBlock("Module privilege gaps", privilegeModules.flatMap(item => (item.used_but_not_registered || []).map(priv => ({{
-          module: item.name,
-          id: priv.id,
-          name: priv.name,
-        }}))), item => `<code>${{escapeHtml(item.module || "?")}}</code>: <code>${{escapeHtml(item.id || "?")}}</code>${{item.name ? ` (${{escapeHtml(item.name)}})` : ""}}`),
-      ].join("");
-    }}
-
-    function renderErrorBanner() {{
-      const banner = document.getElementById("error-banner");
-      if (statusData?.last_error) {{
-        const intro = statusData.showing_last_successful_snapshot
-          ? "Analysis failed, showing the last successful snapshot.\\n\\n"
-          : "Analysis failed before a successful snapshot was available.\\n\\n";
-        banner.style.display = "block";
-        banner.textContent = intro + statusData.last_error;
-      }} else {{
-        banner.style.display = "none";
-        banner.textContent = "";
-      }}
-    }}
-
-    function renderAll() {{
-      captureOpenDetails();
-      setStatusBadge(statusData?.status, statusData?.showing_last_successful_snapshot);
-      renderErrorBanner();
-      renderSummary();
-      renderStatusPanel();
-      renderFunctionsTable();
-      renderHooks();
-      renderLocalization();
-      renderNet();
-      renderPrivileges();
-      renderDuplicates();
-      renderPlacement();
-      renderDrilldown();
-      restoreOpenDetails();
-    }}
-
-    async function refreshData() {{
-      try {{
-        const [reportResponse, statusResponse] = await Promise.all([
-          fetch("/api/report", {{ cache: "no-store" }}),
-          fetch("/api/status", {{ cache: "no-store" }}),
-        ]);
-        reportData = await reportResponse.json();
-        statusData = await statusResponse.json();
-        renderAll();
-      }} catch (error) {{
-        console.error("Failed to refresh dashboard data", error);
-      }}
-    }}
-
-    document.getElementById("functions-filter").addEventListener("input", renderFunctionsTable);
-    document.querySelectorAll("#functions-table th").forEach(th => {{
-      th.addEventListener("click", () => {{
-        const key = th.dataset.sortKey;
-        const current = tableSort.functions || {{ key: "missing", dir: "desc" }};
-        const dir = current.key === key && current.dir === "desc" ? "asc" : "desc";
-        tableSort.functions = {{ key, dir }};
-        renderFunctionsTable();
-      }});
-    }});
-
-    refreshData();
-    setInterval(refreshData, refreshMs);
-  </script>
+  </main>
+</div>
+<script>
+const refreshMs=__REFRESH_SECONDS__*1000;
+let reportData=null,statusData=null,currentScope="all",selectedGroupId=null,selectedTargetId=null,categoryCache=null;
+const collapsedTreeIds=new Set();
+const CATEGORY_ORDER=["functions","hooks","localization","networking","privileges","configuration","commands","entities","ui","timers","performance","hygiene"];
+const CATEGORY_META={
+  functions:["Functions","Documentation coverage and unused API functions"],hooks:["Hooks","Undocumented and stale hook documentation"],
+  localization:["Localization","Undefined keys, format mismatches, conflicts and unused strings"],networking:["Networking","Unregistered, disconnected and incorrectly placed net messages"],
+  privileges:["Privileges","Privilege registration and ownership gaps"],configuration:["Configuration","Undefined, duplicate, unused and type-inconsistent configuration"],
+  commands:["Commands","Duplicate commands, aliases and incomplete command metadata"],entities:["Entities","Entity/weapon class conflicts, missing references and bases"],
+  ui:["Derma / UI","Panel registration, panel bases, fonts and placement"],timers:["Timers","Duplicate timers, unknown removals and hot intervals"],
+  performance:["Performance","Heuristic hot-path and expensive-operation warnings"],hygiene:["Hygiene","Duplicate keys and module/file placement checks"]
+};
+function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+function pct(v){return v==null?"—":`${Number(v).toFixed(Number(v)%1?1:0)}%`}
+function severityClass(sev){sev=String(sev||"info").toLowerCase();return sev==="critical"||sev==="error"?"danger":sev==="warning"?"warn":"info"}
+function health(n){if((n||0)>=1)return["Review",n>=10?"danger":"warn"];return["Healthy",""]}
+function coverageBar(v){if(v==null)return`<span style="color:var(--muted)">n/a</span>`;return`<div class="inline-progress"><span>${pct(v)}</span><span class="bar"><span style="width:${Math.max(0,Math.min(100,v))}%"></span></span></div>`}
+function metric(label,value,sub,cls=""){return`<div class="metric ${cls}"><div class="metric-label">${esc(label)}</div><div class="metric-value ${cls==="primary"?"cyan":cls}">${esc(value)}</div><div class="metric-sub">${esc(sub)}</div>${cls==="primary"&&String(value).includes("%")?`<div class="progress"><span style="width:${esc(String(value).replace("%",""))}%"></span></div>`:""}</div>`}
+function treePill(item){if(item?.analysis_pending)return`<span class="pill info">…</span>`;if(item?.coverage_percent!=null)return`<span class="pill ${health(item.findings)[1]}">${pct(item.coverage_percent)}</span>`;return`<span class="pill ${health(item?.findings)[1]}">${item?.findings||0}</span>`}
+function itemBadge(item,findings){if(item?.analysis_pending)return`<span class="status-pill"><span class="dot"></span>Pending</span>`;const[name,cls]=health(findings);return`<span class="status-pill ${cls}"><span class="dot ${cls}"></span>${name}</span>`}
+function normalizeAuditPath(v){let n=String(v||"").replaceAll(String.fromCharCode(92),"/").toLowerCase();while(n.includes("//"))n=n.replaceAll("//","/");if(n.startsWith("./"))n=n.slice(2);return n}
+function findTreeTarget(id){const h=reportData?.hierarchy||{};for(const[owner,root]of[["lilia",h.lilia],["sams",h.sams_modules]])for(const group of root?.groups||[])for(const item of group.items||[])if(item.id===id)return{owner,root,group,item};return null}
+function findTreeGroup(id){const h=reportData?.hierarchy||{};for(const[owner,root]of[["lilia",h.lilia],["sams",h.sams_modules]])for(const group of root?.groups||[])if(group.id===id)return{owner,root,group};return null}
+function selectedTargetMatch(){return selectedTargetId?findTreeTarget(selectedTargetId):null}
+function selectedGroupMatch(){return selectedGroupId?findTreeGroup(selectedGroupId):null}
+function targetMatchesPath(value,targetMatch=selectedTargetMatch()){if(!targetMatch||!value)return!targetMatch;const target=normalizeAuditPath(targetMatch.item.path),candidate=normalizeAuditPath(value);if(!target||!candidate)return false;if(targetMatch.item.kind==="library")return candidate===target||candidate.endsWith(`/${target}`);return candidate===target||candidate.startsWith(`${target}/`)||candidate.endsWith(`/${target}`)||candidate.includes(`/${target}/`)}
+function isAbsoluteAuditPath(value){const c=normalizeAuditPath(value);return c.startsWith("/")||/^[a-z]:[/]/.test(c)}
+function isSamPath(value){const c=normalizeAuditPath(value);return(reportData?.hierarchy?.sams_modules?.paths||[]).some(path=>{const p=normalizeAuditPath(path);return c===p||c.startsWith(`${p}/`)||c.includes(`/${p}/`)})}
+function selectionMatchesPath(value){if(!value)return false;const target=selectedTargetMatch();if(target)return targetMatchesPath(value,target);const group=selectedGroupMatch();if(group)return(group.group.items||[]).some(item=>targetMatchesPath(value,{item}));if(currentScope==="lilia"){const root=reportData?.hierarchy?.lilia;const p=normalizeAuditPath(root?.path),c=normalizeAuditPath(value);if(!isAbsoluteAuditPath(c))return true;return!p||c===p||c.startsWith(`${p}/`)||c.endsWith(`/${p}`)||c.includes(`/${p}/`)}if(currentScope==="sams")return isSamPath(value);return true}
+function objectBelongsToSelection(value,keyHint=""){if(!selectedTargetId&&!selectedGroupId&&currentScope==="all")return true;if(value==null)return false;if(Array.isArray(value))return value.some(item=>objectBelongsToSelection(item,keyHint));if(typeof value==="object")return Object.entries(value).some(([key,item])=>objectBelongsToSelection(item,key));if(typeof value!=="string")return false;const key=String(keyHint||"").toLowerCase();return(key.includes("file")||key.includes("path")||key==="location")?selectionMatchesPath(value):false}
+function scopedArray(items){const list=Array.isArray(items)?items:[];return list.filter(item=>objectBelongsToSelection(item))}
+function renderTree(){const h=reportData?.hierarchy||{},lilia=h.lilia||{},sams=h.sams_modules||{};const renderGroup=(group,owner,isSam=false)=>{const collapsed=collapsedTreeIds.has(group.id),active=selectedGroupId===group.id;const leaves=(group.items||[]).map(item=>`<div class="tree-leaf ${isSam?"sam":""} ${selectedTargetId===item.id?"active":""}" data-target-id="${esc(item.id)}" data-owner="${owner}" title="${esc(item.path||item.name)}"><span class="tree-name">└ ${esc(item.name)}</span>${treePill(item)}</div>`).join("");return`<div class="tree-group ${isSam?"sam":""} ${active?"active":""}" data-group-id="${esc(group.id)}" data-owner="${owner}"><span class="chev" data-toggle-id="${esc(group.id)}">${collapsed?"›":"⌄"}</span><span class="ico">□</span><span class="tree-name">${esc(group.name)}</span><span class="pill">${group.items?.length||0}</span></div><div class="tree-children ${collapsed?"collapsed":""}">${leaves}</div>`};const lc=collapsedTreeIds.has("lilia-root"),sc=collapsedTreeIds.has("sams-root");document.getElementById("tree").innerHTML=`<div class="tree-node ${currentScope==="lilia"&&!selectedGroupId&&!selectedTargetId?"active":""}" data-scope="lilia"><span class="chev" data-toggle-id="lilia-root">${lc?"›":"⌄"}</span><span class="ico">◈</span><span class="tree-name">Lilia</span>${treePill(lilia)}</div><div class="tree-children ${lc?"collapsed":""}">${(lilia.groups||[]).map(g=>renderGroup(g,"lilia")).join("")}</div><div class="tree-node sam ${currentScope==="sams"&&!selectedGroupId&&!selectedTargetId?"active":""}" data-scope="sams"><span class="chev" data-toggle-id="sams-root">${sc?"›":"⌄"}</span><span class="ico">◇</span><span class="tree-name sam-text">Sam's Modules</span>${treePill(sams)}</div><div class="tree-children ${sc?"collapsed":""}">${(sams.groups||[]).map(g=>renderGroup(g,"sams",true)).join("")}</div>`}
+function setViewHeader(title,subtitle){document.getElementById("view-title").textContent=title;document.getElementById("view-subtitle").textContent=subtitle}
+function updateScopeSummary(){let label="All";const target=selectedTargetMatch(),group=selectedGroupMatch();if(target)label=`${target.owner==="sams"?"Sam's Modules":"Lilia"} / ${target.group.name} / ${target.item.name}`;else if(group)label=`${group.owner==="sams"?"Sam's Modules":"Lilia"} / ${group.group.name}`;else if(currentScope==="lilia")label="Lilia";else if(currentScope==="sams")label="Sam's Modules";document.getElementById("scope-summary").textContent=label}
+function selectScope(scope){currentScope=scope;selectedGroupId=null;selectedTargetId=null;document.getElementById("scope-select").value=scope;if(scope==="lilia")setViewHeader("Lilia","Libraries, internal modules and framework code");else if(scope==="sams")setViewHeader("Sam's Modules","External modules from the configured Sam modules folder");else setViewHeader("Overview","Unified audit across Lilia and Sam's Modules");renderAll()}
+function selectGroup(owner,id){const m=findTreeGroup(id);if(!m)return;currentScope=owner;selectedGroupId=id;selectedTargetId=null;document.getElementById("scope-select").value=owner;setViewHeader(`${owner==="sams"?"Sam's Modules":"Lilia"} / ${m.group.name}`,`${m.group.items?.length||0} audited items`);renderAll()}
+function selectTarget(owner,id){const m=findTreeTarget(id);if(!m)return;currentScope=owner;selectedGroupId=null;selectedTargetId=id;document.getElementById("scope-select").value=owner;setViewHeader(`${owner==="sams"?"Sam's Modules":"Lilia"} / ${m.group.name} / ${m.item.name}`,m.item.path||"Selected audit target");renderAll()}
+function hookBelongs(name){const locs=reportData?.sections?.hooks?.locations?.[name]||[];return locs.some(objectBelongsToSelection)}
+function netBelongs(name){const net=reportData?.sections?.net_messages||{};return[...(net.used?.[name]||[]),...(net.defined?.[name]||[])].some(objectBelongsToSelection)}
+function issue(severity,message,file="",line=0,rule="",extra={}){return{severity,message,file,line,rule,...extra}}
+function categoryIssues(){const s=reportData?.sections||{},out={};const fn=[];for(const f of s.functions?.files||[]){if(!selectionMatchesPath(f.file))continue;for(const name of f.missing_functions||[])fn.push(issue("warning",`Undocumented function: ${name}`,f.file,0,"function.undocumented",{symbol:name}));for(const name of f.unused_functions||[])fn.push(issue("info",`Function appears unused: ${name}`,f.file,0,"function.unused",{symbol:name}))}out.functions=fn;
+  const hooks=[];for(const name of s.hooks?.missing||[]){if(hookBelongs(name)){const sites=(s.hooks?.locations?.[name]||[]).filter(objectBelongsToSelection);hooks.push(issue("warning",`Undocumented hook: ${name}`,sites[0]?.file||sites[0]?.path||"",sites[0]?.line||0,"hook.undocumented",{hook:name,sites}))}}for(const name of s.hooks?.unused||[]){if(!selectedTargetId&&!selectedGroupId&&currentScope==="all")hooks.push(issue("info",`Documented hook is not registered: ${name}`,"",0,"hook.unused",{hook:name}))}out.hooks=hooks;
+  const loc=[];const normalizeLocRow=row=>Array.isArray(row)?{file:row[0]||"",line:row[1]||0,context:row[2]||"",type:row[3]||"",key:row[4]||"?"}:row||{};for(const raw of s.localization?.overview?.undefined_rows||[]){const row=normalizeLocRow(raw);if(objectBelongsToSelection(row))loc.push(issue("error",`Undefined localization key: ${row.key||row.raw||"?"}`,row.file||"",row.line||0,"localization.undefined"))}for(const raw of s.localization?.overview?.at_pattern_rows||[]){const row=normalizeLocRow(raw);if(objectBelongsToSelection(row))loc.push(issue("warning",`Localization value contains unresolved @ token pattern: ${row.key||"?"}`,row.file||"",row.line||0,"localization.token_pattern"))}for(const raw of s.localization?.argument_mismatches||[]){const row=normalizeLocRow(raw);if(objectBelongsToSelection(row))loc.push(issue("warning",`Localization argument mismatch: ${row.key||"?"}`,row.file||"",row.line||0,"localization.arguments"))}for(const raw of s.localization?.undefined_inferred_loc_keys||[]){const row=normalizeLocRow(raw);if(objectBelongsToSelection(row))loc.push(issue("warning",`Undefined inferred localization key: ${row.key||row.value||"?"}`,row.file||"",row.line||0,"localization.inferred"))}if(!selectedTargetId&&!selectedGroupId&&currentScope!=="sams")for(const key of s.localization?.overview?.unused||[])loc.push(issue("info",`Localization key is defined but unused: ${key}`,"",s.localization?.overview?.key_lines?.[key]||0,"localization.unused",{key}));for(const [key,sites] of Object.entries(s.localization?.module_conflicts||{})){const scoped=(sites||[]).filter(objectBelongsToSelection);if(scoped.length>1)loc.push(issue("warning",`Localization key "${key}" is defined by multiple selected modules`,scoped[0]?.language_file||scoped[0]?.module_path||"",0,"localization.conflict",{sites:scoped}))}out.localization=loc;
+  const net=[];for(const name of s.net_messages?.used_but_undefined||[]){if(netBelongs(name)){const sites=(s.net_messages?.used?.[name]||[]).filter(objectBelongsToSelection);net.push(issue("error",`Net message "${name}" is used but not registered`,sites[0]?.file||"",sites[0]?.line||0,"net.undefined",{message:name,sites}))}}for(const row of scopedArray(s.net_messages?.direction_issues))net.push(issue("warning",`${row.message||"Net message"}: ${row.reason||"direction issue"}`,row.sender_sites?.[0]?.file||row.receiver_sites?.[0]?.file||"",row.sender_sites?.[0]?.line||row.receiver_sites?.[0]?.line||0,"net.direction"));for(const row of scopedArray(s.net_messages?.module_undefined))net.push(issue("error",row.reason||`Unregistered module net message: ${row.message||"?"}`,row.usage_sites?.[0]?.file||"",row.usage_sites?.[0]?.line||0,"net.module_undefined"));for(const row of scopedArray(s.net_messages?.module_misregistered))net.push(issue("warning",row.reason||`Misregistered module net message: ${row.message||"?"}`,row.usage_sites?.[0]?.file||"",row.usage_sites?.[0]?.line||0,"net.module_misregistered"));out.networking=net;
+  const priv=[];for(const row of scopedArray(s.privileges?.framework?.used_but_not_registered))priv.push(issue("error",`Privilege "${row.id||row.name||"?"}" is used but not registered`,row.file||row.usage_sites?.[0]?.file||"",row.line||row.usage_sites?.[0]?.line||0,"privilege.undefined"));for(const mod of s.privileges?.modules||[]){if((mod.counts?.missing_registrations||0)<=0)continue;if(objectBelongsToSelection(mod)||(!selectedTargetId&&!selectedGroupId&&currentScope!=="lilia"))priv.push(issue("error",`${mod.name||"Module"} has ${mod.counts?.missing_registrations||0} missing privilege registrations`,mod.module_path||"",0,"privilege.module_missing"))}out.privileges=priv;
+  out.configuration=scopedArray(s.config?.issues);if(!out.configuration.length)for(const row of scopedArray(s.config?.undefined_get_calls))out.configuration.push(issue("error",`Configuration "${row.key||"?"}" is read but not registered`,row.file||"",row.line||0,"config.undefined"));
+  out.commands=scopedArray(s.commands?.issues);out.entities=scopedArray(s.entities?.issues);out.ui=scopedArray(s.ui?.issues);out.timers=scopedArray(s.timers?.issues);out.performance=scopedArray(s.performance?.issues);
+  const hygiene=[];for(const row of scopedArray(s.file_placement?.issues))hygiene.push(issue("warning",row.reason||row.type||"File placement issue",row.file||"",row.line||0,"hygiene.placement"));for(const row of scopedArray(s.duplicates?.language_duplicates?.files))hygiene.push(issue("warning",`${row.duplicate_count||1} duplicate localization keys`,row.file||"",0,"hygiene.localization_duplicates"));for(const row of scopedArray(s.duplicates?.generic_duplicates?.files))hygiene.push(issue("warning",`${row.duplicate_count||1} duplicate table keys`,row.file||"",0,"hygiene.duplicate_keys"));out.hygiene=hygiene;return out}
+function getCategoryIssues(){if(!categoryCache)categoryCache=categoryIssues();return categoryCache}
+function allScopedIssues(){const cats=getCategoryIssues();return CATEGORY_ORDER.flatMap(name=>cats[name]||[])}
+function issueCountForPath(path){if(!path)return allScopedIssues().length;const prevTarget=selectedTargetId,prevGroup=selectedGroupId,prevScope=currentScope;return allScopedIssues().filter(i=>{const c=normalizeAuditPath(i.file);const p=normalizeAuditPath(path);return c&&(c===p||c.startsWith(`${p}/`)||c.endsWith(`/${p}`)||c.includes(`/${p}/`))}).length}
+function scopedTargets(){const h=reportData?.hierarchy||{},rows=[];const pushRoot=(root,type)=>{if(!root)return;rows.push({...root,type,depth:0});for(const group of root.groups||[]){const items=group.items||[];rows.push({id:group.id,name:group.name,type:"Group",kind:group.kind,files:items.reduce((n,i)=>n+(i.files||0),0),coverage_percent:null,findings:items.reduce((n,i)=>n+(i.findings||0),0),depth:1,group});for(const item of items)rows.push({...item,type:item.kind==="library"?"Library":item.kind==="sam_module"?"Sam Module":item.kind==="core_module"?"Core Module":"Target",depth:2})}};if(selectedTargetId){const m=selectedTargetMatch();return m?[{...m.item,type:m.item.kind==="library"?"Library":m.item.kind==="sam_module"?"Sam Module":m.item.kind==="core_module"?"Core Module":"Target",depth:0}]:[]}if(selectedGroupId){const g=selectedGroupMatch();return(g?.group.items||[]).map(item=>({...item,type:item.kind==="library"?"Library":item.kind==="sam_module"?"Sam Module":item.kind==="core_module"?"Core Module":"Target",depth:0}))}if(currentScope!=="sams")pushRoot(h.lilia,"Framework");if(currentScope!=="lilia")pushRoot(h.sams_modules,"External");return rows}
+function rowFindingCount(row){const issues=allScopedIssues();if(row.kind==="framework")return issues.filter(item=>item.file?!isSamPath(item.file):false).length;if(row.kind==="external_modules")return issues.filter(item=>item.file&&isSamPath(item.file)).length;if(row.kind==="libraries"||row.kind==="core_modules"||row.kind==="sam_modules"||row.kind==="other")return(row.group?.items||[]).reduce((n,i)=>n+issueCountForPath(i.path),0);return row.path?issueCountForPath(row.path):issues.length}
+function renderTargets(){const search=(document.getElementById("target-search")?.value||"").toLowerCase(),sort=document.getElementById("target-sort")?.value||"severity";let rows=scopedTargets().filter(r=>!search||String(r.name||"").toLowerCase().includes(search)||String(r.path||"").toLowerCase().includes(search));rows=rows.map(r=>({...r,_auditFindings:rowFindingCount(r)}));if(sort==="name")rows.sort((a,b)=>String(a.name).localeCompare(String(b.name)));else if(sort==="coverage")rows.sort((a,b)=>(a.coverage_percent??101)-(b.coverage_percent??101));else rows.sort((a,b)=>(b._auditFindings||0)-(a._auditFindings||0));document.getElementById("target-count-summary").textContent=`${rows.length} shown`;document.getElementById("targets-body").innerHTML=rows.length?rows.map(r=>`<tr><td style="padding-left:${11+(r.depth||0)*18}px"><span class="target-name">${r.depth?"↳ ":""}${esc(r.name||"Unknown")}</span></td><td><span class="target-type">${esc(r.type)}</span></td><td>${coverageBar(r.coverage_percent)}</td><td>${r._auditFindings||0}</td><td>${r.files||0}</td><td>${itemBadge(r,r._auditFindings)}</td></tr>`).join(""):`<tr><td colspan="6" style="color:var(--muted)">No targets in the selected scope.</td></tr>`}
+function renderMetrics(){const target=selectedTargetMatch()?.item,group=selectedGroupMatch()?.group;let coverage=null,files=0;if(target){coverage=target.coverage_percent;files=target.files||0}else if(group){const items=group.items||[];files=items.reduce((n,i)=>n+(i.files||0),0);const weighted=items.filter(i=>i.coverage_percent!=null&&i.files);const denom=weighted.reduce((n,i)=>n+i.files,0);coverage=denom?weighted.reduce((n,i)=>n+i.coverage_percent*i.files,0)/denom:null}else{const roots=[];const h=reportData?.hierarchy||{};if(currentScope!=="sams"&&h.lilia)roots.push(h.lilia);if(currentScope!=="lilia"&&h.sams_modules)roots.push(h.sams_modules);files=roots.reduce((n,r)=>n+(r.files||0),0);const weighted=roots.filter(r=>r.coverage_percent!=null&&r.files);const denom=weighted.reduce((n,r)=>n+r.files,0);coverage=denom?weighted.reduce((n,r)=>n+r.coverage_percent*r.files,0)/denom:null}const issues=allScopedIssues(),errors=issues.filter(i=>["critical","error"].includes(String(i.severity||"").toLowerCase())).length,warnings=issues.filter(i=>String(i.severity||"").toLowerCase()==="warning").length;document.getElementById("metrics").innerHTML=metric("Documentation Coverage",pct(coverage),"Selected scope","primary")+metric("Errors",errors,"Actionable findings",errors?"red":"")+metric("Warnings",warnings,"Review recommended",warnings?"yellow":"")+metric("Lua Files",files,"Files in selected scope","")}
+function formatIssueLocation(item){const file=item.file||item.path||"";const line=item.line||0;return file?`${file}${line?`:${line}`:""}`:""}
+function categoryFilteredIssues(items){const query=(document.getElementById("finding-search")?.value||"").toLowerCase().trim();if(!query)return items;return items.filter(item=>JSON.stringify(item).toLowerCase().includes(query))}
+function renderAuditSections(){const cats=getCategoryIssues();let total=0;const html=CATEGORY_ORDER.map(name=>{const meta=CATEGORY_META[name],all=cats[name]||[],items=categoryFilteredIssues(all);total+=all.length;const errors=all.filter(i=>["critical","error"].includes(String(i.severity||"").toLowerCase())).length,warnings=all.filter(i=>String(i.severity||"").toLowerCase()==="warning").length,badgeClass=errors?"danger":warnings?"warn":all.length?"info":"ok";const visible=items.slice(0,300);const body=visible.length?`<div class="issue-list">${visible.map(item=>{const sev=String(item.severity||"info").toLowerCase();return`<div class="issue"><div class="issue-severity sev-${esc(sev)}">${esc(sev)}</div><div class="issue-message">${esc(item.message||item.reason||item.rule||"Finding")}</div><div class="issue-location" title="${esc(formatIssueLocation(item))}">${esc(formatIssueLocation(item))}</div></div>`}).join("")}</div>${items.length>300?`<div class="empty">Showing first 300 of ${items.length} matching findings.</div>`:""}`:`<div class="empty">${all.length?"No findings match the current search.":"No findings in this category for the selected scope."}</div>`;return`<details class="audit-category"><summary><span class="audit-chevron">›</span><span class="audit-name">${esc(meta[0])}</span><span class="audit-desc">${esc(meta[1])}</span><span class="audit-count"><span class="pill ${badgeClass}">${all.length}</span></span></summary><div class="audit-body">${body}</div></details>`}).join("");document.getElementById("audit-sections").innerHTML=html;document.getElementById("audit-count-summary").textContent=`${total} findings across ${CATEGORY_ORDER.length} checks`}
+function renderStatus(){const ready=document.getElementById("status-ready"),status=statusData?.status||"starting";ready.innerHTML=`<span class="dot ${status==="error"?"danger":status==="updating"?"warn":""}"></span>${status==="updating"?"Updating":status==="error"?"Error":"Ready"}`;document.getElementById("updated").textContent=statusData?.last_success_at?`Updated ${new Date(statusData.last_success_at).toLocaleTimeString()}`:"Waiting for first audit";const error=document.getElementById("error");if(statusData?.last_error){error.style.display="block";error.textContent=statusData.last_error}else{error.style.display="none";error.textContent=""}}
+function renderAll(){categoryCache=null;renderTree();updateScopeSummary();renderMetrics();renderAuditSections();renderStatus()}
+async function refreshData(){try{const[rr,sr]=await Promise.all([fetch("/api/report",{cache:"no-store"}),fetch("/api/status",{cache:"no-store"})]);reportData=await rr.json();statusData=await sr.json();renderAll()}catch(error){console.error(error)}}
+document.getElementById("tree").addEventListener("click",event=>{const toggle=event.target.closest("[data-toggle-id]");if(toggle){event.stopPropagation();const id=toggle.dataset.toggleId;if(collapsedTreeIds.has(id))collapsedTreeIds.delete(id);else collapsedTreeIds.add(id);renderTree();return}const leaf=event.target.closest("[data-target-id]");if(leaf){selectTarget(leaf.dataset.owner,leaf.dataset.targetId);return}const group=event.target.closest("[data-group-id]");if(group){selectGroup(group.dataset.owner,group.dataset.groupId);return}const node=event.target.closest("[data-scope]");if(node)selectScope(node.dataset.scope)});
+document.getElementById("scope-select").addEventListener("change",event=>selectScope(event.target.value));document.getElementById("finding-search").addEventListener("input",renderAuditSections);document.getElementById("build-details").addEventListener("click",()=>{const i=statusData||{};alert(`Dashboard: ${i.dashboard_version||"__DASHBOARD_VERSION__"}\nBuild count: ${i.build_count||0}\nWatched scope: ${i.watched_scope||"unknown"}\nLast trigger: ${i.last_trigger_reason||"unknown"}\nDuration: ${i.last_build_duration_ms??"n/a"} ms`)});refreshData();setInterval(refreshData,refreshMs);
+</script>
 </body>
 </html>"""
+    return html.replace("__REFRESH_SECONDS__", str(refresh_seconds)).replace("__DASHBOARD_VERSION__", DASHBOARD_VERSION)
 
 
 class DashboardHandler(BaseHTTPRequestHandler):
@@ -8096,7 +8480,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--refresh-seconds", type=int, default=10, help="Browser polling interval in seconds.")
     parser.add_argument("--watch", dest="watch", action="store_true", default=True, help="Enable background watching and automatic rebuilds.")
     parser.add_argument("--no-watch", dest="watch", action="store_false", help="Disable background file watching.")
-    parser.add_argument("--include-modules", action="store_true", help="Include external modules in analysis and watch scope.")
+    parser.add_argument("--include-modules", "--include-sams-modules", dest="include_modules", action="store_true", help="Include Sam's Modules in analysis and watch scope.")
+    parser.add_argument("--no-modules", "--no-sams-modules", dest="include_modules", action="store_false", help="Exclude Sam's Modules from analysis and watch scope.")
+    parser.add_argument("--sams-modules-path", action="append", default=None, help="Path to a Sam's Modules folder. Can be provided more than once.")
+    parser.set_defaults(include_modules=True)
     parser.add_argument("--open-browser", action="store_true", help="Open the dashboard in the default web browser after startup.")
     parser.add_argument("--quiet", "-q", action="store_true", help="Reduce console logging.")
     return parser.parse_args()
@@ -8107,6 +8494,7 @@ def main():
     base_path = Path(args.base_path)
     docs_path = Path(args.docs_path)
     language_file = Path(args.language_file)
+    modules_paths = [Path(path) for path in (args.sams_modules_path or [DEFAULT_SAMS_MODULES_PATH])]
 
     state = DashboardState(
         base_path=base_path,
@@ -8115,6 +8503,7 @@ def main():
         include_modules=args.include_modules,
         refresh_seconds=args.refresh_seconds,
         quiet=args.quiet,
+        modules_paths=modules_paths,
     )
 
     state.start_background_workers(watch=args.watch)
@@ -8124,8 +8513,16 @@ def main():
     url = f"http://{args.host}:{args.port}/"
     if not args.quiet:
         print(f"[dashboard] serving {url}")
+        print(f"[dashboard] version: {DASHBOARD_VERSION}")
         print(f"[dashboard] watch mode: {'on' if args.watch else 'off'}")
-        print(f"[dashboard] module scanning: {'on' if args.include_modules else 'off'}")
+        print(f"[dashboard] Sam's Modules scanning: {'on' if args.include_modules else 'off'}")
+        if args.include_modules:
+            for modules_path in modules_paths:
+                if modules_path.is_dir():
+                    module_count = sum(1 for item in modules_path.iterdir() if item.is_dir() and item.name.lower() != "_disabled")
+                    print(f"[dashboard] Sam's Modules path: {modules_path} ({module_count} modules detected)")
+                else:
+                    print(f"[dashboard] Sam's Modules path missing: {modules_path}")
 
     if args.open_browser:
         webbrowser.open(url)

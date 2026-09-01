@@ -1,4 +1,7 @@
 ﻿local MODULE = MODULE
+local updateNPCRelations
+local flushFactionPlaytime
+local ensureFactionTracking
 function MODULE:OnPlayerJoinClass(client, class, oldClass)
     local info = lia.class.list[class]
     local info2 = lia.class.list[oldClass]
@@ -13,7 +16,7 @@ function MODULE:OnPlayerJoinClass(client, class, oldClass)
     net.Start("liaClassUpdate")
     net.WriteEntity(client)
     net.Broadcast()
-    self:UpdateNPCRelations(client)
+    updateNPCRelations(client)
 end
 
 function MODULE:OnTransferred(client)
@@ -47,13 +50,13 @@ function MODULE:OnCharCreated(_, character)
         character:setClass(0)
     end
 
-    self:EnsureFactionTracking(character, character:getPlayer(), "created")
+    ensureFactionTracking(character, character:getPlayer(), "created")
 end
 
 function MODULE:PlayerLoadedChar(client, character)
-    self:EnsureFactionTracking(character, client, "loaded")
+    ensureFactionTracking(character, client, "loaded")
     if character:getData("factionKickWarn") then
-        client:notifyWarningLocalized("You were kicked from your faction!")
+        client:notifyWarning("You were kicked from your faction!")
         hook.Run("OnTransferred", client)
         local faction = lia.faction.indices[client:Team()]
         if faction and faction.OnTransferred then faction:OnTransferred(client) end
@@ -84,7 +87,7 @@ function MODULE:PlayerLoadedChar(client, character)
 end
 
 function MODULE:CharPreSave(character)
-    self:FlushFactionPlaytime(character)
+    flushFactionPlaytime(character)
 end
 
 local function getNormalizedNPCClass(entity)
@@ -175,7 +178,7 @@ local function applyNPCRelation(entity, client)
     end
 end
 
-function MODULE:UpdateNPCRelations(client)
+updateNPCRelations = function(client)
     if not IsValid(client) or not client:getChar() then return end
     debugNPCRelations("Refreshing NPC relations", "player=", tostring(client:Name()))
     for _, entity in ents.Iterator() do
@@ -190,7 +193,7 @@ local function applyAttributes(client, attr)
     client:SetViewOffset(offset)
     client:SetViewOffsetDucked(offsetDuck)
     client:SetModelScale(1)
-    MODULE:UpdateNPCRelations(client)
+    updateNPCRelations(client)
     if attr.scale and attr.scale ~= 1 then
         client:SetViewOffset(offset * attr.scale)
         client:SetViewOffsetDucked(offsetDuck * attr.scale)
@@ -247,17 +250,17 @@ function MODULE:OnEntityCreated(entity)
 end
 
 function MODULE:PlayerSpawn(client)
-    self:UpdateNPCRelations(client)
+    updateNPCRelations(client)
 end
 
 function MODULE:OnCharVarChanged(character, key, oldValue, newValue)
     if key ~= "faction" or oldValue == nil or oldValue == 0 then return end
     local client = character:getPlayer()
-    if IsValid(client) then self:UpdateNPCRelations(client) end
+    if IsValid(client) then updateNPCRelations(client) end
 end
 
 function MODULE:OnPlayerSwitchClass(client)
-    self:UpdateNPCRelations(client)
+    updateNPCRelations(client)
 end
 
 function MODULE:PostPlayerLoadout(client)
@@ -315,14 +318,6 @@ function MODULE:CanPlayerSwitchChar(client, currentCharacter, newCharacter)
     if faction and self:CheckFactionLimitReached(faction, newCharacter, client) then return false, "This faction is full. Try again later." end
 end
 
-lia.command.add("speed", {
-    desc = "Check your current movement speeds.",
-    onRun = function(client)
-        client:notifyLocalized("Current speeds - Run: %d, Walk: %d", client:GetRunSpeed(), client:GetWalkSpeed())
-        return ""
-    end
-})
-
 local TRACKED_FACTION_KEYS = {
     factionJoinDates = true,
     factionPlaytime = true,
@@ -374,7 +369,7 @@ local function decodeTrackedFactionRow(value)
     return decoded[1]
 end
 
-function MODULE:CanAccessFactionRoster(client, factionUniqueID)
+local function hasFactionRosterAccess(client, factionUniqueID)
     if not IsValid(client) then return false end
     if client:hasPrivilege("listCharacters") or client:hasPrivilege("canManageFactions") then return true end
     local character = client:getChar()
@@ -382,11 +377,15 @@ function MODULE:CanAccessFactionRoster(client, factionUniqueID)
     return getFactionUniqueID(character:getFaction()) == getFactionUniqueID(factionUniqueID)
 end
 
-function MODULE:CanEditFactionNotes(client, factionUniqueID)
-    return self:CanAccessFactionRoster(client, factionUniqueID)
+function MODULE:CanAccessFactionRoster(client, factionUniqueID)
+    return hasFactionRosterAccess(client, factionUniqueID)
 end
 
-function MODULE:FlushFactionPlaytime(character, now)
+function MODULE:CanEditFactionNotes(client, factionUniqueID)
+    return hasFactionRosterAccess(client, factionUniqueID)
+end
+
+flushFactionPlaytime = function(character, now)
     if not character then return 0 end
     now = tonumber(now) or os.time()
     local factionUniqueID = getFactionUniqueID(character:getFaction())
@@ -405,7 +404,7 @@ function MODULE:FlushFactionPlaytime(character, now)
     return elapsed
 end
 
-function MODULE:EnsureFactionTracking(character, actor, reason)
+ensureFactionTracking = function(character, actor, reason)
     if not character then return end
     local factionUniqueID = getFactionUniqueID(character:getFaction())
     if not factionUniqueID then return end
@@ -437,12 +436,12 @@ function MODULE:TrackFactionTransfer(character, oldFactionValue, newFactionValue
     local oldFactionUniqueID = getFactionUniqueID(oldFactionValue)
     local newFactionUniqueID = getFactionUniqueID(newFactionValue)
     if oldFactionUniqueID == newFactionUniqueID and newFactionUniqueID then
-        self:EnsureFactionTracking(character, actor, reason)
+        ensureFactionTracking(character, actor, reason)
         return
     end
 
     local now = os.time()
-    if oldFactionUniqueID then self:FlushFactionPlaytime(character, now) end
+    if oldFactionUniqueID then flushFactionPlaytime(character, now) end
     local joinDates = character:getData("factionJoinDates", {})
     if not istable(joinDates) then joinDates = {} end
     if newFactionUniqueID then joinDates[newFactionUniqueID] = now end
@@ -465,205 +464,133 @@ end
 function MODULE:TrackOfflineFactionTransfer(charID, oldFactionValue, newFactionValue, actor, reason)
     charID = tonumber(charID)
     if not charID then return end
-    local joinDates = lia.char.getCharData(charID, "factionJoinDates")
-    if not istable(joinDates) then joinDates = {} end
-    local newFactionUniqueID = getFactionUniqueID(newFactionValue)
-    if newFactionUniqueID then joinDates[newFactionUniqueID] = os.time() end
-    lia.char.setCharDatabase(charID, "factionJoinDates", joinDates)
-    local history = sanitizeFactionHistory(lia.char.getCharData(charID, "factionTransferHistory"))
-    table.insert(history, 1, {
-        at = os.time(),
-        from = getFactionUniqueID(oldFactionValue),
-        to = newFactionUniqueID,
-        byName = IsValid(actor) and actor:Name() or nil,
-        bySteamID = IsValid(actor) and actor:SteamID() or nil,
-        reason = reason or "transferred"
-    })
-
-    trimFactionHistory(history)
-    lia.char.setCharDatabase(charID, "factionTransferHistory", history)
+    lia.char.getCharData(charID):next(function(data)
+        local joinDates = istable(data.factionJoinDates) and data.factionJoinDates or {}
+        local newFactionUniqueID = getFactionUniqueID(newFactionValue)
+        if newFactionUniqueID then joinDates[newFactionUniqueID] = os.time() end
+        lia.char.setCharDatabase(charID, "factionJoinDates", joinDates)
+        local history = sanitizeFactionHistory(data.factionTransferHistory)
+        table.insert(history, 1, {
+            at = os.time(),
+            from = getFactionUniqueID(oldFactionValue),
+            to = newFactionUniqueID,
+            byName = IsValid(actor) and actor:Name() or nil,
+            bySteamID = IsValid(actor) and actor:SteamID() or nil,
+            reason = reason or "transferred"
+        })
+        trimFactionHistory(history)
+        lia.char.setCharDatabase(charID, "factionTransferHistory", history)
+    end):catch(function(message) lia.error("Failed to track offline faction transfer: " .. tostring(message)) end)
+end
+local function canInviteToFaction(client, target)
+    local clientChar = client:getChar()
+    local targetChar = target:getChar()
+    if not clientChar or not targetChar then return false end
+    if clientChar:getFaction() == targetChar:getFaction() then return false end
+    if clientChar:hasFlags("Z") then return true end
+    local classData = lia.class.list[clientChar:getClass()]
+    if classData and classData.canInviteToFaction then return true end
+    return hook.Run("CanInviteToFaction", client, target) == true
 end
 
-function MODULE:BuildFactionMembersPayload(client, factionUniqueID, callback)
-    local faction = lia.faction.get(factionUniqueID)
-    if not faction then
-        if callback then
-            callback({
-                faction = factionUniqueID,
-                members = {}
-            })
-        end
-        return
-    end
+local function canInviteToClass(client, target)
+    local clientChar = client:getChar()
+    local targetChar = target:getChar()
+    if not clientChar or not targetChar then return false end
+    if clientChar:getFaction() ~= targetChar:getFaction() then return false end
+    if clientChar:hasFlags("X") then return true end
+    local classData = lia.class.list[clientChar:getClass()]
+    if classData and classData.canInviteToClass then return true end
+    return hook.Run("CanInviteToClass", client, target) == true
+end
 
-    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local query = string.format([[
-        SELECT c.id, c.name, c.lastJoinTime, c.steamID, c.class, c.playtime
-        FROM lia_characters AS c
-        WHERE c.faction = %s AND c.schema = %s
-        ORDER BY c.lastJoinTime DESC
-    ]], lia.db.convertDataType(faction.uniqueID), lia.db.convertDataType(gamemode))
-    lia.db.query(query, function(data)
-        local rows = data or {}
-        local ids = {}
-        for _, row in ipairs(rows) do
-            local charID = tonumber(row.id)
-            if charID then ids[#ids + 1] = charID end
-        end
-
-        local function finish()
-            local members = {}
-            for _, row in ipairs(rows) do
-                local charID = tonumber(row.id) or row.id
-                local lastOnlineText
-                local owner = lia.char.getOwnerByID(charID)
-                if not IsValid(owner) and row.steamID then
-                    local ply = player.GetBySteamID(tostring(row.steamID))
-                    local ownerChar = IsValid(ply) and ply:getChar() or nil
-                    if ownerChar and ownerChar:getID() == tonumber(charID) then owner = ply end
-                end
-
-                local ownerChar = IsValid(owner) and owner:getChar() or nil
-                if ownerChar and ownerChar:getID() == tonumber(charID) then
-                    lastOnlineText = "Online now"
-                else
-                    lastOnlineText = row.lastJoinTime or "Unknown"
-                end
-
-                local classIndex = tonumber(row.class) or 0
-                local classData = lia.class.list[classIndex]
-                members[#members + 1] = {
-                    name = row.name or "Unknown",
-                    lastOnline = lastOnlineText,
-                    lastActive = row.lastJoinTime or "Unknown",
-                    charID = charID,
-                    steamID = row.steamID,
-                    class = classIndex,
-                    className = classData and classData.name or nil,
-                    playtime = tonumber(row.playtime) or 0
-                }
-            end
-
-            if callback then
-                callback({
-                    faction = faction.uniqueID,
-                    members = members
-                })
+lia.playerinteract.addInteraction("inviteToFaction", {
+    serverOnly = true,
+    category = "Faction Management",
+    shouldShow = canInviteToFaction,
+    onRun = function(client, target)
+        if not SERVER or not canInviteToFaction(client, target) then return end
+        local clientChar = client:getChar()
+        local targetChar = target:getChar()
+        if not clientChar or not targetChar then return end
+        local faction
+        for _, factionData in pairs(lia.faction.teams) do
+            if factionData.index == client:Team() then
+                faction = factionData
+                break
             end
         end
 
-        finish()
-    end)
-end
-
-function MODULE:SendFactionMembers(client, factionUniqueID)
-    self:BuildFactionMembersPayload(client, factionUniqueID, function(payload) lia.net.writeBigTable(client, "liaFactionMembers", payload) end)
-end
-
-function MODULE:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID, callback)
-    local faction = lia.faction.get(factionUniqueID)
-    charID = tonumber(charID)
-    if not faction or not charID then
-        if callback then
-            callback({
-                faction = factionUniqueID,
-                charID = charID
-            })
-        end
-        return
-    end
-
-    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local query = string.format([[
-        SELECT c.id, c.name, c.lastJoinTime, c.steamID, c.class, c.playtime
-        FROM lia_characters AS c
-        WHERE c.id = %s AND c.faction = %s AND c.schema = %s
-        LIMIT 1
-    ]], charID, lia.db.convertDataType(faction.uniqueID), lia.db.convertDataType(gamemode))
-    lia.db.query(query, function(data)
-        local row = data and data[1]
-        if not row then
-            if callback then
-                callback({
-                    faction = faction.uniqueID,
-                    charID = charID
-                })
-            end
+        if not faction then
+            client:notifyError("The specified faction is not valid.")
             return
         end
 
-        local trackedKeys = {}
-        for key in pairs(TRACKED_FACTION_KEYS) do
-            trackedKeys[#trackedKeys + 1] = "'" .. lia.db.escape(key) .. "'"
+        if faction.uniqueID == "staff" then
+            client:notifyError("You cannot invite players to the staff faction through the interaction menu. Staff characters must be created through the menu system.")
+            return
         end
 
-        lia.db.query(string.format("SELECT charID, key, value FROM lia_chardata WHERE charID = %d AND key IN (%s)", charID, table.concat(trackedKeys, ",")), function(extraRows)
-            local charData = {}
-            for _, extraRow in ipairs(extraRows or {}) do
-                charData[extraRow.key] = decodeTrackedFactionRow(extraRow.value)
+        target:requestBinaryQuestion("Join Faction", "Do you want to join this faction?", "Yes", "No", function(choice)
+            if not IsValid(client) or not IsValid(target) then return end
+            if choice ~= 0 then
+                client:notifyInfo("Invite declined.")
+                return
             end
 
-            local owner = lia.char.getOwnerByID(charID)
-            if not IsValid(owner) and row.steamID then
-                local ply = player.GetBySteamID(tostring(row.steamID))
-                local ownerChar = IsValid(ply) and ply:getChar() or nil
-                if ownerChar and ownerChar:getID() == charID then owner = ply end
-            end
-
-            local ownerChar = IsValid(owner) and owner:getChar() or nil
-            if ownerChar and ownerChar.getData then
-                for key in pairs(TRACKED_FACTION_KEYS) do
-                    charData[key] = ownerChar:getData(key, charData[key])
-                end
-            end
-
-            local now = os.time()
-            local classIndex = tonumber(row.class) or 0
-            local classData = lia.class.list[classIndex]
-            local joinDates = istable(charData.factionJoinDates) and charData.factionJoinDates or {}
-            local joinDate = tonumber(joinDates[faction.uniqueID]) or nil
-            local factionPlaytime = istable(charData.factionPlaytime) and charData.factionPlaytime or {}
-            local playtimeInFaction = tonumber(factionPlaytime[faction.uniqueID]) or 0
-            local lastOnlineText = row.lastJoinTime or "Unknown"
-            if ownerChar and ownerChar:getID() == charID then
-                lastOnlineText = "Online now"
-                if ownerChar:getFaction() == faction.index and tonumber(ownerChar.liaFactionSessionStart or 0) > 0 then playtimeInFaction = playtimeInFaction + math.max(0, now - tonumber(ownerChar.liaFactionSessionStart)) end
-            end
-
-            local notesByFaction = istable(charData.factionNotes) and charData.factionNotes or {}
-            local noteData = notesByFaction[faction.uniqueID]
-            local member = {
-                name = row.name or "Unknown",
-                lastOnline = lastOnlineText,
-                lastActive = row.lastJoinTime or "Unknown",
-                charID = charID,
-                steamID = row.steamID,
-                class = classIndex,
-                className = classData and classData.name or nil,
-                playtime = tonumber(row.playtime) or 0,
-                joinDate = joinDate,
-                timeInFaction = joinDate and math.max(0, now - joinDate) or 0,
-                playtimeInFaction = playtimeInFaction,
-                transferHistory = sanitizeFactionHistory(charData.factionTransferHistory),
-                factionNote = istable(noteData) and tostring(noteData.text or "") or isstring(noteData) and noteData or "",
-                factionNoteMeta = istable(noteData) and {
-                    updatedAt = tonumber(noteData.updatedAt) or nil,
-                    updatedBy = noteData.updatedBy,
-                    updatedBySteamID = noteData.updatedBySteamID
-                } or nil
-            }
-
-            if callback then
-                callback({
-                    faction = faction.uniqueID,
-                    charID = charID,
-                    member = member
-                })
-            end
+            clientChar = client:getChar()
+            targetChar = target:getChar()
+            if not clientChar or not targetChar then return end
+            if not canInviteToFaction(client, target) then return end
+            if hook.Run("CanCharBeTransfered", targetChar, faction, targetChar:getFaction()) == false then return end
+            local oldFaction = targetChar:getFaction()
+            hook.Run("TrackFactionTransfer", targetChar, oldFaction, faction, client, "inviteToFaction")
+            targetChar.vars.faction = faction.uniqueID
+            targetChar:setFaction(faction.index)
+            hook.Run("OnTransferred", target)
+            if faction.OnTransferred then faction:OnTransferred(target, oldFaction) end
+            hook.Run("PlayerLoadout", target)
+            client:notifySuccess(string.format("%s has been transferred to %s.", target:Name(), faction.name))
+            if client ~= target then target:notifyInfo(string.format("You have been transferred to %s by %s.", faction.name, client:Name())) end
+            targetChar:takeFlags("Z")
         end)
-    end)
-end
+    end
+})
 
-function MODULE:SendFactionMemberDetails(client, factionUniqueID, charID)
-    self:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID, function(payload) lia.net.writeBigTable(client, "liaFactionMemberDetails", payload) end)
-end
+lia.playerinteract.addInteraction("inviteToClass", {
+    serverOnly = true,
+    category = "Faction Management",
+    shouldShow = canInviteToClass,
+    onRun = function(client, target)
+        if not SERVER or not canInviteToClass(client, target) then return end
+        local clientChar = client:getChar()
+        local targetChar = target:getChar()
+        if not clientChar or not targetChar then return end
+        local class = lia.class.list[clientChar:getClass()]
+        if not class then
+            client:notifyError("The specified class is not valid.")
+            return
+        end
+
+        target:requestBinaryQuestion("Join Class", "Do you want to join this class?", "Yes", "No", function(choice)
+            if not IsValid(client) or not IsValid(target) then return end
+            if choice ~= 0 then
+                client:notifyInfo("Invite declined.")
+                return
+            end
+
+            clientChar = client:getChar()
+            targetChar = target:getChar()
+            if not clientChar or not targetChar then return end
+            if not canInviteToClass(client, target) then return end
+            class = lia.class.list[clientChar:getClass()]
+            if not class then return end
+            if hook.Run("CanCharBeTransfered", targetChar, class, targetChar:getClass()) == false then return end
+            local oldClass = targetChar:getClass()
+            targetChar:setClass(class.index)
+            hook.Run("OnPlayerJoinClass", target, class.index, oldClass)
+            client:notifySuccess(string.format("%s has been transferred to %s.", target:Name(), class.name))
+            if client ~= target then target:notifyInfo(string.format("You have been transferred to %s by %s.", class.name, client:Name())) end
+        end)
+    end
+})

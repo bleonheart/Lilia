@@ -121,7 +121,7 @@ hook.Add("CreateMenuButtons", "liaInventory", function(tabs)
     local margin = 10
     tabs["inv"] = {
         name = "inv",
-        icon = "icon16/box.png",
+        icon = "inventory.png",
         shouldShow = function() return hook.Run("CanPlayerViewInventory") ~= false end,
         func = function(parentPanel)
             local inventory = LocalPlayer():getChar():getInv()

@@ -151,6 +151,52 @@ This page documents hooks in the spawns category.
 
 ---
 
+<details class="realm-client" id="function-getrespawnscreencause">
+<summary><span class="summary-main"><a id="GetRespawnScreenCause"></a>GetRespawnScreenCause(client, timeLeft, baseTime, lastDeath)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/spawns/libraries/client.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<div class="details-content">
+<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getrespawnscreencause"></a>Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Allows clientside code to replace the cause-of-death text shown on the respawn screen.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Category</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Spawns</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Client</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Parameters</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="/developer/meta/player/">Player</a></span> <span class="parameter">client</span> The local player whose respawn screen is being drawn.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">number</a></span> <span class="parameter">timeLeft</span> The remaining time before normal respawning becomes available.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">number</a></span> <span class="parameter">baseTime</span> The configured base respawn delay.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">number</a></span> <span class="parameter">lastDeath</span> The Unix timestamp recorded for the player's last death.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">string|nil</a></span> Return non-empty replacement text. Returning nil or an empty string uses the default environmental-death text.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<pre><code class="language-lua">  hook.Add("GetRespawnScreenCause", "liaExampleGetRespawnScreenCause", function(client, timeLeft, baseTime, lastDeath)
+      if IsValid(client) and client:WaterLevel() &gt;= 3 then
+          return "Lost beneath the surface"
+      end
+  end)
+</code></pre>
+</div>
+
+</div>
+</details>
+
+---
+
 <details class="realm-client" id="function-onrespawnkeypressed">
 <summary><span class="summary-main"><a id="OnRespawnKeyPressed"></a>OnRespawnKeyPressed(ply, key, left, baseTime, lastDeath)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/spawns/module.lua#L67" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">

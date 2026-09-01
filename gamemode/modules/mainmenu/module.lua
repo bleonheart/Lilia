@@ -1,6 +1,8 @@
 ﻿MODULE.name = "mainMenuModuleName"
 MODULE.author = "Samael"
-MODULE.NetworkStrings = {"liaMainCharacterSet",}
+MODULE.discord = "liliaplayer"
+MODULE.desc = "mainMenuDescription"
+MODULE.NetworkStrings = {"liaMainCharacterSet", "liaStaffDiscordResponse"}
 if SERVER then
     function MODULE:SyncCharList(client)
         if not client.liaCharList then return end
@@ -42,19 +44,11 @@ else
     function MODULE:ChooseCharacter(id)
         assert(isnumber(id), "id must be a number")
         local d = deferred.new()
-        net.Receive("liaCharChoose", function()
-            local message = net.ReadString()
-            if message == "" then
-                d:resolve()
-                lia.char.getCharacter(id, nil, function(character)
-                    local client = LocalPlayer()
-                    if IsValid(client) then client:SetNoDraw(false) end
-                    hook.Run("CharLoaded", character)
-                end)
-            else
-                d:reject(message)
-            end
-        end)
+        self.CharacterChoiceRequests = self.CharacterChoiceRequests or {}
+        self.CharacterChoiceRequests[#self.CharacterChoiceRequests + 1] = {
+            id = id,
+            deferred = d
+        }
 
         net.Start("liaCharChoose")
         net.WriteUInt(id, 32)
@@ -79,22 +73,14 @@ else
             local value = data[key]
             if isfunction(charVar.onValidate) then
                 local results = {charVar.onValidate(value, data, client)}
-                if results[1] == false then return d:reject(L(unpack(results, 2))) end
+                if results[1] == false then return d:reject(unpack(results, 2)) end
             end
 
             payload[key] = value
         end
 
-        net.Receive("liaCharCreate", function()
-            local id = net.ReadUInt(32)
-            local reason = net.ReadString()
-            if id > 0 then
-                d:resolve(id)
-            else
-                d:reject(reason)
-            end
-        end)
-
+        self.CharacterCreationRequests = self.CharacterCreationRequests or {}
+        self.CharacterCreationRequests[#self.CharacterCreationRequests + 1] = d
         net.Start("liaCharCreate")
         net.WriteUInt(table.Count(payload), 32)
         for key, value in pairs(payload) do
@@ -131,10 +117,10 @@ else
     function MODULE:LoadMainCharacter()
         local mainCharID = hook.Run("GetMainCharacterID")
         if not mainCharID then
-            LocalPlayer():notifyErrorLocalized("No main character set.")
+            LocalPlayer():notifyError("No main character set.")
             return
         end
-        return self:ChooseCharacter(mainCharID):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
+        return self:ChooseCharacter(mainCharID):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end)
     end
 
     function MODULE:LiliaLoaded()
@@ -169,7 +155,7 @@ else
     function MODULE:CreateMenuButtons(tabs)
         tabs["characters"] = {
             name = "characters",
-            icon = "icon16/user.png",
+            icon = "characterlist.png",
             func = function()
                 if isInThirdPerson() then
                     lia.option.set("thirdPersonEnabled", false)

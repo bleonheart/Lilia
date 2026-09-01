@@ -1,2 +1,5 @@
 ﻿MODULE.name = "Doors"
 MODULE.author = "Samael"
+MODULE.discord = "liliaplayer"
+MODULE.desc = "Manages door ownership, access control, and door-related permissions."
+MODULE.NetworkStrings = {"liaDoorMenu", "liaDoorPerm", "liaDoorDataUpdate"}

@@ -6,30 +6,30 @@ net.Receive("liaRequestRemoveWarning", function(_, client)
     local rowData = net.ReadTable()
     local warnIndex = tonumber(rowData.ID or rowData.index)
     if not warnIndex then
-        client:notifyErrorLocalized("Invalid warning index.")
+        client:notifyError("Invalid warning index.")
         return
     end
 
     lia.char.getCharacter(charID, client, function(targetChar)
         if not targetChar then
-            client:notifyErrorLocalized("Character not found.")
+            client:notifyError("Character not found.")
             return
         end
 
         local targetClient = targetChar:getPlayer()
         if not IsValid(targetClient) then
-            client:notifyErrorLocalized("Player not found.")
+            client:notifyError("Player not found.")
             return
         end
 
         MODULE:RemoveWarning(charID, warnIndex):next(function(warn)
             if not warn then
-                client:notifyErrorLocalized("Invalid warning index.")
+                client:notifyError("Invalid warning index.")
                 return
             end
 
-            targetClient:notifyInfoLocalized("A warning has been removed from your record by %s", client:Nick())
-            client:notifySuccessLocalized("Removed warning #%s from %s", warnIndex, targetClient:Nick())
+            targetClient:notifyInfo(string.format("A warning has been removed from your record by %s", client:Nick()))
+            client:notifySuccess(string.format("Removed warning #%s from %s", warnIndex, targetClient:Nick()))
             hook.Run("WarningRemoved", client, targetClient, {
                 reason = warn.message,
                 admin = warn.warner,
@@ -37,38 +37,5 @@ net.Receive("liaRequestRemoveWarning", function(_, client)
                 targetSteamID = targetClient:SteamID()
             }, warnIndex)
         end)
-    end)
-end)
-
-net.Receive("liaRequestAllWarnings", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestAllWarnings", "hasPrivilege(viewPlayerWarnings)=", tostring(client:hasPrivilege("viewPlayerWarnings")), "finalResult=", tostring(client:hasPrivilege("viewPlayerWarnings")))
-    if not client:hasPrivilege("viewPlayerWarnings") then return end
-    lia.db.select({"id", "charID", "timestamp", "warned", "warnedSteamID", "warner", "warnerSteamID", "message", "severity"}, "warnings"):next(function(res)
-        net.Start("liaAllWarnings")
-        net.WriteTable(res.results or {})
-        net.Send(client)
-    end)
-end)
-
-net.Receive("liaRequestWarningsCount", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestWarningsCount", "hasPrivilege(viewPlayerWarnings)=", tostring(client:hasPrivilege("viewPlayerWarnings")), "finalResult=", tostring(client:hasPrivilege("viewPlayerWarnings")))
-    if not client:hasPrivilege("viewPlayerWarnings") then return end
-    lia.db.count("warnings"):next(function(count)
-        net.Start("liaWarningsCount")
-        net.WriteInt(count or 0, 32)
-        net.Send(client)
-    end)
-end)
-
-net.Receive("liaRequestPlayerWarnings", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestPlayerWarnings", "hasPrivilege(viewPlayerWarnings)=", tostring(client:hasPrivilege("viewPlayerWarnings")), "finalResult=", tostring(client:hasPrivilege("viewPlayerWarnings")))
-    if not client:hasPrivilege("viewPlayerWarnings") then return end
-    local charID = net.ReadString()
-    if not charID or charID == "" then return end
-    MODULE:GetWarnings(charID):next(function(warnings)
-        net.Start("liaPlayerWarnings")
-        net.WriteString(charID)
-        net.WriteTable(warnings or {})
-        net.Send(client)
     end)
 end)

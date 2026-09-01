@@ -6,11 +6,6 @@ local function getPreviewWidth(width)
     return math.Clamp(math.floor(width * PREVIEW_WIDTH_RATIO), PREVIEW_MIN_WIDTH, PREVIEW_MAX_WIDTH)
 end
 
-local function getAccent()
-    local theme = lia.color and lia.color.theme or {}
-    return theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
-end
-
 local function drawPanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
@@ -101,7 +96,7 @@ local function createInventoryPreview(parentPanel, mainPanel)
     local previewHeight = math.max(parentPanel:GetTall(), mainPanel:GetTall())
     preview:SetSize(previewWidth, previewHeight)
     preview.Paint = function(_, w, h)
-        local accent = getAccent()
+        local accent = lia.color.theme.accent
         drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
     end
 
@@ -245,7 +240,7 @@ hook.Add("CreateMenuButtons", "liaInventory", function(tabs)
     installMenuBagRedirect()
     tabs["inv"] = {
         name = "inv",
-        icon = "icon16/box.png",
+        icon = "inventory.png",
         shouldShow = function() return hook.Run("CanPlayerViewInventory") ~= false end,
         func = function(parentPanel)
             installMenuBagRedirect()

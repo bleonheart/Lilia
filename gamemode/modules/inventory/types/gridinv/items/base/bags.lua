@@ -84,7 +84,7 @@ ITEM.functions.Open = {
         if not inventory then
             if SERVER then
                 lia.log.add(client, "itemInteractionFailed", "open", item:getName())
-                client:notifyErrorLocalized("This bag has no inventory.")
+                client:notifyError("This bag has no inventory.")
             end
             return false
         end
@@ -105,7 +105,7 @@ ITEM.functions.Open = {
         local canRun = not IsValid(item.entity) and item:getInv() ~= nil
         if SERVER and not canRun then
             local reason = IsValid(item.entity) and "bagOnGround" or "bagNoInventory"
-            client:notifyErrorLocalized(reason)
+            client:notifyError(reason)
             lia.log.add(client, "itemInteractionFailed", "open", item:getName())
         end
         return canRun
@@ -129,7 +129,7 @@ function ITEM:onCombine(other)
     if not res then return end
     res:next(function(result)
         if not IsValid(client) then return end
-        if istable(result) and isstring(result.error) then return client:notifyErrorLocalized(result.error) end
+        if istable(result) and isstring(result.error) then return client:notifyError(result.error) end
         client:EmitSound(unpack(self.BagSound))
     end)
 end

@@ -1,0 +1,378 @@
+local Inventory = lia.Inventory or {}
+Inventory.__index = Inventory
+lia.Inventory = Inventory
+Inventory.data = {}
+Inventory.items = {}
+Inventory.id = -1
+function Inventory:getData(key, default)
+    local value = self.data[key]
+    if value == nil then return default end
+    return value
+end
+
+function Inventory:extend(className)
+    local base = debug.getregistry()[className] or {}
+    table.Empty(base)
+    base.className = className
+    local subClass = table.Inherit(base, self)
+    subClass.__index = subClass
+    return subClass
+end
+
+function Inventory:configure(config)
+end
+
+function Inventory:addDataProxy(key, onChange)
+    local dataConfig = self.config.data[key] or {}
+    dataConfig.proxies[#dataConfig.proxies + 1] = onChange
+    self.config.data[key] = dataConfig
+end
+
+function Inventory:getItemsByUniqueID(uniqueID, onlyMain)
+    local items = {}
+    for _, v in pairs(self:getItems(onlyMain)) do
+        if v.uniqueID == uniqueID then items[#items + 1] = v end
+    end
+    return items
+end
+
+function Inventory:register(typeID)
+    assert(isstring(typeID), string.format("Expected argument #1 of %s.register to be a string", self.className))
+    self.typeID = typeID
+    self.config = {
+        data = {}
+    }
+
+    if SERVER then
+        self.config.persistent = true
+        self.config.accessRules = {}
+    end
+
+    self:configure(self.config)
+    if not InventoryRegistered then
+        lia.inventory.newType(self.typeID, self)
+        InventoryRegistered = true
+    end
+end
+
+function Inventory:new()
+    return lia.inventory.new(self.typeID)
+end
+
+function Inventory:tostring()
+    return self.className .. "[" .. tostring(self.id) .. "]"
+end
+
+function Inventory:getType()
+    return lia.inventory.types[self.typeID]
+end
+
+function Inventory:onDataChanged(key, oldValue, newValue)
+    local keyData = self.config.data[key]
+    if keyData and keyData.proxies then
+        for _, proxy in pairs(keyData.proxies) do
+            proxy(oldValue, newValue)
+        end
+    end
+end
+
+function Inventory:getItems()
+    return self.items
+end
+
+function Inventory:getItemsOfType(itemType)
+    local itemID = isstring(itemType) and itemType or itemType and (itemType.uniqueID or lia.item.instances[itemType] and lia.item.instances[itemType].uniqueID)
+    local items = {}
+    for _, item in pairs(self:getItems()) do
+        if item.uniqueID == itemID then items[#items + 1] = item end
+    end
+    return items
+end
+
+function Inventory:getFirstItemOfType(itemType)
+    local itemID = isstring(itemType) and itemType or itemType and (itemType.uniqueID or lia.item.instances[itemType] and lia.item.instances[itemType].uniqueID)
+    for _, item in pairs(self:getItems()) do
+        if item.uniqueID == itemID then return item end
+    end
+end
+
+function Inventory:hasItem(itemType)
+    local itemID = isstring(itemType) and itemType or itemType and (itemType.uniqueID or lia.item.instances[itemType] and lia.item.instances[itemType].uniqueID)
+    for _, item in pairs(self:getItems()) do
+        if item.uniqueID == itemID then return true end
+    end
+    return false
+end
+
+function Inventory:getItemCount(itemType)
+    local itemID = isstring(itemType) and itemType or itemType and (itemType.uniqueID or lia.item.instances[itemType] and lia.item.instances[itemType].uniqueID)
+    local count = 0
+    for _, item in pairs(self:getItems()) do
+        if itemID == nil or item.uniqueID == itemID then count = count + item:getQuantity() end
+    end
+    return count
+end
+
+function Inventory:getID()
+    return self.id
+end
+
+if SERVER then
+    function Inventory:addItem(item, noReplicate)
+        self.items[item:getID()] = item
+        item.invID = self:getID()
+        local id = self.id
+        if not isnumber(id) then id = NULL end
+        lia.db.updateTable({
+            invID = id
+        }, nil, "items", "itemID = " .. item:getID())
+
+        self:syncItemAdded(item)
+        if not noReplicate then hook.Run("OnItemAdded", item:getOwner(), item) end
+        return self
+    end
+
+    function Inventory:add(item)
+        return self:addItem(item)
+    end
+
+    function Inventory:syncItemAdded(item)
+        assert(istable(item) and item.getID, "Cannot sync non-item")
+        assert(self.items[item:getID()], string.format("Item %s does not belong to %s", item:getID(), self.id))
+        local recipients = self:getRecipients()
+        item:sync(recipients)
+        net.Start("liaInventoryAdd")
+        net.WriteUInt(item:getID(), 32)
+        net.WriteType(self.id)
+        net.Send(recipients)
+    end
+
+    function Inventory:initializeStorage(initialData)
+        local d = deferred.new()
+        local charID = initialData.char
+        lia.db.insertTable({
+            invType = self.typeID,
+            charID = charID
+        }, function(_, lastID)
+            local count = 0
+            local expected = table.Count(initialData)
+            if initialData.char then expected = expected - 1 end
+            if expected == 0 then return d:resolve(lastID) end
+            for key, value in pairs(initialData) do
+                if key == "char" then continue end
+                lia.db.insertTable({
+                    invID = lastID,
+                    key = key,
+                    value = {value}
+                }, function()
+                    count = count + 1
+                    if count == expected then d:resolve(lastID) end
+                end, "invdata")
+            end
+        end, "inventories")
+        return d
+    end
+
+    function Inventory:restoreFromStorage()
+    end
+
+    function Inventory:removeItem(itemID, preserveItem)
+        assert(isnumber(itemID), "Item ID must be a number")
+        local d = deferred.new()
+        local instance = self.items[itemID]
+        if instance then
+            instance.invID = 0
+            self.items[itemID] = nil
+            hook.Run("InventoryItemRemoved", self, instance, preserveItem)
+            net.Start("liaInventoryRemove")
+            net.WriteUInt(itemID, 32)
+            net.WriteType(self:getID())
+            net.Send(self:getRecipients())
+            if not preserveItem then
+                d:resolve(instance:delete())
+            else
+                lia.db.updateTable({
+                    invID = NULL
+                }, function() d:resolve() end, "items", "itemID = " .. itemID)
+            end
+        else
+            d:resolve()
+        end
+        return d
+    end
+
+    function Inventory:remove(itemID)
+        return self:removeItem(itemID)
+    end
+
+    function Inventory:setData(key, value)
+        local oldValue = self.data[key]
+        self.data[key] = value
+        local keyData = self.config.data[key]
+        if key == "char" then
+            lia.db.updateTable({
+                charID = value
+            }, nil, "inventories", "invID = " .. self:getID())
+        elseif not keyData or not keyData.notPersistent then
+            if value == nil then
+                lia.db.delete("invdata", "`invID` = " .. self.id .. " AND `key` = '" .. lia.db.escape(key) .. "'")
+            else
+                lia.db.upsert({
+                    invID = self.id,
+                    key = key,
+                    value = {value}
+                }, "invdata")
+            end
+        end
+
+        self:syncData(key)
+        self:onDataChanged(key, oldValue, value)
+        return self
+    end
+
+    function Inventory:canAccess(action, context)
+        context = context or {}
+        local result, reason
+        for _, rule in ipairs(self.config.accessRules) do
+            result, reason = rule(self, action, context)
+            if result ~= nil then return result, reason end
+        end
+    end
+
+    function Inventory:addAccessRule(rule, priority)
+        if isnumber(priority) then
+            table.insert(self.config.accessRules, priority, rule)
+        else
+            self.config.accessRules[#self.config.accessRules + 1] = rule
+        end
+        return self
+    end
+
+    function Inventory:removeAccessRule(rule)
+        table.RemoveByValue(self.config.accessRules, rule)
+        return self
+    end
+
+    function Inventory:getRecipients()
+        local recipients = {}
+        for _, client in player.Iterator() do
+            if self:canAccess("repl", {
+                client = client
+            }) then
+                recipients[#recipients + 1] = client
+            end
+        end
+        return recipients
+    end
+
+    function Inventory:onInstanced()
+    end
+
+    function Inventory:onLoaded()
+    end
+
+    local ITEM_TABLE = "items"
+    local ITEM_FIELDS = {"itemID", "uniqueID", "data", "x", "y", "quantity"}
+    function Inventory:loadItems()
+        return lia.db.select(ITEM_FIELDS, ITEM_TABLE, "invID = " .. self.id):next(function(res)
+            if not res or not istable(res) then
+                local items = {}
+                self.items = items
+                self:onItemsLoaded(items)
+                return items
+            end
+
+            local items = {}
+            for _, result in ipairs(res.results or {}) do
+                if not result or not istable(result) then continue end
+                local itemID = tonumber(result.itemID)
+                local uniqueID = result.uniqueID
+                if not uniqueID or not isstring(uniqueID) then continue end
+                local itemTable = lia.item.list[uniqueID]
+                if not itemTable then
+                    lia.error(string.format("Inventory %s contains invalid item %s (%s)", self.id, uniqueID, itemID))
+                    continue
+                end
+
+                local item = lia.item.new(uniqueID, itemID)
+                if not item then continue end
+                item.invID = self.id
+                if result.data then item.data = table.Merge(item.data, util.JSONToTable(result.data) or {}) end
+                item.data.x = tonumber(result.x)
+                item.data.y = tonumber(result.y)
+                item.quantity = tonumber(result.quantity)
+                items[itemID] = item
+                item:onRestored(self)
+            end
+
+            self.items = items
+            self:onItemsLoaded(items)
+            return items
+        end)
+    end
+
+    function Inventory:onItemsLoaded(items)
+    end
+
+    function Inventory:instance(initialData)
+        return lia.inventory.instance(self.typeID, initialData)
+    end
+
+    function Inventory:syncData(key, recipients)
+        if self.config.data[key] and self.config.data[key].noReplication then return end
+        net.Start("liaInventoryData")
+        net.WriteType(self.id)
+        net.WriteString(key)
+        net.WriteType(self.data[key])
+        net.Send(recipients or self:getRecipients())
+    end
+
+    function Inventory:sync(recipients)
+        net.Start("liaInventoryInit")
+        net.WriteType(self.id)
+        net.WriteString(self.typeID)
+        net.WriteTable(self.data)
+        local items = {}
+        local function writeItem(item)
+            items[#items + 1] = {
+                i = item:getID(),
+                u = item.uniqueID,
+                d = item.data,
+                q = item:getQuantity()
+            }
+        end
+
+        for _, item in pairs(self.items) do
+            writeItem(item)
+        end
+
+        local compressedTable = util.Compress(util.TableToJSON(items))
+        net.WriteUInt(#compressedTable, 32)
+        net.WriteData(compressedTable, #compressedTable)
+        net.Send(recipients or self:getRecipients())
+        for _, item in pairs(self.items) do
+            item:onSync(recipients)
+        end
+    end
+
+    function Inventory:delete()
+        lia.inventory.deleteByID(self.id)
+    end
+
+    function Inventory:destroy()
+        for _, item in pairs(self:getItems()) do
+            item:destroy()
+        end
+
+        lia.inventory.instances[self:getID()] = nil
+        net.Start("liaInventoryDelete")
+        net.WriteType(self.id)
+        net.Broadcast()
+    end
+else
+    function Inventory:show(parent)
+        return lia.inventory.show(self, parent)
+    end
+end
+
+

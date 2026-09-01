@@ -42,7 +42,7 @@ function ENT:Use(activator)
     if hook.Run("CanPlayerUseAmmoBox", activator, self) == false then return end
     local weapon, ammoTypeID, ammoType = getHeldAmmoInfo(activator)
     if not weapon then
-        activator:notifyErrorLocalized("Hold a weapon that uses primary ammo.")
+        activator:notifyError("Hold a weapon that uses primary ammo.")
         return
     end
 
@@ -52,7 +52,7 @@ function ENT:Use(activator)
     local givenAmount = math.max(activator:GetAmmoCount(ammoTypeID) - ammoBefore, 0)
     if givenAmount <= 0 then
         self.liaUsed = nil
-        activator:notifyErrorLocalized("You are already full on that ammo type.")
+        activator:notifyError("You are already full on that ammo type.")
         return
     end
 

@@ -67,7 +67,7 @@ function MODULE:InitializedModules()
     end)
 end
 
-function MODULE:PlayerLoadedCharacter(client)
+function MODULE:PlayerLoadedChar(client)
     if not self:CanManageFilteredWords(client) then return end
     self:SyncFilteredWords(client)
 end

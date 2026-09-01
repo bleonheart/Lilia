@@ -69,19 +69,6 @@ local function applyInventorySize(client, character)
     if sizeChanged or removed then inv:sync(client) end
 end
 
-function MODULE:CharRestored(character)
-    if character and character:getID() then
-        local charID = character:getID()
-        local chardata = lia.char.getCharData(charID)
-        if chardata then
-            character.dataVars = character.dataVars or {}
-            for key, value in pairs(chardata) do
-                if character.dataVars[key] == nil then character.dataVars[key] = value end
-            end
-        end
-    end
-end
-
 function MODULE:PlayerLoadedChar(client, character)
     applyInventorySize(client, character)
 end
@@ -98,7 +85,7 @@ function MODULE:HandleItemTransferRequest(client, itemID, x, y, invID, rotated)
     if not oldInventory or not oldInventory.items[itemID] then return end
     local transferAllowed, transferReason = hook.Run("CanItemBeTransfered", item, oldInventory, newInventory, client)
     if transferAllowed == false then
-        client:notifyErrorLocalized(transferReason or "notNow")
+        client:notifyError(transferReason or "You are not allowed to do this right now.")
         return
     end
 
@@ -112,13 +99,13 @@ function MODULE:HandleItemTransferRequest(client, itemID, x, y, invID, rotated)
     local canAccessTransfer, accessReason = oldInventory:canAccess("transfer", context)
     if not newInventory then return hook.Run("ItemDraggedOutOfInventory", client, item) end
     if not canAccessTransfer then
-        if isstring(accessReason) then client:notifyErrorLocalized(accessReason) end
+        if isstring(accessReason) then client:notifyError(accessReason) end
         return
     end
 
     local canAccessTransferTo, accessReasonTo = newInventory:canAccess("transfer", context)
     if not canAccessTransferTo then
-        if isstring(accessReasonTo) then client:notifyErrorLocalized(accessReasonTo) end
+        if isstring(accessReasonTo) then client:notifyError(accessReasonTo) end
         return
     end
 
@@ -134,7 +121,7 @@ function MODULE:HandleItemTransferRequest(client, itemID, x, y, invID, rotated)
         client.invTransferTransaction = nil
         if err then lia.error(err) end
         if IsValid(client) then lia.log.add(client, "itemTransferFailed", item:getName(), oldInventory:getID(), newInventory and newInventory:getID() or 0) end
-        if IsValid(client) then client:notifyInfoLocalized("Your item has been placed on the ground.") end
+        if IsValid(client) then client:notifyInfo("Your item has been placed on the ground.") end
         item:spawn(dropPos)
     end
 

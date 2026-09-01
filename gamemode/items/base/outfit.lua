@@ -155,7 +155,7 @@ ITEM.functions.Equip = {
         local items = character:getInv():getItems()
         for _, other in pairs(items) do
             if item ~= other and item.outfitCategory == other.outfitCategory and other:getData("equip") then
-                item.player:notifyErrorLocalized("You are already wearing something in this outfit category.")
+                item.player:notifyError("You are already wearing something in this outfit category.")
                 return false
             end
         end

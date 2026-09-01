@@ -28,7 +28,7 @@ This page documents hooks in the configuration category.
 ---
 
 <details class="realm-shared" id="function-canplayermodifyconfig">
-<summary><span class="summary-main"><a id="CanPlayerModifyConfig"></a>CanPlayerModifyConfig(client, key)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L64" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="CanPlayerModifyConfig"></a>CanPlayerModifyConfig(client, key)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L51" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="canplayermodifyconfig"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -72,7 +72,7 @@ This page documents hooks in the configuration category.
 ---
 
 <details class="realm-server" id="function-configchanged">
-<summary><span class="summary-main"><a id="ConfigChanged"></a>ConfigChanged(key, newValue, oldValue, client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L97" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="ConfigChanged"></a>ConfigChanged(key, newValue, oldValue, client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L84" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="configchanged"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -112,7 +112,7 @@ This page documents hooks in the configuration category.
 ---
 
 <details class="realm-client" id="function-createmenubuttons">
-<summary><span class="summary-main"><a id="CreateMenuButtons"></a>CreateMenuButtons(tabs)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L199" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="CreateMenuButtons"></a>CreateMenuButtons(tabs)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L186" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="createmenubuttons"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -148,7 +148,7 @@ This page documents hooks in the configuration category.
 ---
 
 <details class="realm-server" id="function-createsalarytimers">
-<summary><span class="summary-main"><a id="CreateSalaryTimers"></a>CreateSalaryTimers()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L155" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="CreateSalaryTimers"></a>CreateSalaryTimers()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L142" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="createsalarytimers"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -179,7 +179,7 @@ This page documents hooks in the configuration category.
 ---
 
 <details class="realm-shared" id="function-dermaskinchanged">
-<summary><span class="summary-main"><a id="DermaSkinChanged"></a>DermaSkinChanged(skin)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L175" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="DermaSkinChanged"></a>DermaSkinChanged(skin)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L162" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="dermaskinchanged"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -215,7 +215,7 @@ This page documents hooks in the configuration category.
 ---
 
 <details class="realm-shared" id="function-initializedconfig">
-<summary><span class="summary-main"><a id="InitializedConfig"></a>InitializedConfig()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L14" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="InitializedConfig"></a>InitializedConfig()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="initializedconfig"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -246,7 +246,7 @@ This page documents hooks in the configuration category.
 ---
 
 <details class="realm-shared" id="function-onconfigupdated">
-<summary><span class="summary-main"><a id="OnConfigUpdated"></a>OnConfigUpdated(key, oldValue, newValue)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L34" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnConfigUpdated"></a>OnConfigUpdated(key, oldValue, newValue)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L21" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onconfigupdated"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -284,7 +284,7 @@ This page documents hooks in the configuration category.
 ---
 
 <details class="realm-shared" id="function-voicetoggled">
-<summary><span class="summary-main"><a id="VoiceToggled"></a>VoiceToggled(enabled)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L131" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="VoiceToggled"></a>VoiceToggled(enabled)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/config.lua#L118" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="voicetoggled"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

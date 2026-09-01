@@ -1,12 +1,5 @@
 ﻿local RarityColors = lia.item.rarities
 local VendorClick = {"buttons/button15.wav", 30, 250}
-local function getVendorThemeColors()
-    local theme = lia.color.theme or {}
-    local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
-    local text = theme.text or Color(225, 238, 238)
-    return accent, text
-end
-
 local function drawVendorPanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
@@ -48,7 +41,7 @@ local function createVendorButton(parent, text, primary)
     button._primary = primary == true
     button._negative = false
     button.Paint = function(s, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         local hovered = s:IsHovered() and s:IsEnabled()
         local background
         local outline
@@ -148,7 +141,7 @@ end
 function PANEL:OnThemeChanged()
     if not IsValid(self) then return end
     self:ApplyCurrentTheme()
-    local _, text = getVendorThemeColors()
+    local _, text = lia.color.theme.accent
     if IsValid(self.vendorPanel) and IsValid(self.vendorPanel.title) then self.vendorPanel.title:SetTextColor(text) end
     if IsValid(self.mePanel) and IsValid(self.mePanel.title) then self.mePanel.title:SetTextColor(text) end
     self:InvalidateLayout(true)
@@ -159,7 +152,7 @@ function PANEL:CreateInventoryPanel(x, y, isVendor)
     panel:SetSize(self.panelW, self.panelH)
     panel:SetPos(x, y)
     panel.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         drawVendorPanel(0, 0, w, h, 10, Color(6, 18, 23, 226), Color(accent.r, accent.g, accent.b, 72))
     end
 
@@ -168,7 +161,7 @@ function PANEL:CreateInventoryPanel(x, y, isVendor)
     panel.header:SetTall(70)
     panel.header:DockMargin(18, 12, 18, 8)
     panel.header.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         surface.SetDrawColor(accent.r, accent.g, accent.b, 28)
         surface.DrawRect(26, h - 12, w - 52, 1)
     end
@@ -176,7 +169,7 @@ function PANEL:CreateInventoryPanel(x, y, isVendor)
     panel.title = panel.header:Add("DLabel")
     panel.title:Dock(FILL)
     panel.title:SetFont("LiliaFont.25")
-    panel.title:SetTextColor(select(2, getVendorThemeColors()))
+    panel.title:SetTextColor(lia.color.theme.text)
     panel.title:SetContentAlignment(5)
     if isVendor then
         local vendorName = IsValid(liaVendorEnt) and liaVendorEnt:getName() or "Vendor Items"
@@ -203,7 +196,7 @@ function PANEL:CreateInventoryPanel(x, y, isVendor)
     panel.empty:SetMouseInputEnabled(false)
     panel.empty:SetZPos(100)
     panel.empty.Paint = function(_, w, h)
-        local _, text = getVendorThemeColors()
+        local text = lia.color.theme.text
         drawVendorIcon(Material("icon16/box.png", "smooth"), math.floor((w - 24) * 0.5), 6, 24, 24, Color(125, 148, 149))
         draw.SimpleText("No items available", "LiliaFont.18", w * 0.5, 50, Color(text.r, text.g, text.b, 145), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
@@ -508,7 +501,7 @@ function PANEL:Init()
     self.background = self:Add("DPanel")
     self.background:Dock(FILL)
     self.background.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         local hovered = self:IsHovered()
         local background = hovered and Color(12, 29, 35, 238) or Color(10, 25, 30, 232)
         local outline = Color(accent.r, accent.g, accent.b, hovered and 80 or 45)
@@ -525,7 +518,7 @@ function PANEL:Init()
     self.iconFrame:DockMargin(10, 10, 12, 10)
     self.iconFrame._material = nil
     self.iconFrame.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         drawVendorPanel(0, 0, w, h, 6, Color(3, 16, 21, 185), Color(accent.r, accent.g, accent.b, 68))
         if self.iconFrame._material then drawVendorIcon(self.iconFrame._material, 0, 0, w, h, color_white) end
     end
@@ -569,7 +562,7 @@ function PANEL:Init()
     self.priceLabel:SetWide(140)
     self.priceLabel:SetFont("LiliaFont.18")
     self.priceLabel:SetContentAlignment(4)
-    self.priceLabel:SetTextColor(select(1, getVendorThemeColors()))
+    self.priceLabel:SetTextColor(lia.color.theme.accent)
     self.priceLabel:SetText("")
     self.quantityLabel = self.bottomRow:Add("DLabel")
     self.quantityLabel:Dock(RIGHT)
@@ -750,7 +743,7 @@ local function styleEditorEntry(entry)
     local textEntry = IsValid(entry.textEntry) and entry.textEntry or entry
     if isfunction(entry.SetFont) then entry:SetFont("LiliaFont.17") end
     if isfunction(entry.SetTextColor) then entry:SetTextColor(Color(225, 238, 238)) end
-    if isfunction(entry.SetCursorColor) then entry:SetCursorColor(getVendorThemeColors()) end
+    if isfunction(entry.SetCursorColor) then entry:SetCursorColor(lia.color.theme.accent) end
     if isfunction(entry.SetPaintBackground) then entry:SetPaintBackground(false) end
     if not IsValid(textEntry) then return end
     if isfunction(textEntry.SetPaintBackground) then textEntry:SetPaintBackground(false) end
@@ -759,7 +752,7 @@ local function styleEditorEntry(entry)
     if isfunction(textEntry.SetPaintBorderEnabled) then textEntry:SetPaintBorderEnabled(false) end
     textEntry.Paint = function() end
     textEntry.PaintOver = function(s, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         local focused = (isfunction(s.IsEditing) and s:IsEditing()) or s:HasFocus()
         drawVendorPanel(0, 0, w, h, 6, Color(9, 24, 29, 238), Color(accent.r, accent.g, accent.b, focused and 110 or 62))
         local value = isfunction(entry.GetValue) and entry:GetValue() or s:GetText()
@@ -779,7 +772,7 @@ end
 local function styleEditorButton(button, negative)
     button._negative = negative == true
     button.Paint = function(s, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         local hovered = s:IsHovered() and s:IsEnabled()
         local background = hovered and Color(16, 34, 40, 235) or Color(10, 27, 32, 228)
         local outline = Color(accent.r, accent.g, accent.b, hovered and 110 or 62)
@@ -801,7 +794,7 @@ local function addEditorSection(parent, title, subtitle)
     header:DockMargin(0, 4, 0, 10)
     header:SetTall(subtitle and subtitle ~= "" and 54 or 34)
     header.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         draw.SimpleText(string.upper(title or ""), "LiliaFont.17", 0, 4, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         if subtitle and subtitle ~= "" then draw.SimpleText(subtitle, "LiliaFont.15", 0, 27, Color(150, 174, 175), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP) end
         surface.SetDrawColor(accent.r, accent.g, accent.b, 44)
@@ -845,7 +838,7 @@ function PANEL:Init()
     self.backgroundPanel:Dock(FILL)
     self.backgroundPanel:DockPadding(10, 10, 10, 10)
     self.backgroundPanel.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         drawVendorPanel(0, 0, w, h, 8, Color(4, 16, 21, 238), Color(accent.r, accent.g, accent.b, 70))
     end
 
@@ -855,7 +848,7 @@ function PANEL:Init()
     self.generalFrame:DockMargin(0, 0, 10, 0)
     self.generalFrame:DockPadding(12, 12, 12, 12)
     self.generalFrame.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         drawVendorPanel(0, 0, w, h, 8, Color(6, 19, 24, 235), Color(accent.r, accent.g, accent.b, 68))
     end
 
@@ -863,7 +856,7 @@ function PANEL:Init()
     self.itemsFrame:Dock(FILL)
     self.itemsFrame:DockPadding(12, 12, 12, 12)
     self.itemsFrame.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         drawVendorPanel(0, 0, w, h, 8, Color(6, 19, 24, 235), Color(accent.r, accent.g, accent.b, 68))
     end
 
@@ -878,7 +871,7 @@ function PANEL:Init()
     self.itemsHeaderCard:SetTall(66)
     self.itemsHeaderCard:DockMargin(0, 0, 0, 10)
     self.itemsHeaderCard.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         draw.SimpleText(string.upper("Vendor Items"), "LiliaFont.18", 0, 4, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         draw.SimpleText("Set trade mode, buy price, sell price, and stock.", "LiliaFont.16", 0, 31, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 44)
@@ -912,7 +905,7 @@ function PANEL:Init()
     self.itemHeader:DockMargin(0, 0, 0, 4)
     self.itemHeader:DockPadding(10, 0, 10, 0)
     self.itemHeader.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         drawVendorPanel(0, 0, w, h, 5, Color(8, 23, 28, 242), Color(accent.r, accent.g, accent.b, 55))
     end
 
@@ -1103,7 +1096,7 @@ function PANEL:initializeGeneralInfoPanel(entity)
     self.factionAccessPanel:SetTall(270)
     self.factionAccessPanel:DockPadding(8, 8, 8, 8)
     self.factionAccessPanel.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         drawVendorPanel(0, 0, w, h, 7, Color(8, 23, 28, 230), Color(accent.r, accent.g, accent.b, 55))
     end
 
@@ -1127,7 +1120,7 @@ function PANEL:initializeGeneralInfoPanel(entity)
         self.bodygroupsPanel:SetTall(230)
         self.bodygroupsPanel:DockPadding(8, 8, 8, 8)
         self.bodygroupsPanel.Paint = function(_, w, h)
-            local accent = getVendorThemeColors()
+            local accent = lia.color.theme.accent
             drawVendorPanel(0, 0, w, h, 7, Color(8, 23, 28, 230), Color(accent.r, accent.g, accent.b, 55))
         end
 
@@ -1176,7 +1169,7 @@ function PANEL:populateFactionPanel()
         card:DockMargin(0, 0, 0, 6)
         card.expanded = #classRows > 0 and IsValid(entity) and entity:isFactionAllowed(factionID) or false
         card.Paint = function(_, w, h)
-            local accent = getVendorThemeColors()
+            local accent = lia.color.theme.accent
             drawVendorPanel(0, 0, w, h, 6, Color(10, 26, 31, 232), Color(accent.r, accent.g, accent.b, 48))
         end
 
@@ -1185,10 +1178,10 @@ function PANEL:populateFactionPanel()
         header:SetTall(38)
         header:SetText("")
         header.Paint = function(s, w, h)
-            local accent = getVendorThemeColors()
+            local accent = lia.color.theme.accent
             if s:IsHovered() then drawVendorPanel(0, 0, w, h, 6, Color(accent.r, accent.g, accent.b, 20)) end
             draw.SimpleText(#classRows > 0 and (card.expanded and "−" or "+") or "", "LiliaFont.18", 12, h * 0.5, accent, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-            draw.SimpleText(L(faction.name), "LiliaFont.17", 66, h * 0.5, Color(225, 238, 238), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText(faction.name, "LiliaFont.17", 66, h * 0.5, Color(225, 238, 238), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end
 
         local factionCheckbox = header:Add("liaCheckbox")
@@ -1205,7 +1198,7 @@ function PANEL:populateFactionPanel()
         classContainer:Dock(TOP)
         classContainer:DockMargin(10, 0, 10, 8)
         classContainer.Paint = function(_, w)
-            local accent = getVendorThemeColors()
+            local accent = lia.color.theme.accent
             surface.SetDrawColor(accent.r, accent.g, accent.b, 30)
             surface.DrawRect(0, 0, w, 1)
         end
@@ -1229,7 +1222,7 @@ function PANEL:populateFactionPanel()
             self.classes[classInfo.id] = classCheckbox
             local classLabel = classRow:Add("DLabel")
             classLabel:Dock(FILL)
-            classLabel:SetText(L(classInfo.data.name))
+            classLabel:SetText(classInfo.data.name)
             classLabel:SetFont("LiliaFont.15")
             classLabel:SetTextColor(Color(186, 204, 204))
             classLabel:SetContentAlignment(4)
@@ -1341,7 +1334,7 @@ local VendorModeChoices = {
 }
 
 function PANEL:getModeText(mode)
-    return mode and L(VendorText[mode]) or "None"
+    return mode and VendorText[mode] or "None"
 end
 
 function PANEL:notifyNumberError(fieldName)
@@ -1355,7 +1348,7 @@ function PANEL:getItemRowValue(itemType)
     local currentStock, maxStock = entity:getStock(itemType)
     return {
         item = itemType,
-        name = itemTable.getName and itemTable:getName() or L(itemTable.name),
+        name = itemTable.getName and itemTable:getName() or itemTable.name,
         desc = itemTable.getDesc and itemTable:getDesc() or itemTable.desc or "No Description",
         mode = entity.items[itemType] and entity.items[itemType][VENDOR_MODE],
         buyPrice = entity.items[itemType] and (entity.items[itemType][VENDOR_BUYPRICE] ~= nil and entity.items[itemType][VENDOR_BUYPRICE] or entity.items[itemType][VENDOR_PRICE]),
@@ -1371,7 +1364,7 @@ function ROW:Init()
     self:DockPadding(7, 5, 8, 5)
     self.hoverAlpha = 0
     self.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         if self:IsHovered() then
             self.hoverAlpha = math.min(self.hoverAlpha + FrameTime() * 7, 1)
         else
@@ -1442,7 +1435,7 @@ function ROW:Init()
     self.iconFrame:SetWide(36)
     self.iconFrame:DockMargin(0, 0, 10, 0)
     self.iconFrame.Paint = function(_, w, h)
-        local accent = getVendorThemeColors()
+        local accent = lia.color.theme.accent
         drawVendorPanel(0, 0, w, h, 4, Color(13, 30, 35, 230), Color(accent.r, accent.g, accent.b, 55))
         if self.itemIconMaterial then drawVendorIcon(self.itemIconMaterial, 3, 3, w - 6, h - 6, color_white) end
     end
@@ -2134,7 +2127,7 @@ function PANEL:OnRowRightClick(_, rowData)
     local uniqueID = rowData.item
     local itemTable = lia.item.list[uniqueID]
     if not itemTable then return end
-    menu = lia.derma.dermaMenu()
+    menu = DermaMenu()
     local mode, modePanel = menu:AddSubMenu("Trade Mode")
     modePanel:SetImage("icon16/key.png")
     mode:AddOption("None", function() lia.vendor.editor.mode(uniqueID, nil) end):SetImage("icon16/cog_error.png")
@@ -2187,7 +2180,7 @@ function PANEL:ReloadItemList(filter)
     local rowIndex = 0
     for k, v in SortedPairsByMemberValue(lia.item.list, "name") do
         local name = v.getName and v:getName() or v.name
-        if filter and not (v.getName and name or L(name)):lower():find(filter:lower(), 1, true) then continue end
+        if filter and not (v.getName and name or name):lower():find(filter:lower(), 1, true) then continue end
         rowIndex = rowIndex + 1
         local rowData = self.itemList:Add("liaVendorEditorItemRow")
         rowData:Dock(TOP)

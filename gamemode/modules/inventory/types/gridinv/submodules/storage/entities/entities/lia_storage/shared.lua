@@ -19,8 +19,8 @@ function ENT:getStorageInfo()
     local storageInfo = lia.inventory.getStorage(model:lower())
     if not storageInfo then
         storageInfo = {
-            name = lia.lang.resolveToken("Storage Container"),
-            desc = lia.lang.resolveToken("A generic storage container."),
+            name = "Storage Container",
+            desc = "A generic storage container.",
             invType = "GridInv",
             invData = {
                 w = 4,

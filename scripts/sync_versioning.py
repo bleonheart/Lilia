@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import re
 import sys
 import urllib.request
 from io import BytesIO
@@ -20,18 +21,39 @@ def fetch_bytes(url):
         return response.read()
 
 
-def build_module_entry(module_id, about):
-    version_id = about.get("versionID") or about.get("VersionID")
-    return {
+def extract_lua_value(content, field_names):
+    for field_name in field_names:
+        pattern = re.compile(rf"MODULE\.{re.escape(field_name)}\s*=\s*(.+)")
+        match = pattern.search(content)
+        if not match:
+            continue
+
+        raw_value = match.group(1).strip().rstrip(",")
+        if raw_value.startswith('"') and raw_value.endswith('"'):
+            return raw_value[1:-1]
+        if raw_value.startswith("'") and raw_value.endswith("'"):
+            return raw_value[1:-1]
+        return raw_value
+    return ""
+
+
+def build_module_entry(module_id, content):
+    name = extract_lua_value(content, ("name", "Name")) or module_id.replace("_", " ").title()
+    description = extract_lua_value(content, ("desc", "description", "Desc"))
+    author = extract_lua_value(content, ("author", "Author"))
+    version_id = extract_lua_value(content, ("versionID",))
+    version = extract_lua_value(content, ("version", "Version"))
+
+    entry = {
         "moduleID": module_id,
-        "name": about.get("name") or about.get("Name") or module_id.replace("_", " ").title(),
-        "description": about.get("description") or about.get("Description", ""),
-        "author": about.get("author") or about.get("Author", ""),
+        "name": name,
+        "description": description,
+        "author": author,
         "versionID": version_id,
-        "version": about.get("version") or about.get("Version", ""),
-        "source": about.get("source") or about.get("Source", ""),
+        "version": version,
         "url": f"{MODULES_TREE_URL}/{module_id}",
     }
+    return entry
 
 
 def iter_module_lua_files_from_archive():
@@ -40,15 +62,15 @@ def iter_module_lua_files_from_archive():
     with ZipFile(BytesIO(archive_bytes)) as archive:
         for archive_name in archive.namelist():
             path = Path(archive_name)
-            if len(path.parts) != 3 or path.name != "about.json":
+            if len(path.parts) != 3 or path.name != "module.lua":
                 continue
 
-            yield path.parts[1], json.loads(archive.read(archive_name).decode("utf-8-sig"))
+            yield path.parts[1], archive.read(archive_name).decode("utf-8-sig")
 
 
 def iter_module_lua_files_from_directory(source_dir):
-    for about_file in sorted(Path(source_dir).glob("*/about.json")):
-        yield about_file.parent.name, json.loads(about_file.read_text(encoding="utf-8-sig"))
+    for module_file in sorted(Path(source_dir).glob("*/module.lua")):
+        yield module_file.parent.name, module_file.read_text(encoding="utf-8-sig")
 
 
 def collect_modules(source_dir=None):

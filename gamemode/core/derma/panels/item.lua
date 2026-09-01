@@ -84,7 +84,7 @@ function PANEL:openActionMenu()
     local itemTable = self.itemTable
     assert(itemTable, "Cannot open action menu for invalid item")
     itemTable.player = LocalPlayer()
-    local menu = lia.derma.dermaMenu()
+    local menu = DermaMenu()
     if hook.Run("OnCreateItemInteractionMenu", self, menu, itemTable) then
         if IsValid(menu) then menu:Remove() end
         return
@@ -94,7 +94,7 @@ function PANEL:openActionMenu()
         if hook.Run("CanRunItemAction", itemTable, k) == false or isfunction(v.onCanRun) and not v.onCanRun(itemTable) then continue end
         local isMulti = v.isMulti or (v.multiOptions and (istable(v.multiOptions) or isfunction(v.multiOptions)))
         if isMulti then
-            local subMenu = menu:AddSubMenu(L(v.name or k), buildActionFunc(v, k, itemTable), v.icon or "icon16/brick.png")
+            local subMenu = menu:AddSubMenu(v.name or k, buildActionFunc(v, k, itemTable), v.icon or "icon16/brick.png")
             local options = v.multiOptions
             if isfunction(options) then options = options(itemTable, LocalPlayer()) end
             if not options then return end
@@ -105,7 +105,7 @@ function PANEL:openActionMenu()
                         onRun = optionFunc
                     }
 
-                    subMenu:AddOption(L(optionKey), buildActionFunc(v, k, itemTable, subOption, optionKey), "icon16/brick.png")
+                    subMenu:AddOption(optionKey, buildActionFunc(v, k, itemTable, subOption, optionKey), "icon16/brick.png")
                 elseif istable(optionFunc) then
                     if isfunction(optionFunc[2]) and not optionFunc[2](itemTable, LocalPlayer()) then continue end
                     local subOption = {
@@ -114,13 +114,13 @@ function PANEL:openActionMenu()
                         icon = optionFunc.icon
                     }
 
-                    subMenu:AddOption(L(subOption.name), buildActionFunc(v, k, itemTable, subOption, optionKey), subOption.icon or "icon16/brick.png")
+                    subMenu:AddOption(subOption.name, buildActionFunc(v, k, itemTable, subOption, optionKey), subOption.icon or "icon16/brick.png")
                 else
-                    subMenu:AddOption(L(optionFunc.name or "subOption"), buildActionFunc(v, k, itemTable, optionFunc), optionFunc.icon or "icon16/brick.png")
+                    subMenu:AddOption(optionFunc.name or "subOption", buildActionFunc(v, k, itemTable, optionFunc), optionFunc.icon or "icon16/brick.png")
                 end
             end
         else
-            menu:AddOption(L(v.name or k), buildActionFunc(v, k, itemTable), v.icon or "icon16/brick.png")
+            menu:AddOption(v.name or k, buildActionFunc(v, k, itemTable), v.icon or "icon16/brick.png")
         end
     end
 
