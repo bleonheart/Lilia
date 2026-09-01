@@ -1,4 +1,4 @@
-﻿lia.adminStickMapState = lia.adminStickMapState or lia.mapConfigurerState or {
+lia.adminStickMapState = lia.adminStickMapState or lia.mapConfigurerState or {
     modeIndex = 1,
     cachedPositions = {},
     cacheType = nil,
@@ -194,13 +194,6 @@ net.Receive("liaCharDeleted", function()
     net.WriteUInt(0, 32)
     net.WriteUInt(100, 16)
     net.SendToServer()
-end)
-
-net.Receive("liaNetProfilerSnapshot", function()
-    local panel = MODULE.netProfilerPanel
-    if not IsValid(panel) then return end
-    local snapshot = net.ReadTable()
-    if isfunction(panel.RenderNetProfilerSnapshot) then panel:RenderNetProfilerSnapshot(snapshot) end
 end)
 
 net.Receive("liaToolPermissionTiers", function()

@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 local function drawPanel(x, y, w, h, radius, background, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(background):Shape(lia.derma.SHAPE_IOS):Draw()
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
@@ -139,7 +139,7 @@ function PANEL:OnMousePressed(mouseCode)
 end
 
 function PANEL:DoClick()
-    if lia and lia.websound and isfunction(lia.websound.playButtonSound) then lia.websound.playButtonSound() end
+    if lia and lia.webcontent.sound and isfunction(lia.webcontent.sound.playButtonSound) then lia.webcontent.sound.playButtonSound() end
     self.BaseClass.DoClick(self)
 end
 

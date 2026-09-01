@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 lia.chat = lia.chat or {}
 lia.chat.persistedMessages = lia.chat.persistedMessages or {}
 chat.liaAddText = chat.liaAddText or chat.AddText
@@ -228,7 +228,7 @@ local function buildFilteredWordsAdminPanel(panel)
     end
 
     addButton.DoClick = function()
-        lia.websound.playButtonSound()
+        lia.webcontent.sound.playButtonSound()
         openAddFilteredWordPrompt()
     end
 
@@ -302,7 +302,7 @@ local function buildFilteredWordsAdminPanel(panel)
     end
 
     emptyAddButton.DoClick = function()
-        lia.websound.playButtonSound()
+        lia.webcontent.sound.playButtonSound()
         openAddFilteredWordPrompt()
     end
 
@@ -352,7 +352,7 @@ local function buildFilteredWordsAdminPanel(panel)
 
     copyButton.DoClick = function()
         if not selectedWord then return end
-        lia.websound.playButtonSound()
+        lia.webcontent.sound.playButtonSound()
         SetClipboardText(selectedWord)
     end
 
@@ -367,7 +367,7 @@ local function buildFilteredWordsAdminPanel(panel)
 
     removeButton.DoClick = function()
         if not selectedWord then return end
-        lia.websound.playButtonSound()
+        lia.webcontent.sound.playButtonSound()
         removeFilteredWord(selectedWord)
     end
 
@@ -430,7 +430,7 @@ local function buildFilteredWordsAdminPanel(panel)
         end
 
         button.DoClick = function(self)
-            lia.websound.playButtonSound()
+            lia.webcontent.sound.playButtonSound()
             selectWord(self.word)
         end
 

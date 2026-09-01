@@ -1,4 +1,4 @@
-﻿lia.flag = lia.flag or {}
+lia.flag = lia.flag or {}
 lia.flag.list = lia.flag.list or {}
 function lia.flag.add(flag, desc, callback)
     if lia.flag.list[flag] then return end
@@ -88,7 +88,7 @@ if CLIENT then
 
         button.DoClick = function(self)
             if not self:IsEnabled() then return end
-            lia.websound.playButtonSound()
+            lia.webcontent.sound.playButtonSound()
             callback()
         end
         return button
@@ -342,7 +342,7 @@ if CLIENT then
                         end
 
                         card.DoClick = function()
-                            lia.websound.playButtonSound()
+                            lia.webcontent.sound.playButtonSound()
                             selectRecord(record)
                         end
 
@@ -363,7 +363,7 @@ if CLIENT then
                 end
 
                 filterButton.DoClick = function()
-                    lia.websound.playButtonSound()
+                    lia.webcontent.sound.playButtonSound()
                     local menu = DermaMenu()
                     menu:AddOption("All Flags", function()
                         filterMode = "all"

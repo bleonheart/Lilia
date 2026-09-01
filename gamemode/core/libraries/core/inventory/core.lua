@@ -301,3 +301,4 @@ else
         return {panel1, panel2}
     end
 end
+lia.loader.include("lilia/gamemode/core/libraries/core/inventory/meta.lua", "shared")

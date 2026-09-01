@@ -1,4 +1,4 @@
-﻿local entityMeta = FindMetaTable("Entity")
+local entityMeta = FindMetaTable("Entity")
 local baseEmitSound = entityMeta.EmitSound
 local validClasses = {
     ["lvs_base"] = true,
@@ -28,7 +28,7 @@ function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, chann
     if SERVER and isstring(soundName) then
         local name = soundName:gsub("\\", "/"):gsub("^%s+", ""):gsub("%s+$", "")
         if string.StartWith(name, "sound/") then name = name:sub(7) end
-        if lia.websound and lia.websound.stored and lia.websound.stored[name] then
+        if lia.webcontent.sound and lia.webcontent.sound.stored and lia.webcontent.sound.stored[name] then
             net.Start("liaEmitUrlSound")
             net.WriteEntity(self)
             net.WriteString("lilia/websounds/" .. name)
@@ -40,7 +40,7 @@ function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, chann
         end
     end
 
-    if CLIENT and isstring(soundName) and lia.websound.get(soundName) then
+    if CLIENT and isstring(soundName) and lia.webcontent.sound.get(soundName) then
         local maxDistance = soundLevel and soundLevel * 13.33 or 1000
         self:playFollowingSound(soundName, volume or 100, true, maxDistance)
         return true
@@ -343,7 +343,7 @@ else
             return
         end
 
-        if lia.websound.get(soundPath) then
+        if lia.webcontent.sound.get(soundPath) then
             playLocalFile(soundPath)
             return
         end

@@ -2,7 +2,7 @@
 MODULE.author = "Samael"
 MODULE.discord = "liliaplayer"
 MODULE.desc = "Provides comprehensive administration tools and staff management features."
-MODULE.NetworkStrings = {"liaFeaturePositions", "liaFeaturePositionsRequest", "liaFullCharListPage", "liaManagesitroomsAction", "liaMapEntities", "liaMapEntityAction", "liaModifyCharacterFlags", "liaNetProfilerLogs", "liaNetProfilerSnapshot", "liaOnlineStaffData", "liaRequestFullCharListPage", "liaRequestMapEntities", "liaRequestNetProfilerLogs", "liaRequestStaffCases", "liaRequestToolPermissionTiers", "liaRequestStaffCharacterConfiguration", "liaSetFeaturePosition", "liaSetStaffCharacterFlag", "liaSetStaffCharacterPermission", "liaSetToolPermissionTier", "liaSetToolPermissionTiersBatch", "liaResetStaffCharacterConfiguration", "liaResetToolPermissionTiers", "liaSpawnMenuGiveItem", "liaSpawnMenuSpawnItem", "liaStaffCasesSnapshot", "liaStaffCharacterConfiguration", "liaToolPermissionTiers", "liaBodygrouperMenu", "liaBodygrouperMenuClose", "liaBodygrouperMenuCloseClientside", "liaSeeModelTable", "liaWardrobeChangeModel",}
+MODULE.NetworkStrings = {"liaFeaturePositions", "liaFeaturePositionsRequest", "liaFullCharListPage", "liaManagesitroomsAction", "liaMapEntities", "liaMapEntityAction", "liaModifyCharacterFlags", "liaOnlineStaffData", "liaRequestFullCharListPage", "liaRequestMapEntities", "liaRequestStaffCases", "liaRequestToolPermissionTiers", "liaRequestStaffCharacterConfiguration", "liaSetFeaturePosition", "liaSetStaffCharacterFlag", "liaSetStaffCharacterPermission", "liaSetToolPermissionTier", "liaSetToolPermissionTiersBatch", "liaResetStaffCharacterConfiguration", "liaResetToolPermissionTiers", "liaSpawnMenuGiveItem", "liaSpawnMenuSpawnItem", "liaStaffCasesSnapshot", "liaStaffCharacterConfiguration", "liaToolPermissionTiers", "liaBodygrouperMenu", "liaBodygrouperMenuClose", "liaBodygrouperMenuCloseClientside", "liaSeeModelTable", "liaWardrobeChangeModel",}
 MODULE.Privileges = {
     ["ManageWeaponOverrides"] = {
         Name = "Manage Weapon Overrides",
@@ -64,12 +64,6 @@ MODULE.Privileges = {
         Name = "View Staff Management",
         MinAccess = "superadmin",
         Category = "Staff: Management",
-    },
-    ["viewNetProfiler"] = {
-        Name = "View Net Logs",
-        Description = "Allows viewing, filtering, sorting, and paging through network message usage from the admin menu.",
-        MinAccess = "superadmin",
-        Category = "Server",
     },
     ["canAccessScoreboardAdminOptions"] = {
         Name = "Can Access Scoreboard Admin Options",

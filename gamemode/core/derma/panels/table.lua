@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 function PANEL:Init()
     self.columns = {}
     self.rows = {}
@@ -135,7 +135,7 @@ function PANEL:CreateHeader()
             label.DoClick = function()
                 local desc = (self.sortColumn == i and not self.sortDesc) or false
                 self:SortByColumn(i, desc)
-                lia.websound.playButtonSound()
+                lia.webcontent.sound.playButtonSound()
             end
         end
 
@@ -543,7 +543,7 @@ function PANEL:CreateRow(rowIndex, rowData)
         if self.OnRowSelected then self:OnRowSelected(rowIndex, rowData) end
         if self.OnClickLine then self:OnClickLine(rowData, not wasSelected) end
         if self.OnAction then self:OnAction(rowData) end
-        lia.websound.playButtonSound()
+        lia.webcontent.sound.playButtonSound()
     end
 
     row.DoDoubleClick = function() self:DoDoubleClick(rowIndex, rowData) end

@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 local math_abs = math.abs
 local math_cos = math.cos
 local math_sin = math.sin
@@ -83,11 +83,11 @@ function PANEL:Init(options)
             local dist = math_sqrt((mouseX - centerX) ^ 2 + (mouseY - centerY) ^ 2)
             if hovered then
                 self:SelectOption(hovered)
-                lia.websound.playButtonSound()
+                lia.webcontent.sound.playButtonSound()
             elseif dist <= innerRadius then
                 if #self.menuStack > 0 then
                     self:GoBack()
-                    lia.websound.playButtonSound()
+                    lia.webcontent.sound.playButtonSound()
                 else
                     self:Remove()
                 end

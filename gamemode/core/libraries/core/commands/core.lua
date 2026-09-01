@@ -1,4 +1,4 @@
-﻿lia.command = lia.command or {}
+lia.command = lia.command or {}
 lia.command.list = lia.command.list or {}
 function lia.command.buildSyntaxFromArguments(args)
     local tokens = {}
@@ -592,7 +592,7 @@ if CLIENT then
 
         button.DoClick = function(self)
             if not self:IsEnabled() then return end
-            lia.websound.playButtonSound()
+            lia.webcontent.sound.playButtonSound()
             callback()
         end
         return button
@@ -889,7 +889,7 @@ if CLIENT then
                             end
 
                             card.DoClick = function()
-                                lia.websound.playButtonSound()
+                                lia.webcontent.sound.playButtonSound()
                                 selectRecord(record)
                             end
 
@@ -963,64 +963,6 @@ if SERVER then
         end
     end)
 
-    local function handleSetUserGroup(ply, _, args)
-        local steamID = string.Trim(args[1] or "")
-        local usergroup = string.Trim(args[2] or "")
-        local canUse = not IsValid(ply)
-        lia.debug("[Permissions]", "Permission Check for function handleSetUserGroup", "isValidPlayer=", tostring(IsValid(ply)), "finalResult=", tostring(canUse))
-        if not canUse then
-            ply:notifyError("You are not allowed to do this.")
-            return
-        end
-
-        if steamID == "" or not string.match(steamID, "^STEAM_%d+:%d+:%d+$") then
-            if IsValid(ply) then
-                ply:notifyError(string.format("Invalid player: %s", steamID))
-            else
-                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Invalid player: %s", steamID) .. "\n")
-            end
-            return
-        end
-
-        if usergroup == "" or not lia.admin.groups[usergroup] then
-            if IsValid(ply) then
-                ply:notifyError(string.format("Invalid usergroup: %s", usergroup))
-            else
-                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Invalid usergroup: %s", usergroup) .. "\n")
-            end
-            return
-        end
-
-        local target = lia.util.getBySteamID(steamID)
-        lia.db.selectOne({"steamName", "userGroup"}, "players", "steamID = " .. lia.db.convertDataType(steamID)):next(function(data)
-            if not data then
-                if IsValid(ply) then
-                    ply:notifyError("Player does not exist.")
-                else
-                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Invalid player: %s", steamID) .. "\n")
-                end
-                return
-            end
-
-            lia.db.updateTable({
-                userGroup = usergroup
-            }, nil, "players", "steamID = " .. lia.db.convertDataType(steamID)):next(function()
-                lia.admin.setSteamIDUsergroup(steamID, usergroup, IsValid(ply) and ply:Name() or "Console")
-                if IsValid(target) and isfunction(target.getName) then target:notifyInfo(string.format("Usergroup set to %s.", usergroup)) end
-                if IsValid(ply) then
-                    local targetName = isfunction(target and target.getName) and target:getName() or data.steamName or steamID
-                    ply:notifyInfo(string.format("%s's usergroup has been set to %s by an admin.", targetName, usergroup))
-                end
-
-                lia.log.add(IsValid(ply) and ply or nil, "usergroup", IsValid(target) and target or steamID, usergroup)
-                local playerName = isfunction(target and target.getName) and target:getName() or data.steamName or steamID
-                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set " .. playerName .. " (" .. steamID .. ") to usergroup: " .. usergroup .. "\n")
-            end)
-        end)
-    end
-
-    concommand.Add("plysetgroup", handleSetUserGroup)
-    concommand.Add("plysetusergroup", handleSetUserGroup)
     concommand.Add("stopsoundall", function(client)
         local permission = client:hasPrivilege("stopSoundForEveryone")
         lia.debug("[Permissions]", "Permission Check for concommand stopsoundall", "hasPrivilege(stopSoundForEveryone)=", tostring(permission), "finalResult=", tostring(permission))
@@ -1044,64 +986,6 @@ if SERVER then
         end)
     end)
 
-    local wipeConfirmationExpires = 0
-    concommand.Add("lia_wipedb", function(client)
-        if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
-            return
-        end
-
-        if wipeConfirmationExpires < RealTime() then
-            wipeConfirmationExpires = RealTime() + 3
-            MsgC(Color(255, 0, 0), "[Lilia] THIS WILL PERMANENTLY DELETE EVERY lia_ DATABASE TABLE.\n")
-            MsgC(Color(255, 0, 0), "[Lilia] Run lia_wipedb again within 3 seconds to confirm.\n")
-            return
-        end
-
-        wipeConfirmationExpires = 0
-        lia.db.wipeTables(function()
-            lia.information("Database Wiped")
-            lia.db.loadTables()
-            hook.Add("PostLoadData", "lia_wipedb_changemap", function()
-                hook.Remove("PostLoadData", "lia_wipedb_changemap")
-                timer.Simple(2.5, function()
-                    lia.information("Database wipe complete. Changing map...")
-                    RunConsoleCommand("changelevel", game.GetMap())
-                end)
-            end)
-        end)
-    end)
-
-    concommand.Add("lia_wipelogs", function(client)
-        if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
-            return
-        end
-
-        lia.db.wipeLogs()
-        lia.information("All logs have been wiped!")
-    end)
-
-    concommand.Add("lia_wipebans", function(client)
-        if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
-            return
-        end
-
-        lia.db.wipeBans()
-        lia.information("All bans have been wiped!")
-    end)
-
-    concommand.Add("lia_wipepersistence", function(client)
-        if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
-            return
-        end
-
-        lia.data.deleteAll()
-        lia.information("All persistence data has been wiped!")
-    end)
-
     concommand.Add("list_entities", function(client)
         local entityCount = {}
         local totalEntities = 0
@@ -1123,20 +1007,6 @@ if SERVER then
         end
     end)
 
-    concommand.Add("lia_database_list", function(ply)
-        if IsValid(ply) then return end
-        lia.db.getCharacterTable(function(columns)
-            if #columns == 0 then
-                lia.error("No columns found in lia_characters.")
-            else
-                lia.information(string.format("Columns in lia_characters: %s", #columns))
-                for _, column in ipairs(columns) do
-                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), column .. "\n")
-                end
-            end
-        end)
-    end)
-
     concommand.Add("print_vector", function(client)
         if not IsValid(client) then
             MsgC(Color(255, 0, 0), "[Lilia] " .. "Error Prefix" .. "This command can only be used by players." .. "\n")
@@ -1156,76 +1026,6 @@ if SERVER then
 
         local ang = client:GetAngles()
         MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Angle: " .. tostring(ang) .. "\n")
-    end)
-
-    concommand.Add("lia_snapshot", function(client, _, args)
-        if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
-            return
-        end
-
-        if not args[1] then
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_snapshot <table_name>" .. "\n")
-            return
-        end
-
-        local tableName = args[1]
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Creating snapshot for table: %s", tableName) .. "\n")
-        lia.db.createSnapshot(tableName):next(function(snapshot)
-            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Snapshot created successfully!" .. "\n")
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Records: %s", snapshot.records) .. "\n")
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Path: %s", snapshot.path) .. "\n")
-        end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Snapshot failed: %s", tostring(err)) .. "\n") end)
-    end)
-
-    concommand.Add("lia_snapshot_load", function(client, _, args)
-        if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
-            return
-        end
-
-        if not args[1] then
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_snapshot_load <filename>" .. "\n")
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Available snapshots:" .. "\n")
-            local files = file.Find("lilia/snapshots/*", "DATA")
-            if #files == 0 then
-                MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "No snapshots found" .. "\n")
-            else
-                for _, fileName in ipairs(files) do
-                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "  - " .. fileName .. "\n")
-                end
-            end
-            return
-        end
-
-        local fileName = args[1]
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Loading snapshot: %s", fileName) .. "\n")
-        lia.db.loadSnapshot(fileName):next(function(result)
-            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Snapshot loaded successfully!" .. "\n")
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Table: %s", result.table) .. "\n")
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Records: %s", result.records) .. "\n")
-        end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Snapshot load failed: %s", tostring(err)) .. "\n") end)
-    end)
-
-    concommand.Add("lia_wipetable", function(client, _, args)
-        if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
-            return
-        end
-
-        if not args[1] then
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_wipetable <table_name>" .. "\n")
-            return
-        end
-
-        local tableName = args[1]
-        local fullTableName = "lia_" .. tableName
-        MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), string.format("Creating backup before wiping table: %s", tableName) .. "\n")
-        lia.db.createSnapshot(tableName):next(function(snapshot)
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Backup created: %s", snapshot.file) .. "\n")
-            MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), string.format("Wiping table: %s", fullTableName) .. "\n")
-            lia.db.query("DELETE FROM " .. fullTableName, function() MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), string.format("Table %s has been wiped successfully!", fullTableName) .. "\n") end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Failed to wipe table: %s", tostring(err)) .. "\n") end)
-        end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Backup failed, aborting wipe: %s", tostring(err)) .. "\n") end)
     end)
 end
 

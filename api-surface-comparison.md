@@ -212,12 +212,6 @@ Bleeding edge: `D:\GMOD\Server\garrysmod\gamemodes\lilia`
 - Stable Usages:
   - `gamemode/modules/administration/netcalls/server.lua:1099` (net.Receive) — `net.Receive("liaRequestFullCharList", function(_, client)`
 
-### `liaRequestNetProfilerSnapshot` — USED
-- Stable Declarations:
-  - `gamemode/modules/administration/module.lua:502` (NetworkStrings) — `MODULE.NetworkStrings = {"liaAdminSetCharProperty", "liaAllFlags", "liaAllPks", "liaAllPlayers", "liaFeaturePositions", "liaFeaturePositionsRequest", "liaFullCharList", "liaFullCharListPage", "liaManagesitroomsAction", "liaMapEntities", ...`
-- Stable Usages:
-  - `gamemode/modules/administration/netcalls/server.lua:547` (net.Receive) — `net.Receive("liaRequestNetProfilerSnapshot", function(_, client)`
-
 ### `liaRequestPksCount` — USED
 - Stable Declarations:
   - `gamemode/modules/administration/module.lua:502` (NetworkStrings) — `MODULE.NetworkStrings = {"liaAdminSetCharProperty", "liaAllFlags", "liaAllPks", "liaAllPlayers", "liaFeaturePositions", "liaFeaturePositionsRequest", "liaFullCharList", "liaFullCharListPage", "liaManagesitroomsAction", "liaMapEntities", ...`

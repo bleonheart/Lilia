@@ -1495,3 +1495,4 @@ hook.Add("InitPostEntity", "liaWeaponRuntimeDefaults", function()
         end
     end
 end)
+lia.loader.include("lilia/gamemode/core/libraries/core/item/meta.lua", "shared")

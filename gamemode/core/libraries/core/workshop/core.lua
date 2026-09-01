@@ -1,4 +1,4 @@
-﻿lia.workshop = lia.workshop or {}
+lia.workshop = lia.workshop or {}
 lia.workshop.ids = lia.workshop.ids or {}
 lia.workshop.known = lia.workshop.known or {}
 if SERVER then
@@ -392,7 +392,7 @@ else
 
         button.DoClick = function(self)
             if not self:IsEnabled() then return end
-            lia.websound.playButtonSound()
+            lia.webcontent.sound.playButtonSound()
             callback()
         end
         return button
@@ -932,7 +932,7 @@ else
                     end
 
                     record.card.DoClick = function()
-                        lia.websound.playButtonSound()
+                        lia.webcontent.sound.playButtonSound()
                         selectRecord(record)
                     end
 

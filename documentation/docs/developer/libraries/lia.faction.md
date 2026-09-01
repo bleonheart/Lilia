@@ -970,35 +970,6 @@ The faction library centralizes shared faction behavior under `lia.faction`. It 
 
 ---
 
-<details class="realm-shared" id="function-liafactionformatmodeldata">
-<summary><span class="summary-main"><a id="lia.faction.formatModelData"></a>lia.faction.formatModelData()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/factions.lua#L1283" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
-<div class="details-content">
-<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liafactionformatmodeldata"></a>Purpose</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-  <p>Normalizes bodygroup data for every registered faction model entry where bodygroup names must be converted to indexes.</p>
-</div>
-
-<h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-  <p>Shared</p>
-</div>
-
-<h3 style="margin-bottom: 5px; font-weight: 700;">Returns</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">nil</a></span> This function does not return a value.</p>
-</div>
-
-<h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-<pre><code class="language-lua">  lia.faction.formatModelData()
-</code></pre>
-</div>
-
-</div>
-</details>
-
----
-
 <details class="realm-shared" id="function-liafactiongetcategories">
 <summary><span class="summary-main"><a id="lia.faction.getCategories"></a>lia.faction.getCategories(teamName)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/factions.lua#L1325" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
@@ -1355,4 +1326,3 @@ The faction library centralizes shared faction behavior under `lia.faction`. It 
 </details>
 
 ---
-

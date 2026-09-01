@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 local function isGeneratedCloseNode(node)
     if not istable(node) then return false end
     local nodeID = string.Trim(string.lower(tostring(node.dialogID or "")))
@@ -550,7 +550,7 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         end
 
         choiceBtn.DoClick = function()
-            if lia.websound and lia.websound.playButtonSound then lia.websound.playButtonSound() end
+            if lia.webcontent.sound and lia.webcontent.sound.playButtonSound then lia.webcontent.sound.playButtonSound() end
             if info.nodeID and self.generatedDialog then
                 self:AppendDialogLine(label, true)
                 self.pendingResponse = true

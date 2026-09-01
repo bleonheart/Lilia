@@ -220,3 +220,4 @@ end
 hook.Add("PrePACEditorOpen", "RestrictPAC3Editor", function(ply) if not canUsePAC3(ply) then return false end end)
 hook.Add("pac_CanWearParts", "RestrictPAC3Wearing", function(ply) if not canUsePAC3(ply) then return false end end)
 lia.flag.add("P", "Gives Access to PAC3.")
+lia.loader.include("lilia/gamemode/core/libraries/compatibility/pac/meta.lua", "shared")

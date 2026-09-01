@@ -1,4 +1,4 @@
-﻿local GM = GM or GAMEMODE
+local GM = GM or GAMEMODE
 local RealTime, FrameTime = RealTime, FrameTime
 local mathApproach = math.Approach
 local IsValid = IsValid
@@ -1046,12 +1046,12 @@ end
 function GM:CharLoaded(character)
     if not character then return end
     timer.Simple(0.5, function()
-        if lia.webimage and lia.webimage.stored then
+        if lia.webcontent.image and lia.webcontent.image.stored then
             local baseDir = "lilia/webimages/"
             local missingImages = {}
-            for name, data in pairs(lia.webimage.stored) do
+            for name, data in pairs(lia.webcontent.image.stored) do
                 if data and data.url then
-                    local cached = lia.webimage.get(name)
+                    local cached = lia.webcontent.image.get(name)
                     if not cached then
                         local cleanName = name:gsub("%.%w+$", "")
                         local found = false
@@ -1078,19 +1078,19 @@ function GM:CharLoaded(character)
                 local function downloadNext(index)
                     if index > #missingImages then return end
                     local entry = missingImages[index]
-                    lia.webimage.download(entry.name, entry.url, function(mat, fromCache, errorMsg) timer.Simple(0.1, function() downloadNext(index + 1) end) end, entry.flags)
+                    lia.webcontent.image.download(entry.name, entry.url, function(mat, fromCache, errorMsg) timer.Simple(0.1, function() downloadNext(index + 1) end) end, entry.flags)
                 end
 
                 downloadNext(1)
             end
         end
 
-        if lia.websound and lia.websound.stored then
+        if lia.webcontent.sound and lia.webcontent.sound.stored then
             local baseDir = "lilia/websounds/"
             local missingSounds = {}
-            for name, url in pairs(lia.websound.stored) do
+            for name, url in pairs(lia.webcontent.sound.stored) do
                 if url and isstring(url) then
-                    local cached = lia.websound.get(name)
+                    local cached = lia.webcontent.sound.get(name)
                     if not cached then
                         local savePath = baseDir .. name
                         if not file.Exists(savePath, "DATA") then
@@ -1107,7 +1107,7 @@ function GM:CharLoaded(character)
                 local function downloadNext(index)
                     if index > #missingSounds then return end
                     local entry = missingSounds[index]
-                    lia.websound.download(entry.name, entry.url, function(path, fromCache, errorMsg) timer.Simple(0.1, function() downloadNext(index + 1) end) end)
+                    lia.webcontent.sound.download(entry.name, entry.url, function(path, fromCache, errorMsg) timer.Simple(0.1, function() downloadNext(index + 1) end) end)
                 end
 
                 downloadNext(1)

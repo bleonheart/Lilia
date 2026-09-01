@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 local optionHeight = 36
 local edgePadding = 8
 local maxMenuHeight = 380
@@ -130,7 +130,7 @@ local function styleOption(combo, menu, option, optionIndex, optionLabel, option
         timer.Simple(0, function()
             if IsValid(combo) then
                 combo:ChooseOption(optionLabel, optionIndex)
-                if lia and lia.websound and isfunction(lia.websound.playButtonSound) then lia.websound.playButtonSound() end
+                if lia and lia.webcontent.sound and isfunction(lia.webcontent.sound.playButtonSound) then lia.webcontent.sound.playButtonSound() end
             end
 
             if IsValid(overlay) then overlay:Remove() end

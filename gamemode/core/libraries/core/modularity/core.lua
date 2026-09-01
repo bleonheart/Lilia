@@ -1,4 +1,4 @@
-﻿lia.module = lia.module or {}
+lia.module = lia.module or {}
 lia.module.list = lia.module.list or {}
 local function loadPermissions(Privileges)
     if not Privileges or not istable(Privileges) then return end
@@ -127,13 +127,13 @@ local function loadExtras(path)
     else
         if MODULE.WebImages and istable(MODULE.WebImages) then
             for name, url in pairs(MODULE.WebImages) do
-                if isstring(name) and isstring(url) then lia.webimage.register(name, url) end
+                if isstring(name) and isstring(url) then lia.webcontent.image.register(name, url) end
             end
         end
 
         if MODULE.WebSounds and istable(MODULE.WebSounds) then
             for name, url in pairs(MODULE.WebSounds) do
-                if isstring(name) and isstring(url) then lia.websound.register(name, url) end
+                if isstring(name) and isstring(url) then lia.webcontent.sound.register(name, url) end
             end
         end
     end

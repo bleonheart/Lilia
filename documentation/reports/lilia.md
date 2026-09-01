@@ -142,7 +142,6 @@ Count: 1 functions
 #### lia.net
 Count: 1 functions
 
-- `lia.net.profiler.recordSessionEntry(direction, messageName, rawSize, sender, receiver)`
 
 #### lia.player
 Count: 1 functions

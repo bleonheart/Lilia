@@ -98,11 +98,11 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/webimage.lua",
+        path = "lilia/gamemode/core/libraries/core/webcontent/core.lua",
         realm = "client"
     },
     {
-        path = "lilia/gamemode/core/libraries/websound.lua",
+        path = "lilia/gamemode/core/libraries/core/webcontent/netcalls.lua",
         realm = "client"
     },
     {
@@ -172,117 +172,6 @@ local FilesToLoad = {
     {
         path = "lilia/gamemode/core/netcalls/server.lua",
         realm = "server"
-    },
-}
-
-local ConditionalFiles = {
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/vcmod.lua",
-        global = "VCMod",
-        name = "VCMod",
-        realm = "shared"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/vjbase.lua",
-        global = "VJ",
-        name = "VJ",
-        realm = "server"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/advdupe.lua",
-        global = "AdvDupe",
-        name = "AdvDupe",
-        realm = "server"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/advdupe2.lua",
-        global = "AdvDupe2",
-        name = "AdvDupe2",
-        realm = "server"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/mediaplayer.lua",
-        global = "MediaPlayer",
-        name = "Media Player",
-        realm = "shared"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/pac.lua",
-        global = "pac",
-        name = "PAC3",
-        realm = "shared"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/prone.lua",
-        global = "prone",
-        name = "Prone",
-        realm = "server"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/cami.lua",
-        global = "CAMI",
-        name = "CAMI",
-        realm = "shared"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/ulx.lua",
-        global = "ulx",
-        name = "ULX",
-        realm = "shared"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/serverguard.lua",
-        global = "serverguard",
-        name = "ServerGuard",
-        realm = "shared"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/sam.lua",
-        global = "sam",
-        name = "SAM | Admin Mod",
-        realm = "shared"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/simfphys.lua",
-        global = "simfphys",
-        name = "Simfphys Vehicles",
-        realm = "shared"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/sitanywhere.lua",
-        global = "SitAnywhere",
-        name = "Sit Anywhere",
-        realm = "shared"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/permaprops.lua",
-        global = "PermaProps",
-        name = "PermaProps",
-        realm = "server"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/lvs.lua",
-        global = "LVS",
-        name = "LVS",
-        realm = "server"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/arccw.lua",
-        global = "ArcCWInstalled",
-        name = "ArcCW",
-        realm = "shared"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/wiremod.lua",
-        global = "WireLib",
-        name = "Wiremod",
-        realm = "server"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/compatibility/vmanip.lua",
-        global = "VManip",
-        name = "VManip",
-        realm = "shared"
     },
 }
 
@@ -363,15 +252,15 @@ function lia.loader.includeGroupedDir(dir, raw, recursive, forceRealm)
     end
 end
 
-lia.loader.include("lilia/gamemode/core/libraries/languages.lua", "shared")
+lia.loader.include("lilia/gamemode/core/libraries/core/languages/core.lua", "shared")
 lia.loader.includeDir("lilia/gamemode/core/libraries/thirdparty", true, true)
-lia.loader.include("lilia/gamemode/core/libraries/net.lua", "shared")
-lia.loader.include("lilia/gamemode/core/libraries/config.lua", "shared")
-lia.loader.include("lilia/gamemode/core/libraries/color.lua", "shared")
-lia.loader.include("lilia/gamemode/core/libraries/derma.lua", "client")
+lia.loader.include("lilia/gamemode/core/libraries/core/net/core.lua", "shared")
+lia.loader.include("lilia/gamemode/core/libraries/core/config/core.lua", "shared")
+lia.loader.include("lilia/gamemode/core/libraries/core/color/core.lua", "shared")
+lia.loader.include("lilia/gamemode/core/libraries/core/derma/core.lua", "client")
 lia.loader.includeDir("lilia/gamemode/core/derma", true, true, "client")
-lia.loader.include("lilia/gamemode/core/libraries/database.lua", "server")
-lia.loader.include("lilia/gamemode/core/libraries/data.lua", "shared")
+lia.loader.include("lilia/gamemode/core/libraries/core/database/core.lua", "server")
+lia.loader.include("lilia/gamemode/core/libraries/core/data/core.lua", "shared")
 for _, files in ipairs(FilesToLoad) do
     lia.loader.include(files.path, files.realm)
 end
@@ -505,7 +394,6 @@ function lia.loader.initializeGamemode(isReload)
         timer.Remove("liaReloadComplete")
         lia.net.buffers = {}
         lia.net.sendq = {}
-        lia.net.cache = {}
         lia.reloadInProgress = true
         lia.isReloading = true
     end
@@ -515,7 +403,6 @@ function lia.loader.initializeGamemode(isReload)
         if not isReload then hasInitializedModules = true end
     end
 
-    lia.faction.formatModelData()
     if SERVER and isReload then
         lia.config.load()
         local adminHasChanges = lia.admin.hasChanges()

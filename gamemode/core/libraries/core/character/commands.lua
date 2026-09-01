@@ -188,14 +188,4 @@ if SERVER then
         lia.db.wipeCharacters()
         lia.information("All characters have been wiped!")
     end)
-
-    concommand.Add("lia_fix_characters", function(client)
-        if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
-            return
-        end
-
-        lia.db.fixCharacters()
-        lia.information("Characters Fixed")
-    end)
 end

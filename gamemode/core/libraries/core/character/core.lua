@@ -1079,3 +1079,4 @@ if SERVER then
         end)
     end
 end
+lia.loader.include("lilia/gamemode/core/libraries/core/character/meta.lua", "shared")

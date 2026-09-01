@@ -1,4 +1,4 @@
-﻿local RarityColors = lia.item.rarities
+local RarityColors = lia.item.rarities
 local VendorClick = {"buttons/button15.wav", 30, 250}
 local function drawVendorPanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -116,7 +116,7 @@ function PANEL:Init()
     self.leaveButton:SetSize(buttonW, buttonH)
     self.leaveButton:SetPos(self.rightX + self.panelW - buttonW, buttonY)
     self.leaveButton.DoClick = function()
-        lia.websound.playButtonSound()
+        lia.webcontent.sound.playButtonSound()
         self:Remove()
     end
 
@@ -125,7 +125,7 @@ function PANEL:Init()
         self.editButton:SetSize(buttonW, buttonH)
         self.editButton:SetPos(self.leaveButton.x - buttonW - 12, buttonY)
         self.editButton.DoClick = function()
-            lia.websound.playButtonSound()
+            lia.webcontent.sound.playButtonSound()
             vgui.Create("liaVendorEditor"):SetZPos(99)
         end
     end

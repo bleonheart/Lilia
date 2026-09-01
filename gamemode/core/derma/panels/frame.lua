@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 local function drawFramePanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
@@ -54,7 +54,7 @@ function PANEL:Init()
     self.cls:SetText("")
     self.cls.Paint = function(_, w, h) draw.SimpleText("X", "LiliaFont.18", w * 0.5, h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
     self.cls.DoClick = function()
-        lia.websound.playButtonSound()
+        lia.webcontent.sound.playButtonSound()
         if self.deleteOnClose then
             self:AlphaTo(0, 0.1, 0, function() if IsValid(self) then self:Remove() end end)
         else

@@ -1,6 +1,6 @@
 # Class Generator
 
-Create specialized battalions inside a faction, such as medics, officers, or other role-focused subgroups. Classes are the right layer for role-specific models, weapons, bodygroups, permissions, limits, and spawn behavior without changing character-specific data more than necessary.
+Create specialized battalions inside a faction, such as medics, officers, or other role-focused subgroups. Classes are the right layer for role-specific models, weapons, permissions, limits, and spawn behavior without changing character-specific data more than necessary.
 
 Output Location:
 
@@ -70,7 +70,7 @@ You can also add callback fields like `OnCanBe`, `OnSet`, `OnTransferred`, `OnLe
         <label>Model:</label>
         <div id="models-list" class="dynamic-list"></div>
         <button onclick="addModelRow()" class="add-btn">+ Add Model</button>
-        <small>The model or models this class can use. Each entry is split into a model row and a second row for the skin/bodygroup rules tied to that model.</small>
+        <small>The model or models this class can use, with optional skin settings.</small>
       </div>
 
       <div class="form-grid-2">
@@ -88,13 +88,6 @@ You can also add callback fields like `OnCanBe`, `OnSet`, `OnTransferred`, `OnLe
           <input type="number" id="class-skin" placeholder="0" min="0">
           <small>Default skin number for this class.</small>
         </div>
-      </div>
-
-      <div class="input-group">
-        <label>Default Bodygroups:</label>
-        <div id="bodygroups-list" class="dynamic-list"></div>
-        <button onclick="addBodygroupRow()" class="add-btn">+ Add Bodygroup</button>
-        <small>Bodygroup values this class should use by default. You can retrieve these in-game with the `viewbodygroups` UI, which includes a copy option.</small>
       </div>
 
       <div class="input-group">
@@ -262,7 +255,7 @@ function addTextRow(containerId, placeholder, value = '') {
 function addCommandRow(val='') { addTextRow('commands-list', 'kick', val); }
 
 function addWeaponRow(val='') { addTextRow('weapons-list', 'weapon_class', val); }
-function addModelRow(model='', skin='', bodygroups='', allowedSkins='', allowedBodygroups='') {
+function addModelRow(model='', skin='', allowedSkins='') {
   const container = document.getElementById('models-list');
   const div = document.createElement('div');
   div.className = 'dynamic-row';
@@ -273,25 +266,11 @@ function addModelRow(model='', skin='', bodygroups='', allowedSkins='', allowedB
   <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%;">
     <input type="text" placeholder="models/player/..." value="${model}" class="model-path" style="flex:2; min-width:220px;">
     <input type="number" placeholder="Skin" value="${skin}" min="0" class="model-skin small-input">
-    <input type="text" placeholder="Default bodygroups (1=0; helmet=1)" value="${bodygroups}" class="model-bodygroups" style="flex:1.25; min-width:180px;">
     <button onclick="this.closest('.dynamic-row').remove()" class="remove-btn">&times;</button>
   </div>
   <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%;">
     <input type="text" placeholder="Allowed skins for this model (0,1,2)" value="${allowedSkins}" class="model-allowed-skins" style="flex:1; min-width:220px;">
-    <input type="text" placeholder="Allowed bodygroups for this model (1=0|1; helmet=0|1)" value="${allowedBodygroups}" class="model-allowed-bodygroups" style="flex:1.5; min-width:260px;">
   </div>
-  `;
-  container.appendChild(div);
-}
-
-function addBodygroupRow(id='', value='') {
-  const container = document.getElementById('bodygroups-list');
-  const div = document.createElement('div');
-  div.className = 'dynamic-row';
-  div.innerHTML = `
-  <input type="number" placeholder="ID" value="${id}" min="0" class="bg-id small-input">
-  <input type="number" placeholder="Value" value="${value}" min="0" class="bg-value small-input">
-  <button onclick="this.parentElement.remove()" class="remove-btn">×</button>
   `;
   container.appendChild(div);
 }
@@ -323,17 +302,6 @@ function addNPCRelationRow(npc='', disposition='D_HT') {
   <button onclick="this.parentElement.remove()" class="remove-btn">×</button>
   `;
   container.appendChild(div);
-}
-
-function getBodygroupValues() {
-  const rows = document.querySelectorAll('#bodygroups-list .dynamic-row');
-  const groups = [];
-  rows.forEach(row => {
-    const id = row.querySelector('.bg-id').value.trim();
-    const value = row.querySelector('.bg-value').value.trim();
-    if (id !== '') groups.push({ id, value: value !== '' ? value : '0' });
-  });
-  return groups;
 }
 
 function getSubMaterialValues() {
@@ -371,42 +339,6 @@ function parseNumberList(text) {
   .filter(value => !isNaN(value));
 }
 
-function parseBodygroupMap(text) {
-  const result = {};
-  (text || '').split(';').forEach(rule => {
-    const trimmedRule = rule.trim();
-    if (!trimmedRule) return;
-    const match = trimmedRule.match(/^([^:=]+)\s*[:=]\s*(.+)$/);
-    if (!match) return;
-    const rawKey = match[1].trim();
-    const rawValue = match[2].trim();
-    if (!rawKey || rawValue === '') return;
-    const numericKey = Number(rawKey);
-    const key = Number.isNaN(numericKey) ? rawKey : numericKey;
-    const numericValue = parseInt(rawValue, 10);
-    if (!isNaN(numericValue)) result[key] = numericValue;
-  });
-  return result;
-}
-
-function parseAllowedBodygroupMap(text) {
-  const result = {};
-  (text || '').split(';').forEach(rule => {
-    const trimmedRule = rule.trim();
-    if (!trimmedRule) return;
-    const match = trimmedRule.match(/^([^:=]+)\s*[:=]\s*(.+)$/);
-    if (!match) return;
-    const rawKey = match[1].trim();
-    const rawValues = match[2].trim();
-    if (!rawKey || !rawValues) return;
-    const numericKey = Number(rawKey);
-    const key = Number.isNaN(numericKey) ? rawKey : numericKey;
-    const values = rawValues.split('|').map(value => parseInt(value.trim(), 10)).filter(value => !isNaN(value));
-    if (values.length > 0) result[key] = values;
-  });
-  return result;
-}
-
 function getModelValues() {
   const rows = document.querySelectorAll('#models-list .dynamic-row');
   const models = [];
@@ -414,10 +346,8 @@ function getModelValues() {
     const model = row.querySelector('.model-path').value.trim();
     if (!model) return;
     const skinValue = row.querySelector('.model-skin').value.trim();
-    const bodygroups = parseBodygroupMap(row.querySelector('.model-bodygroups').value.trim());
     const allowedSkins = parseNumberList(row.querySelector('.model-allowed-skins').value.trim());
-    const allowedBodygroups = parseAllowedBodygroupMap(row.querySelector('.model-allowed-bodygroups').value.trim());
-    const hasAdvancedData = skinValue !== '' || Object.keys(bodygroups).length > 0 || allowedSkins.length > 0 || Object.keys(allowedBodygroups).length > 0;
+    const hasAdvancedData = skinValue !== '' || allowedSkins.length > 0;
     if (!hasAdvancedData) {
       models.push(model);
       return;
@@ -426,9 +356,7 @@ function getModelValues() {
     models.push({
       model,
       skin: skinValue !== '' ? parseInt(skinValue, 10) : 0,
-      bodygroups,
-      allowedSkins,
-      allowedBodygroups
+      allowedSkins
     });
   });
   return models;
@@ -436,19 +364,6 @@ function getModelValues() {
 
 function formatLuaKey(key) {
   return typeof key === 'number' ? `[${key}]` : `[${JSON.stringify(key)}]`;
-}
-
-function formatLuaBodygroupMap(map, indent) {
-  const entries = Object.entries(map);
-  if (entries.length === 0) return '{}';
-  const lines = ['{'];
-  entries.forEach(([key, value]) => {
-    const numericKey = Number(key);
-    const normalizedKey = Number.isNaN(numericKey) ? key : numericKey;
-    lines.push(`${indent}    ${formatLuaKey(normalizedKey)} = ${value},`);
-  });
-  lines.push(`${indent}}`);
-  return lines.join('\n');
 }
 
 function pushLuaModelEntry(lines, modelEntry) {
@@ -460,18 +375,8 @@ function pushLuaModelEntry(lines, modelEntry) {
   lines.push('        {');
   lines.push(`            ${JSON.stringify(modelEntry.model)},`);
   lines.push(`            ${modelEntry.skin || 0},`);
-  lines.push(`            ${formatLuaBodygroupMap(modelEntry.bodygroups || {}, '            ')},`);
   if ((modelEntry.allowedSkins || []).length > 0) {
     lines.push(`            allowedSkins = {${modelEntry.allowedSkins.join(', ')}},`);
-  }
-  if (Object.keys(modelEntry.allowedBodygroups || {}).length > 0) {
-    lines.push('            allowedBodygroups = {');
-    Object.entries(modelEntry.allowedBodygroups).forEach(([bodygroupKey, values]) => {
-      const numericKey = Number(bodygroupKey);
-      const normalizedKey = Number.isNaN(numericKey) ? bodygroupKey : numericKey;
-      lines.push(`                ${formatLuaKey(normalizedKey)} = {${values.join(', ')}},`);
-    });
-    lines.push('            },');
   }
   lines.push('        },');
 }
@@ -535,7 +440,6 @@ function generateClass() {
   const models = getModelValues();
   const weapons = getListValues('weapons-list');
   const commands = getCommandValues();
-  const bodyGroups = getBodygroupValues();
   const subMaterials = getSubMaterialValues();
   const npcRelations = getNPCRelationValues();
 
@@ -562,7 +466,7 @@ function generateClass() {
   }
 
   const hasAdvancedModelData = models.some(model => typeof model === 'object');
-  if (models.length > 0 || colorInput || skin || logo || hasCustomScale || bodyGroups.length > 0 || subMaterials.length > 0) {
+  if (models.length > 0 || colorInput || skin || logo || hasCustomScale || subMaterials.length > 0) {
   lines.push('');
   if (models.length === 1 && !hasAdvancedModelData) {
   pushField('model', JSON.stringify(models[0]));
@@ -581,11 +485,6 @@ function generateClass() {
   if (skin) pushField('skin', skin);
   if (logo) pushField('logo', JSON.stringify(logo));
   if (hasCustomScale) pushField('scale', scale);
-  if (bodyGroups.length > 0) {
-  pushTableStart('bodyGroups');
-  bodyGroups.forEach(bg => lines.push(`        {id = ${bg.id}, value = ${bg.value}},`));
-  lines.push('    },');
-  }
   if (subMaterials.length > 0) {
   pushTableStart('subMaterials');
   subMaterials.forEach(entry => {
@@ -670,7 +569,6 @@ function fillExampleClass() {
   // Clear lists
   document.getElementById('models-list').innerHTML = '';
   document.getElementById('weapons-list').innerHTML = '';
-  document.getElementById('bodygroups-list').innerHTML = '';
   document.getElementById('submaterials-list').innerHTML = '';
   document.getElementById('npc-relations-list').innerHTML = '';
   document.getElementById('commands-list').innerHTML = '';

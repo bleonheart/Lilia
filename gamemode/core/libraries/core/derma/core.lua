@@ -1,4 +1,4 @@
-﻿lia.derma = lia.derma or {}
+lia.derma = lia.derma or {}
 local color_disconnect = Color(210, 65, 65)
 local color_bot = Color(70, 150, 220)
 local color_online = Color(120, 180, 70)
@@ -52,7 +52,7 @@ function lia.derma.requestColorPicker(func, colorStandard)
         if keyCode == MOUSE_LEFT then
             isDraggingColor = true
             self:OnCursorMoved(self:CursorPos())
-            lia.websound.playButtonSound()
+            lia.webcontent.sound.playButtonSound()
         end
     end
 
@@ -98,7 +98,7 @@ function lia.derma.requestColorPicker(func, colorStandard)
         if keyCode == MOUSE_LEFT then
             isDraggingHue = true
             self:OnCursorMoved(self:CursorPos())
-            lia.websound.playButtonSound()
+            lia.webcontent.sound.playButtonSound()
         end
     end
 
@@ -1685,3 +1685,220 @@ function lia.derma.requestPopupQuestion(question, buttons)
     lia.gui.menuRequestPopup = frame
     return frame
 end
+
+local requestNoticeScrW = ScrW()
+local requestNoticeLastScrWCheck = 0
+local function organizeRequestNotices()
+    local now = CurTime()
+    if now - requestNoticeLastScrWCheck > 1 then
+        requestNoticeLastScrWCheck = now
+        requestNoticeScrW = ScrW()
+    end
+
+    local list = {}
+    for _, notice in ipairs(lia.notices) do
+        if IsValid(notice) then list[#list + 1] = notice end
+    end
+
+    while #list > 6 do
+        local old = table.remove(list, 1)
+        if IsValid(old) then old:Remove() end
+    end
+
+    local leftCount = #list > 3 and #list - 3 or 0
+    for i, notice in ipairs(list) do
+        if IsValid(notice) then
+            local height = notice:GetTall()
+            local x, y
+            if i <= leftCount then
+                x = 10
+                y = 10 + (i - 1) * (height + 5)
+            else
+                local index = i - leftCount
+                x = requestNoticeScrW - notice:GetWide() - 10
+                y = 10 + (index - 1) * (height + 5)
+            end
+
+            local currentX, currentY = notice:GetPos()
+            if math.abs(currentX - x) > 2 or math.abs(currentY - y) > 2 then
+                notice:MoveTo(x, y, 0.15)
+            else
+                notice.targetY = y
+            end
+        end
+    end
+end
+
+local function removeRequestNotice(notice)
+    if not IsValid(notice) then return end
+    for i, value in ipairs(lia.notices) do
+        if value == notice then
+            notice:SizeTo(notice:GetWide(), 0, 0.2, 0, -1, function() if IsValid(notice) then notice:Remove() end end)
+            table.remove(lia.notices, i)
+            timer.Simple(0.25, organizeRequestNotices)
+            break
+        end
+    end
+end
+
+local function requestNoticePalette()
+    local theme = lia.color and lia.color.theme or {}
+    local color = function(value, fallback) return IsColor(value) and value or fallback end
+    local accent = color(theme.accent or theme.maincolor or theme.theme, Color(60, 140, 140))
+    local text = color(theme.text, Color(210, 235, 235))
+    local background = color(theme.background, Color(24, 32, 32))
+    local popup = color(theme.backgroundPanelPopup or theme.background_panelpopup, Color(20, 28, 28))
+    local button = color(theme.button, Color(38, 66, 66))
+    local hovered = color(theme.buttonHovered or theme.button_hovered, Color(70, 140, 140))
+    local blend = function(base, tint, fraction, alpha)
+        return Color(math.Round(Lerp(fraction, base.r, tint.r)), math.Round(Lerp(fraction, base.g, tint.g)), math.Round(Lerp(fraction, base.b, tint.b)), alpha or 255)
+    end
+    return {
+        accent = accent,
+        text = text,
+        textSecondary = blend(text, background, 0.18),
+        textMuted = blend(text, background, 0.46),
+        surface = blend(popup, accent, 0.08, 248),
+        inset = blend(background, accent, 0.09, 235),
+        button = blend(button, accent, 0.08, 238),
+        buttonHovered = blend(hovered, accent, 0.14, 248),
+        keycap = blend(background, accent, 0.16, 245),
+        borderStrong = Color(accent.r, accent.g, accent.b, 126)
+    }
+end
+
+local function drawRequestNoticePanel(x, y, width, height, radius, color, outline)
+    if lia.derma and lia.derma.rect and lia.derma.SHAPE_IOS then
+        lia.derma.rect(x, y, width, height):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
+        if outline then lia.derma.rect(x, y, width, height):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
+        return
+    end
+
+    draw.RoundedBox(radius, x, y, width, height, color)
+    if outline then
+        surface.SetDrawColor(outline)
+        surface.DrawOutlinedRect(x, y, width, height, 1)
+    end
+end
+
+local function resolveRequestNoticeText(value, fallback)
+    if value == nil then return fallback end
+    if istable(value) then return value[1] ~= nil and tostring(value[1]) or fallback end
+    if isstring(value) and value:sub(1, 1) == "@" then return value:sub(2) end
+    return tostring(value)
+end
+
+local function createRequestNotice(length, manualDismiss)
+    local notice = vgui.Create("DPanel")
+    notice:SetSize(0, 0)
+    notice.start = CurTime() + 0.25
+    notice.endTime = CurTime() + length
+    notice.notimer = manualDismiss or false
+    function notice:Paint(w, h)
+        local palette = requestNoticePalette()
+        draw.RoundedBox(9, 4, 5, math.max(w - 8, 0), math.max(h - 3, 0), Color(0, 0, 0, 110))
+        drawRequestNoticePanel(0, 0, w, h, 8, palette.surface, palette.borderStrong)
+        draw.RoundedBoxEx(8, 0, 0, 4, h, palette.accent, true, false, true, false)
+        if self.start then
+            local remaining = 1 - math.Clamp(math.TimeFraction(self.start, self.endTime, CurTime()), 0, 1)
+            local barWidth = math.max(w - 24, 0)
+            surface.SetDrawColor(palette.accent.r, palette.accent.g, palette.accent.b, 28)
+            surface.DrawRect(12, h - 4, barWidth, 2)
+            surface.SetDrawColor(palette.accent)
+            surface.DrawRect(12, h - 4, math.floor(barWidth * remaining), 2)
+        end
+    end
+    if not notice.notimer then timer.Simple(length, function() if IsValid(notice) then removeRequestNotice(notice) end end) end
+    return notice
+end
+
+local function createRequestNoticeButton(parent, label, key)
+    local button = parent:Add("DButton")
+    button:SetText("")
+    button:SetCursor("hand")
+    button.hoverFraction = 0
+    function button:Paint(w, h)
+        local palette = requestNoticePalette()
+        self.hoverFraction = Lerp(math.Clamp(FrameTime() * 14, 0, 1), self.hoverFraction, self:IsHovered() and 1 or 0)
+        local background = self.flashColor or Color(math.Round(Lerp(self.hoverFraction, palette.button.r, palette.buttonHovered.r)), math.Round(Lerp(self.hoverFraction, palette.button.g, palette.buttonHovered.g)), math.Round(Lerp(self.hoverFraction, palette.button.b, palette.buttonHovered.b)), math.Round(Lerp(self.hoverFraction, palette.button.a, palette.buttonHovered.a)))
+        drawRequestNoticePanel(0, 0, w, h, 5, background, Color(palette.accent.r, palette.accent.g, palette.accent.b, math.Round(Lerp(self.hoverFraction, 45, 125))))
+        if self.hoverFraction > 0.01 then
+            surface.SetDrawColor(palette.accent.r, palette.accent.g, palette.accent.b, math.Round(210 * self.hoverFraction))
+            surface.DrawRect(5, h - 2, math.max(w - 10, 0), 2)
+        end
+        draw.SimpleText(label, "LiliaFont.17", 12, h * 0.5, palette.textSecondary, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        surface.SetFont("LiliaFont.15")
+        local keyWidth = math.max(surface.GetTextSize(key) + 14, 30)
+        local keyX = w - keyWidth - 8
+        drawRequestNoticePanel(keyX, math.floor((h - 22) * 0.5), keyWidth, 22, 4, palette.keycap, Color(palette.accent.r, palette.accent.g, palette.accent.b, 34))
+        draw.SimpleText(key, "LiliaFont.15", keyX + keyWidth * 0.5, h * 0.5, palette.textMuted, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+    return button
+end
+
+function lia.derma.requestBinaryNotice(question, option1, option2, manualDismiss, callback)
+    question = resolveRequestNoticeText(question, "Are you sure?")
+    option1 = resolveRequestNoticeText(option1, "Yes")
+    option2 = resolveRequestNoticeText(option2, "No")
+    surface.SetFont("LiliaFont.19")
+    local width = math.Clamp(math.max(520, surface.GetTextSize(question) + 76), 520, 700)
+    local height = 126
+    local notice = createRequestNotice(10, manualDismiss)
+    table.insert(lia.notices, notice)
+    notice.isQuery = true
+    notice:SetSize(width, height)
+    notice.oh = height
+    if manualDismiss then notice.start = nil end
+    notice.header = notice:Add("DPanel")
+    notice.header:SetPos(18, 14)
+    notice.header:SetSize(width - 36, 52)
+    notice.header.Paint = function(_, w)
+        local palette = requestNoticePalette()
+        draw.SimpleText("BINARY REQUEST", "LiliaFont.15", 0, 0, palette.accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText(lia.util.wrapText(question, w, "LiliaFont.19", 1, "...")[1] or "", "LiliaFont.19", 0, 24, palette.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+    end
+    notice.actions = notice:Add("DPanel")
+    notice.actions:SetPos(12, 71)
+    notice.actions:SetSize(width - 24, 44)
+    notice.actions.Paint = function(_, w, h)
+        local palette = requestNoticePalette()
+        drawRequestNoticePanel(0, 0, w, h, 7, palette.inset, Color(palette.accent.r, palette.accent.g, palette.accent.b, 26))
+    end
+    notice.opt1 = createRequestNoticeButton(notice.actions, option1, "F7")
+    notice.opt2 = createRequestNoticeButton(notice.actions, option2, "F8")
+    notice.cancelBtn = createRequestNoticeButton(notice.actions, "Cancel", "F9")
+    local gap, padding = 6, 6
+    local buttonWidth = math.floor((notice.actions:GetWide() - padding * 2 - gap * 2) / 3)
+    local buttonHeight = notice.actions:GetTall() - padding * 2
+    notice.opt1:SetPos(padding, padding)
+    notice.opt1:SetSize(buttonWidth, buttonHeight)
+    notice.opt2:SetPos(padding + buttonWidth + gap, padding)
+    notice.opt2:SetSize(buttonWidth, buttonHeight)
+    local thirdX = padding + (buttonWidth + gap) * 2
+    notice.cancelBtn:SetPos(thirdX, padding)
+    notice.cancelBtn:SetSize(notice.actions:GetWide() - thirdX - padding, buttonHeight)
+    local function finish(button, success, result)
+        if not notice.respondToKeys then return end
+        notice.respondToKeys = false
+        notice.lastKey = CurTime()
+        button.flashColor = success and Color(43, 112, 81, 255) or Color(117, 48, 57, 255)
+        if callback then callback(result) end
+        timer.Simple(0.28, function() if IsValid(notice) then notice:AlphaTo(0, 0.15, 0, function() if IsValid(notice) then removeRequestNotice(notice) end end) end end)
+    end
+    local chooseFirst = function() finish(notice.opt1, true, 0) end
+    local chooseSecond = function() finish(notice.opt2, true, 1) end
+    local cancel = function() finish(notice.cancelBtn, false, false) end
+    notice.opt1.DoClick, notice.opt2.DoClick, notice.cancelBtn.DoClick = chooseFirst, chooseSecond, cancel
+    notice.lastKey = CurTime()
+    notice.respondToKeys = true
+    notice:SetTall(0)
+    notice:SetPos(ScrW() * 0.5 - width * 0.5, 10)
+    notice:SizeTo(width, height, 0.2, 0, -1)
+    function notice:Think()
+        self:SetPos(ScrW() * 0.5 - self:GetWide() * 0.5, 10)
+        if not self.respondToKeys or CurTime() - self.lastKey < 0.45 then return end
+        if input.IsKeyDown(KEY_F7) then chooseFirst() elseif input.IsKeyDown(KEY_F8) then chooseSecond() elseif input.IsKeyDown(KEY_F9) then cancel() end
+    end
+    return notice
+end
+lia.loader.include("lilia/gamemode/core/libraries/core/derma/meta.lua", "client")

@@ -971,10 +971,6 @@ function lia.db.wipeBans()
     return lia.db.query("DELETE FROM `lia_bans`")
 end
 
-function lia.db.fixCharacters()
-    return lia.db.addDatabaseFields()
-end
-
 function GM:SetupDatabase()
     local defaults = {
         adapter = "sqlite",
