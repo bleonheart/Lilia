@@ -4,6 +4,7 @@ Local browser dashboard for the Lilia function comparison report.
 """
 
 import argparse
+import copy
 import json
 import threading
 import time
@@ -374,6 +375,8 @@ class LuaFunctionExtractor:
 
     def __init__(self, base_path: str):
         self.base_path = Path(base_path)
+        self.duplicate_definitions: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+        self.duplicate_definitions_by_file: Dict[str, Set[str]] = defaultdict(set)
 
     def extract_functions_from_file(self, file_path: str) -> Dict[str, FunctionInfo]:
         """Extract all functions from a single Lua file"""
@@ -430,6 +433,12 @@ class LuaFunctionExtractor:
                 is_server = self._is_server_realm(content, line_num)
                 is_client = self._is_client_realm(content, line_num)
 
+                if func_name in functions:
+                    self.duplicate_definitions[func_name].append({
+                        "file": str(Path(file_path).resolve()),
+                        "line": line_num,
+                    })
+                    self.duplicate_definitions_by_file[str(Path(file_path).resolve()).lower()].add(func_name)
                 functions[func_name] = FunctionInfo(
                     name=func_name,
                     line_number=line_num,
@@ -797,6 +806,28 @@ class FunctionComparator:
             file_comparison = self._compare_file_functions(file_path, functions, doc_functions)
             if file_comparison:
                 comparison_results[file_path] = file_comparison
+
+        # Preserve duplicate definitions as an explicit finding.  A dictionary
+        # is still used for the normal symbol payload, but duplicates must not
+        # disappear merely because the last definition wins that dictionary.
+        for file_path, file_comparison in comparison_results.items():
+            file_comparison["duplicate_functions"] = [
+                name for name in sorted(
+                    self.extractor.duplicate_definitions_by_file.get(
+                        str((self.extractor.base_path / file_path).resolve()).lower(), set()
+                    ), key=str.lower
+                )
+            ]
+        all_definition_sites: Dict[str, List[str]] = defaultdict(list)
+        for file_path, functions in code_functions.items():
+            for name in functions:
+                all_definition_sites[name].append(file_path)
+        duplicate_names = {
+            name: sorted(files, key=str.lower)
+            for name, files in all_definition_sites.items() if len(files) > 1
+        }
+        if duplicate_names and comparison_results:
+            comparison_results[next(iter(comparison_results))]["duplicate_definition_sites"] = duplicate_names
 
         # Keep this separate from the documentation comparison.  A function can
         # be documented and still never be used by the gamemode.  The usage scan
@@ -3030,6 +3061,125 @@ class FunctionComparisonReportGenerator:
                 roots.append(resolved)
         return roots
 
+    def _iter_lua_sources(self, roots: Optional[Iterable[Path]] = None) -> Iterable[Tuple[Path, str]]:
+        """Yield each source file once, with comments and markdown examples removed.
+
+        All cross-library checks use this iterator.  Previously the function, hook,
+        config, and net checks each had subtly different file filters and comment
+        handling, which made a symbol appear to exist in one report but not another.
+        """
+        seen: Set[str] = set()
+        for root in roots or self._iter_workspace_roots():
+            root = Path(root)
+            if not root.is_dir():
+                continue
+            for lua_file in root.rglob("*.lua"):
+                parts = {part.lower() for part in lua_file.parts}
+                if parts & {"documentation", "docs", "languages", "_disabled"}:
+                    continue
+                try:
+                    resolved = lua_file.resolve()
+                    key = str(resolved).lower()
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    yield resolved, self._remove_lua_comments(resolved.read_text(encoding="utf-8", errors="ignore"))
+                except OSError:
+                    continue
+
+    def _extract_shared_symbols(self, content: str) -> Dict[str, Set[str]]:
+        """Extract exported functions, function references, and hook sites.
+
+        This intentionally remains a lexical scanner (Lua has no safe, complete
+        parser in the standard library), but handles the common declaration and
+        call forms used by Lilia and Sam Modules, including method-style calls and
+        aliases such as ``local util = lia.util``.
+        """
+        functions: Set[str] = set()
+        function_refs: Set[str] = set()
+        hooks: Set[str] = set()
+        hook_definitions: Set[str] = set()
+        meta_functions: Set[str] = set()
+        aliases: Dict[str, str] = {}
+        meta_aliases: Dict[str, str] = {}
+
+        for alias, target in re.findall(
+            r"\blocal\s+([A-Za-z_]\w*)\s*=\s*(lia(?:\.[A-Za-z_]\w*)*)\b", content
+        ):
+            aliases[alias] = target
+
+        for alias, table_name in re.findall(
+            r"\b(?:local\s+)?([A-Za-z_]\w*)\s*=\s*FindMetaTable\s*\(\s*['\"]([A-Za-z_]\w*)['\"]\s*\)", content
+        ):
+            meta_aliases[alias] = f"{table_name.lower()}Meta"
+        for table_name in re.findall(
+            r"\bFindMetaTable\s*\(\s*['\"]([A-Za-z_]\w*)['\"]\s*\)\s*[.:]\s*([A-Za-z_]\w*)\s*=\s*function",
+            content,
+        ):
+            meta_aliases[f"FindMetaTable:{table_name[0]}"] = f"{table_name[0].lower()}Meta"
+
+        function_patterns = (
+            r"\bfunction\s+((?:lia|[A-Za-z_]\w*Meta)[.:][A-Za-z_]\w*(?:[.:][A-Za-z_]\w*)*)\s*\(",
+            r"\b((?:lia\.)[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\s*=\s*function\s*\(",
+        )
+        for pattern in function_patterns:
+            for match in re.finditer(pattern, content):
+                name = match.group(1)
+                functions.add(name)
+                if ":" in name and name.split(":", 1)[0].endswith("Meta"):
+                    meta_functions.add(name)
+                if name.startswith(("GM:", "MODULE:", "SCHEMA:")):
+                    hook_definitions.add(name.split(":", 1)[1])
+
+        # ``function GM:Hook`` / ``function MODULE:Hook`` are hooks, not API
+        # functions.  Treat all three conventional owners consistently.
+        for owner, name in re.findall(r"\bfunction\s+(GM|MODULE|SCHEMA):([A-Za-z_]\w*)\s*\(", content):
+            hooks.add(name)
+            hook_definitions.add(name)
+
+        for owner, name in re.findall(r"\bfunction\s+([A-Za-z_]\w*Meta):([A-Za-z_]\w*)\s*\(", content):
+            meta_functions.add(f"{owner}:{name}")
+        for owner, name in re.findall(
+            r"\b([A-Za-z_]\w*Meta)\s*\.\s*([A-Za-z_]\w*)\s*=\s*function\s*\(", content
+        ):
+            meta_functions.add(f"{owner}:{name}")
+        for alias, meta_name in meta_aliases.items():
+            if alias.startswith("FindMetaTable:"):
+                meta_functions.add(f"{meta_name}:{alias.split(':', 1)[1]}")
+                continue
+            for name in re.findall(rf"\b{re.escape(alias)}\s*[.:]\s*([A-Za-z_]\w*)\s*=\s*function\s*\(", content):
+                meta_functions.add(f"{meta_name}:{name}")
+            for name in re.findall(rf"\bfunction\s+{re.escape(alias)}\s*:\s*([A-Za-z_]\w*)\s*\(", content):
+                meta_functions.add(f"{meta_name}:{name}")
+
+        for alias, target in aliases.items():
+            for suffix in re.findall(rf"\b{re.escape(alias)}\.([A-Za-z_]\w*)\s*\(", content):
+                function_refs.add(f"{target}.{suffix}")
+
+        for match in re.finditer(r"\b(lia(?:\.[A-Za-z_]\w*)+)\s*\(", content):
+            name = match.group(1)
+            if name not in functions:
+                function_refs.add(name)
+
+        # Support all quote styles for standard hook calls.
+        for match in re.finditer(
+            r"\bhook\s*\.\s*(?:Add|Run|Call|Remove)\s*\(\s*"
+            r"(?:\"((?:\\.|[^\"\\])*)\"|'((?:\\.|[^'\\])*)'|\[\[(.*?)\]\])",
+            content,
+            re.DOTALL,
+        ):
+            value = match.group(1) or match.group(2) or match.group(3)
+            if value:
+                hooks.add(value.strip())
+
+        return {
+            "functions": functions,
+            "function_refs": function_refs,
+            "hooks": hooks,
+            "hook_definitions": hook_definitions,
+            "meta_functions": meta_functions,
+        }
+
     def _scan_lua_files_for_net_analysis(self) -> List[Path]:
         """Return Lua files that should be included in code placement analyses."""
         lua_files: Dict[str, Path] = {}
@@ -3338,15 +3488,14 @@ class FunctionComparisonReportGenerator:
                 "usage_sites": usage_sites,
                 "definition_sites": definition_sites,
             }
+            # Definitions are workspace-wide.  A framework registration is a
+            # valid definition for a Sam Module consumer, and vice versa; do
+            # not turn library boundaries into false missing/misregistered
+            # findings.
             if not definition_sites:
                 undefined.append({
                     **base_entry,
                     "reason": f'Used only by module "{module["name"]}" and not defined anywhere',
-                })
-            elif not in_module_defs:
-                misregistered.append({
-                    **base_entry,
-                    "reason": f'Used only by module "{module["name"]}" but defined outside that module',
                 })
 
         return misregistered, undefined, notes
@@ -4467,6 +4616,7 @@ class FunctionComparisonReportGenerator:
         if self.generate_module_docs:
             print("Scanning Sam's Modules for undocumented items...")
             modules_scan = self._scan_modules_for_undocumented()
+            self._ensure_module_meta_examples(modules_scan)
 
         
         print("Comparing language files...")
@@ -5068,6 +5218,15 @@ class FunctionComparisonReportGenerator:
             if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
                 standard_hooks.add(hook_name.strip())
 
+        # Keep removal/replacement sites visible as hook usages too, and accept
+        # single-quoted and long-bracket literals just like the shared scanner.
+        shared = self._extract_shared_symbols(content)
+        method_names = set(re.findall(r"\bfunction\s+(?:GM|MODULE|SCHEMA):([A-Za-z_]\w*)\s*\(", content))
+        standard_hooks.update(
+            name for name in shared["hooks"] - method_names
+            if name not in GMOD_HOOKS_BLACKLIST
+        )
+
         return method_hooks, standard_hooks
 
     def _extract_hooks_from_file_content(self, content: str) -> Set[str]:
@@ -5630,6 +5789,8 @@ class FunctionComparisonReportGenerator:
         
         report_lines.extend(self._generate_net_message_section(data))
 
+        report_lines.extend(self._generate_fonts_section(data))
+
         
         report_lines.extend(self._generate_derma_panel_section(data))
 
@@ -5639,14 +5800,132 @@ class FunctionComparisonReportGenerator:
         
         report_lines.extend(self._generate_config_undefined_section(data))
 
+        report_lines.extend(self._generate_additional_audits_section(data))
+
         
-        if self.generate_module_docs:
+        if self.generate_module_docs and data.modules_scan:
             try:
                 report_lines.extend(self._generate_modules_section(data.modules_scan))
             except Exception as e:
                 print(f"Error generating modules section: {e}")
 
         return "\n".join(report_lines)
+
+    def _generate_additional_audits_section(self, data: CombinedReportData) -> List[str]:
+        """Expose dashboard-only audit categories in saved Markdown reports."""
+        lines = ["## Additional Static Audits", ""]
+        extended = getattr(self, "extended_audits", {}) or {}
+        duplicate = getattr(data, "duplicate_key_analysis", {}) or {}
+        privileges = getattr(data, "privilege_report", {}) or {}
+        lines.append(f"- **Commands:** {len((extended.get('commands') or {}).get('issues', []))} findings")
+        lines.append(f"- **Entities:** {len((extended.get('entities') or {}).get('issues', []))} findings")
+        lines.append(f"- **Timers:** {len((extended.get('timers') or {}).get('issues', []))} findings")
+        lines.append(f"- **Performance:** {len((extended.get('performance') or {}).get('issues', []))} findings")
+        lines.append(f"- **Duplicate language keys:** {(duplicate.get('language_duplicates') or {}).get('total_duplicates', 0)}")
+        lines.append(f"- **Duplicate table keys:** {(duplicate.get('generic_duplicates') or {}).get('total_duplicates', 0)}")
+        lines.append(f"- **Privilege modules analyzed:** {len(privileges.get('modules', [])) if isinstance(privileges, dict) else 0}")
+        lines.append("")
+        return lines
+
+    def _scope_data_to_path(self, data: CombinedReportData, root: Path) -> CombinedReportData:
+        """Return a deep-copied report containing findings belonging to ``root``.
+
+        The report still emits every section, even when a section has no scoped
+        findings.  That makes library/module reports comparable and avoids the
+        old behavior where a narrow report silently omitted categories.
+        """
+        scoped = copy.deepcopy(data)
+        root = root.resolve()
+        def belongs(ref: Any) -> bool:
+            if isinstance(ref, dict):
+                if ref.get("module_path"):
+                    try:
+                        if Path(ref["module_path"]).resolve().is_relative_to(root):
+                            return True
+                    except Exception:
+                        pass
+                ref = ref.get("file") or ref.get("path") or ""
+            candidate = self._resolve_report_path(str(ref))
+            try:
+                return bool(candidate and (candidate.resolve() == root or candidate.resolve().is_relative_to(root)))
+            except Exception:
+                return False
+
+        scoped.function_comparison = {
+            file: value for file, value in (data.function_comparison or {}).items()
+            if belongs(file)
+        }
+        scoped.hooks_locations = {
+            name: [site for site in sites if belongs(site)]
+            for name, sites in (data.hooks_locations or {}).items()
+            if any(belongs(site) for site in sites)
+        }
+        scoped.hooks_registered = sorted(scoped.hooks_locations.keys(), key=str.lower)
+        scoped.hooks_method = [name for name in data.hooks_method if name in scoped.hooks_registered]
+        scoped.hooks_standard = [name for name in data.hooks_standard if name in scoped.hooks_registered]
+        scoped.hooks_missing = sorted(set(scoped.hooks_registered) - set(scoped.hooks_documented), key=str.lower)
+        scoped.config_undefined_get_calls = [row for row in data.config_undefined_get_calls if belongs(row)]
+        for attr in ("module_derma_panels_outside_folder", "module_file_placement_issues", "argument_mismatches"):
+            setattr(scoped, attr, [row for row in getattr(data, attr, []) if belongs(row)])
+        for attr in ("net_messages_defined", "net_messages_used"):
+            original = getattr(data, attr, {}) or {}
+            setattr(scoped, attr, {name: [site for site in sites if belongs(site)]
+                                   for name, sites in original.items() if any(belongs(site) for site in sites)})
+        scoped.net_messages_unused_defined = sorted(set(scoped.net_messages_defined) - set(scoped.net_messages_used), key=str.lower)
+        scoped.net_messages_used_but_undefined = sorted(set(scoped.net_messages_used) - set(scoped.net_messages_defined), key=str.lower)
+        scoped.modules_scan = [row for row in data.modules_scan if belongs(row)]
+        return scoped
+
+    def generate_markdown_for_scope(self, data: CombinedReportData, scope: str, name: Optional[str] = None) -> str:
+        """Generate Markdown for one of the supported report scopes.
+
+        Supported scopes are ``fully_report_libraries``, ``report_library``,
+        ``report_lilia_module``, and ``report_module`` (Sam Module).
+        """
+        normalized = (scope or "").strip().lower().replace("-", "_").replace(" ", "_")
+        if normalized in {"fully_report_libraries", "fully_report_library", "lilia"}:
+            return self.generate_markdown_report(data)
+        if not name:
+            raise ValueError(f"Scope {scope!r} requires a library or module name")
+
+        if normalized in {"report_library", "library"}:
+            candidate = self.base_path / "core" / "libraries" / name
+            # ``Path.with_suffix`` would turn ``lia.util`` into ``lia.lua``;
+            # library names legitimately contain dots, so append the extension.
+            candidates = [candidate, candidate.parent / f"{candidate.name}.lua"]
+            root = next((path for path in candidates if path.exists()), None)
+            if root is None:
+                raise ValueError(f"Unknown Lilia library: {name}")
+        elif normalized in {"report_lilia_module", "lilia_module"}:
+            roots = [entry["path"] for entry in self._discover_module_roots() if entry.get("source") == "framework"]
+            root = next((path for path in roots if path.name.lower() == name.lower()), None)
+            if root is None:
+                raise ValueError(f"Unknown Lilia module: {name}")
+        elif normalized in {"report_module", "module", "sam_module", "sam_modules"}:
+            roots = [entry["path"] for entry in self._discover_module_roots() if entry.get("source") == "external"]
+            root = next((path for path in roots if path.name.lower() == name.lower()), None)
+            if root is None:
+                raise ValueError(f"Unknown Sam Module: {name}")
+        else:
+            raise ValueError(f"Unknown report scope: {scope}")
+        return self.generate_markdown_report(self._scope_data_to_path(data, root))
+
+    def save_markdown_for_scope(self, data: CombinedReportData, scope: str, name: Optional[str] = None,
+                                output_file: Optional[str] = None) -> str:
+        """Generate and save one scoped Markdown report with validation."""
+        report = self.generate_markdown_for_scope(data, scope, name)
+        reports_dir = self._get_reports_dir()
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        if output_file:
+            target = Path(output_file)
+            if not target.is_absolute():
+                target = reports_dir / target
+        else:
+            stem = self._sanitize_report_filename("_".join(filter(None, [scope, name])))
+            target = reports_dir / f"{stem}.md"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(report, encoding="utf-8")
+        return str(target)
 
     def _get_reports_dir(self) -> Path:
         """Return the centralized reports directory."""
@@ -6449,6 +6728,152 @@ class FunctionComparisonReportGenerator:
 
         return results
 
+    def _scan_modules_for_undocumented(self) -> List[Dict]:
+        """Scan Sam Modules using the same symbol rules as the framework scan.
+
+        A Sam Module is an extension of Lilia, not an isolated library.  In
+        particular, framework-defined APIs and hooks satisfy module references.
+        This method intentionally supersedes the older duplicated scanner above;
+        keeping the old implementation in the historical script is harmless, but
+        this single implementation is the one bound on the class.
+        """
+        framework_functions: Set[str] = set()
+        framework_hooks: Set[str] = set()
+        for _, content in self._iter_lua_sources([self.base_path]):
+            symbols = self._extract_shared_symbols(content)
+            framework_functions.update(symbols["functions"])
+            framework_hooks.update(symbols["hooks"])
+        try:
+            framework_hooks.update(self._scan_hook_registrations_with_signatures()[0])
+        except Exception:
+            pass
+        documented_hooks = self._read_all_documented_hooks()
+        documented_functions = self._get_documented_library_functions() | self._get_documented_meta_functions()
+        results: List[Dict] = []
+
+        for module_root in self._discover_module_roots():
+            module_dir = module_root["path"]
+            if module_root.get("source") != "external":
+                continue
+            # ``_discover_module_roots`` also returns nested module.lua
+            # directories.  They are emitted below as submodule entries, not
+            # as a second parent module.
+            if not any(module_dir.parent.resolve() == Path(root).resolve() for root in (self.modules_paths or [])):
+                continue
+            submodules = [item["path"] for item in self._discover_module_roots()
+                          if item["path"] != module_dir and item["path"].is_relative_to(module_dir)
+                          and (item["path"] / "module.lua").exists()]
+            module_docs_hooks, module_docs_functions = self._read_module_docs(module_dir)
+            found_functions: Set[str] = set()
+            found_hooks: Set[str] = set()
+            found_meta: Set[str] = set()
+            refs: Set[str] = set()
+            hook_locations: Dict[str, List[Dict[str, str]]] = {}
+
+            def scan_scope(scope_dir: Path, scope_name: str, exclude_children: bool) -> Dict[str, Any]:
+                local_functions: Set[str] = set()
+                local_hooks: Set[str] = set()
+                local_meta: Set[str] = set()
+                local_refs: Set[str] = set()
+                local_files: List[Path] = []
+                for file_path, content in self._iter_lua_sources([scope_dir]):
+                    if exclude_children and any(file_path.is_relative_to(child) for child in submodules):
+                        continue
+                    symbols = self._extract_shared_symbols(content)
+                    local_functions.update(name for name in symbols["functions"] if name.startswith("lia."))
+                    local_meta.update(symbols.get("meta_functions", set()))
+                    local_hooks.update(symbols["hooks"])
+                    local_refs.update(symbols["function_refs"])
+                    local_files.append(file_path)
+                    for hook in symbols["hooks"]:
+                        self._append_hook_location(
+                            hook_locations, hook,
+                            self._classify_hook_location(file_path, "standard", scope_dir,
+                                                         "submodule" if scope_name == "submodule" else "module",
+                                                         scope_dir.name),
+                        )
+                return {"functions": local_functions, "hooks": local_hooks, "meta": local_meta,
+                        "refs": local_refs, "files": local_files}
+
+            for scope_dir, scope_name in [(module_dir, "module"), *[(path, "submodule") for path in submodules]]:
+                scanned = scan_scope(scope_dir, scope_name, scope_name == "module")
+                scope_hooks, scope_functions = self._read_module_docs(scope_dir)
+                found_functions.update(scanned["functions"])
+                found_hooks.update(scanned["hooks"])
+                found_meta.update(scanned["meta"])
+                refs.update(scanned["refs"])
+                results.append({
+                    "module_path": str(scope_dir),
+                    "module_name": scope_dir.name,
+                    "module_scope": scope_name,
+                    "undoc_hooks": sorted((scanned["hooks"] - documented_hooks - framework_hooks - scope_hooks - GMOD_HOOKS_BLACKLIST), key=str.lower),
+                    "hook_locations": {name: hook_locations.get(name, []) for name in scanned["hooks"] if name not in documented_hooks and name not in framework_hooks},
+                    "undoc_functions": sorted((scanned["functions"] - framework_functions - documented_functions - scope_functions), key=str.lower),
+                    "undoc_meta_functions": sorted((scanned["meta"] - documented_functions - scope_functions), key=str.lower),
+                    "meta_functions": sorted(scanned["meta"], key=str.lower),
+                    "undefined_functions": sorted((scanned["refs"] - framework_functions - scanned["functions"]), key=str.lower),
+                    "total_functions": len(scanned["functions"]),
+                    "total_hooks": len(scanned["hooks"]),
+                    "total_meta_functions": len(scanned["meta"]),
+                    "total_audited_items": len(scanned["functions"]) + len(scanned["hooks"]) + len(scanned["meta"]),
+                })
+        return sorted(results, key=lambda item: (item["module_name"].lower(), item["module_scope"], item["module_path"].lower()))
+
+    def _ensure_module_meta_examples(self, modules_scan: List[Dict[str, Any]]) -> None:
+        """Create a small usable ``docs/meta.md`` for modules exposing meta methods."""
+        for entry in modules_scan or []:
+            meta_names = sorted(set(entry.get("meta_functions", []) or entry.get("undoc_meta_functions", [])), key=str.lower)
+            if not meta_names:
+                continue
+            module_path = Path(entry["module_path"])
+            docs_file = module_path / "docs" / "meta.md"
+            docs_file.parent.mkdir(parents=True, exist_ok=True)
+            existing = docs_file.read_text(encoding="utf-8", errors="ignore") if docs_file.exists() else ""
+            if "<!-- Lilia comparison dashboard meta example -->" in existing:
+                continue
+            lines = [
+                "# Module Meta",
+                "",
+                "Detected meta methods owned by this module.",
+                "",
+                "<!-- Lilia comparison dashboard meta example -->",
+                "## Meta documentation example",
+                "",
+                "Meta methods should document the owning table, parameters, realm, and a Lua usage example.",
+                "",
+                "```lua",
+                "local playerMeta = FindMetaTable(\"Player\")",
+                "local health = playerMeta:GetHealth()",
+                "```",
+                "",
+            ]
+            for name in meta_names:
+                lines.extend([
+                    f"## `{name}`",
+                    "",
+                    "**Purpose**",
+                    "",
+                    "Describe what this meta method does.",
+                    "",
+                    "**Parameters**",
+                    "",
+                    "Document each parameter here.",
+                    "",
+                    "**Example Usage**",
+                    "",
+                    "```lua",
+                    f"local object = FindMetaTable(\"{name.split('Meta:', 1)[0].replace('Meta', '') or 'Player'}\")",
+                    f"object:{name.split(':', 1)[-1]}()",
+                    "```",
+                    "",
+                ])
+            generated = "\n".join(lines)
+            if existing:
+                # Preserve module-authored documentation and add the example
+                # instead of replacing their meta reference material.
+                generated = existing.rstrip() + "\n\n" + generated
+            docs_file.write_text(generated, encoding="utf-8")
+
     def _read_module_docs(self, module_dir: Path) -> Tuple[Set[str], Set[str]]:
         """Read module-level documentation markers from module_dir/docs.
         - hooks.md: list of documented hook names (strings)
@@ -6531,7 +6956,8 @@ class FunctionComparisonReportGenerator:
             undoc_hooks = entry.get('undoc_hooks', [])
             undoc_functions = entry.get('undoc_functions', [])
             undoc_meta_functions = entry.get('undoc_meta_functions', [])
-            if not undoc_hooks and not undoc_functions and not undoc_meta_functions:
+            undefined_functions = entry.get('undefined_functions', [])
+            if not undoc_hooks and not undoc_functions and not undoc_meta_functions and not undefined_functions:
                 continue
             lines.append("---")
             lines.append("")
@@ -6555,6 +6981,11 @@ class FunctionComparisonReportGenerator:
                 lines.append("- **Undocumented Meta Functions:**")
                 for f in undoc_meta_functions:
                     lines.append(f"  - `{f}()`")
+            if undefined_functions:
+                lines.append("")
+                lines.append("- **Functions Used but Not Defined in Either Library:**")
+                for f in undefined_functions:
+                    lines.append(f"  - `{f}()`")
             lines.append("")
 
         
@@ -6563,10 +6994,10 @@ class FunctionComparisonReportGenerator:
             lines.append("")
             lines.append("# Module Documentation Summary")
             lines.append("")
-            lines.append("| Module Path | Undocumented Hooks | Undocumented lia.* Functions | Undocumented Meta Functions |")
-            lines.append("|---|---:|---:|---:|")
+            lines.append("| Module Path | Undocumented Hooks | Undocumented lia.* Functions | Undocumented Meta Functions | Undefined Functions |")
+            lines.append("|---|---:|---:|---:|---:|")
             for entry in modules_scan:
-                lines.append(f"| {entry['module_path']} | {len(entry.get('undoc_hooks', []))} | {len(entry.get('undoc_functions', []))} | {len(entry.get('undoc_meta_functions', []))} |")
+                lines.append(f"| {entry['module_path']} | {len(entry.get('undoc_hooks', []))} | {len(entry.get('undoc_functions', []))} | {len(entry.get('undoc_meta_functions', []))} | {len(entry.get('undefined_functions', []))} |")
             lines.append("")
 
         return lines
@@ -7851,8 +8282,29 @@ class FunctionComparisonReportGenerator:
         return output_file
 
     def save_reports(self, data: CombinedReportData, output_file: str = None) -> List[str]:
-        """Generate the centralized framework report plus one report per detected module."""
-        report_files = [self.save_report(data, output_file)]
+        """Generate the framework report plus a report inside every module root."""
+        # The framework report must not contain Sam Module findings.  Keep the
+        # cross-library analysis correct in the full snapshot, but scope this
+        # artifact to the framework before writing it.
+        framework_data = self._scope_data_to_path(data, self.base_path)
+        framework_data.modules_scan = []
+        framework_data.module_net_messages_misregistered = []
+        framework_data.module_net_messages_undefined = []
+        framework_data.net_messages_direction_issues = [
+            issue for issue in data.net_messages_direction_issues
+            if any(self._path_is_within_module(site.get("file"), self.base_path)
+                   for site in (issue.get("sender_sites", []) + issue.get("receiver_sites", [])))
+        ]
+        framework_data.module_file_placement_issues = [
+            issue for issue in framework_data.module_file_placement_issues
+            if not issue.get("module_path")
+        ]
+        framework_data.module_derma_panels_outside_folder = []
+        framework_data.modules_data = [
+            entry for entry in (data.modules_data or [])
+            if not entry.get("module_path") or self._path_is_within_module(entry.get("module_path"), self.base_path)
+        ]
+        report_files = [self.save_report(framework_data, output_file)]
         reports_dir = self._get_reports_dir()
         reports_dir.mkdir(parents=True, exist_ok=True)
 
@@ -7861,7 +8313,10 @@ class FunctionComparisonReportGenerator:
                 continue
 
             scoped_data = self._build_scoped_report_data(data, target)
-            output_path = reports_dir / f"{target.report_name}.md"
+            # Module reports belong with the module they describe.  This also
+            # prevents same-named modules in different roots from colliding.
+            output_path = target.module_path / "comparison_report.md"
+            output_path.parent.mkdir(parents=True, exist_ok=True)
             report = self.generate_markdown_report(scoped_data)
             with open(output_path, 'w', encoding='utf-8') as f:
                 f.write(report)
@@ -8176,12 +8631,17 @@ class DashboardState:
             self._log(f"[dashboard] analysis snapshot published in {duration_ms} ms")
 
             try:
-                report_file = generator.save_report(data)
-                snapshot["metadata"]["report_files"] = [report_file]
+                # Export the framework report and one Markdown report for every
+                # detected external module/submodule.  The dashboard used to
+                # call save_report() here, which silently produced only
+                # lilia.md even though save_reports() already supported the
+                # per-module export behavior.
+                report_files = generator.save_reports(data)
+                snapshot["metadata"]["report_files"] = report_files
                 with self.lock:
                     self.snapshot = snapshot
                     self.snapshot_json = safe_json(snapshot)
-                self._log(f"[dashboard] report exported: {report_file}")
+                self._log(f"[dashboard] reports exported: {len(report_files)} files")
             except Exception as report_error:
                 self._log(f"[dashboard] report export skipped: {report_error}")
         except Exception:
@@ -8485,6 +8945,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sams-modules-path", action="append", default=None, help="Path to a Sam's Modules folder. Can be provided more than once.")
     parser.set_defaults(include_modules=True)
     parser.add_argument("--open-browser", action="store_true", help="Open the dashboard in the default web browser after startup.")
+    parser.add_argument(
+        "--export-reports",
+        action="store_true",
+        help="Generate lilia.md and one Markdown report per detected module, then exit.",
+    )
     parser.add_argument("--quiet", "-q", action="store_true", help="Reduce console logging.")
     return parser.parse_args()
 
@@ -8495,6 +8960,21 @@ def main():
     docs_path = Path(args.docs_path)
     language_file = Path(args.language_file)
     modules_paths = [Path(path) for path in (args.sams_modules_path or [DEFAULT_SAMS_MODULES_PATH])]
+
+    if args.export_reports:
+        generator = FunctionComparisonReportGenerator(
+            base_path=str(base_path),
+            docs_path=str(docs_path),
+            language_file=str(language_file),
+            modules_paths=[str(path) for path in modules_paths] if args.include_modules else [],
+            generate_module_docs=args.include_modules,
+        )
+        data = generator.run_all_analyses()
+        report_files = generator.save_reports(data)
+        print(f"[dashboard] exported {len(report_files)} Markdown reports:")
+        for report_file in report_files:
+            print(f"  {report_file}")
+        return
 
     state = DashboardState(
         base_path=base_path,
