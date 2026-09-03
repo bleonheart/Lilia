@@ -26,6 +26,81 @@ function PANEL:getItem()
     return self.itemTable
 end
 
+--[[
+    Hooks:
+        ItemPaintOver(Panel panel, Item|nil itemTable, number w, number h)
+
+    Purpose:
+        Runs after an item icon panel finishes its normal paint pass so modules can draw extra overlays.
+
+    Category:
+        Inventory
+
+    Parameters:
+        panel (Panel)
+            The item icon panel being painted.
+
+        itemTable (Item|nil)
+            The item instance assigned to the panel, when available.
+
+        w (number)
+            The width of the item panel.
+
+        h (number)
+            The height of the item panel.
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        hook.Add("ItemPaintOver", "liaExampleItemPaintOver", function(panel, itemTable, w, h)
+            if itemTable and itemTable:getData("favorite") then
+                draw.SimpleText("*", "DermaDefaultBold", w - 8, 4, color_white, TEXT_ALIGN_RIGHT)
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        OnCreateItemInteractionMenu(Panel panel, Panel menu, Item itemTable)
+
+    Purpose:
+        Runs before the default item interaction options are added so modules can customize or replace the context menu.
+
+    Category:
+        Inventory
+
+    Parameters:
+        panel (Panel)
+            The item icon panel that opened the menu.
+
+        menu (Panel)
+            The newly created derma menu instance.
+
+        itemTable (Item)
+            The item whose interaction menu is being built.
+
+    Returns:
+        boolean|nil
+            Return true to stop the default menu population. Returning nil allows the standard item actions to be added.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnCreateItemInteractionMenu", "liaExampleOnCreateItemInteractionMenu", function(panel, menu, itemTable)
+            if itemTable.uniqueID == "badge" then
+                menu:AddOption("Inspect Badge", function() print(itemTable:getName()) end)
+                return true
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
 function PANEL:Init()
     self:Droppable("inv")
     self:SetSize(64, 64)
@@ -82,9 +157,9 @@ end
 
 function PANEL:openActionMenu()
     local itemTable = self.itemTable
-    assert(itemTable, "Cannot open action menu for invalid item")
+    assert(itemTable, L("invalidActionMenuItem"))
     itemTable.player = LocalPlayer()
-    local menu = DermaMenu()
+    local menu = lia.derma.dermaMenu()
     if hook.Run("OnCreateItemInteractionMenu", self, menu, itemTable) then
         if IsValid(menu) then menu:Remove() end
         return
@@ -94,7 +169,7 @@ function PANEL:openActionMenu()
         if hook.Run("CanRunItemAction", itemTable, k) == false or isfunction(v.onCanRun) and not v.onCanRun(itemTable) then continue end
         local isMulti = v.isMulti or (v.multiOptions and (istable(v.multiOptions) or isfunction(v.multiOptions)))
         if isMulti then
-            local subMenu = menu:AddSubMenu(v.name or k, buildActionFunc(v, k, itemTable), v.icon or "icon16/brick.png")
+            local subMenu = menu:AddSubMenu(L(v.name or k), buildActionFunc(v, k, itemTable), v.icon or "icon16/brick.png")
             local options = v.multiOptions
             if isfunction(options) then options = options(itemTable, LocalPlayer()) end
             if not options then return end
@@ -105,7 +180,7 @@ function PANEL:openActionMenu()
                         onRun = optionFunc
                     }
 
-                    subMenu:AddOption(optionKey, buildActionFunc(v, k, itemTable, subOption, optionKey), "icon16/brick.png")
+                    subMenu:AddOption(L(optionKey), buildActionFunc(v, k, itemTable, subOption, optionKey), "icon16/brick.png")
                 elseif istable(optionFunc) then
                     if isfunction(optionFunc[2]) and not optionFunc[2](itemTable, LocalPlayer()) then continue end
                     local subOption = {
@@ -114,13 +189,13 @@ function PANEL:openActionMenu()
                         icon = optionFunc.icon
                     }
 
-                    subMenu:AddOption(subOption.name, buildActionFunc(v, k, itemTable, subOption, optionKey), subOption.icon or "icon16/brick.png")
+                    subMenu:AddOption(L(subOption.name), buildActionFunc(v, k, itemTable, subOption, optionKey), subOption.icon or "icon16/brick.png")
                 else
-                    subMenu:AddOption(optionFunc.name or "subOption", buildActionFunc(v, k, itemTable, optionFunc), optionFunc.icon or "icon16/brick.png")
+                    subMenu:AddOption(L(optionFunc.name or "subOption"), buildActionFunc(v, k, itemTable, optionFunc), optionFunc.icon or "icon16/brick.png")
                 end
             end
         else
-            menu:AddOption(v.name or k, buildActionFunc(v, k, itemTable), v.icon or "icon16/brick.png")
+            menu:AddOption(L(v.name or k), buildActionFunc(v, k, itemTable), v.icon or "icon16/brick.png")
         end
     end
 
@@ -137,7 +212,7 @@ function PANEL:setItemType(itemTypeOrID)
         self.itemType = itemTypeOrID
     end
 
-    assert(item, string.format("Invalid item type or ID %s", item and item.name or itemTypeOrID))
+    assert(item, L("invalidItemTypeOrID", item and item.name or itemTypeOrID))
     self.liaToolTip = true
     self.itemTable = item
     self:SetModel(item:getModel())

@@ -87,14 +87,14 @@ end
 function MODULE:PlayerInitialSpawn(client)
     lia.log.add(client, "playerInitialSpawn")
     local steam64 = IsValid(client) and client:SteamID64() or ""
-    local message = string.format("Player %s (Steam64ID: %s) has joined the server.", client:Name(), steam64)
+    local message = L("staffLogPlayerJoined", client:Name(), steam64)
     StaffAddTextShadowed(Color(0, 200, 0), "JOIN", Color(255, 255, 255), message)
 end
 
 function MODULE:PlayerDisconnected(client)
     lia.log.add(client, "playerDisconnected")
     local steam64 = IsValid(client) and client:SteamID64() or ""
-    local message = string.format("Player %s (Steam64ID: %s) has left the server.", client:Name(), steam64)
+    local message = L("staffLogPlayerLeft", client:Name(), steam64)
     StaffAddTextShadowed(Color(128, 128, 128), "LEAVE", Color(255, 255, 255), message)
 end
 
@@ -165,7 +165,7 @@ function MODULE:CanTool(client, trace, tool)
 end
 
 function MODULE:OnPlayerObserve(client, state)
-    lia.log.add(client, "observeToggle", state and "Enabled" or "Disabled")
+    lia.log.add(client, "observeToggle", state and L("enabled") or L("disabled"))
 end
 
 function MODULE:WarningIssued(admin, target, reason, severity, index)

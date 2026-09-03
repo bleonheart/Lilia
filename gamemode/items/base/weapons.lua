@@ -12,7 +12,7 @@ function ITEM.postHooks:drop()
     local client = self.player
     if not client or not IsValid(client) then return end
     if client:HasWeapon(self.class) then
-        client:notifyError("You cannot drop this weapon while it's equipped.")
+        client:notifyErrorLocalized("invalidWeapon")
         client:StripWeapon(self.class)
     end
 end
@@ -21,7 +21,7 @@ ITEM:hook("drop", function(item)
     local client = item.player
     if not client or not IsValid(client) then return false end
     if IsValid(client:GetRagdollEntity()) then
-        client:notifyError("You cannot do that while ragdolled.")
+        client:notifyErrorLocalized("noRagdollAction")
         return false
     end
 
@@ -44,7 +44,7 @@ ITEM.functions.Unequip = {
         local client = item.player
         if not client or not IsValid(client) then return false end
         if IsValid(client:GetRagdollEntity()) then
-            client:notifyError("You cannot do that while ragdolled.")
+            client:notifyErrorLocalized("noRagdollAction")
             return false
         end
 
@@ -53,7 +53,7 @@ ITEM.functions.Unequip = {
             item:setData("ammo", weapon:Clip1())
             client:StripWeapon(item.class)
         else
-            lia.error(string.format("Weapon '%s' does not exist", item.class))
+            lia.error(L("weaponDoesNotExist", item.class))
         end
 
         client:EmitSound(item.unequipSound or "items/ammo_pickup.wav", 80)
@@ -72,7 +72,7 @@ ITEM.functions.Equip = {
         local client = item.player
         if not client or not IsValid(client) then return false end
         if IsValid(client:GetRagdollEntity()) then
-            client:notifyError("You cannot do that while ragdolled.")
+            client:notifyErrorLocalized("noRagdollAction")
             return false
         end
 
@@ -80,7 +80,7 @@ ITEM.functions.Equip = {
         if item.weaponCategory then
             for _, v in pairs(items) do
                 if v.id ~= item.id and v.isWeapon and v.weaponCategory == item.weaponCategory and v:getData("equip") then
-                    client:notifyError("You already have a weapon equipped in that slot.")
+                    client:notifyErrorLocalized("weaponSlotFilled")
                     return false
                 end
             end
@@ -96,7 +96,7 @@ ITEM.functions.Equip = {
             weapon:SetClip1(item:getData("ammo", 0))
             if item.onEquipWeapon then item:onEquipWeapon(client, weapon) end
         else
-            lia.error(string.format("Weapon '%s' does not exist", item.class))
+            lia.error(L("weaponDoesNotExist", item.class))
         end
         return false
     end,
@@ -117,7 +117,7 @@ function ITEM:onLoadout()
             client:RemoveAmmo(weapon:Clip1(), weapon:GetPrimaryAmmoType())
             weapon:SetClip1(self:getData("ammo", 0))
         else
-            lia.error(string.format("Weapon '%s' does not exist", self.class))
+            lia.error(L("weaponDoesNotExist", self.class))
         end
     end
 end
@@ -132,7 +132,7 @@ end
 if CLIENT then
     function ITEM:getName()
         local override = lia.item.WeaponOverrides and lia.item.WeaponOverrides[self.class]
-        if override and override.name then return isstring(override.name) and override.name or override.name end
+        if override and override.name then return isstring(override.name) and L(override.name) or override.name end
         local weapon = weapons.GetStored(self.class)
         if weapon and weapon.PrintName then return language.GetPhrase(weapon.PrintName) end
         return self.name

@@ -1,308 +1,936 @@
-﻿MODULE.Name = "Administration"
+﻿--[[
+    Hooks:
+        CharListColumns(columns)
+
+    Purpose:
+        Allows code to add extra columns to the administration character list.
+
+    Category:
+        Administration
+
+    Parameters:
+        columns (table)
+            The mutable list of character list column definitions.
+
+    Example Usage:
+        ```lua
+        hook.Add("CharListColumns", "liaExampleCharListColumns", function(columns)
+            columns[#columns + 1] = {
+                name = "SteamID",
+                field = "steamID"
+            }
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        CharListEntry(entry, row)
+
+    Purpose:
+        Allows code to append extra values to a generated character list row before it is sent to clients.
+
+    Category:
+        Administration
+
+    Parameters:
+        entry (table)
+            The character entry data being serialized.
+
+        row (table)
+            The mutable row data that will be sent to the client.
+
+    Example Usage:
+        ```lua
+        hook.Add("CharListEntry", "liaExampleCharListEntry", function(entry, row)
+            if not istable(entry) then return end
+            entry.exampleHandled = true
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        GetAdminESPTarget(ent, client)
+
+    Purpose:
+        Allows clientside code to override which entity should be treated as the admin ESP target.
+
+    Category:
+        Administration
+
+    Parameters:
+        ent (Entity)
+            The entity currently under consideration.
+
+        client (Player)
+            The local player drawing admin ESP.
+
+    Example Usage:
+        ```lua
+        hook.Add("GetAdminESPTarget", "liaExampleGetAdminESPTarget", function(ent, client)
+            if not IsValid(client) then return end
+            print(string.format("[MyModule] handled GetAdminESPTarget for %s", client:Name()))
+        end)
+        ```
+
+    Returns:
+        Entity|false|nil
+            Return a replacement target entity, or false to suppress the current target.
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        OnAdminSystemLoaded(groups, privileges)
+
+    Purpose:
+        Called after the administration system finishes loading usergroups and privileges.
+
+    Category:
+        Administration
+
+    Parameters:
+        groups (table)
+            The registered administration groups.
+
+        privileges (table)
+            The registered privilege definitions.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnAdminSystemLoaded", "liaExampleOnAdminSystemLoaded", function(groups, privileges)
+            print("[MyModule] handled OnAdminSystemLoaded")
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        OnPrivilegeRegistered(privilege)
+
+    Purpose:
+        Called after a new administration privilege is registered.
+
+    Category:
+        Administration
+
+    Parameters:
+        privilege (table)
+            The registered privilege definition.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnPrivilegeRegistered", "liaExampleOnPrivilegeRegistered", function(privilege)
+            print("[MyModule] handled OnPrivilegeRegistered")
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        OnPrivilegeUnregistered(privilege)
+
+    Purpose:
+        Called after an administration privilege is removed.
+
+    Category:
+        Administration
+
+    Parameters:
+        privilege (table)
+            The privilege definition that was removed.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnPrivilegeUnregistered", "liaExampleOnPrivilegeUnregistered", function(privilege)
+            print("[MyModule] handled OnPrivilegeUnregistered")
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        OnSetUsergroup(sid, newGroup, source, player)
+
+    Purpose:
+        Called after the administration system changes a player's usergroup.
+
+    Category:
+        Administration
+
+    Parameters:
+        sid (string)
+            The SteamID being updated.
+
+        newGroup (string)
+            The new usergroup name.
+
+        source (string|nil)
+            The source or provider that triggered the change.
+
+        player (Player|nil)
+            The online player object, if available.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnSetUsergroup", "liaExampleOnSetUsergroup", function(sid, newGroup, source, player)
+            print("[MyModule] handled OnSetUsergroup")
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        OnUsergroupCreated(groupName, groupData)
+
+    Purpose:
+        Called after a new administration usergroup is created.
+
+    Category:
+        Administration
+
+    Parameters:
+        groupName (string)
+            The created usergroup name.
+
+        groupData (table)
+            The stored usergroup definition.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnUsergroupCreated", "liaExampleOnUsergroupCreated", function(groupName, groupData)
+            if not istable(groupData) then return end
+            groupData.exampleHandled = true
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        OnUsergroupPermissionsChanged(groupName, groupData)
+
+    Purpose:
+        Called after a usergroup's permissions are changed.
+
+    Category:
+        Administration
+
+    Parameters:
+        groupName (string)
+            The updated usergroup name.
+
+        groupData (table)
+            The updated usergroup definition.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnUsergroupPermissionsChanged", "liaExampleOnUsergroupPermissionsChanged", function(groupName, groupData)
+            if not istable(groupData) then return end
+            groupData.exampleHandled = true
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        OnUsergroupRemoved(groupName)
+
+    Purpose:
+        Called after an administration usergroup is removed.
+
+    Category:
+        Administration
+
+    Parameters:
+        groupName (string)
+            The removed usergroup name.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnUsergroupRemoved", "liaExampleOnUsergroupRemoved", function(groupName)
+            print("[MyModule] handled OnUsergroupRemoved")
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        OnUsergroupRenamed(oldName, newName)
+
+    Purpose:
+        Called after an administration usergroup is renamed.
+
+    Category:
+        Administration
+
+    Parameters:
+        oldName (string)
+            The previous usergroup name.
+
+        newName (string)
+            The new usergroup name.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnUsergroupRenamed", "liaExampleOnUsergroupRenamed", function(oldName, newName)
+            print("[MyModule] handled OnUsergroupRenamed")
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        PlayerGagged(target, admin)
+
+    Purpose:
+        Called after a player is gagged.
+
+    Category:
+        Administration
+
+    Parameters:
+        target (Player)
+            The player who was gagged.
+
+        admin (Player)
+            The admin who applied the gag.
+
+    Example Usage:
+        ```lua
+        hook.Add("PlayerGagged", "liaExamplePlayerGagged", function(target, admin)
+            if not IsValid(target) then return end
+            print(string.format("[MyModule] handled PlayerGagged for %s", target:Name()))
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        PlayerMuted(target, admin)
+
+    Purpose:
+        Called after a player is muted.
+
+    Category:
+        Administration
+
+    Parameters:
+        target (Player)
+            The player who was muted.
+
+        admin (Player)
+            The admin who applied the mute.
+
+    Example Usage:
+        ```lua
+        hook.Add("PlayerMuted", "liaExamplePlayerMuted", function(target, admin)
+            if not IsValid(target) then return end
+            print(string.format("[MyModule] handled PlayerMuted for %s", target:Name()))
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        PlayerUngagged(target, admin)
+
+    Purpose:
+        Called after a player is ungagged.
+
+    Category:
+        Administration
+
+    Parameters:
+        target (Player)
+            The player who was ungagged.
+
+        admin (Player)
+            The admin who removed the gag.
+
+    Example Usage:
+        ```lua
+        hook.Add("PlayerUngagged", "liaExamplePlayerUngagged", function(target, admin)
+            if not IsValid(target) then return end
+            print(string.format("[MyModule] handled PlayerUngagged for %s", target:Name()))
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        PlayerUnmuted(target, admin)
+
+    Purpose:
+        Called after a player is unmuted.
+
+    Category:
+        Administration
+
+    Parameters:
+        target (Player)
+            The player who was unmuted.
+
+        admin (Player)
+            The admin who removed the mute.
+
+    Example Usage:
+        ```lua
+        hook.Add("PlayerUnmuted", "liaExamplePlayerUnmuted", function(target, admin)
+            if not IsValid(target) then return end
+            print(string.format("[MyModule] handled PlayerUnmuted for %s", target:Name()))
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        RunAdminSystemCommand(cmd, victim, dur, reason)
+
+    Purpose:
+        Allows clientside code to handle an admin command before the chat-command fallback runs.
+
+    Category:
+        Administration
+
+    Parameters:
+        cmd (string)
+            The admin command being executed.
+
+        victim (Player|string)
+            The target player or identifier.
+
+        dur (number|nil)
+            The optional duration for timed commands.
+
+        reason (string|nil)
+            The optional reason text supplied with the command.
+
+    Example Usage:
+        ```lua
+        hook.Add("RunAdminSystemCommand", "liaExampleRunAdminSystemCommand", function(cmd, victim, dur, reason)
+            if cmd == "goto" and victim then
+                return true, function()
+                    chat.AddText(Color(255, 200, 0), "Opening a custom goto confirmation for ", tostring(victim))
+                end
+            end
+        end)
+        ```
+
+    Returns:
+        boolean|nil, function|nil
+            Return true and a callback to handle the command through the hook.
+
+    Realm:
+        Client
+]]
+MODULE.Name = "@categoryAdministration"
 MODULE.author = "Samael"
-MODULE.discord = "liliaplayer"
-MODULE.desc = "Provides comprehensive administration tools and staff management features."
-MODULE.NetworkStrings = {"liaFeaturePositions", "liaFeaturePositionsRequest", "liaFullCharListPage", "liaManagesitroomsAction", "liaMapEntities", "liaMapEntityAction", "liaModifyCharacterFlags", "liaOnlineStaffData", "liaRequestFullCharListPage", "liaRequestMapEntities", "liaRequestStaffCases", "liaRequestToolPermissionTiers", "liaRequestStaffCharacterConfiguration", "liaSetFeaturePosition", "liaSetStaffCharacterFlag", "liaSetStaffCharacterPermission", "liaSetToolPermissionTier", "liaSetToolPermissionTiersBatch", "liaResetStaffCharacterConfiguration", "liaResetToolPermissionTiers", "liaSpawnMenuGiveItem", "liaSpawnMenuSpawnItem", "liaStaffCasesSnapshot", "liaStaffCharacterConfiguration", "liaToolPermissionTiers", "liaBodygrouperMenu", "liaBodygrouperMenuClose", "liaBodygrouperMenuCloseClientside", "liaSeeModelTable", "liaWardrobeChangeModel",}
+MODULE.discord = "@liliaplayer"
+MODULE.desc = "@administrationToolsDescription"
+MODULE.NetworkStrings = {"liaAdminSetCharProperty", "liaAllFlags", "liaAllPks", "liaAllPlayers", "liaFeaturePositions", "liaFeaturePositionsRequest", "liaFullCharList", "liaFullCharListPage", "liaManagesitroomsAction", "liaMapEntities", "liaMapEntityAction", "liaModifyCharacterFlags", "liaNetProfilerLogs", "liaNetProfilerSnapshot", "liaOnlineStaffData", "liaPksCount", "liaRequestAllFlags", "liaRequestFullCharList", "liaRequestFullCharListPage", "liaRequestMapEntities", "liaRequestNetProfilerLogs", "liaRequestNetProfilerSnapshot", "liaRequestPksCount", "liaRequestPlayers", "liaRequestStaffCases", "liaRequestStaffSummary", "liaRequestToolPermissionTiers", "liaRequestStaffCharacterConfiguration", "liaSetFeaturePosition", "liaSetStaffCharacterFlag", "liaSetStaffCharacterPermission", "liaSetToolPermissionTier", "liaSetToolPermissionTiersBatch", "liaResetStaffCharacterConfiguration", "liaResetToolPermissionTiers", "liaSpawnMenuGiveItem", "liaSpawnMenuSpawnItem", "liaStaffCasesSnapshot", "liaStaffCharacterConfiguration", "liaStaffSummary", "liaToolPermissionTiers",}
 MODULE.Privileges = {
     ["ManageWeaponOverrides"] = {
-        Name = "Manage Weapon Overrides",
+        Name = "@ManageWeaponOverrides",
         MinAccess = "superadmin",
-        Category = "Staff: Items",
-    },
-    ["canSeeAltingNotifications"] = {
-        Name = "Can See Alting Notifications",
-        MinAccess = "admin",
-        Category = "Exploiting",
+        Category = "@categoryStaffItems",
     },
     ["canUseItemSpawner"] = {
-        Name = "Can Use Item Spawner",
+        Name = "@canUseItemSpawner",
         MinAccess = "admin",
-        Category = "Staff: Items",
+        Category = "@categoryStaffItems",
     },
     ["managePropBlacklist"] = {
-        Name = "Manage Prop Blacklist",
+        Name = "@managePropBlacklist",
         MinAccess = "superadmin",
-        Category = "Blacklisting",
+        Category = "@categoryBlacklisting",
     },
     ["staffHUD"] = {
-        Name = "Staff HUD",
+        Name = "@staffHUD",
         MinAccess = "superadmin",
         Category = "developmentHUD",
     },
     ["developmentHUD"] = {
-        Name = "Development HUD",
+        Name = "@developmentHUD",
         MinAccess = "superadmin",
         Category = "developmentHUD",
     },
     ["manageBodygroups"] = {
-        Name = "Manage Bodygroups",
+        Name = "@manageBodygroups",
         MinAccess = "admin",
         Category = "bodygroups",
     },
     ["changeBodygroups"] = {
-        Name = "Change Bodygroups",
-        Description = "Allows access to changing another player's bodygroups.",
+        Name = "@changeBodygroupsPrivilege",
+        Description = "@changeBodygroupsPrivilegeDesc",
         MinAccess = "admin",
         Category = "bodygroups",
     },
     ["manageVehicleBlacklist"] = {
-        Name = "Manage Vehicle Blacklist",
+        Name = "@manageVehicleBlacklist",
         MinAccess = "superadmin",
-        Category = "Blacklisting",
+        Category = "@categoryBlacklisting",
     },
     ["accessEditConfigurationMenu"] = {
-        Name = "Access Edit Configuration Menu",
+        Name = "@accessEditConfigurationMenu",
         MinAccess = "superadmin",
-        Category = "User Interface",
+        Category = "@userInterface",
     },
     ["manageUsergroups"] = {
-        Name = "Manage Permissions",
+        Name = "@manageUsergroups",
         MinAccess = "superadmin",
-        Category = "Usergroups",
+        Category = "@categoryUsergroups",
     },
     ["viewStaffManagement"] = {
-        Name = "View Staff Management",
+        Name = "@viewStaffManagement",
         MinAccess = "superadmin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
     },
-    ["canAccessScoreboardAdminOptions"] = {
-        Name = "Can Access Scoreboard Admin Options",
-        MinAccess = "admin",
-        Category = "User Interface",
+    ["viewNetProfiler"] = {
+        Name = "View Net Logs",
+        Description = "Allows viewing, filtering, sorting, and paging through network message usage from the admin menu.",
+        MinAccess = "superadmin",
+        Category = "@categoryServer",
     },
-    ["canAccessScoreboardInfoOutOfStaff"] = {
-        Name = "Can Access Scoreboard Info Out Of Staff",
+    ["canAccessPlayerList"] = {
+        Name = "@canAccessPlayerList",
         MinAccess = "admin",
-        Category = "User Interface",
+        Category = "@players",
     },
     ["listCharacters"] = {
-        Name = "List Characters",
+        Name = "@listCharacters",
         MinAccess = "admin",
-        Category = "Character",
+        Category = "@character",
+    },
+    ["canAccessFlagManagement"] = {
+        Name = "@canAccessFlagManagement",
+        MinAccess = "superadmin",
+        Category = "@flags",
     },
     ["createStaffCharacter"] = {
-        Name = "Create Staff Character",
+        Name = "@createStaffCharacter",
         MinAccess = "admin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
     },
     ["canBypassSAMFactionWhitelist"] = {
-        Name = "Can Bypass Staff Faction SAM Command whitelist",
+        Name = "@canBypassSAMFactionWhitelist",
         MinAccess = "superadmin",
-        Category = "SAM | Admin Mod",
+        Category = "@categorySAM",
     },
     ["canEditSimfphysCars"] = {
-        Name = "Can Edit Simfphys Cars",
+        Name = "@canEditSimfphysCars",
         MinAccess = "superadmin",
-        Category = "Simfphys Vehicles",
+        Category = "@simfphysVehicles",
     },
     ["canSeeSAMNotificationsOutsideStaff"] = {
-        Name = "Can See SAM Notifications Outside Staff Character",
+        Name = "@canSeeSAMNotificationsOutsideStaff",
         MinAccess = "superadmin",
-        Category = "SAM | Admin Mod",
+        Category = "@categorySAM",
     },
     ["checkInventories"] = {
-        Name = "Check Inventories",
+        Name = "@checkInventories",
         MinAccess = "admin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
+    },
+    ["manageAttributes"] = {
+        Name = "@manageAttributes",
+        MinAccess = "admin",
+        Category = "@categoryStaffManagement",
     },
     ["manageCharacterInformation"] = {
-        Name = "Manage Character Information",
+        Name = "@manageCharacterInformation",
         MinAccess = "admin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
     },
     ["manageCharacters"] = {
-        Name = "Manage Characters",
+        Name = "@manageCharacters",
         MinAccess = "admin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
+    },
+    ["manageClasses"] = {
+        Name = "@manageClasses",
+        MinAccess = "admin",
+        Category = "@categoryStaffManagement",
     },
     ["manageDoors"] = {
-        Name = "Manage Doors",
+        Name = "@manageDoors",
         MinAccess = "admin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
     },
     ["manageFlags"] = {
-        Name = "Manage Flags",
+        Name = "@manageFlags",
         MinAccess = "admin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
     },
     ["manageSitRooms"] = {
-        Name = "Manage Administration Rooms",
+        Name = "@manageSitRooms",
         MinAccess = "admin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
     },
     ["manageTransfers"] = {
-        Name = "Manage Transfers",
+        Name = "@manageTransfers",
         MinAccess = "admin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
+    },
+    ["receiveCheaterNotifications"] = {
+        Name = "@receiveCheaterNotifications",
+        MinAccess = "admin",
+        Category = "@exploiting",
     },
     ["viewEntityTab"] = {
-        Name = "View Entity Tab",
+        Name = "@viewEntityTab",
         MinAccess = "admin",
-        Category = "Exploiting",
+        Category = "@exploiting",
     },
     ["stopSoundForEveryone"] = {
-        Name = "Stop Sound For Everyone",
+        Name = "@stopSoundForEveryone",
         MinAccess = "superadmin",
-        Category = "Server",
+        Category = "@categoryServer",
     },
     ["useDisallowedTools"] = {
-        Name = "Use Disallowed Tools",
+        Name = "@useDisallowedTools",
         MinAccess = "superadmin",
-        Category = "Staff: Tools",
+        Category = "@categoryStaffTools",
     },
     ["canBypassCharacterLock"] = {
-        Name = "Can Bypass Character Lock",
+        Name = "@canBypassCharacterLock",
         MinAccess = "superadmin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
     },
     ["canGrabWorldProps"] = {
-        Name = "Can Grab World Props",
+        Name = "@canGrabWorldProps",
         MinAccess = "superadmin",
-        Category = "Staff: Physgun",
+        Category = "@categoryStaffPhysgun",
     },
     ["canGrabPlayers"] = {
-        Name = "Can Grab Players",
+        Name = "@canGrabPlayers",
         MinAccess = "superadmin",
-        Category = "Staff: Physgun",
+        Category = "@categoryStaffPhysgun",
     },
     ["physgunPickup"] = {
-        Name = "Physgun Pickup",
+        Name = "@physgunPickup",
         MinAccess = "admin",
-        Category = "Staff: Physgun",
+        Category = "@categoryStaffPhysgun",
+    },
+    ["canAccessItemInformations"] = {
+        Name = "@canAccessItemInformations",
+        MinAccess = "superadmin",
+        Category = "@categoryStaffItems",
     },
     ["physgunPickupRestrictedEntities"] = {
-        Name = "Physgun Pickup on Restricted Entities",
+        Name = "@physgunPickupRestrictedEntities",
         MinAccess = "superadmin",
-        Category = "Staff: Physgun",
+        Category = "@categoryStaffPhysgun",
     },
     ["physgunPickupVehicles"] = {
-        Name = "Physgun Pickup on Vehicles",
+        Name = "@physgunPickupVehicles",
         MinAccess = "admin",
-        Category = "Staff: Physgun",
+        Category = "@categoryStaffPhysgun",
     },
     ["cantBeGrabbedPhysgun"] = {
-        Name = "Can't be Grabbed with PhysGun",
+        Name = "@cantBeGrabbedPhysgun",
         MinAccess = "superadmin",
-        Category = "Staff: Protection",
+        Category = "@categoryStaffProtection",
     },
     ["canPhysgunReload"] = {
-        Name = "Can Physgun Reload",
+        Name = "@canPhysgunReload",
         MinAccess = "superadmin",
-        Category = "Staff: Physgun",
+        Category = "@categoryStaffPhysgun",
     },
     ["noClipOutsideStaff"] = {
-        Name = "Noclip Outside Staff Character",
+        Name = "@noClipOutsideStaff",
         MinAccess = "superadmin",
-        Category = "Staff: Movement",
+        Category = "@categoryStaffMovement",
     },
     ["noClipESPOffsetStaff"] = {
-        Name = "Noclip ESP Outside Staff Character",
+        Name = "@noClipESPOffsetStaff",
         MinAccess = "superadmin",
-        Category = "User Interface",
-    },
-    ["canUsePAC3"] = {
-        Name = "Can Use PAC3",
-        MinAccess = "admin",
-        Category = "Compatibility",
+        Category = "@userInterface",
     },
     ["canPropertyWorldEntities"] = {
-        Name = "Can Property World Entities",
+        Name = "@canPropertyWorldEntities",
         MinAccess = "superadmin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
     },
     ["canSpawnRagdolls"] = {
-        Name = "Can Spawn Ragdolls",
+        Name = "@canSpawnRagdolls",
         MinAccess = "admin",
-        Category = "Spawn Permissions",
+        Category = "@spawnPermissions",
     },
     ["canSpawnSWEPs"] = {
-        Name = "Can Spawn SWEPs",
+        Name = "@canSpawnSWEPs",
         MinAccess = "superadmin",
-        Category = "Spawn Permissions",
+        Category = "@spawnPermissions",
+    },
+    ["canEditWeapons"] = {
+        Name = "@canEditWeapons",
+        MinAccess = "superadmin",
+        Category = "@spawnPermissions",
     },
     ["canSpawnEffects"] = {
-        Name = "Can Spawn Effects",
+        Name = "@canSpawnEffects",
         MinAccess = "admin",
-        Category = "Spawn Permissions",
+        Category = "@spawnPermissions",
     },
     ["canSpawnProps"] = {
-        Name = "Can Spawn Props",
+        Name = "@canSpawnProps",
         MinAccess = "admin",
-        Category = "Spawn Permissions",
+        Category = "@spawnPermissions",
     },
     ["canSpawnBlacklistedProps"] = {
-        Name = "Can Spawn Blacklisted Props",
+        Name = "@canSpawnBlacklistedProps",
         MinAccess = "superadmin",
-        Category = "Spawn Permissions",
+        Category = "@spawnPermissions",
     },
     ["canSpawnNPCs"] = {
-        Name = "Can Spawn NPCs",
+        Name = "@canSpawnNPCs",
         MinAccess = "superadmin",
-        Category = "Spawn Permissions",
+        Category = "@spawnPermissions",
     },
     ["noCarSpawnDelay"] = {
-        Name = "No Car Spawn Delay",
+        Name = "@noCarSpawnDelay",
         MinAccess = "superadmin",
-        Category = "Spawn Permissions",
+        Category = "@spawnPermissions",
     },
     ["canSpawnCars"] = {
-        Name = "Can Spawn Cars",
+        Name = "@canSpawnCars",
         MinAccess = "admin",
-        Category = "Spawn Permissions",
+        Category = "@spawnPermissions",
     },
     ["canSpawnBlacklistedCars"] = {
-        Name = "Can Spawn Blacklisted Cars",
+        Name = "@canSpawnBlacklistedCars",
         MinAccess = "superadmin",
-        Category = "Spawn Permissions",
+        Category = "@spawnPermissions",
     },
     ["canSpawnSENTs"] = {
-        Name = "Can Spawn SENTs",
+        Name = "@canSpawnSENTs",
         MinAccess = "admin",
-        Category = "Spawn Permissions",
+        Category = "@spawnPermissions",
     },
     ["canRemoveBlockedEntities"] = {
-        Name = "Can Remove Blocked Entities",
+        Name = "@canRemoveBlockedEntities",
         MinAccess = "admin",
-        Category = "Staff: Blacklisting",
+        Category = "@categoryStaffBlacklisting",
     },
     ["canRemoveWorldEntities"] = {
-        Name = "Can Remove World Entities",
+        Name = "@canRemoveWorldEntities",
         MinAccess = "superadmin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
     },
     ["usePositionTool"] = {
-        Name = "Use Position Tool",
+        Name = "@usePositionTool",
         MinAccess = "superadmin",
-        Category = "Staff: Tools",
+        Category = "@categoryStaffTools",
+    },
+    ["command_ban"] = {
+        Name = "@commandBan",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_kick"] = {
+        Name = "@commandKick",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_kill"] = {
+        Name = "@commandKill",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_freeze"] = {
+        Name = "@commandFreeze",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_unfreeze"] = {
+        Name = "@commandUnfreeze",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_slay"] = {
+        Name = "@commandSlay",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_respawn"] = {
+        Name = "@commandRespawn",
+        MinAccess = "admin",
+        Category = "@commands",
     },
     ["command_blind"] = {
-        Name = "Access to Blind Command",
+        Name = "@commandBlind",
         MinAccess = "admin",
-        Category = "Commands",
+        Category = "@commands",
+    },
+    ["command_unblind"] = {
+        Name = "@commandUnblind",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_gag"] = {
+        Name = "@commandGag",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_ungag"] = {
+        Name = "@commandUngag",
+        MinAccess = "admin",
+        Category = "@commands",
     },
     ["command_mute"] = {
-        Name = "Access to Mute Command",
+        Name = "@commandMute",
         MinAccess = "admin",
-        Category = "Commands",
+        Category = "@commands",
+    },
+    ["command_unmute"] = {
+        Name = "@commandUnmute",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_bring"] = {
+        Name = "@commandBring",
+        MinAccess = "admin",
+        Category = "@commands",
     },
     ["command_goto"] = {
-        Name = "Access to Goto Command",
+        Name = "@commandGoto",
         MinAccess = "admin",
-        Category = "Commands",
+        Category = "@commands",
+    },
+    ["command_return"] = {
+        Name = "@commandReturn",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_jail"] = {
+        Name = "@commandJail",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_unjail"] = {
+        Name = "@commandUnjail",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_cloak"] = {
+        Name = "@commandCloak",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_uncloak"] = {
+        Name = "@commandUncloak",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_god"] = {
+        Name = "@commandGod",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_ungod"] = {
+        Name = "@commandUngod",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_ignite"] = {
+        Name = "@commandIgnite",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_extinguish"] = {
+        Name = "@commandExtinguish",
+        MinAccess = "admin",
+        Category = "@commands",
+    },
+    ["command_strip"] = {
+        Name = "@commandStrip",
+        MinAccess = "admin",
+        Category = "@commands",
     },
     ["canManageNPCs"] = {
-        Name = "Can Manage Dialog NPCs",
+        Name = "@canManageNPCs",
         MinAccess = "admin",
-        Category = "NPCs",
+        Category = "@npcs",
     },
     ["canManageProperties"] = {
-        Name = "Can Manage Properties",
+        Name = "@canManageProperties",
         MinAccess = "superadmin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
     },
     ["seeInsertNotifications"] = {
-        Name = "See Insert Notifications",
+        Name = "@seeInsertNotifications",
         MinAccess = "superadmin",
-        Category = "Staff: Management",
+        Category = "@categoryStaffManagement",
     },
 }

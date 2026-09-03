@@ -3,7 +3,7 @@ AccessorFunc(PANEL, "m_eTarget", "Target")
 local leftrotate, rightrotate = input.LookupBinding("+moveleft"), input.LookupBinding("+moveright")
 local leftinput, rightinput = input.GetKeyCode(leftrotate), input.GetKeyCode(rightrotate)
 function PANEL:GetPreviewEntity()
-    return lia.camera.getEntity(self)
+    return lia.view.getEntity(self)
 end
 
 function PANEL:GetCurrentBodygroups()
@@ -38,15 +38,15 @@ function PANEL:Init()
     self:SetPos(ScrW() - self:GetWide() - 48, math.max(48, (ScrH() - self:GetTall()) * 0.5))
     self:MakePopup()
     self:SetBackgroundBlur(false)
-    self:SetTitle("Bodygroup Editor")
+    self:SetTitle(L("bodygroupMenuTitle"))
     self:DockPadding(8, 32, 8, 8)
     self.previewInfo = self:Add("DPanel")
     self.previewInfo:Dock(TOP)
     self.previewInfo:DockMargin(0, 0, 0, 8)
     self.previewInfo:SetTall(56)
     self.previewInfo.Paint = function(panel, panelWidth, h)
-        local str = string.format("Use %s and %s to rotate the model.", leftrotate:upper(), rightrotate:upper())
-        lia.util.drawText("Bodygroup Editor", panelWidth / 2, 18, Color(255, 255, 255), 1, 1, "LiliaFont.18")
+        local str = L("rotateInstruction", leftrotate:upper(), rightrotate:upper())
+        lia.util.drawText(L("bodygroupMenuTitle"), panelWidth / 2, 18, Color(255, 255, 255), 1, 1, "LiliaFont.18")
         lia.util.drawText(str, panelWidth / 2, 38, Color(220, 220, 220), 1, 1, "LiliaFont.16")
     end
 
@@ -56,7 +56,7 @@ function PANEL:Init()
     self.skinSelector = self.side:Add("liaSlideBox")
     self.skinSelector:Dock(TOP)
     self.skinSelector:DockMargin(0, 0, 0, 5)
-    self.skinSelector:SetText("Skin")
+    self.skinSelector:SetText(L("skin"))
     self.skinSelector:SetRange(0, 0, 0)
     self.skinSelector:SetVisible(false)
     self.skinSelector.OnValueChanged = function(_, value)
@@ -71,18 +71,18 @@ function PANEL:Init()
     self.copyBodygroups = self.actions:Add("liaButton")
     self.copyBodygroups:Dock(LEFT)
     self.copyBodygroups:SetWide(160)
-    self.copyBodygroups:SetText("Copy Bodygroups")
+    self.copyBodygroups:SetText(L("copyBodygroups"))
     self.copyBodygroups.DoClick = function()
         local export = self:BuildBodygroupExport()
         SetClipboardText(export)
         MsgC(Color(0, 255, 0), "[Lilia] ", color_white, export .. "\n")
-        LocalPlayer():notifySuccess("Copied to clipboard.")
+        LocalPlayer():notifySuccessLocalized("copied")
     end
 
     self.submit = self.actions:Add("liaButton")
     self.submit:Dock(FILL)
     self.submit:DockMargin(5, 0, 0, 0)
-    self.submit:SetText("Submit")
+    self.submit:SetText(L("submit"))
     self.submit.DoClick = function()
         local model = self:GetPreviewEntity()
         if IsValid(model) then
@@ -100,7 +100,7 @@ function PANEL:Init()
             end
 
             if makeChange then
-                net.Start("liaBodygrouperMenu")
+                net.Start("BodygrouperMenu")
                 net.WriteEntity(self:GetTarget())
                 net.WriteUInt(skn, 10)
                 net.WriteTable(groups)
@@ -114,9 +114,9 @@ function PANEL:Init()
 end
 
 function PANEL:OnClose()
-    net.Start("liaBodygrouperMenuClose")
+    net.Start("BodygrouperMenuClose")
     net.SendToServer()
-    lia.camera.close(self)
+    lia.view.close(self)
 end
 
 function PANEL:PopulateOptions()
@@ -150,8 +150,8 @@ function PANEL:PopulateOptions()
         local info = self.scroll:Add("DLabel")
         info:Dock(TOP)
         info:DockMargin(0, 10, 0, 0)
-        info:SetText("No bodygroups or skins available for this model.")
-        info:SetFont("LiliaFont.25")
+        info:SetText(L("noBodygroupsnSkins"))
+        info:SetFont("liaMediumFont")
         info:SetTextColor(color_white)
         info:SetContentAlignment(5)
         info:SetWrap(true)
@@ -162,12 +162,12 @@ end
 
 function PANEL:SetTarget(target)
     self.m_eTarget = target
-    lia.camera.begin(self, {
+    lia.view.begin(self, {
         context = target,
         hideEntities = {target, LocalPlayer()}
     })
 
-    lia.camera.setModel(self, target:GetModel(), {
+    lia.view.setModel(self, target:GetModel(), {
         skin = target:GetSkin(),
         bodygroups = lia.util.resolveBodygroups(target, {}),
         context = target
@@ -189,14 +189,14 @@ end
 
 function PANEL:Think()
     if input.IsKeyDown(leftinput) then
-        lia.camera.rotate(self, FrameTime() * 180)
+        lia.view.rotate(self, FrameTime() * 180)
     elseif input.IsKeyDown(rightinput) then
-        lia.camera.rotate(self, FrameTime() * -180)
+        lia.view.rotate(self, FrameTime() * -180)
     end
 end
 
 function PANEL:OnRemove()
-    lia.camera.close(self)
+    lia.view.close(self)
 end
 
 vgui.Register("BodygrouperMenu", PANEL, "liaFrame")

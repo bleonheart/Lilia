@@ -12,6 +12,31 @@ local dividerColor = Color(192, 211, 218, 24)
 local mutedTextColor = Color(160, 180, 188)
 local sectionAccentColor = Color(171, 113, 61)
 local positiveColor = Color(92, 225, 180)
+local function wrap(text, maxWidth, font)
+    surface.SetFont(font)
+    local words, lines, current = {}, {}, ""
+    for word in text:gmatch("%S+") do
+        words[#words + 1] = word
+    end
+
+    for _, word in ipairs(words) do
+        local trial = current == "" and word or current .. " " .. word
+        if select(1, surface.GetTextSize(trial)) > maxWidth then
+            if current == "" then
+                lines[#lines + 1] = word
+            else
+                lines[#lines + 1] = current
+                current = word
+            end
+        else
+            current = trial
+        end
+    end
+
+    if current ~= "" then lines[#lines + 1] = current end
+    return lines
+end
+
 local function tintColor(base, accent, amount, alpha)
     return Color(math.Clamp(base.r + (accent.r - base.r) * amount, 0, 255), math.Clamp(base.g + (accent.g - base.g) * amount, 0, 255), math.Clamp(base.b + (accent.b - base.b) * amount, 0, 255), alpha or base.a)
 end
@@ -57,7 +82,7 @@ local function getPlayerRankText(ply, char)
         end
     end
 
-    if rank == "" then rank = "None" end
+    if rank == "" then rank = L("none") end
     return rank
 end
 
@@ -201,8 +226,8 @@ function PANEL:Init()
     for _, factionInfo in ipairs(sortedFactions) do
         local facID, facData = factionInfo.id, factionInfo.data
         local facColor = team.GetColor(facID)
-        local factionTitle = string.upper(facData.name)
-        local factionSubtitle = facData.scoreboardSubtitle and facData.scoreboardSubtitle or ""
+        local factionTitle = string.upper(L(facData.name))
+        local factionSubtitle = facData.scoreboardSubtitle and L(facData.scoreboardSubtitle) or ""
         local facCat = layout:Add("DCollapsibleCategory")
         facCat:SetLabel("")
         facCat:SetExpanded(true)
@@ -335,7 +360,7 @@ function PANEL:Init()
                             textX = textX + 30
                         end
 
-                        draw.SimpleText(string.upper(clsData.name), "LiliaFont.15b", textX, centerY, tintColor(mutedTextColor, headerClassColor, 0.45, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(string.upper(L(clsData.name)), "LiliaFont.15b", textX, centerY, tintColor(mutedTextColor, headerClassColor, 0.45, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                         local count = IsValid(list) and list:ChildCount() or 0
                         draw.SimpleText(count == 1 and "1 PLAYER" or count .. " PLAYERS", "LiliaFont.16", w - 14, centerY, mutedTextColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
                     end
@@ -350,7 +375,7 @@ function PANEL:Init()
                     classLabel:SetFont("LiliaFont.15b")
                     classLabel:SetTextColor(color_white)
                     classLabel:SetExpensiveShadow(1, Color(0, 0, 0, 170))
-                    classLabel:SetText(string.upper(clsData.name))
+                    classLabel:SetText(string.upper(L(clsData.name)))
                     classLabel:SizeToContents()
                     classLabel:SetMouseInputEnabled(false)
                     classLabel:SetVisible(false)
@@ -482,7 +507,7 @@ function PANEL:addPlayer(ply, parent)
     slot.model:setHidden(slot.lastHidden)
     local initialOpts = {}
     hook.Run("ShowPlayerOptions", ply, initialOpts)
-    if #initialOpts > 0 then slot.model:SetTooltip("Scoreboard Options.") end
+    if #initialOpts > 0 then slot.model:SetTooltip(L("sbOptions")) end
     slot.model.DoClick = function()
         local opts = {}
         hook.Run("ShowPlayerOptions", ply, opts)
@@ -491,7 +516,7 @@ function PANEL:addPlayer(ply, parent)
         frame:SetSize(360, 450)
         frame:Center()
         frame:MakePopup()
-        frame:SetTitle("Scoreboard Options.")
+        frame:SetTitle(L("sbOptions"))
         frame:LiteMode()
         self.playerOptionFrames[#self.playerOptionFrames + 1] = frame
         frame.OnRemove = function()
@@ -523,7 +548,7 @@ function PANEL:addPlayer(ply, parent)
                     surface.DrawTexturedRect(8, (h - 16) * 0.5, 16, 16)
                 end
 
-                draw.SimpleText(option.name, "LiliaFont.17", 32, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(L(option.name), "LiliaFont.17", 32, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             end
 
             button.DoClick = function()
@@ -620,7 +645,14 @@ function PANEL:addPlayer(ply, parent)
 
         local description = hook.Run("ShouldAllowScoreboardOverride", ply, "desc") and hook.Run("GetDisplayedDescription", ply, false) or char:getDesc()
         description = description:gsub("#", "\226\128\139#")
-        local wrapped = lia.util.wrapText(description, math.max(self.desc:GetWide(), 80), "LiliaFont.16", 1, " (...)")
+        local wrapped = wrap(description, math.max(self.desc:GetWide(), 80), "LiliaFont.16")
+        if #wrapped > 1 then
+            wrapped[1] = wrapped[1] .. " (...)"
+            for i = 2, #wrapped do
+                wrapped[i] = nil
+            end
+        end
+
         local finalDescription = table.concat(wrapped, "\n")
         if self.lastDesc ~= finalDescription then
             self.desc:SetText(finalDescription)

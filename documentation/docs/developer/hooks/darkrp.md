@@ -28,7 +28,7 @@ This page documents hooks in the darkrp category.
 ---
 
 <details class="realm-server" id="function-entitykeyvalue">
-<summary><span class="summary-main"><a id="EntityKeyValue"></a>EntityKeyValue(entity, key, value)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/darkrp.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="EntityKeyValue"></a>EntityKeyValue(entity, key, value)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/darkrp.lua#L14" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="entitykeyvalue"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -56,6 +56,37 @@ This page documents hooks in the darkrp category.
 <div style="margin-left: 20px; margin-bottom: 20px;">
 <pre><code class="language-lua">  hook.Add("EntityKeyValue", "liaExampleEntityKeyValue", function(entity, key, value)
       print("[MyModule] handled EntityKeyValue")
+  end)
+</code></pre>
+</div>
+
+</div>
+</details>
+
+---
+
+<details class="realm-shared" id="function-initializedmodules">
+<summary><span class="summary-main"><a id="InitializedModules"></a>InitializedModules()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/darkrp.lua#L47" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<div class="details-content">
+<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="initializedmodules"></a>Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Copies Lilia faction indices into `RPExtraTeams` and assigns each copied faction its DarkRP-compatible team index.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Category</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>DarkRP</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Shared</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<pre><code class="language-lua">  hook.Add("InitializedModules", "liaExampleInitializedModules", function()
+      print("[MyModule] handled InitializedModules")
   end)
 </code></pre>
 </div>

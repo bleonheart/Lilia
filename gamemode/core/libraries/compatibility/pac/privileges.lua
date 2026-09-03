@@ -1,7 +1,0 @@
-﻿if not pac then return end
-lia.admin.registerPrivilege({
-    Name = "Can Use PAC3",
-    ID = "canUsePAC3",
-    MinAccess = "admin",
-    Category = "Compatibility"
-})

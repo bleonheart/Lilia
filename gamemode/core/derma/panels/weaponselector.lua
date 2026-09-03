@@ -39,6 +39,11 @@ local function getOption(name, fallback)
     return fallback
 end
 
+local function getAccent()
+    local theme = lia and lia.color and lia.color.theme
+    return theme and (theme.accent or theme.header or theme.theme) or bronzeFallback
+end
+
 local function withAlpha(color, alphaValue)
     return Color(color.r, color.g, color.b, math.Clamp(alphaValue, 0, 255))
 end
@@ -49,6 +54,61 @@ end
 
 local function drawText(text, font, x, y, color, fraction, alignX, alignY)
     draw.SimpleText(tostring(text or ""), font, x, y, scaled(color, fraction), alignX or TEXT_ALIGN_LEFT, alignY or TEXT_ALIGN_TOP)
+end
+
+local function ellipsize(text, font, maxWidth)
+    text = tostring(text or "")
+    if maxWidth <= 0 then return "" end
+    surface.SetFont(font)
+    if surface.GetTextSize(text) <= maxWidth then return text end
+    local suffix = "..."
+    while #text > 0 and surface.GetTextSize(text .. suffix) > maxWidth do
+        text = text:sub(1, -2)
+    end
+    return text .. suffix
+end
+
+local function wrapText(text, font, maxWidth, maxLines)
+    local lines = {}
+    text = tostring(text or "")
+    maxLines = maxLines or 6
+    if maxWidth <= 0 or maxLines <= 0 or not text:find("%S") then return lines end
+    surface.SetFont(font)
+    local textLines = string.Explode("\n", text)
+    for _, textLine in ipairs(textLines) do
+        local words = string.Explode(" ", textLine)
+        local line = ""
+        for _, word in ipairs(words) do
+            local test = line ~= "" and line .. " " .. word or word
+            if surface.GetTextSize(test) > maxWidth and line ~= "" then
+                lines[#lines + 1] = line
+                line = word
+                if #lines >= maxLines then
+                    lines[#lines] = ellipsize(lines[#lines], font, maxWidth)
+                    return lines
+                end
+            else
+                line = test
+            end
+        end
+
+        if line ~= "" then
+            lines[#lines + 1] = line
+            if #lines >= maxLines then
+                lines[#lines] = ellipsize(lines[#lines], font, maxWidth)
+                return lines
+            end
+        end
+    end
+    return lines
+end
+
+local function appendWrapped(lines, text, font, maxWidth, maxLines)
+    if maxLines <= 0 then return end
+    local wrapped = wrapText(text, font, maxWidth, maxLines)
+    for _, line in ipairs(wrapped) do
+        lines[#lines + 1] = line
+    end
 end
 
 local function getWeaponName(weapon)
@@ -76,19 +136,10 @@ local function buildInfoLines(weapon, maxWidth)
     local lines = {}
     if not IsValid(weapon) then return lines, 0, 19 end
     local maxLines = 5
-    if weapon.Purpose and tostring(weapon.Purpose):find("%S") then
-        local wrapped = lia.util.wrapText("Purpose: " .. tostring(weapon.Purpose), maxWidth, "LiliaFont.17", maxLines - #lines)
-        for _, line in ipairs(wrapped) do
-            lines[#lines + 1] = line
-        end
-    end
-
+    if weapon.Purpose and tostring(weapon.Purpose):find("%S") then appendWrapped(lines, "Purpose: " .. tostring(weapon.Purpose), "LiliaFont.17", maxWidth, maxLines - #lines) end
     if #lines < maxLines and weapon.Instructions and tostring(weapon.Instructions):find("%S") then
         lines[#lines + 1] = "Instructions:"
-        local wrapped = lia.util.wrapText(tostring(weapon.Instructions), maxWidth, "LiliaFont.17", maxLines - #lines)
-        for _, line in ipairs(wrapped) do
-            lines[#lines + 1] = line
-        end
+        appendWrapped(lines, tostring(weapon.Instructions), "LiliaFont.17", maxWidth, maxLines - #lines)
     end
     return lines, #lines > 0 and #lines * 19 or 0, 19
 end
@@ -121,8 +172,8 @@ local function drawEntry(client, weapon, i, selectedIndex, x, y, w, h, infoLines
         surface.DrawRect(x, y, 3, h)
     end
 
-    drawText(lia.util.wrapText(name, textWidth, "LiliaFont.28", 1, "...")[1] or "", "LiliaFont.28", contentX, y + 15, textPrimary, fraction)
-    drawText(lia.util.wrapText(detail, textWidth, "LiliaFont.17", 1, "...")[1] or "", "LiliaFont.17", contentX, y + 45, isActive and accent or textSecondary, fraction)
+    drawText(ellipsize(name, "LiliaFont.28", textWidth), "LiliaFont.28", contentX, y + 15, textPrimary, fraction)
+    drawText(ellipsize(detail, "LiliaFont.17", textWidth), "LiliaFont.17", contentX, y + 45, isActive and accent or textSecondary, fraction)
     draw.RoundedBox(4, slotX, slotY, slotW, slotH, Color(0, 0, 0, 48 * fraction))
     surface.SetDrawColor(accent.r, accent.g, accent.b, (isActive and 145 or 76) * fraction)
     surface.DrawOutlinedRect(slotX, slotY, slotW, slotH)
@@ -180,7 +231,7 @@ local function HUDPaint()
         centerX = screenW * 0.66
     end
 
-    local accent = lia.color.theme.accent or lia.color.theme.maincolor or bronzeFallback
+    local accent = getAccent()
     local visibleCount = math.Clamp(math.floor((screenH - 210) / 92), 3, 7)
     if visibleCount % 2 == 0 then visibleCount = visibleCount - 1 end
     local firstIndex, lastIndex = getVisibleBounds(total, index, visibleCount)

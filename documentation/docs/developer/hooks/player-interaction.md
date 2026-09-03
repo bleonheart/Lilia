@@ -28,7 +28,7 @@ This page documents hooks in the player interaction category.
 ---
 
 <details class="realm-server" id="function-onvoicetypechanged">
-<summary><span class="summary-main"><a id="OnVoiceTypeChanged"></a>OnVoiceTypeChanged(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/playerinteract.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnVoiceTypeChanged"></a>OnVoiceTypeChanged(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/playerinteract.lua#L14" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onvoicetypechanged"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

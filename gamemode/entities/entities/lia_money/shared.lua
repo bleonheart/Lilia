@@ -1,7 +1,7 @@
 ﻿ENT.Type = "anim"
-ENT.PrintName = "Money"
+ENT.PrintName = L("money")
 ENT.Author = "Samael"
-ENT.Contact = "liliaplayer"
+ENT.Contact = "@liliaplayer"
 ENT.Category = "Lilia"
 ENT.Spawnable = false
 ENT.DrawEntityInfo = true

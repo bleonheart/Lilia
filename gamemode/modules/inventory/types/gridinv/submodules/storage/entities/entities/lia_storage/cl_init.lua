@@ -1,13 +1,12 @@
 ﻿local vectorMeta = FindMetaTable("Vector")
 local toScreen = vectorMeta.ToScreen
-local drawTexture = lia.derma.drawSurfaceTexture
 function ENT:onDrawEntityInfo(alpha)
     local locked = self:getNetVar("locked", false)
     local position = toScreen(self:LocalToWorld(self:OBBCenter(self)))
     local x, y = position.x, position.y
     y = y - 20
     local mat = locked and "locked.png" or "unlocked.png"
-    drawTexture(mat, ColorAlpha(color_white, alpha), x - 16, y - 16, 32, 32)
+    lia.util.drawTexture(mat, ColorAlpha(color_white, alpha), x - 16, y - 16, 32, 32)
     local def = self:getStorageInfo()
     if def and def.desc then
         local descText = def.desc

@@ -35,7 +35,7 @@ The entity meta table extends Garry's Mod entities with helpers for custom sound
 ---
 
 <details class="realm-shared" id="function-emitsound">
-<summary><span class="summary-main"><a id="EmitSound"></a>EmitSound(soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/meta/entity.lua#L93" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="EmitSound"></a>EmitSound(soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/meta/entity.lua#L57" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="emitsound"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -75,7 +75,7 @@ The entity meta table extends Garry's Mod entities with helpers for custom sound
 ---
 
 <details class="realm-shared" id="function-isprop">
-<summary><span class="summary-main"><a id="isProp"></a>isProp()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/meta/entity.lua#L150" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="isProp"></a>isProp()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/meta/entity.lua#L114" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="isprop"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -104,7 +104,7 @@ The entity meta table extends Garry's Mod entities with helpers for custom sound
 ---
 
 <details class="realm-shared" id="function-isitem">
-<summary><span class="summary-main"><a id="isItem"></a>isItem()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/meta/entity.lua#L171" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="isItem"></a>isItem()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/meta/entity.lua#L135" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="isitem"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -133,7 +133,7 @@ The entity meta table extends Garry's Mod entities with helpers for custom sound
 ---
 
 <details class="realm-shared" id="function-ismoney">
-<summary><span class="summary-main"><a id="isMoney"></a>isMoney()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/meta/entity.lua#L192" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="isMoney"></a>isMoney()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/meta/entity.lua#L156" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="ismoney"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -162,7 +162,7 @@ The entity meta table extends Garry's Mod entities with helpers for custom sound
 ---
 
 <details class="realm-shared" id="function-issimfphyscar">
-<summary><span class="summary-main"><a id="isSimfphysCar"></a>isSimfphysCar()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/meta/entity.lua#L213" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="isSimfphysCar"></a>isSimfphysCar()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/meta/entity.lua#L177" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="issimfphyscar"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -191,11 +191,16 @@ The entity meta table extends Garry's Mod entities with helpers for custom sound
 ---
 
 <details class="realm-shared" id="function-checkdooraccess">
-<summary><span class="summary-main"><a id="checkDoorAccess"></a>checkDoorAccess(client, access)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/meta/entity.lua#L240" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="checkDoorAccess"></a>checkDoorAccess(client, door, access)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/meta/entity.lua#L240" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="checkdooraccess"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-  <p>Checks whether a player has the requested access level on a door.</p>
+  <p>Allows modules to explicitly grant door access before the normal Lilia door access table is checked.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Category</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Doors</p>
 </div>
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
@@ -205,18 +210,23 @@ The entity meta table extends Garry's Mod entities with helpers for custom sound
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Parameters</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-<p><span class="types"><a class="type" href="/developer/meta/player/">Player</a></span> <span class="parameter">client</span> The player whose access is being checked.</p>
-<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">number</a></span> <span class="parameter">access</span> The minimum door access level to require. Defaults to `DOOR_GUEST`.</p>
+<p><span class="types"><a class="type" href="/developer/meta/player/">Player</a></span> <span class="parameter">client</span> The player attempting to access the door.</p>
+<p><span class="types"><a class="type" href="/developer/meta/entity/">Entity</a></span> <span class="parameter">door</span> The door entity being checked.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">number</a></span> <span class="parameter">access</span> The required access level, such as `DOOR_GUEST` or `DOOR_TENANT`.</p>
 </div>
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Returns</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">boolean</a></span> `true` if the player is allowed to access the door.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">boolean|nil</a></span> Return true to grant access immediately. Returning nil allows the default door access checks to continue.</p>
 </div>
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-<pre><code class="language-lua">  if door:checkDoorAccess(client, DOOR_TENANT) then return end
+<pre><code class="language-lua">  hook.Add("CanPlayerAccessDoor", "liaExampleCanPlayerAccessDoor", function(client, door, access)
+      if access == DOOR_TENANT and client:IsAdmin() then
+          return true
+      end
+  end)
 </code></pre>
 </div>
 

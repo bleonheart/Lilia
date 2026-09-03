@@ -1,4 +1,21 @@
 ﻿local currentCategoryData = {}
+local categoryIcons = {
+    combat = "icon16/brick.png",
+    connections = "icon16/connect.png",
+    factions = "icon16/group.png",
+    admin = "icon16/shield.png",
+    character = "icon16/user.png",
+    world = "icon16/world.png",
+    chat = "icon16/comments.png",
+    cheating = "icon16/eye.png",
+    permissions = "icon16/lock.png",
+    money = "icon16/money.png",
+    vjbase = "icon16/script_code.png",
+    items = "icon16/package.png",
+    tools = "icon16/wrench.png",
+    inventory = "icon16/briefcase.png"
+}
+
 local categoryDescriptions = {
     combat = "Review combat events and damage activity.",
     connections = "Review player connection and disconnection activity.",
@@ -20,6 +37,13 @@ local function normalizeCategory(category)
     return tostring(category or ""):lower():gsub("[^%w]", "")
 end
 
+local function getThemeColors()
+    local theme = lia.color.theme or {}
+    local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
+    local text = theme.text or Color(225, 238, 238)
+    return accent, text
+end
+
 local function drawPanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
@@ -35,7 +59,7 @@ end
 local function getCategoryLabel(category)
     local label = tostring(category or "")
     if label == "" then return "Logs" end
-    local localized = label
+    local localized = L(label)
     if isstring(localized) and localized ~= "" and localized ~= label then return localized end
     return label
 end
@@ -50,6 +74,10 @@ local function getCategoryDescription(category)
     return categoryDescriptions[normalizeCategory(category)] or "Review recorded activity for this category."
 end
 
+local function getCategoryIcon(category)
+    return Material(categoryIcons[normalizeCategory(category)] or "icon16/page_white_text.png", "smooth")
+end
+
 local function styleScrollBar(scrollPanel)
     if not IsValid(scrollPanel) or not IsValid(scrollPanel.VBar) then return end
     local vbar = scrollPanel.VBar
@@ -62,7 +90,7 @@ local function styleScrollBar(scrollPanel)
     vbar.btnUp.Paint = function() end
     vbar.btnDown.Paint = function() end
     vbar.btnGrip.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         drawPanel(1, 0, w - 2, h, 4, Color(accent.r, accent.g, accent.b, 145))
     end
 end
@@ -96,8 +124,8 @@ end
 
 local function openRowMenu(log)
     local menu = DermaMenu()
-    if log.steamID and log.steamID ~= "" then menu:AddOption("Copy Steam ID", function() SetClipboardText(tostring(log.steamID)) end):SetIcon("icon16/page_copy.png") end
-    menu:AddOption("Copy Log Message", function() SetClipboardText(tostring(log.message or "")) end):SetIcon("icon16/page_copy.png")
+    if log.steamID and log.steamID ~= "" then menu:AddOption(L("copySteamID"), function() SetClipboardText(tostring(log.steamID)) end):SetIcon("icon16/page_copy.png") end
+    menu:AddOption(L("copyLogMessage"), function() SetClipboardText(tostring(log.message or "")) end):SetIcon("icon16/page_copy.png")
     menu:Open()
 end
 
@@ -119,7 +147,7 @@ local function createLogTable(parent, categoryData)
     tablePanel:Dock(FILL)
     tablePanel:DockMargin(0, 0, 0, 12)
     tablePanel.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         drawPanel(0, 0, w, h, 7, Color(4, 17, 21, 242), Color(accent.r, accent.g, accent.b, 78))
     end
 
@@ -128,14 +156,14 @@ local function createLogTable(parent, categoryData)
     header:SetTall(42)
     header.cells = {}
     header.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         surface.SetDrawColor(7, 26, 31, 255)
         surface.DrawRect(1, 1, w - 2, h - 1)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 75)
         surface.DrawRect(0, h - 1, w, 1)
     end
 
-    local columnNames = {"Timestamp", "Message", "SteamID"}
+    local columnNames = {L("timestamp"), L("message"), L("steamID")}
     for _, name in ipairs(columnNames) do
         local cell = createCell(header, "LiliaFont.17", Color(225, 236, 236))
         cell:SetText(name)
@@ -158,7 +186,7 @@ local function createLogTable(parent, categoryData)
         row:SetText("")
         row.cells = {}
         row.Paint = function(s, w, h)
-            local accent = lia.color.theme.accent
+            local accent = getThemeColors()
             if s:IsHovered() then
                 surface.SetDrawColor(accent.r, accent.g, accent.b, 18)
             elseif index % 2 == 0 then
@@ -191,7 +219,7 @@ local function createLogTable(parent, categoryData)
         empty:SetFont("LiliaFont.18")
         empty:SetTextColor(Color(145, 165, 165))
         empty:SetContentAlignment(5)
-        empty:SetText("No logs available.")
+        empty:SetText(L("noLogsAvailable"))
     end
     return tablePanel
 end
@@ -203,7 +231,7 @@ local function renderLoading(panel, category)
     title:Dock(TOP)
     title:SetTall(34)
     title:SetFont("LiliaFont.25")
-    title:SetTextColor(lia.color.theme.text)
+    title:SetTextColor(select(2, getThemeColors()))
     title:SetText(getCategoryTitle(category))
     local subtitle = panel.logsContent:Add("DLabel")
     subtitle:Dock(TOP)
@@ -216,7 +244,7 @@ local function renderLoading(panel, category)
     loading:SetFont("LiliaFont.20")
     loading:SetTextColor(Color(150, 170, 170))
     loading:SetContentAlignment(5)
-    loading:SetText("Loading...")
+    loading:SetText(L("loading"))
     panel.loadingLabel = loading
 end
 
@@ -239,7 +267,7 @@ local function renderCategory(panel, category)
     title:Dock(TOP)
     title:SetTall(34)
     title:SetFont("LiliaFont.25")
-    title:SetTextColor(lia.color.theme.text)
+    title:SetTextColor(select(2, getThemeColors()))
     title:SetText(getCategoryTitle(category))
     local subtitle = panel.logsContent:Add("DLabel")
     subtitle:Dock(TOP)
@@ -253,7 +281,7 @@ local function renderCategory(panel, category)
     searchWrap:DockMargin(0, 0, 0, 12)
     searchWrap:DockPadding(42, 0, 10, 0)
     searchWrap.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         drawPanel(0, 0, w, h, 5, Color(4, 17, 21, 245), Color(accent.r, accent.g, accent.b, 82))
         drawIcon(Material("icon16/magnifier.png", "smooth"), 14, math.floor(h * 0.5) - 8, 16, Color(150, 180, 181))
     end
@@ -262,8 +290,8 @@ local function renderCategory(panel, category)
     searchBox:Dock(FILL)
     searchBox:SetFont("LiliaFont.17")
     searchBox:SetTextColor(Color(225, 236, 236))
-    searchBox:SetCursorColor(lia.color.theme.accent)
-    searchBox:SetPlaceholderText("Search logs...")
+    searchBox:SetCursorColor(getThemeColors())
+    searchBox:SetPlaceholderText(L("searchLogs"))
     searchBox:SetPaintBackground(false)
     searchBox:SetPaintBackground(false)
     searchBox:SetPaintBorderEnabled(false)
@@ -277,11 +305,11 @@ local function renderCategory(panel, category)
     previousButton:SetWide(108)
     previousButton:SetText("")
     previousButton.Paint = function(s, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         local disabled = categoryData.currentPage <= 1
         local background = s:IsHovered() and not disabled and Color(accent.r, accent.g, accent.b, 16) or Color(4, 17, 21, 225)
         drawPanel(0, 6, w, h - 12, 5, background, Color(accent.r, accent.g, accent.b, disabled and 28 or 70))
-        draw.SimpleText("Previous", "LiliaFont.16", w * 0.5, h * 0.5, disabled and Color(80, 100, 100) or Color(205, 220, 220), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(L("previousPage"), "LiliaFont.16", w * 0.5, h * 0.5, disabled and Color(80, 100, 100) or Color(205, 220, 220), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     local pageLabel = pagination:Add("DLabel")
@@ -289,17 +317,17 @@ local function renderCategory(panel, category)
     pageLabel:SetFont("LiliaFont.16")
     pageLabel:SetTextColor(Color(210, 224, 224))
     pageLabel:SetContentAlignment(5)
-    pageLabel:SetText(string.format("Page %d of %d", categoryData.currentPage, categoryData.totalPages))
+    pageLabel:SetText(L("pageIndicator", categoryData.currentPage, categoryData.totalPages))
     local nextButton = pagination:Add("DButton")
     nextButton:Dock(RIGHT)
     nextButton:SetWide(108)
     nextButton:SetText("")
     nextButton.Paint = function(s, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         local disabled = categoryData.currentPage >= categoryData.totalPages
         local background = s:IsHovered() and not disabled and Color(accent.r, accent.g, accent.b, 16) or Color(4, 17, 21, 225)
         drawPanel(0, 6, w, h - 12, 5, background, Color(accent.r, accent.g, accent.b, disabled and 28 or 70))
-        draw.SimpleText("Next", "LiliaFont.16", w * 0.5, h * 0.5, disabled and Color(80, 100, 100) or Color(205, 220, 220), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(L("next"), "LiliaFont.16", w * 0.5, h * 0.5, disabled and Color(80, 100, 100) or Color(205, 220, 220), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     local function rebuildTable()
@@ -336,8 +364,9 @@ function MODULE:CreateMenuButtons(tabs)
     if not IsValid(client) then return end
     local canSeeLogs = client:hasPrivilege("canSeeLogs")
     if canSeeLogs then
-        tabs["Logs"] = {
-            name = "Logs",
+        tabs["@logs"] = {
+            name = "@logs",
+            icon = "icon16/book_open.png",
             func = openLogsPanel
         }
     end
@@ -354,7 +383,7 @@ function MODULE:CreateLogsUI(panel, categories)
     if not categories or #categories == 0 then
         local noLogsLabel = panel:Add("DLabel")
         noLogsLabel:Dock(FILL)
-        noLogsLabel:SetText("No logs available.")
+        noLogsLabel:SetText(L("noLogsAvailable"))
         noLogsLabel:SetTextColor(Color(150, 170, 170))
         noLogsLabel:SetFont("LiliaFont.20")
         noLogsLabel:SetContentAlignment(5)
@@ -365,7 +394,7 @@ function MODULE:CreateLogsUI(panel, categories)
     pageHeader:Dock(TOP)
     pageHeader:SetTall(74)
     pageHeader.Paint = function()
-        local textColor = lia.color.theme.text
+        local _, textColor = getThemeColors()
         draw.SimpleText("Server Logs", "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         draw.SimpleText("Browse and inspect recorded server activity.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
@@ -379,7 +408,7 @@ function MODULE:CreateLogsUI(panel, categories)
     categoryPanel:DockMargin(0, 0, 14, 0)
     categoryPanel:DockPadding(10, 10, 10, 10)
     categoryPanel.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         drawPanel(0, 0, w, h, 8, Color(4, 17, 21, 235), Color(accent.r, accent.g, accent.b, 70))
     end
 
@@ -401,7 +430,7 @@ function MODULE:CreateLogsUI(panel, categories)
     contentPanel:Dock(FILL)
     contentPanel:DockPadding(14, 14, 14, 14)
     contentPanel.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         drawPanel(0, 0, w, h, 8, Color(4, 17, 21, 235), Color(accent.r, accent.g, accent.b, 70))
     end
 
@@ -442,8 +471,9 @@ function MODULE:CreateLogsUI(panel, categories)
         button:DockMargin(0, 0, 0, 5)
         button:SetText("")
         button.category = category
+        button.icon = getCategoryIcon(category)
         button.Paint = function(s, w, h)
-            local accent = lia.color.theme.accent
+            local accent = getThemeColors()
             local active = panel.activeLogsCategory == s.category
             local hovered = s:IsHovered()
             local background = active and Color(accent.r, accent.g, accent.b, 24) or hovered and Color(255, 255, 255, 6) or Color(0, 0, 0, 0)
@@ -453,7 +483,8 @@ function MODULE:CreateLogsUI(panel, categories)
                 surface.DrawRect(0, 5, 3, h - 10)
             end
 
-            draw.SimpleText(getCategoryLabel(s.category), "LiliaFont.17", 14, h * 0.5, active and Color(242, 248, 248) or Color(195, 211, 211), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            drawIcon(s.icon, 14, math.floor((h - 20) * 0.5), 20, active and Color(242, 248, 248) or Color(170, 192, 192))
+            draw.SimpleText(getCategoryLabel(s.category), "LiliaFont.17", 48, h * 0.5, active and Color(242, 248, 248) or Color(195, 211, 211), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end
 
         button.DoClick = function() panel:SelectLogsCategory(category) end
@@ -494,7 +525,7 @@ lia.net.readBigTable("liaSendLogs", function(logsData)
     end
 
     if not logsData then
-        chat.AddText(Color(255, 0, 0), "Failed to retrieve logs.")
+        chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
         removeLoadingLabel()
         return
     end
@@ -502,10 +533,10 @@ lia.net.readBigTable("liaSendLogs", function(logsData)
     if IsValid(logsPanel) then
         local success, err = pcall(UpdateLogsUI, logsPanel, logsData)
         if not success then
-            chat.AddText(Color(255, 0, 0), string.format("Error updating logs UI: %s", tostring(err)))
+            chat.AddText(Color(255, 0, 0), L("logsUIUpdateError", tostring(err)))
             removeLoadingLabel()
         end
     else
-        chat.AddText(Color(255, 100, 100), "Logs panel not found. Please reopen the logs tab.")
+        chat.AddText(Color(255, 100, 100), L("logsPanelError"))
     end
 end)

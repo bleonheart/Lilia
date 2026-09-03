@@ -1,5 +1,12 @@
-local RarityColors = lia.item.rarities
+﻿local RarityColors = lia.item.rarities
 local VendorClick = {"buttons/button15.wav", 30, 250}
+local function getVendorThemeColors()
+    local theme = lia.color.theme or {}
+    local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
+    local text = theme.text or Color(225, 238, 238)
+    return accent, text
+end
+
 local function drawVendorPanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
@@ -19,7 +26,7 @@ local function drawVendorIcon(material, x, y, w, h, color)
 end
 
 local function formatVendorPrice(price)
-    if price == 0 then return "Free" end
+    if price == 0 then return L("vendorFree") end
     local symbol = lia.currency.symbol
     if isstring(symbol) and symbol ~= "" then return symbol .. string.Comma(price) end
     if price > 1 then return string.format("%s %s", price, lia.currency.plural) end
@@ -41,7 +48,7 @@ local function createVendorButton(parent, text, primary)
     button._primary = primary == true
     button._negative = false
     button.Paint = function(s, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         local hovered = s:IsHovered() and s:IsEnabled()
         local background
         local outline
@@ -112,20 +119,20 @@ function PANEL:Init()
     local buttonW = math.Clamp(ScrW() * 0.095, 150, 190)
     local buttonH = 46
     local buttonY = math.min(self.y0 + self.panelH + 18, ScrH() - buttonH - 18)
-    self.leaveButton = createVendorButton(self, "Leave", false)
+    self.leaveButton = createVendorButton(self, L("leave"), false)
     self.leaveButton:SetSize(buttonW, buttonH)
     self.leaveButton:SetPos(self.rightX + self.panelW - buttonW, buttonY)
     self.leaveButton.DoClick = function()
-        lia.webcontent.sound.playButtonSound()
+        lia.websound.playButtonSound()
         self:Remove()
     end
 
     if client:canEditVendor(self.vendorPanel) then
-        self.editButton = createVendorButton(self, "Edit Vendor", false)
+        self.editButton = createVendorButton(self, L("vendorEditorButton"), false)
         self.editButton:SetSize(buttonW, buttonH)
         self.editButton:SetPos(self.leaveButton.x - buttonW - 12, buttonY)
         self.editButton.DoClick = function()
-            lia.webcontent.sound.playButtonSound()
+            lia.websound.playButtonSound()
             vgui.Create("liaVendorEditor"):SetZPos(99)
         end
     end
@@ -141,7 +148,7 @@ end
 function PANEL:OnThemeChanged()
     if not IsValid(self) then return end
     self:ApplyCurrentTheme()
-    local _, text = lia.color.theme.accent
+    local _, text = getVendorThemeColors()
     if IsValid(self.vendorPanel) and IsValid(self.vendorPanel.title) then self.vendorPanel.title:SetTextColor(text) end
     if IsValid(self.mePanel) and IsValid(self.mePanel.title) then self.mePanel.title:SetTextColor(text) end
     self:InvalidateLayout(true)
@@ -152,7 +159,7 @@ function PANEL:CreateInventoryPanel(x, y, isVendor)
     panel:SetSize(self.panelW, self.panelH)
     panel:SetPos(x, y)
     panel.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         drawVendorPanel(0, 0, w, h, 10, Color(6, 18, 23, 226), Color(accent.r, accent.g, accent.b, 72))
     end
 
@@ -161,7 +168,7 @@ function PANEL:CreateInventoryPanel(x, y, isVendor)
     panel.header:SetTall(70)
     panel.header:DockMargin(18, 12, 18, 8)
     panel.header.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         surface.SetDrawColor(accent.r, accent.g, accent.b, 28)
         surface.DrawRect(26, h - 12, w - 52, 1)
     end
@@ -169,14 +176,14 @@ function PANEL:CreateInventoryPanel(x, y, isVendor)
     panel.title = panel.header:Add("DLabel")
     panel.title:Dock(FILL)
     panel.title:SetFont("LiliaFont.25")
-    panel.title:SetTextColor(lia.color.theme.text)
+    panel.title:SetTextColor(select(2, getVendorThemeColors()))
     panel.title:SetContentAlignment(5)
     if isVendor then
-        local vendorName = IsValid(liaVendorEnt) and liaVendorEnt:getName() or "Vendor Items"
-        panel.title:SetText(string.format("%s's %s", vendorName, "Items"))
+        local vendorName = IsValid(liaVendorEnt) and liaVendorEnt:getName() or L("vendorItemsTitle")
+        panel.title:SetText(string.format("%s's %s", vendorName, L("items")))
         self.vendorItemsLabel = panel.title
     else
-        panel.title:SetText("Your Items")
+        panel.title:SetText(L("vendorYourItems"))
     end
 
     panel.items = panel:Add("liaScrollPanel")
@@ -196,7 +203,7 @@ function PANEL:CreateInventoryPanel(x, y, isVendor)
     panel.empty:SetMouseInputEnabled(false)
     panel.empty:SetZPos(100)
     panel.empty.Paint = function(_, w, h)
-        local text = lia.color.theme.text
+        local _, text = getVendorThemeColors()
         drawVendorIcon(Material("icon16/box.png", "smooth"), math.floor((w - 24) * 0.5), 6, 24, 24, Color(125, 148, 149))
         draw.SimpleText("No items available", "LiliaFont.18", w * 0.5, 50, Color(text.r, text.g, text.b, 145), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
@@ -309,7 +316,7 @@ function PANEL:GetItemCategoryList()
     if not IsValid(liaVendorEnt) then return {} end
     local data = liaVendorEnt.items or {}
     local categories = {
-        ["Show All"] = true
+        [L("vendorShowAll")] = true
     }
 
     for id in pairs(data) do
@@ -344,7 +351,7 @@ function PANEL:applyCategoryFilter()
         if item then
             local category = item:getCategory()
             if category then category = category:sub(1, 1):upper() .. category:sub(2) end
-            if not self.currentCategory or self.currentCategory == "Show All" or category == self.currentCategory then
+            if not self.currentCategory or self.currentCategory == L("vendorShowAll") or category == self.currentCategory then
                 local mode = liaVendorEnt:getTradeMode(id)
                 if mode ~= VENDOR_BUYONLY then self:updateItem(id, "vendor") end
                 if mode ~= VENDOR_SELLONLY then
@@ -385,8 +392,8 @@ function PANEL:onVendorPropEdited(_, key)
     if not IsValid(liaVendorEnt) then return end
     if key == "name" then
         if IsValid(self.vendorItemsLabel) then
-            local vendorName = liaVendorEnt:getName() or "Vendor Items"
-            self.vendorItemsLabel:SetText(string.format("%s's %s", vendorName, "Items"))
+            local vendorName = liaVendorEnt:getName() or L("vendorItemsTitle")
+            self.vendorItemsLabel:SetText(string.format("%s's %s", vendorName, L("items")))
         end
     elseif key == "skin" then
         if IsValid(self.skin) then self.skin:SetValue(liaVendorEnt:GetSkin()) end
@@ -501,7 +508,7 @@ function PANEL:Init()
     self.background = self:Add("DPanel")
     self.background:Dock(FILL)
     self.background.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         local hovered = self:IsHovered()
         local background = hovered and Color(12, 29, 35, 238) or Color(10, 25, 30, 232)
         local outline = Color(accent.r, accent.g, accent.b, hovered and 80 or 45)
@@ -518,7 +525,7 @@ function PANEL:Init()
     self.iconFrame:DockMargin(10, 10, 12, 10)
     self.iconFrame._material = nil
     self.iconFrame.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         drawVendorPanel(0, 0, w, h, 6, Color(3, 16, 21, 185), Color(accent.r, accent.g, accent.b, 68))
         if self.iconFrame._material then drawVendorIcon(self.iconFrame._material, 0, 0, w, h, color_white) end
     end
@@ -562,7 +569,7 @@ function PANEL:Init()
     self.priceLabel:SetWide(140)
     self.priceLabel:SetFont("LiliaFont.18")
     self.priceLabel:SetContentAlignment(4)
-    self.priceLabel:SetTextColor(lia.color.theme.accent)
+    self.priceLabel:SetTextColor(select(1, getVendorThemeColors()))
     self.priceLabel:SetText("")
     self.quantityLabel = self.bottomRow:Add("DLabel")
     self.quantityLabel:Dock(RIGHT)
@@ -620,7 +627,7 @@ function PANEL:updateCooldown()
         local minutes = math.floor(remaining / 60)
         local seconds = remaining % 60
         local timeText = minutes > 0 and string.format("%dm %ds", minutes, seconds) or string.format("%ds", seconds)
-        self.action._text = string.format("Cooldown: %s", timeText)
+        self.action._text = L("vendorOnCooldown", timeText)
         self.action:SetEnabled(false)
     else
         self.action:SetEnabled(true)
@@ -630,7 +637,7 @@ end
 function PANEL:updateAction()
     if not IsValid(self.action) or not self.item then return end
     if not IsValid(liaVendorEnt) then
-        self.action._text = self.isSelling and "Sell" or "Buy"
+        self.action._text = self.isSelling and L("sell") or L("buy")
         self.action:SetEnabled(false)
         return
     end
@@ -640,7 +647,7 @@ function PANEL:updateAction()
     if IsValid(self.priceLabel) then self.priceLabel:SetText(formatVendorPrice(price)) end
     if self.cooldownActive then return end
     self.action._negative = false
-    self.action._text = self.isSelling and "Sell" or "Buy"
+    self.action._text = self.isSelling and L("sell") or L("buy")
     self.action:SetEnabled(true)
     self.action.DoClick = function()
         if self.isSelling then
@@ -700,7 +707,7 @@ end
 
 function PANEL:setItemType(itemType)
     local item = lia.item.list[itemType]
-    assert(item, string.format("Invalid item type or ID %s", tostring(itemType)))
+    assert(item, L("invalidItemTypeOrID", tostring(itemType)))
     self.item = item
     self.iconFrame._material = resolveVendorIcon(item.icon)
     if self.iconFrame._material then
@@ -727,7 +734,7 @@ end
 function PANEL:updateLabel()
     if not self.item then return end
     self.name:SetText(self.item:getName())
-    self.description:SetText(self.item:getDesc() or "No Description")
+    self.description:SetText(self.item:getDesc() or L("noDesc"))
     self:updateAction()
     if self.currentQuantity > 0 or not self.isSelling then self:setQuantity(self.currentQuantity, true) end
 end
@@ -743,7 +750,7 @@ local function styleEditorEntry(entry)
     local textEntry = IsValid(entry.textEntry) and entry.textEntry or entry
     if isfunction(entry.SetFont) then entry:SetFont("LiliaFont.17") end
     if isfunction(entry.SetTextColor) then entry:SetTextColor(Color(225, 238, 238)) end
-    if isfunction(entry.SetCursorColor) then entry:SetCursorColor(lia.color.theme.accent) end
+    if isfunction(entry.SetCursorColor) then entry:SetCursorColor(getVendorThemeColors()) end
     if isfunction(entry.SetPaintBackground) then entry:SetPaintBackground(false) end
     if not IsValid(textEntry) then return end
     if isfunction(textEntry.SetPaintBackground) then textEntry:SetPaintBackground(false) end
@@ -752,7 +759,7 @@ local function styleEditorEntry(entry)
     if isfunction(textEntry.SetPaintBorderEnabled) then textEntry:SetPaintBorderEnabled(false) end
     textEntry.Paint = function() end
     textEntry.PaintOver = function(s, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         local focused = (isfunction(s.IsEditing) and s:IsEditing()) or s:HasFocus()
         drawVendorPanel(0, 0, w, h, 6, Color(9, 24, 29, 238), Color(accent.r, accent.g, accent.b, focused and 110 or 62))
         local value = isfunction(entry.GetValue) and entry:GetValue() or s:GetText()
@@ -772,7 +779,7 @@ end
 local function styleEditorButton(button, negative)
     button._negative = negative == true
     button.Paint = function(s, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         local hovered = s:IsHovered() and s:IsEnabled()
         local background = hovered and Color(16, 34, 40, 235) or Color(10, 27, 32, 228)
         local outline = Color(accent.r, accent.g, accent.b, hovered and 110 or 62)
@@ -794,7 +801,7 @@ local function addEditorSection(parent, title, subtitle)
     header:DockMargin(0, 4, 0, 10)
     header:SetTall(subtitle and subtitle ~= "" and 54 or 34)
     header.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         draw.SimpleText(string.upper(title or ""), "LiliaFont.17", 0, 4, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         if subtitle and subtitle ~= "" then draw.SimpleText(subtitle, "LiliaFont.15", 0, 27, Color(150, 174, 175), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP) end
         surface.SetDrawColor(accent.r, accent.g, accent.b, 44)
@@ -830,7 +837,7 @@ function PANEL:Init()
     self:SetSize(width, height)
     self:MakePopup()
     self:Center()
-    self:SetTitle(string.format("%s — %s", "Vendor Editor", entity:getName()))
+    self:SetTitle(string.format("%s — %s", L("vendorEditor"), entity:getName()))
     self.factions = {}
     self.classes = {}
     hook.Add("OnThemeChanged", self, self.OnThemeChanged)
@@ -838,7 +845,7 @@ function PANEL:Init()
     self.backgroundPanel:Dock(FILL)
     self.backgroundPanel:DockPadding(10, 10, 10, 10)
     self.backgroundPanel.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         drawVendorPanel(0, 0, w, h, 8, Color(4, 16, 21, 238), Color(accent.r, accent.g, accent.b, 70))
     end
 
@@ -848,7 +855,7 @@ function PANEL:Init()
     self.generalFrame:DockMargin(0, 0, 10, 0)
     self.generalFrame:DockPadding(12, 12, 12, 12)
     self.generalFrame.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         drawVendorPanel(0, 0, w, h, 8, Color(6, 19, 24, 235), Color(accent.r, accent.g, accent.b, 68))
     end
 
@@ -856,7 +863,7 @@ function PANEL:Init()
     self.itemsFrame:Dock(FILL)
     self.itemsFrame:DockPadding(12, 12, 12, 12)
     self.itemsFrame.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         drawVendorPanel(0, 0, w, h, 8, Color(6, 19, 24, 235), Color(accent.r, accent.g, accent.b, 68))
     end
 
@@ -871,9 +878,9 @@ function PANEL:Init()
     self.itemsHeaderCard:SetTall(66)
     self.itemsHeaderCard:DockMargin(0, 0, 0, 10)
     self.itemsHeaderCard.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-        draw.SimpleText(string.upper("Vendor Items"), "LiliaFont.18", 0, 4, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        draw.SimpleText("Set trade mode, buy price, sell price, and stock.", "LiliaFont.16", 0, 31, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        local accent = getVendorThemeColors()
+        draw.SimpleText(string.upper(L("vendorItemsTitle")), "LiliaFont.18", 0, 4, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        draw.SimpleText(L("vendorItemsSubtitle"), "LiliaFont.16", 0, 31, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 44)
         surface.DrawRect(0, h - 1, w, 1)
     end
@@ -882,7 +889,7 @@ function PANEL:Init()
     self.itemSearchBar:Dock(RIGHT)
     self.itemSearchBar:SetWide(math.Clamp(width * 0.17, 190, 280))
     self.itemSearchBar:DockMargin(0, 7, 0, 17)
-    self.itemSearchBar:SetPlaceholderText("Search...")
+    self.itemSearchBar:SetPlaceholderText(L("search"))
     styleEditorEntry(self.itemSearchBar)
     self.itemSearchBar.action = function(value) self:ReloadItemList(value) end
     self.lastSearchValue = ""
@@ -905,15 +912,15 @@ function PANEL:Init()
     self.itemHeader:DockMargin(0, 0, 0, 4)
     self.itemHeader:DockPadding(10, 0, 10, 0)
     self.itemHeader.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         drawVendorPanel(0, 0, w, h, 5, Color(8, 23, 28, 242), Color(accent.r, accent.g, accent.b, 55))
     end
 
     self.itemHeaderStock = self.itemHeader:Add("DLabel")
     self.itemHeaderStock:Dock(RIGHT)
     self.itemHeaderStock:SetWide(72)
-    self.itemHeaderStock:SetText("Max")
-    self.itemHeaderStock:SetTooltip("Set max stock quantity.")
+    self.itemHeaderStock:SetText(L("vendorStockMaxShort"))
+    self.itemHeaderStock:SetTooltip(L("vendorStockReq"))
     self.itemHeaderStock:SetFont("LiliaFont.15")
     self.itemHeaderStock:SetTextColor(Color(196, 211, 211))
     self.itemHeaderStock:SetContentAlignment(5)
@@ -921,8 +928,8 @@ function PANEL:Init()
     self.itemHeaderCurrentStock:Dock(RIGHT)
     self.itemHeaderCurrentStock:SetWide(68)
     self.itemHeaderCurrentStock:DockMargin(6, 0, 0, 0)
-    self.itemHeaderCurrentStock:SetText("Cur.")
-    self.itemHeaderCurrentStock:SetTooltip("Edit Current Stock")
+    self.itemHeaderCurrentStock:SetText(L("vendorStockCurrentShort"))
+    self.itemHeaderCurrentStock:SetTooltip(L("vendorEditCurStock"))
     self.itemHeaderCurrentStock:SetFont("LiliaFont.15")
     self.itemHeaderCurrentStock:SetTextColor(Color(196, 211, 211))
     self.itemHeaderCurrentStock:SetContentAlignment(5)
@@ -930,7 +937,7 @@ function PANEL:Init()
     self.itemHeaderSellPrice:Dock(RIGHT)
     self.itemHeaderSellPrice:SetWide(92)
     self.itemHeaderSellPrice:DockMargin(6, 0, 0, 0)
-    self.itemHeaderSellPrice:SetText("Sell Price")
+    self.itemHeaderSellPrice:SetText(L("vendorSellPriceLabel"))
     self.itemHeaderSellPrice:SetFont("LiliaFont.15")
     self.itemHeaderSellPrice:SetTextColor(Color(196, 211, 211))
     self.itemHeaderSellPrice:SetContentAlignment(5)
@@ -938,7 +945,7 @@ function PANEL:Init()
     self.itemHeaderBuyPrice:Dock(RIGHT)
     self.itemHeaderBuyPrice:SetWide(92)
     self.itemHeaderBuyPrice:DockMargin(6, 0, 0, 0)
-    self.itemHeaderBuyPrice:SetText("Buy Price")
+    self.itemHeaderBuyPrice:SetText(L("vendorBuyPriceLabel"))
     self.itemHeaderBuyPrice:SetFont("LiliaFont.15")
     self.itemHeaderBuyPrice:SetTextColor(Color(196, 211, 211))
     self.itemHeaderBuyPrice:SetContentAlignment(5)
@@ -946,13 +953,13 @@ function PANEL:Init()
     self.itemHeaderMode:Dock(RIGHT)
     self.itemHeaderMode:SetWide(136)
     self.itemHeaderMode:DockMargin(6, 0, 0, 0)
-    self.itemHeaderMode:SetText("Trade Mode")
+    self.itemHeaderMode:SetText(L("mode"))
     self.itemHeaderMode:SetFont("LiliaFont.15")
     self.itemHeaderMode:SetTextColor(Color(196, 211, 211))
     self.itemHeaderMode:SetContentAlignment(5)
     self.itemHeaderName = self.itemHeader:Add("DLabel")
     self.itemHeaderName:Dock(FILL)
-    self.itemHeaderName:SetText("Name")
+    self.itemHeaderName:SetText(L("name"))
     self.itemHeaderName:SetFont("LiliaFont.15")
     self.itemHeaderName:SetTextColor(Color(196, 211, 211))
     self.itemHeaderName:SetContentAlignment(4)
@@ -969,8 +976,8 @@ end
 
 function PANEL:initializeGeneralInfoPanel(entity)
     if not IsValid(entity) or not IsValid(self.generalScroll) then return end
-    addEditorSection(self.generalScroll, "General Information", "Edit the vendor's appearance, presets, stock, and access rules.")
-    self.nameLabel = addEditorFieldLabel(self.generalScroll, "Name")
+    addEditorSection(self.generalScroll, L("vendorGeneralInfo"), L("vendorGeneralInfoSubtitle"))
+    self.nameLabel = addEditorFieldLabel(self.generalScroll, L("name"))
     self.name = self.generalScroll:Add("liaEntry")
     self.name:Dock(TOP)
     self.name:DockMargin(0, 0, 0, 12)
@@ -980,14 +987,14 @@ function PANEL:initializeGeneralInfoPanel(entity)
     self.name.action = function(value)
         local currentName = lia.vendor.getVendorProperty(entity, "name")
         if currentName == value then return end
-        if not value or value == "" then value = "Jane Doe" end
+        if not value or value == "" then value = L("vendorDefaultName") end
         if self.name.processing then return end
         self.name.processing = true
         lia.vendor.editor.name(value)
         timer.Simple(0.1, function() if IsValid(self) and IsValid(self.name) then self.name.processing = false end end)
     end
 
-    self.modelLabel = addEditorFieldLabel(self.generalScroll, "Model")
+    self.modelLabel = addEditorFieldLabel(self.generalScroll, L("model"))
     self.model = self.generalScroll:Add("liaEntry")
     self.model:Dock(TOP)
     self.model:DockMargin(0, 0, 0, 12)
@@ -1000,11 +1007,11 @@ function PANEL:initializeGeneralInfoPanel(entity)
     end
 
     if entity:SkinCount() > 1 then
-        self.skinLabel = addEditorFieldLabel(self.generalScroll, "Skin")
+        self.skinLabel = addEditorFieldLabel(self.generalScroll, L("skin"))
         self.skin = self.generalScroll:Add("liaSlider")
         self.skin:Dock(TOP)
         self.skin:DockMargin(0, 0, 0, 12)
-        self.skin:SetText("Skin")
+        self.skin:SetText(L("skin"))
         self.skin:SetRange(0, entity:SkinCount() - 1, 0)
         self.skin:SetValue(entity:GetSkin())
         self.skin.OnValueChanged = function(_, value)
@@ -1013,28 +1020,28 @@ function PANEL:initializeGeneralInfoPanel(entity)
         end
     end
 
-    self.animationLabel = addEditorFieldLabel(self.generalScroll, "Animation")
+    self.animationLabel = addEditorFieldLabel(self.generalScroll, L("animation"))
     self.animation = self.generalScroll:Add("liaComboBox")
     self.animation:Dock(TOP)
     self.animation:DockMargin(0, 0, 0, 8)
     self.animation:SetTall(38)
     self.animation:PostInit()
-    self.animation:SetText("Pick Your Animation")
-    self.animation:SetTooltip("Select an animation for the vendor")
+    self.animation:SetText(L("vendorPickAnimation"))
+    self.animation:SetTooltip(L("vendorAnimationTooltip"))
     self:refreshAnimationDropdown()
     local currentAnimation = lia.vendor.getVendorProperty(entity, "animation")
-    self.animation:SetValue(currentAnimation == "" and "None" or currentAnimation)
-    self.animation:ChooseOption(currentAnimation == "" and "None" or currentAnimation)
+    self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation)
+    self.animation:ChooseOption(currentAnimation == "" and L("none") or currentAnimation)
     self.animation.OnSelect = function(_, _, value)
         if not IsValid(self.animation) then return end
         local selectedValue = value or self.animation:GetValue()
         if not isstring(selectedValue) then return end
-        if selectedValue == "None" then selectedValue = "" end
+        if selectedValue == L("none") then selectedValue = "" end
         if lia.vendor.editor.animation then lia.vendor.editor.animation(selectedValue) end
-        timer.Simple(0.1, function() if IsValid(self.animation) then self.animation:SetValue(selectedValue == "" and "None" or selectedValue) end end)
+        timer.Simple(0.1, function() if IsValid(self.animation) then self.animation:SetValue(selectedValue == "" and L("none") or selectedValue) end end)
     end
 
-    addEditorSection(self.generalScroll, "Preset")
+    addEditorSection(self.generalScroll, L("preset"))
     self.presetActions = self.generalScroll:Add("DPanel")
     self.presetActions:Dock(TOP)
     self.presetActions:DockMargin(0, 0, 0, 8)
@@ -1044,18 +1051,18 @@ function PANEL:initializeGeneralInfoPanel(entity)
     self.presetButton:Dock(LEFT)
     self.presetButton:SetWide(104)
     self.presetButton:DockMargin(0, 0, 6, 0)
-    self.presetButton:SetText(string.format("Load %s", "Preset"))
-    self.presetButton:SetTooltip("Load a preset to quickly populate the vendor with items")
+    self.presetButton:SetText(L("loadThing", L("preset")))
+    self.presetButton:SetTooltip(L("vendorLoadPresetTooltip"))
     styleEditorButton(self.presetButton)
     self.presetButton.DoClick = function() self:openPresetSelector() end
     self.savePresetButton = self.presetActions:Add("liaButton")
     self.savePresetButton:Dock(LEFT)
     self.savePresetButton:SetWide(104)
     self.savePresetButton:DockMargin(0, 0, 6, 0)
-    self.savePresetButton:SetText("Save Preset")
+    self.savePresetButton:SetText(L("vendorSavePreset"))
     styleEditorButton(self.savePresetButton)
     self.savePresetButton.DoClick = function()
-        LocalPlayer():requestString("Save Vendor Preset", "Enter a name for this preset:", function(text)
+        LocalPlayer():requestString("@vendorSavePresetTitle", "@vendorSavePresetPrompt", function(text)
             if not text or text == "" then return end
             net.Start("liaVendorSavePreset")
             net.WriteString(text)
@@ -1067,11 +1074,11 @@ function PANEL:initializeGeneralInfoPanel(entity)
 
     self.deletePresetButton = self.presetActions:Add("liaButton")
     self.deletePresetButton:Dock(FILL)
-    self.deletePresetButton:SetText("Delete Preset")
-    self.deletePresetButton:SetTooltip("Delete a saved vendor preset")
+    self.deletePresetButton:SetText(L("vendorDeletePreset"))
+    self.deletePresetButton:SetTooltip(L("vendorDeletePresetTooltip"))
     styleEditorButton(self.deletePresetButton, true)
     self.deletePresetButton.DoClick = function() self:openDeletePresetSelector() end
-    addEditorSection(self.generalScroll, "Enable Stock")
+    addEditorSection(self.generalScroll, L("vendorStockToggle"))
     self.stockEnabledButton = self.generalScroll:Add("liaButton")
     self.stockEnabledButton:Dock(TOP)
     self.stockEnabledButton:DockMargin(0, 0, 0, 8)
@@ -1089,14 +1096,14 @@ function PANEL:initializeGeneralInfoPanel(entity)
     end
 
     self:updateStockEnabledButton()
-    addEditorSection(self.generalScroll, "Faction Access", "Choose which factions and classes can use this vendor.")
+    addEditorSection(self.generalScroll, L("vendorFaction"), L("vendorFactionAccessSubtitle"))
     self.factionAccessPanel = self.generalScroll:Add("DPanel")
     self.factionAccessPanel:Dock(TOP)
     self.factionAccessPanel:DockMargin(0, 0, 0, 10)
     self.factionAccessPanel:SetTall(270)
     self.factionAccessPanel:DockPadding(8, 8, 8, 8)
     self.factionAccessPanel.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         drawVendorPanel(0, 0, w, h, 7, Color(8, 23, 28, 230), Color(accent.r, accent.g, accent.b, 55))
     end
 
@@ -1113,14 +1120,14 @@ function PANEL:initializeGeneralInfoPanel(entity)
     end
 
     if hasBodygroups then
-        addEditorSection(self.generalScroll, "Bodygroups")
+        addEditorSection(self.generalScroll, L("bodygroups"))
         self.bodygroupsPanel = self.generalScroll:Add("DPanel")
         self.bodygroupsPanel:Dock(TOP)
         self.bodygroupsPanel:DockMargin(0, 0, 0, 10)
         self.bodygroupsPanel:SetTall(230)
         self.bodygroupsPanel:DockPadding(8, 8, 8, 8)
         self.bodygroupsPanel.Paint = function(_, w, h)
-            local accent = lia.color.theme.accent
+            local accent = getVendorThemeColors()
             drawVendorPanel(0, 0, w, h, 7, Color(8, 23, 28, 230), Color(accent.r, accent.g, accent.b, 55))
         end
 
@@ -1169,7 +1176,7 @@ function PANEL:populateFactionPanel()
         card:DockMargin(0, 0, 0, 6)
         card.expanded = #classRows > 0 and IsValid(entity) and entity:isFactionAllowed(factionID) or false
         card.Paint = function(_, w, h)
-            local accent = lia.color.theme.accent
+            local accent = getVendorThemeColors()
             drawVendorPanel(0, 0, w, h, 6, Color(10, 26, 31, 232), Color(accent.r, accent.g, accent.b, 48))
         end
 
@@ -1178,10 +1185,10 @@ function PANEL:populateFactionPanel()
         header:SetTall(38)
         header:SetText("")
         header.Paint = function(s, w, h)
-            local accent = lia.color.theme.accent
+            local accent = getVendorThemeColors()
             if s:IsHovered() then drawVendorPanel(0, 0, w, h, 6, Color(accent.r, accent.g, accent.b, 20)) end
             draw.SimpleText(#classRows > 0 and (card.expanded and "−" or "+") or "", "LiliaFont.18", 12, h * 0.5, accent, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-            draw.SimpleText(faction.name, "LiliaFont.17", 66, h * 0.5, Color(225, 238, 238), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText(L(faction.name), "LiliaFont.17", 66, h * 0.5, Color(225, 238, 238), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end
 
         local factionCheckbox = header:Add("liaCheckbox")
@@ -1198,7 +1205,7 @@ function PANEL:populateFactionPanel()
         classContainer:Dock(TOP)
         classContainer:DockMargin(10, 0, 10, 8)
         classContainer.Paint = function(_, w)
-            local accent = lia.color.theme.accent
+            local accent = getVendorThemeColors()
             surface.SetDrawColor(accent.r, accent.g, accent.b, 30)
             surface.DrawRect(0, 0, w, 1)
         end
@@ -1222,7 +1229,7 @@ function PANEL:populateFactionPanel()
             self.classes[classInfo.id] = classCheckbox
             local classLabel = classRow:Add("DLabel")
             classLabel:Dock(FILL)
-            classLabel:SetText(classInfo.data.name)
+            classLabel:SetText(L(classInfo.data.name))
             classLabel:SetFont("LiliaFont.15")
             classLabel:SetTextColor(Color(186, 204, 204))
             classLabel:SetContentAlignment(4)
@@ -1316,25 +1323,25 @@ local VendorText = {
 
 local VendorModeChoices = {
     {
-        text = "None",
+        text = L("none"),
         value = nil
     },
     {
-        text = "Buy and Sell",
+        text = L("buyOnlynSell"),
         value = VENDOR_SELLANDBUY
     },
     {
-        text = "Buy Only",
+        text = L("buyOnly"),
         value = VENDOR_BUYONLY
     },
     {
-        text = "Sell Only",
+        text = L("sellOnly"),
         value = VENDOR_SELLONLY
     }
 }
 
 function PANEL:getModeText(mode)
-    return mode and VendorText[mode] or "None"
+    return mode and L(VendorText[mode]) or L("none")
 end
 
 function PANEL:notifyNumberError(fieldName)
@@ -1348,8 +1355,8 @@ function PANEL:getItemRowValue(itemType)
     local currentStock, maxStock = entity:getStock(itemType)
     return {
         item = itemType,
-        name = itemTable.getName and itemTable:getName() or itemTable.name,
-        desc = itemTable.getDesc and itemTable:getDesc() or itemTable.desc or "No Description",
+        name = itemTable.getName and itemTable:getName() or L(itemTable.name),
+        desc = itemTable.getDesc and itemTable:getDesc() or itemTable.desc or L("noDesc"),
         mode = entity.items[itemType] and entity.items[itemType][VENDOR_MODE],
         buyPrice = entity.items[itemType] and (entity.items[itemType][VENDOR_BUYPRICE] ~= nil and entity.items[itemType][VENDOR_BUYPRICE] or entity.items[itemType][VENDOR_PRICE]),
         sellPrice = entity.items[itemType] and (entity.items[itemType][VENDOR_SELLPRICE] ~= nil and entity.items[itemType][VENDOR_SELLPRICE] or entity.items[itemType][VENDOR_PRICE]),
@@ -1364,7 +1371,7 @@ function ROW:Init()
     self:DockPadding(7, 5, 8, 5)
     self.hoverAlpha = 0
     self.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         if self:IsHovered() then
             self.hoverAlpha = math.min(self.hoverAlpha + FrameTime() * 7, 1)
         else
@@ -1400,7 +1407,7 @@ function ROW:Init()
     self.sellPriceEntry:SetWide(92)
     self.sellPriceEntry:DockMargin(6, 0, 0, 0)
     self.sellPriceEntry:SetNumeric(true)
-    self.sellPriceEntry:SetPlaceholderText("Sell Price")
+    self.sellPriceEntry:SetPlaceholderText(L("vendorSellPriceLabel"))
     styleEditorEntry(self.sellPriceEntry)
     self.sellPriceEntry.action = function() self:CommitSellPrice() end
     self.buyPriceEntry = self:Add("liaEntry")
@@ -1408,7 +1415,7 @@ function ROW:Init()
     self.buyPriceEntry:SetWide(92)
     self.buyPriceEntry:DockMargin(6, 0, 0, 0)
     self.buyPriceEntry:SetNumeric(true)
-    self.buyPriceEntry:SetPlaceholderText("Buy Price")
+    self.buyPriceEntry:SetPlaceholderText(L("vendorBuyPriceLabel"))
     styleEditorEntry(self.buyPriceEntry)
     self.buyPriceEntry.action = function() self:CommitBuyPrice() end
     self.modeCombo = self:Add("liaComboBox")
@@ -1435,7 +1442,7 @@ function ROW:Init()
     self.iconFrame:SetWide(36)
     self.iconFrame:DockMargin(0, 0, 10, 0)
     self.iconFrame.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getVendorThemeColors()
         drawVendorPanel(0, 0, w, h, 4, Color(13, 30, 35, 230), Color(accent.r, accent.g, accent.b, 55))
         if self.itemIconMaterial then drawVendorIcon(self.itemIconMaterial, 3, 3, w - 6, h - 6, color_white) end
     end
@@ -1524,7 +1531,7 @@ function ROW:CommitStock()
 
     local stockValue = tonumber(raw)
     if not isnumber(stockValue) then
-        self.editor:notifyNumberError("Stock")
+        self.editor:notifyNumberError(L("stock"))
         self:Refresh()
         return
     end
@@ -1544,7 +1551,7 @@ function ROW:CommitCurrentStock()
     local raw = string.Trim(self.currentStockEntry:GetValue() or "")
     local currentStock = raw == "" and 0 or tonumber(raw)
     if not isnumber(currentStock) then
-        self.editor:notifyNumberError("Edit Current Stock")
+        self.editor:notifyNumberError(L("vendorEditCurStock"))
         self:Refresh()
         return
     end
@@ -1590,8 +1597,8 @@ function ROW:Refresh()
     self.currentStockEntry:SetValue(data.currentStock ~= nil and tostring(data.currentStock) or "0")
     self.stockEntry:SetValue(data.stock ~= nil and tostring(data.stock) or "")
     self:UpdateStockFieldState()
-    self.currentStockEntry:SetTooltip("Edit Current Stock")
-    self.stockEntry:SetTooltip(data.stock ~= nil and string.format("%s: %s", "Stock", data.stock) or "Disable Stock")
+    self.currentStockEntry:SetTooltip(L("vendorEditCurStock"))
+    self.stockEntry:SetTooltip(data.stock ~= nil and string.format("%s: %s", L("stock"), data.stock) or L("disable"))
     local item = lia.item.list[self.itemID]
     self.itemIconMaterial = nil
     if item and item.icon then
@@ -1651,7 +1658,7 @@ end
 function PANEL:refreshAnimationDropdown()
     if not IsValid(self.animation) then return end
     self.animation:Clear()
-    self.animation:AddChoice("None")
+    self.animation:AddChoice(L("none"))
     if IsValid(liaVendorEnt) then
         local sequenceList = liaVendorEnt:GetSequenceList()
         if sequenceList and #sequenceList > 0 then
@@ -1662,18 +1669,18 @@ function PANEL:refreshAnimationDropdown()
     end
 
     local currentAnimation = lia.vendor.getVendorProperty(liaVendorEnt, "animation")
-    if isstring(currentAnimation) then self.animation:SetValue(currentAnimation == "" and "None" or currentAnimation) end
+    if isstring(currentAnimation) then self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation) end
 end
 
 function PANEL:refreshPresetButton()
     if not IsValid(self.presetButton) then return end
-    self.presetButton:SetText(string.format("Load %s", "Preset"))
+    self.presetButton:SetText(L("loadThing", L("preset")))
 end
 
 function PANEL:updateStockEnabledButton()
     if not IsValid(self.stockEnabledButton) or not IsValid(liaVendorEnt) then return end
     local enabled = lia.vendor.getVendorProperty(liaVendorEnt, "stockEnabled")
-    self.stockEnabledButton:SetText(enabled and "Enabled" or "Disabled")
+    self.stockEnabledButton:SetText(enabled and L("enabled") or L("disabled"))
 end
 
 function PANEL:updateStockColumnVisibility()
@@ -1701,7 +1708,7 @@ function PANEL:openPresetSelector()
     end
 
     self.leftFrame = self.presetSelector:Add("liaFrame")
-    self.leftFrame:SetTitle(string.format("Load %s", "Preset"))
+    self.leftFrame:SetTitle(L("loadThing", L("preset")))
     self.leftFrame:SetSize(300, 500)
     self.leftFrame:SetPos(0, 0)
     self.leftFrame.OnRemove = function() if IsValid(self.presetSelector) then self.presetSelector:Remove() end end
@@ -1711,7 +1718,7 @@ function PANEL:openPresetSelector()
     local noneButton = leftScroll:Add("liaButton")
     noneButton:Dock(TOP)
     noneButton:DockMargin(0, 0, 0, 8)
-    noneButton:SetText("None")
+    noneButton:SetText(L("none"))
     noneButton:SetTall(40)
     noneButton.DoClick = function() self:showPresetDetails("none", {}) end
     if lia.vendor.presets then
@@ -1737,7 +1744,7 @@ function PANEL:openPresetSelector()
     end
 
     self.rightFrame = self.presetSelector:Add("liaFrame")
-    self.rightFrame:SetTitle("Preset Details")
+    self.rightFrame:SetTitle(L("vendorPresetDetails"))
     self.rightFrame:SetSize(400, 500)
     self.rightFrame:SetPos(300, 0)
     self.rightFrame.OnRemove = function() if IsValid(self.presetSelector) then self.presetSelector:Remove() end end
@@ -1748,7 +1755,7 @@ function PANEL:openPresetSelector()
     local submitButton = self.rightFrame:Add("liaButton")
     submitButton:Dock(BOTTOM)
     submitButton:DockMargin(10, 10, 10, 10)
-    submitButton:SetText("Load")
+    submitButton:SetText(L("load"))
     submitButton:SetTall(40)
     submitButton:SetDisabled(true)
     submitButton.DoClick = function()
@@ -1783,7 +1790,7 @@ function PANEL:openDeletePresetSelector()
     end
 
     self.deleteLeftFrame = self.deletePresetSelector:Add("liaFrame")
-    self.deleteLeftFrame:SetTitle("Delete Preset")
+    self.deleteLeftFrame:SetTitle(L("vendorDeletePreset"))
     self.deleteLeftFrame:SetSize(300, 500)
     self.deleteLeftFrame:SetPos(0, 0)
     self.deleteLeftFrame.OnRemove = function() if IsValid(self.deletePresetSelector) and not self.deletePresetSelector._removing then self.deletePresetSelector:Remove() end end
@@ -1817,7 +1824,7 @@ function PANEL:openDeletePresetSelector()
     end
 
     self.deleteRightFrame = self.deletePresetSelector:Add("liaFrame")
-    self.deleteRightFrame:SetTitle("Delete Preset")
+    self.deleteRightFrame:SetTitle(L("vendorDeletePreset"))
     self.deleteRightFrame:SetSize(400, 500)
     self.deleteRightFrame:SetPos(300, 0)
     self.deleteRightFrame.OnRemove = function() if IsValid(self.deletePresetSelector) and not self.deletePresetSelector._removing then self.deletePresetSelector:Remove() end end
@@ -1828,7 +1835,7 @@ function PANEL:openDeletePresetSelector()
     local deleteButton = self.deleteRightFrame:Add("liaButton")
     deleteButton:Dock(BOTTOM)
     deleteButton:DockMargin(10, 10, 10, 10)
-    deleteButton:SetText("Delete")
+    deleteButton:SetText(L("delete"))
     deleteButton:SetTall(40)
     deleteButton:SetDisabled(true)
     deleteButton.DoClick = function()
@@ -1847,7 +1854,7 @@ end
 function PANEL:showDeletePresetDetails(presetName, presetData)
     self.deletePresetDetailsScroll:Clear()
     if not presetName or not presetData then
-        local displayText = "No preset selected"
+        local displayText = L("vendorNoPresetSelected")
         local emptyPanel = self.deletePresetDetailsScroll:Add("DPanel")
         emptyPanel:Dock(TOP)
         emptyPanel:DockMargin(0, 20, 0, 0)
@@ -1872,7 +1879,7 @@ function PANEL:showDeletePresetDetails(presetName, presetData)
     local nameLabel = self.deletePresetDetailsScroll:Add("DLabel")
     nameLabel:Dock(TOP)
     nameLabel:DockMargin(0, 0, 0, 10)
-    nameLabel:SetText("Name" .. ": " .. presetName)
+    nameLabel:SetText(L("name") .. ": " .. presetName)
     nameLabel:SetFont("LiliaFont.20b")
     nameLabel:SetTextColor(lia.color.theme.text or color_white)
     nameLabel:SetContentAlignment(4)
@@ -1880,7 +1887,7 @@ function PANEL:showDeletePresetDetails(presetName, presetData)
     local warningLabel = self.deletePresetDetailsScroll:Add("DLabel")
     warningLabel:Dock(TOP)
     warningLabel:DockMargin(0, 0, 0, 20)
-    warningLabel:SetText("Warning: This action cannot be undone. The preset will be permanently deleted.")
+    warningLabel:SetText(L("vendorDeletePresetWarning"))
     warningLabel:SetFont("LiliaFont.16")
     warningLabel:SetTextColor(Color(255, 100, 100))
     warningLabel:SetContentAlignment(4)
@@ -1889,7 +1896,7 @@ function PANEL:showDeletePresetDetails(presetName, presetData)
     local itemsLabel = self.deletePresetDetailsScroll:Add("DLabel")
     itemsLabel:Dock(TOP)
     itemsLabel:DockMargin(0, 0, 0, 10)
-    itemsLabel:SetText("Items" .. ": " .. table.Count(presetData))
+    itemsLabel:SetText(L("items") .. ": " .. table.Count(presetData))
     itemsLabel:SetFont("LiliaFont.16")
     itemsLabel:SetTextColor(lia.color.theme.text or color_white)
     itemsLabel:SetContentAlignment(4)
@@ -1899,7 +1906,7 @@ end
 function PANEL:showPresetDetails(presetName, presetData)
     self.presetDetailsScroll:Clear()
     if not presetName or presetName == "none" or not presetData or table.Count(presetData) == 0 then
-        local displayText = presetName == "none" and "None" or "No preset selected"
+        local displayText = presetName == "none" and L("none") or L("vendorNoPresetSelected")
         local emptyPanel = self.presetDetailsScroll:Add("DPanel")
         emptyPanel:Dock(TOP)
         emptyPanel:DockMargin(0, 20, 0, 0)
@@ -1950,14 +1957,14 @@ function PANEL:showPresetDetails(presetName, presetData)
     local countLabel = headerPanel:Add("DLabel")
     countLabel:Dock(TOP)
     countLabel:DockMargin(10, 2, 10, 8)
-    countLabel:SetText(string.format("Items: %d", itemCount))
+    countLabel:SetText(L("vendorPresetItemCount", itemCount))
     countLabel:SetFont("LiliaFont.14")
     countLabel:SetTextColor(Color(200, 200, 200))
     countLabel:SizeToContents()
     local itemsHeader = self.presetDetailsScroll:Add("DLabel")
     itemsHeader:Dock(TOP)
     itemsHeader:DockMargin(0, 5, 0, 10)
-    itemsHeader:SetText("Items")
+    itemsHeader:SetText(L("items"))
     itemsHeader:SetFont("LiliaFont.18b")
     itemsHeader:SetTextColor(lia.color.theme and lia.color.theme.text or color_white)
     itemsHeader:SizeToContents()
@@ -2021,7 +2028,7 @@ function PANEL:showPresetDetails(presetName, presetData)
             modeContainer.Paint = function() end
             local modeLabel = modeContainer:Add("DLabel")
             modeLabel:Dock(LEFT)
-            modeLabel:SetText("Mode" .. ": ")
+            modeLabel:SetText(L("attribMode") .. ": ")
             modeLabel:SetFont("LiliaFont.14")
             modeLabel:SetTextColor(Color(180, 180, 180))
             modeLabel:SizeToContents()
@@ -2031,16 +2038,16 @@ function PANEL:showPresetDetails(presetName, presetData)
             itemMode:Dock(LEFT)
             itemMode:DockMargin(5, 0, 0, 0)
             local mode = itemData[VENDOR_MODE]
-            local modeText = "Unknown"
+            local modeText = L("unknown")
             local modeColor = Color(255, 255, 0)
             if mode == VENDOR_SELLANDBUY then
-                modeText = "Buy and Sell"
+                modeText = L("buyOnlynSell")
                 modeColor = Color(100, 255, 100)
             elseif mode == VENDOR_SELLONLY then
-                modeText = "Sell Only"
+                modeText = L("sellOnly")
                 modeColor = Color(255, 200, 100)
             elseif mode == VENDOR_BUYONLY then
-                modeText = "Buy Only"
+                modeText = L("buyOnly")
                 modeColor = Color(100, 200, 255)
             end
 
@@ -2069,12 +2076,12 @@ function PANEL:onNameDescChanged(key)
         timer.Simple(0.1, function()
             if IsValid(self) and IsValid(entity) then
                 local currentAnimation = lia.vendor.getVendorProperty(entity, "animation")
-                if IsValid(self.animation) then self.animation:SetValue(currentAnimation == "" and "None" or currentAnimation) end
+                if IsValid(self.animation) then self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation) end
             end
         end)
     elseif key == "animation" then
         local currentAnimation = lia.vendor.getVendorProperty(entity, "animation")
-        if IsValid(self.animation) then self.animation:SetValue(currentAnimation == "" and "None" or currentAnimation) end
+        if IsValid(self.animation) then self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation) end
     end
 end
 
@@ -2119,7 +2126,7 @@ end
 function PANEL:OnRowRightClick(_, rowData)
     local entity = liaVendorEnt
     if not IsValid(entity) then
-        LocalPlayer():notifyError("Vendor entity is not valid!")
+        LocalPlayer():notifyError(L("vendorEntityInvalid"))
         return
     end
 
@@ -2127,40 +2134,40 @@ function PANEL:OnRowRightClick(_, rowData)
     local uniqueID = rowData.item
     local itemTable = lia.item.list[uniqueID]
     if not itemTable then return end
-    menu = DermaMenu()
-    local mode, modePanel = menu:AddSubMenu("Trade Mode")
+    menu = lia.derma.dermaMenu()
+    local mode, modePanel = menu:AddSubMenu(L("mode"))
     modePanel:SetImage("icon16/key.png")
-    mode:AddOption("None", function() lia.vendor.editor.mode(uniqueID, nil) end):SetImage("icon16/cog_error.png")
-    mode:AddOption("Buy and Sell", function() lia.vendor.editor.mode(uniqueID, VENDOR_SELLANDBUY) end):SetImage("icon16/cog.png")
-    mode:AddOption("Buy Only", function() lia.vendor.editor.mode(uniqueID, VENDOR_BUYONLY) end):SetImage("icon16/cog_delete.png")
-    mode:AddOption("Sell Only", function() lia.vendor.editor.mode(uniqueID, VENDOR_SELLONLY) end):SetImage("icon16/cog_add.png")
+    mode:AddOption(L("none"), function() lia.vendor.editor.mode(uniqueID, nil) end):SetImage("icon16/cog_error.png")
+    mode:AddOption(L("buyOnlynSell"), function() lia.vendor.editor.mode(uniqueID, VENDOR_SELLANDBUY) end):SetImage("icon16/cog.png")
+    mode:AddOption(L("buyOnly"), function() lia.vendor.editor.mode(uniqueID, VENDOR_BUYONLY) end):SetImage("icon16/cog_delete.png")
+    mode:AddOption(L("sellOnly"), function() lia.vendor.editor.mode(uniqueID, VENDOR_SELLONLY) end):SetImage("icon16/cog_add.png")
     menu:AddOption("Buy Price", function()
-        LocalPlayer():requestString(itemTable:getName(), "Set the item's price.", function(text)
+        LocalPlayer():requestString(itemTable:getName(), "@vendorPriceReq", function(text)
             text = tonumber(text)
             lia.vendor.editor.buyPrice(uniqueID, text)
         end, entity.items[uniqueID] and (entity.items[uniqueID][VENDOR_BUYPRICE] or entity.items[uniqueID][VENDOR_PRICE]) or entity:getPrice(uniqueID))
     end):SetImage("icon16/coins.png")
 
     menu:AddOption("Sell Price", function()
-        LocalPlayer():requestString(itemTable:getName(), "Set the item's price.", function(text)
+        LocalPlayer():requestString(itemTable:getName(), "@vendorPriceReq", function(text)
             text = tonumber(text)
             lia.vendor.editor.sellPrice(uniqueID, text)
         end, entity.items[uniqueID] and (entity.items[uniqueID][VENDOR_SELLPRICE] or entity.items[uniqueID][VENDOR_PRICE]) or entity:getPrice(uniqueID, true))
     end):SetImage("icon16/coins.png")
 
-    local stock, stockPanel = menu:AddSubMenu("Stock")
+    local stock, stockPanel = menu:AddSubMenu(L("stock"))
     stockPanel:SetImage("icon16/table.png")
-    stock:AddOption("Disable Stock", function() lia.vendor.editor.stockDisable(uniqueID) end):SetImage("icon16/table_delete.png")
-    stock:AddOption("Edit Max Stock", function()
+    stock:AddOption(L("disable"), function() lia.vendor.editor.stockDisable(uniqueID) end):SetImage("icon16/table_delete.png")
+    stock:AddOption(L("edit"), function()
         local _, max = entity:getStock(uniqueID)
-        LocalPlayer():requestString(itemTable:getName(), "Set max stock quantity.", function(text)
+        LocalPlayer():requestString(itemTable:getName(), "@vendorStockReq", function(text)
             text = math.max(math.Round(tonumber(text) or 1), 1)
             lia.vendor.editor.stockMax(uniqueID, text)
         end, max or 1)
     end):SetImage("icon16/table_edit.png")
 
-    stock:AddOption("Edit Current Stock", function()
-        LocalPlayer():requestString(itemTable:getName(), "Set current stock quantity.", function(text)
+    stock:AddOption(L("vendorEditCurStock"), function()
+        LocalPlayer():requestString(itemTable:getName(), "@vendorStockCurReq", function(text)
             text = math.Round(tonumber(text) or 0)
             lia.vendor.editor.stock(uniqueID, text)
         end, entity:getStock(uniqueID) or 0)
@@ -2180,7 +2187,7 @@ function PANEL:ReloadItemList(filter)
     local rowIndex = 0
     for k, v in SortedPairsByMemberValue(lia.item.list, "name") do
         local name = v.getName and v:getName() or v.name
-        if filter and not (v.getName and name or name):lower():find(filter:lower(), 1, true) then continue end
+        if filter and not (v.getName and name or L(name)):lower():find(filter:lower(), 1, true) then continue end
         rowIndex = rowIndex + 1
         local rowData = self.itemList:Add("liaVendorEditorItemRow")
         rowData:Dock(TOP)

@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self.text = ""
     self.icon = nil
@@ -38,7 +38,7 @@ function PANEL:OnCursorExited()
 end
 
 function PANEL:DoClick()
-    lia.webcontent.sound.playButtonSound()
+    lia.websound.playButtonSound()
     if self.DoClickCallback then self:DoClickCallback() end
 end
 

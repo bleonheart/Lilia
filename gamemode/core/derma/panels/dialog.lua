@@ -1,8 +1,22 @@
-local PANEL = {}
+﻿local PANEL = {}
 local function isGeneratedCloseNode(node)
     if not istable(node) then return false end
     local nodeID = string.Trim(string.lower(tostring(node.dialogID or "")))
     return nodeID == "goodbye" or nodeID == "bye" or nodeID == "farewell" or nodeID == "close"
+end
+
+local function resolveThemeColor(value, fallback)
+    if IsColor(value) then return value end
+    if istable(value) and IsColor(value[1]) then return value[1] end
+    return fallback
+end
+
+local function getThemeColors()
+    local theme = lia.color.theme or {}
+    local configured = lia.config and lia.config.get and lia.config.get("Color") or nil
+    local accent = resolveThemeColor(theme.accent or theme.theme or configured, Color(45, 190, 170))
+    local text = resolveThemeColor(theme.text, Color(225, 238, 238))
+    return accent, text
 end
 
 local function drawPanel(x, y, w, h, radius, color, outline)
@@ -33,7 +47,7 @@ function PANEL:Init()
     if IsValid(lia.dialog.historyFrame) then lia.dialog.historyFrame:Remove() end
     if IsValid(lia.dialog.backdrop) then lia.dialog.backdrop:Remove() end
     lia.dialog.vgui = self
-    self.npcDisplayName = "Dialog"
+    self.npcDisplayName = L("dialog")
     self.lastResponseText = ""
     self.pendingResponse = false
     self.hasHistoryMessage = false
@@ -57,7 +71,7 @@ function PANEL:Init()
     self:SetKeyboardInputEnabled(true)
     self:SetAlpha(0)
     self.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         drawPanel(0, 0, w, h, 8, Color(4, 16, 21, 246), Color(accent.r, accent.g, accent.b, 145))
     end
 
@@ -83,7 +97,7 @@ function PANEL:Init()
     self.dialogHistoryFrame:SetKeyboardInputEnabled(false)
     self.dialogHistoryFrame:SetAlpha(0)
     self.dialogHistoryFrame.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         drawPanel(0, 0, w, h, 8, Color(4, 16, 21, 246), Color(accent.r, accent.g, accent.b, 145))
     end
 
@@ -92,8 +106,8 @@ function PANEL:Init()
     self.historyHeader:Dock(TOP)
     self.historyHeader:SetTall(58)
     self.historyHeader.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-        draw.SimpleText(string.upper("History"), "LiliaFont.18", 18, 20, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        local accent = getThemeColors()
+        draw.SimpleText(string.upper(L("history")), "LiliaFont.18", 18, 20, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 78)
         surface.DrawRect(16, h - 1, w - 32, 1)
     end
@@ -110,8 +124,8 @@ function PANEL:Init()
     self.header:SetMouseInputEnabled(true)
     self.header:SetTall(58)
     self.header.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
-        draw.SimpleText(string.upper(tostring(self.npcDisplayName or "Dialog")), "LiliaFont.18", 18, 20, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        local accent = getThemeColors()
+        draw.SimpleText(string.upper(tostring(self.npcDisplayName or L("dialog"))), "LiliaFont.18", 18, 20, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 78)
         surface.DrawRect(16, h - 1, w - 32, 1)
     end
@@ -121,7 +135,7 @@ function PANEL:Init()
     self.closeButton:SetWide(52)
     self.closeButton:SetText("")
     self.closeButton.Paint = function(button, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeColors()
         local hovered = button:IsHovered()
         if hovered then drawPanel(6, 8, w - 12, h - 16, 5, Color(accent.r, accent.g, accent.b, 24), Color(accent.r, accent.g, accent.b, 72)) end
         draw.SimpleText("X", "LiliaFont.20", w * 0.5, h * 0.5, hovered and Color(244, 248, 248) or Color(170, 192, 193), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -235,7 +249,7 @@ function PANEL:SetDialogText(text)
 end
 
 function PANEL:SetDialogTitle(title)
-    self.npcDisplayName = title or "Dialog"
+    self.npcDisplayName = title or L("dialog")
     if IsValid(self.header) then self.header:InvalidateLayout(true) end
 end
 
@@ -250,7 +264,7 @@ function PANEL:ClearDialogOptions()
 end
 
 function PANEL:GetSpeakerColor(isPlayer)
-    local accent, text = lia.color.theme.accent
+    local accent, text = getThemeColors()
     return isPlayer and accent or text
 end
 
@@ -263,8 +277,8 @@ end
 
 function PANEL:AppendDialogLine(text, isPlayer, skipResponseUpdate)
     if not text or text == "" or not IsValid(self.dialogHistoryList) then return end
-    local speaker = isPlayer and "You" or self.npcDisplayName or "Dialog"
-    local accent = lia.color.theme.accent
+    local speaker = isPlayer and L("you") or self.npcDisplayName or L("dialog")
+    local accent = getThemeColors()
     local isFirstMessage = not self.hasHistoryMessage
     self.hasHistoryMessage = true
     local container = self.dialogHistoryList:Add("DPanel")
@@ -499,7 +513,7 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
 
     if not skipBackButton and #self.conversationStack > 0 then
         table.insert(validOptions, {
-            label = "Back",
+            label = L("back"),
             info = {
                 Response = "",
                 isAutoBack = true
@@ -514,12 +528,12 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         local bIsAdmin = labelB:find("^%[admin%]") or labelB:find("^%[admin%]:")
         if aIsAdmin and not bIsAdmin then return true end
         if bIsAdmin and not aIsAdmin then return false end
-        local aIsBack = a.info.isAutoBack and labelMatches(a.label, "back", "Back", "return", "Return")
-        local bIsBack = b.info.isAutoBack and labelMatches(b.label, "back", "Back", "return", "Return")
+        local aIsBack = a.info.isAutoBack and labelMatches(a.label, "back", L("back"), "return", L("returnText"))
+        local bIsBack = b.info.isAutoBack and labelMatches(b.label, "back", L("back"), "return", L("returnText"))
         if aIsBack and not bIsBack then return true end
         if bIsBack and not aIsBack then return false end
-        local aIsGoodbye = a.info.closeDialog or labelMatches(a.label, "goodbye", "bye", "farewell", "close", "Close")
-        local bIsGoodbye = b.info.closeDialog or labelMatches(b.label, "goodbye", "bye", "farewell", "close", "Close")
+        local aIsGoodbye = a.info.closeDialog or labelMatches(a.label, "goodbye", "bye", "farewell", "close", L("close"))
+        local bIsGoodbye = b.info.closeDialog or labelMatches(b.label, "goodbye", "bye", "farewell", "close", L("close"))
         if aIsGoodbye and not bIsGoodbye then return false end
         if bIsGoodbye and not aIsGoodbye then return true end
         return labelA < labelB
@@ -535,7 +549,7 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         choiceBtn:SetText("")
         choiceBtn:SetCursor("hand")
         choiceBtn.Paint = function(button, w, h)
-            local accent = lia.color.theme.accent
+            local accent = getThemeColors()
             local hovered = button:IsHovered()
             local pressed = button:IsDown()
             local background = pressed and Color(18, 39, 45, 248) or hovered and Color(14, 34, 40, 246) or Color(8, 25, 30, 238)
@@ -550,7 +564,7 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         end
 
         choiceBtn.DoClick = function()
-            if lia.webcontent.sound and lia.webcontent.sound.playButtonSound then lia.webcontent.sound.playButtonSound() end
+            if lia.websound and lia.websound.playButtonSound then lia.websound.playButtonSound() end
             if info.nodeID and self.generatedDialog then
                 self:AppendDialogLine(label, true)
                 self.pendingResponse = true
@@ -563,8 +577,8 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
                 return
             end
 
-            local isGoodbye = info.closeDialog or labelMatches(label, "goodbye", "bye", "farewell", "close", "Close")
-            local isBack = labelMatches(label, "back", "Back", "return", "Return")
+            local isGoodbye = info.closeDialog or labelMatches(label, "goodbye", "bye", "farewell", "close", L("close"))
+            local isBack = labelMatches(label, "back", L("back"), "return", L("returnText"))
             if isBack and info.isAutoBack then
                 self:AppendDialogLine(label, true)
                 if #self.conversationStack > 0 then

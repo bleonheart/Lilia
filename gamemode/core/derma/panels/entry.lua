@@ -1,68 +1,13 @@
-﻿local function isColorLike(value)
-    return istable(value) and isnumber(value.r) and isnumber(value.g) and isnumber(value.b)
-end
-
-local function withAlpha(color, alpha)
-    return Color(color.r, color.g, color.b, alpha)
-end
-
-local function getThemeColor(value, fallback)
-    if isColorLike(value) then return value end
-    return fallback
-end
-
-local function getEntryPalette()
-    local theme = lia.color and lia.color.theme or {}
-    local accent = getThemeColor(theme.accent or theme.theme or theme.header, Color(60, 140, 140))
-    local text = getThemeColor(theme.text, Color(225, 236, 236))
-    local muted = getThemeColor(theme.text_entry or theme.gray, Color(155, 181, 182))
-    local panel = nil
-    if isColorLike(theme.backgroundPanelPopup) then
-        panel = theme.backgroundPanelPopup
-    elseif isColorLike(theme.background_panelpopup) then
-        panel = theme.background_panelpopup
-    elseif istable(theme.panel) and isColorLike(theme.panel[1]) then
-        panel = theme.panel[1]
-    elseif isColorLike(theme.background) then
-        panel = theme.background
-    end
-
-    panel = panel and Color(panel.r, panel.g, panel.b, 235) or Color(5, 18, 23, 235)
-    return {
-        accent = accent,
-        text = text,
-        muted = muted,
-        panel = panel,
-        outline = withAlpha(accent, 92),
-        outlineFocus = withAlpha(accent, 210),
-        placeholder = Color(muted.r, muted.g, muted.b, 150),
-        icon = Color(muted.r, muted.g, muted.b, 210),
-        title = getThemeColor(theme.text, Color(210, 230, 230))
-    }
-end
-
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self.title = nil
-    self.placeholder = "Enter Text"
-    self.font = "LiliaFont.18"
-    self.textColor = nil
-    self.placeholderColor = nil
-    self.cursorColor = nil
-    self.highlightColor = nil
+    self.placeholder = L("enterText")
+    self:SetTall(26)
     self.action = function() end
-    self.leftIcon = nil
-    self.leftIconSize = 16
-    self.radius = 5
-    self.centerText = false
-    self:SetTall(40)
-    self.textEntry = self:Add("DTextEntry")
+    self.font = "LiliaFont.18"
+    self.textEntry = vgui.Create("DTextEntry", self)
     self.textEntry:Dock(FILL)
     self.textEntry:SetText("")
-    self.textEntry:SetFont(self.font)
-    self.textEntry:SetPaintBackground(false)
-    self.textEntry:SetDrawBorder(false)
-    if self.textEntry.SetPaintBorderEnabled then self.textEntry:SetPaintBorderEnabled(false) end
     self.textEntry.OnEnter = function() self.action(self:GetValue()) end
     self.textEntry.OnLoseFocus = function() self.action(self:GetValue()) end
     self.textEntry.OnValueChange = function(_, value) if self.OnValueChange then self:OnValueChange(value) end end
@@ -71,83 +16,60 @@ function PANEL:Init()
         if self.OnTextChanged then self:OnTextChanged(value) end
     end
 
-    self.textEntry.Paint = function(s, w, h) self:PaintTextEntry(s, w, h) end
-    self:ApplyTheme()
-    self:UpdateTextMargin()
-end
-
-function PANEL:ApplyTheme()
-    local palette = getEntryPalette()
-    self.textColor = self.textColor or palette.text
-    self.placeholderColor = self.placeholderColor or palette.placeholder
-    self.cursorColor = self.cursorColor or palette.accent
-    self.highlightColor = self.highlightColor or withAlpha(palette.accent, 60)
-    self.textEntry:SetTextColor(self.textColor)
-    self.textEntry:SetCursorColor(self.cursorColor)
-    if self.textEntry.SetHighlightColor then self.textEntry:SetHighlightColor(self.highlightColor) end
-end
-
-function PANEL:UpdateTextMargin()
-    if not IsValid(self.textEntry) then return end
-    local left = self.leftIcon and 42 or 12
-    self.textEntry:DockMargin(left, 0, 12, 0)
-end
-
-function PANEL:Paint(w, h)
-    local palette = getEntryPalette()
-    local focused = IsValid(self.textEntry) and (self.textEntry:HasFocus() or self.textEntry:IsEditing())
-    local hovered = self:IsHovered() or IsValid(self.textEntry) and self.textEntry:IsHovered()
-    self._focusFrac = Lerp(FrameTime() * 12, self._focusFrac or 0, focused and 1 or 0)
-    self._hoverFrac = Lerp(FrameTime() * 12, self._hoverFrac or 0, hovered and 1 or 0)
-    local outlineAlpha = Lerp(math.max(self._focusFrac, self._hoverFrac * 0.5), palette.outline.a, palette.outlineFocus.a)
-    local outline = Color(palette.accent.r, palette.accent.g, palette.accent.b, outlineAlpha)
-    lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(palette.panel):Shape(lia.derma.SHAPE_IOS):Draw()
-    lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw()
-    if self.leftIcon and not self.leftIcon:IsError() then
-        surface.SetMaterial(self.leftIcon)
-        surface.SetDrawColor(palette.icon)
-        surface.DrawTexturedRect(14, math.floor((h - self.leftIconSize) * 0.5), self.leftIconSize, self.leftIconSize)
-    end
-end
-
-function PANEL:PaintTextEntry(entry, w, h)
-    local palette = getEntryPalette()
-    local value = entry:GetText() or ""
-    local font = self.font or "LiliaFont.18"
-    local textColor = self.textColor or palette.text
-    local placeholderColor = self.placeholderColor or palette.placeholder
-    local highlightColor = self.highlightColor or withAlpha(palette.accent, 60)
-    local cursorColor = self.cursorColor or palette.accent
-    local focused = entry:HasFocus() or entry:IsEditing()
-    if self.centerText then
-        surface.SetFont(font)
-        if value == "" then
-            if not focused then draw.SimpleText(self.placeholder or "", font, w * 0.5, h * 0.5, placeholderColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+    self._text_offset = 0
+    self._centerText = false
+    self.panelColor = lia.color.theme.panel[1]
+    self.textEntry.Paint = function(s, w, h) if self._centerText then return end end
+    self.textEntry._originalPaintOver = nil
+    self.textEntry.PaintOver = function(s, w, h)
+        local theme = lia.color.theme
+        local accent = theme.accent or theme.header or theme.theme or Color(100, 150, 200)
+        local bgColor = Color(30, 33, 40, 255)
+        lia.derma.rect(0, 0, w, h):Rad(8):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        s._focusFrac = Lerp(FrameTime() * 10, s._focusFrac or 0, (s:IsEditing() or s:HasFocus()) and 1 or 0)
+        if s._focusFrac > 0 then
+            local ac = Color(accent.r, accent.g, accent.b, math.floor(s._focusFrac * 255))
+            lia.derma.rect(0, 0, w, h):Rad(8):Color(ac):Outline(1):Draw()
         else
-            draw.SimpleText(value, font, w * 0.5, h * 0.5, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            lia.derma.rect(0, 0, w, h):Rad(8):Color(Color(255, 255, 255, 10)):Outline(1):Draw()
         end
-        return
-    end
 
-    if value == "" and not focused then draw.SimpleText(self.placeholder or "", font, 0, h * 0.5, placeholderColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
-    entry:DrawTextEntryText(textColor, highlightColor, cursorColor)
+        local value = self:GetValue()
+        local padding = 8
+        local font = self.font or "LiliaFont.18"
+        local textCol = theme.text or color_white
+        local selBase = accent
+        local selCol = Color(selBase.r, selBase.g, selBase.b, 60)
+        local caretCol = accent
+        if self._centerText then
+            if value == "" then
+                surface.SetFont(font)
+                local phColor = Color(200, 200, 200, 50)
+                draw.SimpleText(self.placeholder or "", font, w * 0.5, h * 0.5, phColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            else
+                surface.SetFont(font)
+                draw.SimpleText(value, font, w * 0.5, h * 0.5, textCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
+        else
+            if value == "" then
+                surface.SetFont(font)
+                local phColor = Color(200, 200, 200, 50)
+                draw.SimpleText(self.placeholder or "", font, padding, h * 0.5, phColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            end
+
+            s:DrawTextEntryText(textCol, selCol, caretCol)
+        end
+    end
 end
 
 function PANEL:SetTitle(title)
-    if title == nil or tostring(title) == "" then
-        self.title = nil
-        if IsValid(self.titlePanel) then self.titlePanel:Remove() end
-        return
-    end
-
-    self.title = tostring(title)
-    self:SetTall(62)
-    if IsValid(self.titlePanel) then self.titlePanel:Remove() end
-    self.titlePanel = self:Add("DPanel")
+    self.title = title
+    self:SetTall(52)
+    self.titlePanel = vgui.Create("DPanel", self)
     self.titlePanel:Dock(TOP)
     self.titlePanel:DockMargin(0, 0, 0, 6)
-    self.titlePanel:SetTall(16)
-    self.titlePanel.Paint = function(_, w, h) draw.SimpleText(self.title or "", "LiliaFont.16", 0, h * 0.5, getEntryPalette().title, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
+    self.titlePanel:SetTall(18)
+    self.titlePanel.Paint = function() draw.SimpleText(self.title, "LiliaFont.18", 0, 0, lia.color.theme.text_entry or lia.color.theme.text) end
 end
 
 function PANEL:SetPlaceholder(placeholder)
@@ -156,10 +78,6 @@ end
 
 function PANEL:SetPlaceholderText(placeholder)
     self.placeholder = placeholder
-end
-
-function PANEL:SetPlaceholderColor(color)
-    self.placeholderColor = color
 end
 
 function PANEL:SetValue(value)
@@ -181,16 +99,10 @@ end
 function PANEL:SetFont(font)
     self.font = font
     self.textEntry:SetFont(font)
-    self:InvalidateLayout(true)
 end
 
-function PANEL:PerformLayout()
-    if not IsValid(self.textEntry) then return end
-    self.textEntry:SetTextInset(0, 0)
-end
-
-function PANEL:SetNumeric(numeric)
-    if self.textEntry.SetNumeric then self.textEntry:SetNumeric(numeric) end
+function PANEL:SetNumeric(isNumeric)
+    if self.textEntry.SetNumeric then self.textEntry:SetNumeric(isNumeric) end
 end
 
 function PANEL:AllowInput(callback)
@@ -202,54 +114,95 @@ function PANEL:AllowInput(callback)
 end
 
 function PANEL:SetTextColor(color)
-    self.textColor = color
     if IsValid(self.textEntry) then self.textEntry:SetTextColor(color) end
 end
 
-function PANEL:GetTextColor()
-    return self.textColor
-end
-
-function PANEL:SetCursorColor(color)
-    self.cursorColor = color
-    if IsValid(self.textEntry) and self.textEntry.SetCursorColor then self.textEntry:SetCursorColor(color) end
+function PANEL:GetAutoComplete()
+    if self.textEntry.GetAutoComplete then return self.textEntry:GetAutoComplete() end
 end
 
 function PANEL:GetCursorColor()
-    return self.cursorColor
-end
-
-function PANEL:SetHighlightColor(color)
-    self.highlightColor = color
-    if IsValid(self.textEntry) and self.textEntry.SetHighlightColor then self.textEntry:SetHighlightColor(color) end
-end
-
-function PANEL:GetHighlightColor()
-    return self.highlightColor
-end
-
-function PANEL:GetPlaceholderText()
-    return self.placeholder
-end
-
-function PANEL:GetPlaceholderColor()
-    return self.placeholderColor
-end
-
-function PANEL:SetDisabled(disabled)
-    if self.textEntry.SetDisabled then self.textEntry:SetDisabled(disabled) end
+    if self.textEntry.GetCursorColor then return self.textEntry:GetCursorColor() end
 end
 
 function PANEL:GetDisabled()
     if self.textEntry.GetDisabled then return self.textEntry:GetDisabled() end
 end
 
-function PANEL:SetDrawBorder(drawBorder)
-    if self.textEntry.SetDrawBorder then self.textEntry:SetDrawBorder(drawBorder) end
+function PANEL:GetPaintBackground()
+    if self.textEntry.GetPaintBackground then return self.textEntry:GetPaintBackground() end
 end
 
 function PANEL:GetDrawBorder()
     if self.textEntry.GetDrawBorder then return self.textEntry:GetDrawBorder() end
+end
+
+function PANEL:GetEnterAllowed()
+    if self.textEntry.GetEnterAllowed then return self.textEntry:GetEnterAllowed() end
+end
+
+function PANEL:GetFloat()
+    if self.textEntry.GetFloat then return self.textEntry:GetFloat() end
+end
+
+function PANEL:GetHighlightColor()
+    if self.textEntry.GetHighlightColor then return self.textEntry:GetHighlightColor() end
+end
+
+function PANEL:GetHistoryEnabled()
+    if self.textEntry.GetHistoryEnabled then return self.textEntry:GetHistoryEnabled() end
+end
+
+function PANEL:GetInt()
+    if self.textEntry.GetInt then return self.textEntry:GetInt() end
+end
+
+function PANEL:GetNumeric()
+    if self.textEntry.GetNumeric then return self.textEntry:GetNumeric() end
+end
+
+function PANEL:GetPaintBackground()
+    if self.textEntry.GetPaintBackgroundEnabled then return self.textEntry:GetPaintBackgroundEnabled() end
+end
+
+function PANEL:GetPlaceholderColor()
+    if self.textEntry.GetPlaceholderColor then return self.textEntry:GetPlaceholderColor() end
+end
+
+function PANEL:GetPlaceholderText()
+    return self.placeholder
+end
+
+function PANEL:GetTabbingDisabled()
+    if self.textEntry.GetTabbingDisabled then return self.textEntry:GetTabbingDisabled() end
+end
+
+function PANEL:GetTextColor()
+    if self.textEntry.GetTextColor then return self.textEntry:GetTextColor() end
+end
+
+function PANEL:GetUpdateOnType()
+    if self.textEntry.GetUpdateOnType then return self.textEntry:GetUpdateOnType() end
+end
+
+function PANEL:IsEditing()
+    if self.textEntry.IsEditing then return self.textEntry:IsEditing() end
+end
+
+function PANEL:SetCursorColor(color)
+    if self.textEntry.SetCursorColor then self.textEntry:SetCursorColor(color) end
+end
+
+function PANEL:SetDisabled(disabled)
+    if self.textEntry.SetDisabled then self.textEntry:SetDisabled(disabled) end
+end
+
+function PANEL:SetPaintBackground(drawBackground)
+    if self.textEntry.SetPaintBackground then self.textEntry:SetPaintBackground(drawBackground) end
+end
+
+function PANEL:SetDrawBorder(drawBorder)
+    if self.textEntry.SetDrawBorder then self.textEntry:SetDrawBorder(drawBorder) end
 end
 
 function PANEL:SetEditable(editable)
@@ -260,32 +213,40 @@ function PANEL:SetEnterAllowed(allowed)
     if self.textEntry.SetEnterAllowed then self.textEntry:SetEnterAllowed(allowed) end
 end
 
-function PANEL:GetEnterAllowed()
-    if self.textEntry.GetEnterAllowed then return self.textEntry:GetEnterAllowed() end
+function PANEL:SetHighlightColor(color)
+    if self.textEntry.SetHighlightColor then self.textEntry:SetHighlightColor(color) end
 end
 
 function PANEL:SetHistoryEnabled(enabled)
     if self.textEntry.SetHistoryEnabled then self.textEntry:SetHistoryEnabled(enabled) end
 end
 
-function PANEL:GetHistoryEnabled()
-    if self.textEntry.GetHistoryEnabled then return self.textEntry:GetHistoryEnabled() end
+function PANEL:SetNumeric(numeric)
+    if self.textEntry.SetNumeric then self.textEntry:SetNumeric(numeric) end
+end
+
+function PANEL:SetPaintBackground(paintBackground)
+    if self.textEntry.SetPaintBackgroundEnabled then self.textEntry:SetPaintBackgroundEnabled(paintBackground) end
+end
+
+function PANEL:SetPlaceholderColor(color)
+    if self.textEntry.SetPlaceholderColor then self.textEntry:SetPlaceholderColor(color) end
+end
+
+function PANEL:SetPlaceholderText(placeholder)
+    self.placeholder = placeholder
 end
 
 function PANEL:SetTabbingDisabled(disabled)
     if self.textEntry.SetTabbingDisabled then self.textEntry:SetTabbingDisabled(disabled) end
 end
 
-function PANEL:GetTabbingDisabled()
-    if self.textEntry.GetTabbingDisabled then return self.textEntry:GetTabbingDisabled() end
+function PANEL:SetTextColor(color)
+    if IsValid(self.textEntry) then self.textEntry:SetTextColor(color) end
 end
 
 function PANEL:SetUpdateOnType(update)
     if self.textEntry.SetUpdateOnType then self.textEntry:SetUpdateOnType(update) end
-end
-
-function PANEL:GetUpdateOnType()
-    if self.textEntry.GetUpdateOnType then return self.textEntry:GetUpdateOnType() end
 end
 
 function PANEL:SetMultiline(multiline)
@@ -294,15 +255,16 @@ end
 
 function PANEL:SetContentAlignment(align)
     if align == TEXT_ALIGN_CENTER or align == 5 then
-        self.centerText = true
+        self._centerText = true
+        if IsValid(self.textEntry) then
+            self.textEntry.Paint = function(s, w, h) return end
+            if self.textEntry.SetPaintBackground then self.textEntry:SetPaintBackground(false) end
+            if self.textEntry.SetDrawBorder then self.textEntry:SetDrawBorder(false) end
+        end
     else
-        self.centerText = false
+        self._centerText = false
+        if IsValid(self.textEntry) then self.textEntry.Paint = function(s, w, h) if self._centerText then return end end end
     end
-end
-
-function PANEL:IsEditing()
-    if self.textEntry.IsEditing then return self.textEntry:IsEditing() end
-    return false
 end
 
 function PANEL:OnChange()
@@ -339,23 +301,6 @@ end
 
 function PANEL:UpdateFromMenu()
     if self.textEntry.UpdateFromMenu then self.textEntry:UpdateFromMenu() end
-end
-
-function PANEL:SetLeftIcon(icon, size)
-    if type(icon) == "IMaterial" then
-        self.leftIcon = icon
-    elseif isstring(icon) and icon ~= "" then
-        self.leftIcon = Material(icon, "smooth")
-    else
-        self.leftIcon = nil
-    end
-
-    if isnumber(size) and size > 0 then self.leftIconSize = size end
-    self:UpdateTextMargin()
-end
-
-function PANEL:SetIcon(icon, size)
-    self:SetLeftIcon(icon, size)
 end
 
 vgui.Register("liaEntry", PANEL, "EditablePanel")

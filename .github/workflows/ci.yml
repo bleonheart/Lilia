@@ -191,7 +191,7 @@ jobs:
           python3 generate_docs.py compatibility --force
           python3 generate_docs.py about --force
       - run: |
-          python3 scripts/remove_comments.py gamemode
+          python3 remove_comments.py gamemode
       - if: ${{ steps.skip_docs_regen.outputs.present != 'true' }}
         run: |
           echo "=== Fetching Modules Documentation ==="
@@ -384,7 +384,7 @@ jobs:
           python3 generate_docs.py compatibility --force
           python3 generate_docs.py about --force
       - run: |
-          python3 scripts/remove_comments.py gamemode
+          python3 remove_comments.py gamemode
       - if: ${{ steps.skip_docs_regen.outputs.present != 'true' }}
         run: |
           echo "=== Fetching Modules Documentation ==="
@@ -424,36 +424,29 @@ jobs:
           echo "Modules documentation successfully placed in documentation/docs/modules/"
       - if: ${{ steps.skip_docs_regen.outputs.present == 'true' }}
         run: |
-          echo "Skipping documentation regeneration and GitHub Pages deployment because .skip-docs-regeneration is present."
+          echo "Skipping documentation regeneration because .skip-docs-regeneration is present."
       - uses: actions/setup-node@v7
-        if: ${{ steps.skip_docs_regen.outputs.present != 'true' }}
         with:
           node-version: '24'
           cache: npm
           cache-dependency-path: documentation/docs/derma_generator/source/package-lock.json
       - name: Build Derma Generator
-        if: ${{ steps.skip_docs_regen.outputs.present != 'true' }}
         run: |
           npm ci --prefix documentation/docs/derma_generator/source
           npm --prefix documentation/docs/derma_generator/source run build:docs
           rm -rf documentation/docs/derma_generator/source/node_modules
       - uses: actions/checkout@v7
-        if: ${{ steps.skip_docs_regen.outputs.present != 'true' }}
         with:
           repository: LiliaFramework/LiliaFramework.github.io
           path: site
           token: ${{ secrets.LiliaGitSecret }}
-      - if: ${{ steps.skip_docs_regen.outputs.present != 'true' }}
-        run: |
+      - run: |
           rsync -a --delete --exclude '.git' documentation/ site/
-      - if: ${{ steps.skip_docs_regen.outputs.present != 'true' }}
-        run: |
+      - run: |
           curl -L -o site/modules.json https://raw.githubusercontent.com/LiliaFramework/Modules/gh-pages/modules.json
-      - if: ${{ steps.skip_docs_regen.outputs.present != 'true' }}
-        run: |
+      - run: |
           echo "{\"version\":\"${VERSION}\"}" > site/version.json
-      - if: ${{ steps.skip_docs_regen.outputs.present != 'true' }}
-        run: |
+      - run: |
           cd site
           git config user.name github-actions
           git config user.email github-actions@github.com

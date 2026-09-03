@@ -1,7 +1,7 @@
-﻿ITEM.name = "Bag"
-ITEM.desc = "A bag to hold more items."
+﻿ITEM.name = "@bagName"
+ITEM.desc = "@bagDesc"
 ITEM.model = "models/props_c17/suitcase001a.mdl"
-ITEM.category = "Storage"
+ITEM.category = "@storage"
 ITEM.isBag = true
 ITEM.invWidth = 2
 ITEM.invHeight = 2
@@ -76,7 +76,7 @@ end
 
 lia.inventory = lia.inventory or {}
 ITEM.functions.Open = {
-    tip = "Opens the container.",
+    tip = "@openTip",
     icon = "icon16/briefcase.png",
     onRun = function(item)
         local client = item.player
@@ -84,7 +84,7 @@ ITEM.functions.Open = {
         if not inventory then
             if SERVER then
                 lia.log.add(client, "itemInteractionFailed", "open", item:getName())
-                client:notifyError("This bag has no inventory.")
+                client:notifyErrorLocalized("bagNoInventory")
             end
             return false
         end
@@ -105,7 +105,7 @@ ITEM.functions.Open = {
         local canRun = not IsValid(item.entity) and item:getInv() ~= nil
         if SERVER and not canRun then
             local reason = IsValid(item.entity) and "bagOnGround" or "bagNoInventory"
-            client:notifyError(reason)
+            client:notifyErrorLocalized(reason)
             lia.log.add(client, "itemInteractionFailed", "open", item:getName())
         end
         return canRun
@@ -129,7 +129,7 @@ function ITEM:onCombine(other)
     if not res then return end
     res:next(function(result)
         if not IsValid(client) then return end
-        if istable(result) and isstring(result.error) then return client:notifyError(result.error) end
+        if istable(result) and isstring(result.error) then return client:notifyErrorLocalized(result.error) end
         client:EmitSound(unpack(self.BagSound))
     end)
 end

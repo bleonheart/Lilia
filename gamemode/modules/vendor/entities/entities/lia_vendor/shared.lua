@@ -1,8 +1,8 @@
 ﻿LiliaVendors = LiliaVendors or {}
 ENT.Type = "anim"
-ENT.PrintName = "Vendor"
+ENT.PrintName = L("vendor")
 ENT.Author = "Samael"
-ENT.Contact = "liliaplayer"
+ENT.Contact = "@liliaplayer"
 ENT.Category = "Lilia"
 ENT.Spawnable = true
 ENT.AdminOnly = true
@@ -13,7 +13,7 @@ ENT.DrawEntityInfo = true
 ENT.IsPersistent = true
 function ENT:setupVars()
     if SERVER and not self.hasSetupVars then
-        lia.vendor.setVendorProperty(self, "name", "Jane Doe")
+        lia.vendor.setVendorProperty(self, "name", L("vendorDefaultName"))
         lia.vendor.setVendorProperty(self, "desc", "")
         lia.vendor.setVendorProperty(self, "preset", "none")
         lia.vendor.setVendorProperty(self, "animation", "")
@@ -95,7 +95,7 @@ end
 
 function ENT:isItemInStock(itemType, amount)
     amount = amount or 1
-    assert(isnumber(amount), "Amount must be a number")
+    assert(isnumber(amount), L("vendorAmountNumber"))
     if not self.items then self:setupVars() end
     local info = self.items[itemType]
     if not info then return false end

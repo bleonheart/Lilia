@@ -1,17 +1,17 @@
-function MODULE:LoadCharInformation()
+﻿function MODULE:LoadCharInformation()
     local client = LocalPlayer()
     if not IsValid(client) then return end
     local character = client:getChar()
     if not character then return end
-    hook.Run("AddTextField", "General Info", "faction", "Faction", function()
+    hook.Run("AddTextField", L("generalInfo"), "faction", L("faction"), function()
         local factionName = team.GetName(client:Team())
-        return string.format("You are part of the %s faction", factionName)
+        return L("factionMember", factionName)
     end)
 
     local classID = character:getClass()
     if not lia.class or not lia.class.list then return end
     local classData = lia.class.list[classID]
-    if classID and classData and classData.name then hook.Run("AddTextField", "General Info", "class", "Class", function() return string.format("You are part of the %s class", classData.name) end) end
+    if classID and classData and classData.name then hook.Run("AddTextField", L("generalInfo"), "class", L("class"), function() return L("classMember", classData.name) end) end
 end
 
 function MODULE:DrawCharInfo(client, character, info)
@@ -24,7 +24,7 @@ function MODULE:DrawCharInfo(client, character, info)
 
         info[#info + 1] = {
             label = "Class",
-            value = charClass.name or "Undefined Class"
+            value = charClass.name or L("undefinedClass")
         }
     end
 end
@@ -39,6 +39,13 @@ local rosterCopyIcon = Material("icon16/page_copy.png", "smooth")
 local rosterProfileIcon = Material("icon16/world.png", "smooth")
 local rosterNoteIcon = Material("icon16/note_edit.png", "smooth")
 local rosterKickIcon = Material("icon16/user_delete.png", "smooth")
+local function getRosterThemeColors()
+    local theme = lia.color.theme or {}
+    local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
+    local text = theme.text or Color(225, 238, 238)
+    return accent, text
+end
+
 local function drawRosterPanel(x, y, w, h, radius, color, outline)
     if lia.derma and lia.derma.rect then
         lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -60,6 +67,47 @@ local function drawRosterIcon(material, x, y, size, color)
     surface.DrawTexturedRect(x, y, size, size)
 end
 
+local function getRosterTextLength(text)
+    if utf8 and utf8.len then
+        local length = utf8.len(text)
+        if length then return length end
+    end
+    return #text
+end
+
+local function getRosterTextPrefix(text, length)
+    if length <= 0 then return "" end
+    if utf8 and utf8.offset then
+        local nextByte = utf8.offset(text, length + 1)
+        if nextByte then return text:sub(1, nextByte - 1) end
+    end
+    return text:sub(1, length)
+end
+
+local function fitRosterText(text, font, maxWidth)
+    text = tostring(text or "")
+    maxWidth = math.max(0, tonumber(maxWidth) or 0)
+    surface.SetFont(font)
+    local textWidth = surface.GetTextSize(text)
+    if textWidth <= maxWidth then return text end
+    local ellipsis = "..."
+    local ellipsisWidth = surface.GetTextSize(ellipsis)
+    if ellipsisWidth > maxWidth then return "" end
+    local low = 0
+    local high = getRosterTextLength(text)
+    while low < high do
+        local mid = math.ceil((low + high) * 0.5)
+        local candidate = getRosterTextPrefix(text, mid) .. ellipsis
+        local candidateWidth = surface.GetTextSize(candidate)
+        if candidateWidth <= maxWidth then
+            low = mid
+        else
+            high = mid - 1
+        end
+    end
+    return getRosterTextPrefix(text, low) .. ellipsis
+end
+
 local function getRosterFactionData(uniqueID)
     for id, faction in pairs(lia.faction.teams or {}) do
         if id == uniqueID or faction.uniqueID == uniqueID or faction.index == uniqueID then return faction end
@@ -71,19 +119,19 @@ local function getRosterFactionData(uniqueID)
 end
 
 local function getRosterMemberPresence(member)
-    local lastOnlineText = member.lastOnline or "Unknown"
-    local isOnline = lastOnlineText == "Online now"
+    local lastOnlineText = member.lastOnline or L("unknown")
+    local isOnline = lastOnlineText == L("onlineNow")
     local charID = tonumber(member and member.charID)
     if not isOnline and charID then
         local owner = lia.char.getOwnerByID(charID)
         local character = IsValid(owner) and owner:getChar() or nil
         if character and character:getID() == charID then
             isOnline = true
-            lastOnlineText = "Online now"
+            lastOnlineText = L("onlineNow")
         end
     end
 
-    if not isOnline and isstring(lastOnlineText) and lastOnlineText ~= "Unknown" then
+    if not isOnline and isstring(lastOnlineText) and lastOnlineText ~= L("unknown") then
         local timeParts = lia.time.toNumber(lastOnlineText)
         if timeParts and timeParts.year then
             local timestamp = os.time({
@@ -98,9 +146,9 @@ local function getRosterMemberPresence(member)
             local lastDiff = os.time() - timestamp
             if lastDiff > 0 then
                 local timeSince = lia.time.timeSince(timestamp)
-                if timeSince and timeSince ~= "Invalid date" and timeSince ~= "Invalid input" then
+                if timeSince and timeSince ~= L("invalidDate") and timeSince ~= L("invalidInput") then
                     local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                    lastOnlineText = string.format("%s (%s) ago", timeStripped, lia.time.formatDHM(lastDiff))
+                    lastOnlineText = L("agoFormat", timeStripped, lia.time.formatDHM(lastDiff))
                 end
             end
         end
@@ -119,24 +167,24 @@ end
 
 local function getRosterFactionDisplayName(factionUniqueID)
     local faction = getRosterFactionData(factionUniqueID)
-    if faction and faction.name then return tostring(faction.name) end
-    return tostring(factionUniqueID or "Unknown")
+    if faction and faction.name then return tostring(L(faction.name)) end
+    return tostring(factionUniqueID or L("unknown"))
 end
 
 local function formatRosterUnixTime(timestamp)
     timestamp = tonumber(timestamp)
-    if not timestamp or timestamp <= 0 then return "Unknown" end
+    if not timestamp or timestamp <= 0 then return L("unknown") end
     return os.date("%Y-%m-%d %H:%M:%S", timestamp)
 end
 
 local function formatRosterDuration(seconds)
     seconds = tonumber(seconds)
-    if not seconds or seconds < 0 then return "Unknown" end
+    if not seconds or seconds < 0 then return L("unknown") end
     return lia.time.formatDHM(seconds)
 end
 
 local function formatRosterTransferSummary(entry)
-    if not istable(entry) then return "Unknown", "Unknown" end
+    if not istable(entry) then return L("unknown"), L("unknown") end
     local fromFaction = entry.from and getRosterFactionDisplayName(entry.from) or "None"
     local toFaction = entry.to and getRosterFactionDisplayName(entry.to) or "None"
     local summary = string.format("%s -> %s", fromFaction, toFaction)
@@ -194,7 +242,7 @@ local function openFactionNoteEditor(member, factionUniqueID, onSaved)
     info:SetWrap(true)
     info:SetFont("LiliaFont.17")
     info:SetTextColor(Color(215, 230, 230))
-    info:SetText(string.format("Editing the faction note for %s in %s.", tostring(member.name or "Unknown"), getRosterFactionDisplayName(factionUniqueID)))
+    info:SetText(string.format("Editing the faction note for %s in %s.", tostring(member.name or L("unknown")), getRosterFactionDisplayName(factionUniqueID)))
     local editor = frame:Add("DTextEntry")
     editor:Dock(FILL)
     editor:SetMultiline(true)
@@ -232,7 +280,7 @@ local function openFactionNoteEditor(member, factionUniqueID, onSaved)
         net.SendToServer()
         if onSaved then onSaved(editor:GetValue() or "") end
         frame:Close()
-        lia.webcontent.sound.playButtonSound()
+        lia.websound.playButtonSound()
     end
 
     local clearButton = footer:Add("DButton")
@@ -243,7 +291,7 @@ local function openFactionNoteEditor(member, factionUniqueID, onSaved)
     clearButton:SetFont("LiliaFont.17")
     clearButton.DoClick = function()
         editor:SetText("")
-        lia.webcontent.sound.playButtonSound()
+        lia.websound.playButtonSound()
     end
 end
 
@@ -254,7 +302,7 @@ local function addRosterDetailSection(parent, title, rows)
     section:DockMargin(0, 0, 0, 12)
     section:DockPadding(14, 42, 14, 8)
     section.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
+        local accent = getRosterThemeColors()
         drawRosterPanel(0, 0, panelW, panelH, 6, Color(3, 16, 21, 185), Color(accent.r, accent.g, accent.b, 68))
         draw.SimpleText(title, "LiliaFont.17", 14, 12, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 35)
@@ -280,7 +328,7 @@ function MODULE:CreateMenuButtons(tabs)
     if #joinable >= 1 then
         tabs["classes"] = {
             name = "classes",
-            icon = "classes.png",
+            icon = "icon16/group.png",
             func = function(panel) panel:Add("liaClasses") end
         }
     end
@@ -292,14 +340,14 @@ function MODULE:CreateMenuButtons(tabs)
     if character:hasFlags("F") then
         tabs["factionRoster"] = {
             name = "factionRoster",
-            icon = "factionmanagement.png",
+            icon = "icon16/group_go.png",
             func = function(panel)
                 panel:Clear()
                 panel:DockPadding(6, 6, 6, 6)
                 panel.Paint = nil
                 local loadingLabel = panel:Add("DLabel")
                 loadingLabel:Dock(FILL)
-                loadingLabel:SetText("Loading...")
+                loadingLabel:SetText(L("loading"))
                 loadingLabel:SetTextColor(Color(150, 150, 150))
                 loadingLabel:SetFont("LiliaFont.20")
                 loadingLabel:SetContentAlignment(5)
@@ -316,7 +364,7 @@ function MODULE:CreateMenuButtons(tabs)
                     net.WriteString(faction.uniqueID)
                     net.SendToServer()
                 else
-                    loadingLabel:SetText("No factions found.")
+                    loadingLabel:SetText(L("noFactionsFound"))
                 end
             end
         }
@@ -330,7 +378,7 @@ local function getFactionManagementFactions()
         if faction and faction.name then
             factions[#factions + 1] = {
                 uniqueID = tostring(faction.uniqueID or uniqueID),
-                name = tostring(faction.name)
+                name = tostring(L(faction.name))
             }
         end
     end
@@ -360,7 +408,7 @@ local function CreateFactionManagementUI(panel)
     if #panel.managementFactions == 0 then
         local noFactionsLabel = panel:Add("DLabel")
         noFactionsLabel:Dock(FILL)
-        noFactionsLabel:SetText("No options available")
+        noFactionsLabel:SetText(L("noOptionsAvailable"))
         noFactionsLabel:SetTextColor(Color(150, 150, 150))
         noFactionsLabel:SetFont("LiliaFont.20")
         noFactionsLabel:SetContentAlignment(5)
@@ -369,7 +417,7 @@ local function CreateFactionManagementUI(panel)
 
     local loadingLabel = panel:Add("DLabel")
     loadingLabel:Dock(FILL)
-    loadingLabel:SetText("Loading...")
+    loadingLabel:SetText(L("loading"))
     loadingLabel:SetTextColor(Color(150, 150, 150))
     loadingLabel:SetFont("LiliaFont.20")
     loadingLabel:SetContentAlignment(5)
@@ -394,14 +442,14 @@ local function UpdateFactionRosterUI(panel, data)
     panel.rosterFactionUniqueID = data.faction
     if isManagement then panel.managementSelectedFaction = data.faction end
     local faction = getRosterFactionData(data.faction)
-    local factionName = faction and faction.name and faction.name or team.GetName(LocalPlayer():Team()) or "Unknown"
+    local factionName = faction and faction.name and L(faction.name) or team.GetName(LocalPlayer():Team()) or L("unknown")
     local factionIcon = rosterMemberIcon
     if faction and isstring(faction.logo) and faction.logo ~= "" then factionIcon = Material(faction.logo, "smooth") end
     local header = panel:Add("DPanel")
     header:Dock(TOP)
     header:SetTall(isManagement and 56 or 76)
     header.Paint = function(_, panelW)
-        local accent, textColor = lia.color.theme.accent, lia.color.theme.text
+        local accent, textColor = getRosterThemeColors()
         if not isManagement then
             draw.SimpleText("Faction Roster", "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             draw.SimpleText("Browse and inspect faction members.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
@@ -427,7 +475,7 @@ local function UpdateFactionRosterUI(panel, data)
     browser:DockMargin(0, 0, 14, 0)
     browser:DockPadding(12, 12, 12, 12)
     browser.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
+        local accent = getRosterThemeColors()
         drawRosterPanel(0, 0, panelW, panelH, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
     end
 
@@ -455,7 +503,7 @@ local function UpdateFactionRosterUI(panel, data)
     end
 
     filterCombo.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
+        local accent = getRosterThemeColors()
         drawRosterPanel(0, 0, panelW, panelH, 5, Color(5, 18, 23, 235), Color(accent.r, accent.g, accent.b, 92))
     end
 
@@ -468,7 +516,7 @@ local function UpdateFactionRosterUI(panel, data)
     searchWrap:Dock(FILL)
     searchWrap:DockPadding(40, 0, 8, 0)
     searchWrap.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
+        local accent = getRosterThemeColors()
         drawRosterPanel(0, 0, panelW, panelH, 5, Color(5, 18, 23, 235), Color(accent.r, accent.g, accent.b, 92))
         drawRosterIcon(rosterSearchIcon, 14, math.floor(panelH * 0.5) - 8, 16, Color(155, 181, 182))
     end
@@ -477,7 +525,7 @@ local function UpdateFactionRosterUI(panel, data)
     searchEntry:Dock(FILL)
     searchEntry:SetFont("LiliaFont.17")
     searchEntry:SetTextColor(Color(225, 236, 236))
-    searchEntry:SetCursorColor(lia.color.theme.accent)
+    searchEntry:SetCursorColor(getRosterThemeColors())
     searchEntry:SetPlaceholderText("Search members...")
     searchEntry:SetPaintBackground(false)
     searchEntry:SetPaintBackground(false)
@@ -495,7 +543,7 @@ local function UpdateFactionRosterUI(panel, data)
     details:Dock(FILL)
     details:DockPadding(14, 14, 14, 14)
     details.Paint = function(_, panelW, panelH)
-        local accent = lia.color.theme.accent
+        local accent = getRosterThemeColors()
         drawRosterPanel(0, 0, panelW, panelH, 8, Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 80))
     end
 
@@ -505,7 +553,7 @@ local function UpdateFactionRosterUI(panel, data)
         if not member then
             local empty = details:Add("DLabel")
             empty:Dock(FILL)
-            empty:SetText("No options available")
+            empty:SetText(L("noOptionsAvailable"))
             empty:SetTextColor(Color(150, 170, 170))
             empty:SetFont("LiliaFont.20")
             empty:SetContentAlignment(5)
@@ -516,7 +564,7 @@ local function UpdateFactionRosterUI(panel, data)
         panel.selectedRosterCharID = member.charID
         local isOnline, lastOnlineText = getRosterMemberPresence(member)
         local statusText = isOnline and "ONLINE" or "OFFLINE"
-        local accent, textColor = lia.color.theme.accent, lia.color.theme.text
+        local accent, textColor = getRosterThemeColors()
         local className = getRosterMemberClassName(member)
         local memberHeader = details:Add("DPanel")
         memberHeader:Dock(TOP)
@@ -542,7 +590,7 @@ local function UpdateFactionRosterUI(panel, data)
             draw.SimpleText(statusText, "LiliaFont.15", badgeX + 31, badgeY + badgeH * 0.5, badgeTextColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             local textX = iconX + iconSize + 24
             local nameMaxWidth = math.max(80, badgeX - textX - 24)
-            local displayName = lia.util.wrapText(member.name or "Unknown", nameMaxWidth, "LiliaFont.25", 1, "...")[1] or ""
+            local displayName = fitRosterText(member.name or L("unknown"), "LiliaFont.25", nameMaxWidth)
             draw.SimpleText(displayName, "LiliaFont.25", textX, 24, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             local subtitleY = 73
             local subtitleX = textX
@@ -559,7 +607,7 @@ local function UpdateFactionRosterUI(panel, data)
             subtitleX = subtitleX + factionWidth + 10
             local separatorWidth = draw.SimpleText("•", "LiliaFont.17", subtitleX, subtitleY, Color(100, 145, 145), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             subtitleX = subtitleX + separatorWidth + 10
-            draw.SimpleText("Character #" .. tostring(member.charID or "Unknown"), "LiliaFont.17", subtitleX, subtitleY, Color(185, 204, 204), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            draw.SimpleText("Character #" .. tostring(member.charID or L("unknown")), "LiliaFont.17", subtitleX, subtitleY, Color(185, 204, 204), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         end
 
         local detailScroll = details:Add("liaScrollPanel")
@@ -573,17 +621,17 @@ local function UpdateFactionRosterUI(panel, data)
             canvas = detailScroll
         end
 
-        local generalRows = {{"Character ID", tostring(member.charID or "Unknown")}, {"SteamID", tostring(member.steamID or "Unknown")}, {"Faction", tostring(factionName)}}
-        if className then generalRows[#generalRows + 1] = {"Class", tostring(className)} end
+        local generalRows = {{L("characterID"), tostring(member.charID or L("unknown"))}, {L("steamID"), tostring(member.steamID or L("unknown"))}, {L("faction"), tostring(factionName)}}
+        if className then generalRows[#generalRows + 1] = {L("class"), tostring(className)} end
         if member.joinDate then generalRows[#generalRows + 1] = {"Join Date", formatRosterUnixTime(member.joinDate)} end
         local optionalRank = member.rank or member.role
         if optionalRank ~= nil and tostring(optionalRank) ~= "" then generalRows[#generalRows + 1] = {"Rank / Role", tostring(optionalRank)} end
         addRosterDetailSection(canvas, "GENERAL", generalRows)
-        local statusRows = {{"Presence", isOnline and "Online" or "Offline"}, {"Last Online", tostring(lastOnlineText)}, {"Last Active", isOnline and "Online now" or tostring(member.lastActive or member.lastOnline or "Unknown")}}
+        local statusRows = {{"Presence", isOnline and "Online" or "Offline"}, {L("lastOnline"), tostring(lastOnlineText)}, {"Last Active", isOnline and L("onlineNow") or tostring(member.lastActive or member.lastOnline or L("unknown"))}}
         if member.timeInFaction ~= nil then statusRows[#statusRows + 1] = {"Time in Faction", formatRosterDuration(member.timeInFaction)} end
         if member.playtimeInFaction ~= nil then statusRows[#statusRows + 1] = {"Playtime in Faction", formatRosterDuration(member.playtimeInFaction)} end
         local playtime = member.playtime or member.playTime
-        if playtime ~= nil and tostring(playtime) ~= "" then statusRows[#statusRows + 1] = {"Playtime", formatRosterDuration(playtime)} end
+        if playtime ~= nil and tostring(playtime) ~= "" then statusRows[#statusRows + 1] = {L("playtime"), formatRosterDuration(playtime)} end
         addRosterDetailSection(canvas, "STATUS", statusRows)
         local transferRows = {}
         if member.transferHistory == nil then
@@ -613,7 +661,7 @@ local function UpdateFactionRosterUI(panel, data)
         actions:SetTall(116)
         actions:DockMargin(0, 0, 0, 12)
         actions.Paint = function(_, panelW, panelH)
-            local currentAccent = lia.color.theme.accent
+            local currentAccent = getRosterThemeColors()
             drawRosterPanel(0, 0, panelW, panelH, 6, Color(3, 16, 21, 185), Color(currentAccent.r, currentAccent.g, currentAccent.b, 68))
             draw.SimpleText("MEMBER ACTIONS", "LiliaFont.17", 14, 12, currentAccent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             surface.SetDrawColor(currentAccent.r, currentAccent.g, currentAccent.b, 35)
@@ -634,7 +682,7 @@ local function UpdateFactionRosterUI(panel, data)
             button:SetEnabled(isEnabled)
             actionButtonCount = actionButtonCount + 1
             button.Paint = function(s, panelW, panelH)
-                local currentAccent = lia.color.theme.accent
+                local currentAccent = getRosterThemeColors()
                 local hovered = s:IsHovered() and s:IsEnabled()
                 drawRosterPanel(0, 0, panelW, panelH, 5, hovered and Color(currentAccent.r, currentAccent.g, currentAccent.b, 28) or Color(5, 18, 23, 235), Color(currentAccent.r, currentAccent.g, currentAccent.b, hovered and 120 or 72))
                 drawRosterIcon(icon, 14, math.floor(panelH * 0.5) - 8, 16, s:IsEnabled() and Color(185, 205, 205) or Color(100, 115, 115))
@@ -644,7 +692,7 @@ local function UpdateFactionRosterUI(panel, data)
             button.DoClick = function(self)
                 if not self:IsEnabled() then return end
                 onClick()
-                lia.webcontent.sound.playButtonSound()
+                lia.websound.playButtonSound()
             end
             return button
         end
@@ -674,7 +722,7 @@ local function UpdateFactionRosterUI(panel, data)
         end)
 
         if isManagement then
-            createActionButton(string.upper(tostring("Kick to Base Faction")), rosterKickIcon, true, function()
+            createActionButton(string.upper(tostring(L("kickToBaseFaction"))), rosterKickIcon, true, function()
                 net.Start("liaKickCharacterToBase")
                 net.WriteUInt(tonumber(member.charID) or 0, 32)
                 net.SendToServer()
@@ -692,7 +740,7 @@ local function UpdateFactionRosterUI(panel, data)
         local selectedMember
         local visibleCount = 0
         for _, member in ipairs(members) do
-            local memberName = tostring(member.name or "Unknown")
+            local memberName = tostring(member.name or L("unknown"))
             local charID = tostring(member.charID or "")
             local steamID = tostring(member.steamID or "")
             local className = tostring(getRosterMemberClassName(member) or "")
@@ -708,7 +756,7 @@ local function UpdateFactionRosterUI(panel, data)
             button:DockMargin(0, 0, 0, 8)
             button:SetText("")
             button.Paint = function(s, panelW, panelH)
-                local currentAccent = lia.color.theme.accent
+                local currentAccent = getRosterThemeColors()
                 local active = panel.selectedRosterCharID == currentMember.charID
                 local hovered = s:IsHovered()
                 local online = getRosterMemberPresence(currentMember)
@@ -728,7 +776,7 @@ local function UpdateFactionRosterUI(panel, data)
             end
 
             button.DoClick = function()
-                lia.webcontent.sound.playButtonSound()
+                lia.websound.playButtonSound()
                 panel.selectedRosterCharID = currentMember.charID
                 buildMemberDetails(currentMember)
             end
@@ -741,7 +789,7 @@ local function UpdateFactionRosterUI(panel, data)
             local empty = rosterList:Add("DLabel")
             empty:Dock(TOP)
             empty:SetTall(64)
-            empty:SetText("No options available")
+            empty:SetText(L("noOptionsAvailable"))
             empty:SetTextColor(Color(145, 165, 166))
             empty:SetFont("LiliaFont.17")
             empty:SetContentAlignment(5)
@@ -767,10 +815,10 @@ local function UpdateFactionRosterUI(panel, data)
     local compatibilityList = panel:Add("liaTable")
     compatibilityList:SetVisible(false)
     compatibilityList:SetSize(1, 1)
-    compatibilityList:AddColumn("Name")
-    compatibilityList:AddColumn("Character ID")
+    compatibilityList:AddColumn(L("name"))
+    compatibilityList:AddColumn(L("characterID"))
     for _, member in ipairs(members) do
-        local line = compatibilityList:AddLine(member.name or "Unknown", member.charID or "Unknown")
+        local line = compatibilityList:AddLine(member.name or L("unknown"), member.charID or L("unknown"))
         if line then
             line.charID = member.charID
             line.steamID = member.steamID
@@ -790,8 +838,8 @@ function MODULE:PopulateAdminTabs(pages)
     local canListCharacters = client:hasPrivilege("listCharacters")
     if canListCharacters then
         table.insert(pages, {
-            name = "Faction Management",
-            icon = "factionmanagement.png",
+            name = "@factionManagement",
+            icon = "icon16/group.png",
             drawFunc = function(panel)
                 if not panel.factionManagementInitialized then
                     panel.factionManagementInitialized = true

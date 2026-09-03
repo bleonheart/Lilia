@@ -1,4 +1,109 @@
-﻿local appendDoorAdminFallbackRows
+﻿--[[
+    Hooks:
+        GetDoorInfo(Entity entity, table doorData, table doorInfo)
+
+    Purpose:
+        Populates the mutable clientside door information list that is shown when the player looks at a visible door.
+
+    Category:
+        Doors
+
+    Parameters:
+        entity (Entity)
+            The door entity currently being inspected.
+
+        doorData (table)
+            The cached door data resolved for the entity.
+
+        doorInfo (table)
+            The mutable list that receives formatted entries with `text` and optional `color` fields.
+
+    Example Usage:
+        ```lua
+        hook.Add("GetDoorInfo", "liaExampleGetDoorInfo", function(entity, doorData, doorInfo)
+            if IsValid(entity) and doorData.title and doorData.title ~= "" then
+                doorInfo[#doorInfo + 1] = {
+                    text = "Internal title: " .. doorData.title
+                }
+            end
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        FilterDoorInfo(Entity entity, table doorData, table doorInfo)
+
+    Purpose:
+        Runs after door information entries are assembled so client code can adjust the final list before it is rendered.
+
+    Category:
+        Doors
+
+    Parameters:
+        entity (Entity)
+            The door entity currently being inspected.
+
+        doorData (table)
+            The cached door data resolved for the entity.
+
+        doorInfo (table)
+            The mutable list of formatted door information entries that will be rendered.
+
+    Example Usage:
+        ```lua
+        hook.Add("FilterDoorInfo", "liaExampleFilterDoorInfo", function(entity, doorData, doorInfo)
+            if not (doorData.hidden and doorInfo[1]) then return end
+            doorInfo[#doorInfo + 1] = {
+                text = "Hidden door"
+            }
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        GetDoorInfoForAdminStick(Entity target, table extraInfo)
+
+    Purpose:
+        Allows clientside code to append extra door-specific text lines to the admin stick HUD output.
+
+    Category:
+        Doors
+
+    Parameters:
+        target (Entity)
+            The door entity currently targeted by the admin stick.
+
+        extraInfo (table)
+            The mutable array of additional text lines that will be appended to the admin stick HUD.
+
+    Example Usage:
+        ```lua
+        hook.Add("GetDoorInfoForAdminStick", "liaExampleGetDoorInfoForAdminStick", function(target, extraInfo)
+            if IsValid(target) and target:isDoor() then
+                extraInfo[#extraInfo + 1] = "Map ID: " .. target:MapCreationID()
+            end
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+local appendDoorAdminFallbackRows
 function MODULE:GetDoorInfo(entity, doorData, doorInfo)
     local owner = entity:GetDTEntity(0)
     local classes = doorData.classes or {}
@@ -17,25 +122,25 @@ function MODULE:GetDoorInfo(entity, doorData, doorInfo)
 
     if ownable and price > 0 then
         table.insert(doorInfo, {
-            text = "Price" .. ": " .. lia.currency.get(price)
+            text = L("price") .. ": " .. lia.currency.get(price)
         })
     end
 
     if ownable and not IsValid(owner) then
         table.insert(doorInfo, {
-            text = "You can purchase this door by pressing F2."
+            text = L("doorIsOwnable")
         })
     end
 
     if IsValid(owner) then
         table.insert(doorInfo, {
-            text = string.format("This door is owned by %s.", owner:Name())
+            text = L("doorOwnedBy", owner:Name())
         })
     end
 
     if factions and #factions > 0 then
         table.insert(doorInfo, {
-            text = "Allowed Factions" .. ":"
+            text = L("allowedFactions") .. ":"
         })
 
         for _, id in ipairs(factions) do
@@ -59,7 +164,7 @@ function MODULE:GetDoorInfo(entity, doorData, doorInfo)
 
         if #classData > 0 then
             table.insert(doorInfo, {
-                text = "Allowed Classes" .. ":"
+                text = L("allowedClasses") .. ":"
             })
 
             for _, data in ipairs(classData) do
@@ -219,29 +324,29 @@ local function buildDoorDisplayData(entity)
         local client = LocalPlayer()
         local canSeeAdminData = IsValid(client) and (client:hasPrivilege("manageDoors") or client:isStaffOnDuty())
         if canSeeAdminData then
-            title = "Door Information"
+            title = L("doorInformation")
             appendDoorAdminFallbackRows(entity, doorData, infoRows)
         elseif IsValid(owner) then
-            title = "Owned Door"
+            title = L("doorTitleOwned")
             infoRows[#infoRows + 1] = {
-                text = string.format("This door is owned by %s.", owner:Name())
+                text = L("doorOwnedBy", owner:Name())
             }
         elseif ownable then
-            title = "Unowned Door"
+            title = L("doorTitle")
             infoRows[#infoRows + 1] = {
-                text = "You can purchase this door by pressing F2."
+                text = L("doorIsOwnable")
             }
         elseif hasFactions or hasClasses then
-            title = "Door Information"
+            title = L("doorInformation")
             if hasFactions then
                 infoRows[#infoRows + 1] = {
-                    text = "Allowed Factions"
+                    text = L("allowedFactions")
                 }
             end
 
             if hasClasses then
                 infoRows[#infoRows + 1] = {
-                    text = "Allowed Classes"
+                    text = L("allowedClasses")
                 }
             end
         end
@@ -274,7 +379,7 @@ function MODULE:HUDPaint()
     local displayData = buildDoorDisplayData(entity)
     if not displayData then return end
     if displayData.disabled then
-        lia.util.drawEntText(entity, "This door is disabled.", 0, 255)
+        lia.util.drawEntText(entity, L("doorDisabled"), 0, 255)
         return
     end
 
@@ -304,7 +409,7 @@ function MODULE:GetAdminStickLists(tgt, lists)
 
     if #addFactionItems > 0 then
         table.insert(lists, {
-            name = "Add Factions",
+            name = L("addFactions"),
             category = "doorManagement",
             subcategory = "factions",
             subSubcategory = "addFactions",
@@ -326,7 +431,7 @@ function MODULE:GetAdminStickLists(tgt, lists)
 
     if #removeFactionItems > 0 then
         table.insert(lists, {
-            name = string.format("Remove %s", "Factions"),
+            name = L("removeThing", L("factions")),
             category = "doorManagement",
             subcategory = "factions",
             subSubcategory = "removeFactions",
@@ -355,7 +460,7 @@ function MODULE:GetAdminStickLists(tgt, lists)
 
     if #addClassItems > 0 then
         table.insert(lists, {
-            name = "Add Classes",
+            name = L("addClasses"),
             category = "doorManagement",
             subcategory = "classes",
             subSubcategory = "addClasses",
@@ -378,7 +483,7 @@ function MODULE:GetAdminStickLists(tgt, lists)
 
     if #existingClasses > 0 then
         table.insert(removeClassItems, {
-            name = "Remove" .. " " .. "All" .. " " .. "Classes",
+            name = L("remove") .. " " .. L("all") .. " " .. L("classes"),
             icon = "icon16/delete.png",
             callback = function() LocalPlayer():ConCommand("say /doorremoveclass ''") end
         })
@@ -386,7 +491,7 @@ function MODULE:GetAdminStickLists(tgt, lists)
 
     if #removeClassItems > 0 then
         table.insert(lists, {
-            name = string.format("Remove %s", "Classes"),
+            name = L("removeThing", L("classes")),
             category = "doorManagement",
             subcategory = "classes",
             subSubcategory = "removeClasses",
@@ -399,36 +504,36 @@ appendDoorAdminFallbackRows = function(entity, doorData, infoRows)
     local owner = entity:GetDTEntity(0)
     if IsValid(owner) then
         infoRows[#infoRows + 1] = {
-            text = string.format("This door is owned by %s.", owner:Name())
+            text = L("doorOwnedBy", owner:Name())
         }
     end
 
     if (doorData.price or 0) > 0 then
         infoRows[#infoRows + 1] = {
-            label = "Price",
+            label = L("price"),
             value = lia.currency.get(doorData.price)
         }
     end
 
     infoRows[#infoRows + 1] = {
-        label = "Can Be Sold",
-        value = doorData.noSell and "No" or "Yes"
+        label = L("doorCanBeSold"),
+        value = doorData.noSell and L("no") or L("yes")
     }
 
     infoRows[#infoRows + 1] = {
-        label = "hidden",
-        value = doorData.hidden and "Yes" or "No"
+        label = L("hidden"),
+        value = doorData.hidden and L("yes") or L("no")
     }
 
     infoRows[#infoRows + 1] = {
-        label = "Locked",
-        value = doorData.locked and "Yes" or "No"
+        label = L("locked"),
+        value = doorData.locked and L("yes") or L("no")
     }
 
     local factions = doorData.factions or {}
     if #factions > 0 then
         infoRows[#infoRows + 1] = {
-            section = "Allowed Factions"
+            section = L("allowedFactions")
         }
 
         for _, id in ipairs(factions) do
@@ -444,7 +549,7 @@ appendDoorAdminFallbackRows = function(entity, doorData, infoRows)
     local classes = doorData.classes or {}
     if #classes > 0 then
         infoRows[#infoRows + 1] = {
-            section = "Allowed Classes"
+            section = L("allowedClasses")
         }
 
         for _, uid in ipairs(classes) do
@@ -481,15 +586,15 @@ function MODULE:AddToAdminStickHUD(client, target, information)
         }
 
         local doorLabels = {
-            name = "Name",
-            price = "Price",
-            locked = "Locked",
-            disabled = "Disabled",
-            hidden = "hidden",
-            noSell = "Can Be Sold",
-            ownable = "Door Can Be Owned",
-            factions = "Allowed Factions",
-            classes = "Allowed Classes"
+            name = L("name"),
+            price = L("price"),
+            locked = L("locked"),
+            disabled = L("disabled"),
+            hidden = L("hidden"),
+            noSell = L("doorCanBeSold"),
+            ownable = L("doorCanBeOwned"),
+            factions = L("allowedFactions"),
+            classes = L("allowedClasses")
         }
 
         for key, defaultValue in pairs(defaultDoorData) do
@@ -500,24 +605,24 @@ function MODULE:AddToAdminStickHUD(client, target, information)
                 if value == nil then displayValue = defaultValue end
                 if isbool(displayValue) then
                     local booleanLabels = {
-                        locked = function(val) return val and "Locked" or "unlocked" end,
-                        disabled = function(val) return val and "Disabled" or "Enabled" end,
-                        hidden = function(val) return val and "hidden" or "visible" end,
-                        noSell = function(val) return val and "Cannot Be Sold" or "Can Be Sold" end,
-                        ownable = function(val) return val and "Door Can Be Owned" or "Cannot Be Owned" end
+                        locked = function(val) return val and L("locked") or L("unlocked") end,
+                        disabled = function(val) return val and L("disabled") or L("enabled") end,
+                        hidden = function(val) return val and L("hidden") or L("visible") end,
+                        noSell = function(val) return val and L("doorCannotBeSold") or L("doorCanBeSold") end,
+                        ownable = function(val) return val and L("doorCanBeOwned") or L("doorCannotBeOwned") end
                     }
 
                     if booleanLabels[key] then
                         displayValue = booleanLabels[key](displayValue)
                     else
-                        displayValue = displayValue and "Yes" or "No"
+                        displayValue = displayValue and L("yes") or L("no")
                     end
                 elseif isnumber(displayValue) and key == "price" then
                     displayValue = lia.currency.get(displayValue)
                 elseif istable(displayValue) then
                     displayValue = util.TableToJSON(displayValue)
                 elseif isstring(displayValue) and displayValue == "" then
-                    displayValue = "None"
+                    displayValue = L("none")
                 end
 
                 table.insert(information, label .. ": " .. displayValue)
@@ -533,7 +638,7 @@ function MODULE:AddToAdminStickHUD(client, target, information)
             end
 
             if #factionNames > 0 then
-                table.insert(information, "Allowed Factions" .. ":")
+                table.insert(information, L("allowedFactions") .. ":")
                 for _, factionName in ipairs(factionNames) do
                     table.insert(information, "- " .. factionName)
                 end
@@ -550,16 +655,16 @@ function MODULE:AddToAdminStickHUD(client, target, information)
             end
 
             if #classNames > 0 then
-                table.insert(information, "Allowed Classes" .. ":")
+                table.insert(information, L("allowedClasses") .. ":")
                 for _, className in ipairs(classNames) do
                     table.insert(information, "- " .. className)
                 end
             end
         end
 
-        if target.liaAccess then table.insert(information, string.format("Access Data: %s", util.TableToJSON(target.liaAccess))) end
-        if target.liaPartner and IsValid(target.liaPartner) then table.insert(information, string.format("Partner Door: %s", tostring(target.liaPartner))) end
-        table.insert(information, string.format("Is Locked: %s", target:isLocked() and "Yes" or "No"))
-        table.insert(information, string.format("ID: %s", tostring(target:MapCreationID())))
+        if target.liaAccess then table.insert(information, L("doorAccessDataLabel", util.TableToJSON(target.liaAccess))) end
+        if target.liaPartner and IsValid(target.liaPartner) then table.insert(information, L("doorPartnerDoorLabel", tostring(target.liaPartner))) end
+        table.insert(information, L("doorIsLockedLabel", target:isLocked() and L("yes") or L("no")))
+        table.insert(information, L("idPrefix", tostring(target:MapCreationID())))
     end
 end

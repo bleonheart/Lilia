@@ -160,7 +160,7 @@ const voicePanelMethods: MethodSignature[] = [
   { name: 'FadeOut', args: ['anim', 'delta'] },
 ];
 
-const actionCircleMethods: MethodSignature[] = [
+const lockCircleMethods: MethodSignature[] = [
   { name: 'Init', args: [] },
   { name: 'Start', args: ['text', 'duration', 'options'] },
   { name: 'Think', args: [] },
@@ -552,7 +552,7 @@ const voicePanelOptions: LiaOptionDefinition[] = [
   ] },
 ];
 
-const actionCircleOptions: LiaOptionDefinition[] = [
+const lockCircleOptions: LiaOptionDefinition[] = [
   { key: 'duration', label: 'Duration', input: 'number', defaultValue: 8, min: 0.01, step: 0.1 },
   { key: 'uppercase', label: 'Uppercase Text', input: 'boolean', defaultValue: true },
   { key: 'holdTime', label: 'Hold Time', input: 'number', defaultValue: 1, min: 0, step: 0.1 },
@@ -1176,17 +1176,17 @@ export const LIA_COMPONENT_DEFINITIONS: Partial<Record<ComponentType, LiaCompone
     methods: voicePanelMethods,
     preview: 'voice',
   },
-  [ComponentType.liaActionCircle]: {
-    type: ComponentType.liaActionCircle,
+  [ComponentType.liaLockCircle]: {
+    type: ComponentType.liaLockCircle,
     description: 'Full-screen timed circular action indicator with configurable text, duration, hold time, colors, fonts, geometry, angle, and position.',
     base: 'EditablePanel',
     size: { w: 260, h: 220 },
     defaultText: 'Testing',
-    defaultOptions: Object.fromEntries(actionCircleOptions.map(option => [option.key, option.defaultValue])),
-    options: actionCircleOptions,
+    defaultOptions: Object.fromEntries(lockCircleOptions.map(option => [option.key, option.defaultValue])),
+    options: lockCircleOptions,
     setters: [],
-    methods: actionCircleMethods,
-    preview: 'actionCircle',
+    methods: lockCircleMethods,
+    preview: 'lockCircle',
   },
   [ComponentType.liaDermaMenu]: {
     type: ComponentType.liaDermaMenu,

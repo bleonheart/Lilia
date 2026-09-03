@@ -2,6 +2,13 @@
 local PADDING = 2
 local WEIGHT_PANEL_HEIGHT = 32
 local SHADOW_COLOR = Color(0, 0, 0, 100)
+local function getThemeColors()
+    local theme = lia.color and lia.color.theme or {}
+    local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
+    local text = theme.text or Color(232, 240, 240)
+    return accent, text
+end
+
 function PANEL:Init()
     self:SetPaintBackground(false)
     self.weight = self:Add("DPanel")
@@ -10,7 +17,7 @@ function PANEL:Init()
     self.weight:DockMargin(0, 0, 0, PADDING)
     self.weight:InvalidateLayout(true)
     self.weight.Paint = function(_, w, h)
-        local accent = lia.color.theme.accent
+        local accent = select(1, getThemeColors())
         draw.RoundedBox(6, 0, 0, w, h, Color(2, 14, 18, 175))
         surface.SetDrawColor(accent.r, accent.g, accent.b, 72)
         surface.DrawOutlinedRect(0, 0, w, h, 1)
@@ -21,9 +28,9 @@ function PANEL:Init()
     self.weightBar:DockMargin(PADDING, PADDING, PADDING, PADDING)
     self.weightBar.Paint = function(_, w, h) self:paintWeightBar(w, h) end
     self.weightLabel = self.weight:Add("DLabel")
-    self.weightLabel:SetText(string.format("WEIGHT: %s/%s%s", 0, 10, lia.config.get("invWeightUnit", "KG")))
+    self.weightLabel:SetText(L("inventoryWeightStatus", 0, 10, lia.config.get("invWeightUnit", "KG")))
     self.weightLabel:SetFont("LiliaFont.20")
-    self.weightLabel:SetTextColor(lia.color.theme.text)
+    self.weightLabel:SetTextColor(select(2, getThemeColors()))
     self.weightLabel:Dock(FILL)
     self.weightLabel:SetContentAlignment(5)
     self.weightLabel:SetExpensiveShadow(1, SHADOW_COLOR)
@@ -71,7 +78,7 @@ function PANEL:addStack(key, stack)
     quantity:SetPos(PADDING, PADDING)
     quantity:SetFont("LiliaFont.20")
     quantity:SetText(#stack)
-    quantity:SetTextColor(lia.color.theme.text)
+    quantity:SetTextColor(select(2, getThemeColors()))
     quantity:SetExpensiveShadow(1, SHADOW_COLOR)
     quantity:SizeToContents()
     self.icons[key] = icon
@@ -120,8 +127,8 @@ end
 function PANEL:updateWeight()
     local inventory = self.inventory
     if not inventory then return end
-    self.weightLabel:SetText(string.format("WEIGHT: %s/%s%s", inventory:getWeight(), inventory:getMaxWeight(), lia.config.get("invWeightUnit", "KG")))
-    self.weightLabel:SetTextColor(lia.color.theme.text)
+    self.weightLabel:SetText(L("inventoryWeightStatus", inventory:getWeight(), inventory:getMaxWeight(), lia.config.get("invWeightUnit", "KG")))
+    self.weightLabel:SetTextColor(select(2, getThemeColors()))
 end
 
 function PANEL:Center()
@@ -134,14 +141,14 @@ function PANEL:paintWeightBar(w, h)
     local weight = self.inventory:getWeight()
     local maxWeight = self.inventory:getMaxWeight()
     local percentage = math.Clamp(weight / maxWeight, 0, 1)
-    local accent = lia.color.theme.accent
+    local accent = select(1, getThemeColors())
     draw.RoundedBox(4, 0, 0, w, h, Color(3, 16, 21, 185))
     surface.SetDrawColor(accent.r, accent.g, accent.b, 220)
     surface.DrawRect(0, 0, w * percentage, h)
 end
 
 function PANEL:itemPaintBehind(w, h)
-    local accent = lia.color.theme.accent
+    local accent = select(1, getThemeColors())
     draw.RoundedBox(4, 0, 0, w, h, Color(2, 14, 18, 130))
     surface.SetDrawColor(accent.r, accent.g, accent.b, 52)
     surface.DrawOutlinedRect(0, 0, w, h)

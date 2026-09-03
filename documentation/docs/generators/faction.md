@@ -77,7 +77,7 @@ You can also add callback fields like `OnTransferred`, `OnSpawn`, `NameTemplate`
         <label>Models:</label>
         <div id="models-list" class="dynamic-list"></div>
         <button onclick="addModelRow()" class="add-btn">+ Add Model</button>
-        <small>Add the player models this faction can use, with optional skin settings.</small>
+        <small>Add the player models this faction can use. Each entry is split into a model row and a second row for the skin/bodygroup rules tied to that model.</small>
       </div>
 
       <div class="form-grid-2">
@@ -88,6 +88,12 @@ You can also add callback fields like `OnTransferred`, `OnSpawn`, `NameTemplate`
           <small>Players in this faction can pick a skin for their character during character creation.</small>
         </div>
 
+        <div class="input-group">
+          <label>
+            <input type="checkbox" id="bodygroups-allowed"> Allow Bodygroup Selection
+          </label>
+          <small>Players in this faction can customize bodygroups for their character during character creation.</small>
+        </div>
       </div>
 
       <div class="input-group">
@@ -97,6 +103,12 @@ You can also add callback fields like `OnTransferred`, `OnSpawn`, `NameTemplate`
         <small>Skin numbers players are allowed to choose. Leave empty to allow all skins.</small>
       </div>
 
+      <div class="input-group">
+        <label>Allowed Bodygroups:</label>
+        <div id="allowed-bodygroups-list" class="dynamic-list"></div>
+        <button onclick="addAllowedBodygroupRow()" class="add-btn">+ Add Bodygroup</button>
+        <small>Allowed bodygroup values by bodygroup number. More advanced setups can be added manually later.</small>
+      </div>
     </div>
 
     <div class="generator-section">
@@ -343,7 +355,7 @@ function addMainMenuRow(map='', pos='', ang='') {
 
 function addCommandRow(val='') { addTextRow('commands-list', 'kick', val); }
 
-function addModelRow(model='', skin='', allowedSkins='') {
+function addModelRow(model='', skin='', bodygroups='', allowedSkins='', allowedBodygroups='') {
   const container = document.getElementById('models-list');
   const div = document.createElement('div');
   div.className = 'dynamic-row';
@@ -354,9 +366,11 @@ function addModelRow(model='', skin='', allowedSkins='') {
   <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%;">
     <input type="text" placeholder="models/player/..." value="${model}" class="model-path" style="flex:2; min-width:220px;">
     <input type="number" placeholder="Skin" value="${skin}" min="0" class="model-skin small-input">
+    <input type="text" placeholder="Default bodygroups (1=0; helmet=1)" value="${bodygroups}" class="model-bodygroups" style="flex:1.25; min-width:180px;">
   </div>
   <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%;">
     <input type="text" placeholder="Allowed skins for this model (0,1,2)" value="${allowedSkins}" class="model-allowed-skins" style="flex:1; min-width:220px;">
+    <input type="text" placeholder="Allowed bodygroups for this model (1=0|1; helmet=0|1)" value="${allowedBodygroups}" class="model-allowed-bodygroups" style="flex:1.5; min-width:260px;">
     <button onclick="this.closest('.dynamic-row').remove()" class="remove-btn">&times;</button>
   </div>
   `;
@@ -366,6 +380,19 @@ function addModelRow(model='', skin='', allowedSkins='') {
 function addWeaponRow(val='') { addTextRow('weapons-list', 'weapon_class', val); }
 function addItemRow(val='') { addTextRow('items-list', 'item_unique_id', val); }
 function addAllowedSkinRow(val='') { addTextRow('allowed-skins-list', '0', val); }
+
+function addAllowedBodygroupRow(index='', values='') {
+  const container = document.getElementById('allowed-bodygroups-list');
+  const div = document.createElement('div');
+  div.className = 'dynamic-row';
+  div.innerHTML = `
+  <input type="number" placeholder="Bodygroup index" value="${index}" min="0" class="abg-index small-input">
+  <input type="text" placeholder="Allowed values (e.g. 0,1,2)" value="${values}" class="abg-values">
+  <button onclick="this.parentElement.remove()" class="remove-btn">&times;</button>
+  `;
+  container.appendChild(div);
+  normalizeRemoveButtons(div);
+}
 
 function addNPCRelationRow(npc='', disposition='D_HT') {
   const container = document.getElementById('npc-relations-list');
@@ -409,6 +436,42 @@ function parseNumberList(text) {
   .filter(value => !isNaN(value));
 }
 
+function parseBodygroupMap(text) {
+  const result = {};
+  (text || '').split(';').forEach(rule => {
+    const trimmedRule = rule.trim();
+    if (!trimmedRule) return;
+    const match = trimmedRule.match(/^([^:=]+)\s*[:=]\s*(.+)$/);
+    if (!match) return;
+    const rawKey = match[1].trim();
+    const rawValue = match[2].trim();
+    if (!rawKey || rawValue === '') return;
+    const numericKey = Number(rawKey);
+    const key = Number.isNaN(numericKey) ? rawKey : numericKey;
+    const numericValue = parseInt(rawValue, 10);
+    if (!isNaN(numericValue)) result[key] = numericValue;
+  });
+  return result;
+}
+
+function parseAllowedBodygroupMap(text) {
+  const result = {};
+  (text || '').split(';').forEach(rule => {
+    const trimmedRule = rule.trim();
+    if (!trimmedRule) return;
+    const match = trimmedRule.match(/^([^:=]+)\s*[:=]\s*(.+)$/);
+    if (!match) return;
+    const rawKey = match[1].trim();
+    const rawValues = match[2].trim();
+    if (!rawKey || !rawValues) return;
+    const numericKey = Number(rawKey);
+    const key = Number.isNaN(numericKey) ? rawKey : numericKey;
+    const values = rawValues.split('|').map(value => parseInt(value.trim(), 10)).filter(value => !isNaN(value));
+    if (values.length > 0) result[key] = values;
+  });
+  return result;
+}
+
 function getModelValues() {
   const rows = document.querySelectorAll('#models-list .dynamic-row');
   const models = [];
@@ -416,8 +479,10 @@ function getModelValues() {
     const model = row.querySelector('.model-path').value.trim();
     if (!model) return;
     const skinValue = row.querySelector('.model-skin').value.trim();
+    const bodygroups = parseBodygroupMap(row.querySelector('.model-bodygroups').value.trim());
     const allowedSkins = parseNumberList(row.querySelector('.model-allowed-skins').value.trim());
-    const hasAdvancedData = skinValue !== '' || allowedSkins.length > 0;
+    const allowedBodygroups = parseAllowedBodygroupMap(row.querySelector('.model-allowed-bodygroups').value.trim());
+    const hasAdvancedData = skinValue !== '' || Object.keys(bodygroups).length > 0 || allowedSkins.length > 0 || Object.keys(allowedBodygroups).length > 0;
     if (!hasAdvancedData) {
       models.push(model);
       return;
@@ -426,7 +491,9 @@ function getModelValues() {
     models.push({
       model,
       skin: skinValue !== '' ? parseInt(skinValue, 10) : 0,
-      allowedSkins
+      bodygroups,
+      allowedSkins,
+      allowedBodygroups
     });
   });
   return models;
@@ -434,6 +501,19 @@ function getModelValues() {
 
 function formatLuaKey(key) {
   return typeof key === 'number' ? `[${key}]` : `[${JSON.stringify(key)}]`;
+}
+
+function formatLuaBodygroupMap(map, indent) {
+  const entries = Object.entries(map);
+  if (entries.length === 0) return '{}';
+  const lines = ['{'];
+  entries.forEach(([key, value]) => {
+    const numericKey = Number(key);
+    const normalizedKey = Number.isNaN(numericKey) ? key : numericKey;
+    lines.push(`${indent}    ${formatLuaKey(normalizedKey)} = ${value},`);
+  });
+  lines.push(`${indent}}`);
+  return lines.join('\n');
 }
 
 function pushLuaModelEntry(lines, modelEntry) {
@@ -445,8 +525,18 @@ function pushLuaModelEntry(lines, modelEntry) {
   lines.push('        {');
   lines.push(`            ${JSON.stringify(modelEntry.model)},`);
   lines.push(`            ${modelEntry.skin || 0},`);
+  lines.push(`            ${formatLuaBodygroupMap(modelEntry.bodygroups || {}, '            ')},`);
   if ((modelEntry.allowedSkins || []).length > 0) {
     lines.push(`            allowedSkins = {${modelEntry.allowedSkins.join(', ')}},`);
+  }
+  if (Object.keys(modelEntry.allowedBodygroups || {}).length > 0) {
+    lines.push('            allowedBodygroups = {');
+    Object.entries(modelEntry.allowedBodygroups).forEach(([bodygroupKey, values]) => {
+      const numericKey = Number(bodygroupKey);
+      const normalizedKey = Number.isNaN(numericKey) ? bodygroupKey : numericKey;
+      lines.push(`                ${formatLuaKey(normalizedKey)} = {${values.join(', ')}},`);
+    });
+    lines.push('            },');
   }
   lines.push('        },');
 }
@@ -512,6 +602,19 @@ function getAllowedSkinsValues() {
   .filter(v => !isNaN(v));
 }
 
+function getAllowedBodygroupsValues() {
+  const rows = document.querySelectorAll('#allowed-bodygroups-list .dynamic-row');
+  const result = {};
+  rows.forEach(row => {
+    const idx = row.querySelector('.abg-index').value.trim();
+    const vals = row.querySelector('.abg-values').value.trim();
+    if (idx !== '' && vals !== '') {
+      result[parseInt(idx, 10)] = vals.split(',').map(v => parseInt(v.trim(), 10)).filter(v => !isNaN(v));
+    }
+  });
+  return result;
+}
+
 function toLuaIdentifier(value, prefix) {
   return (value || '')
   .trim()
@@ -557,9 +660,11 @@ function generateFaction() {
   const npcRelations = getNPCRelationValues();
 
   const skinAllowed = document.getElementById('skin-allowed').checked;
+  const bodygroupsAllowed = document.getElementById('bodygroups-allowed').checked;
   const scale = document.getElementById('faction-scale').value.trim();
   const bloodcolor = document.getElementById('faction-bloodcolor').value;
   const allowedSkins = getAllowedSkinsValues();
+  const allowedBodygroups = getAllowedBodygroupsValues();
 
   const health = document.getElementById('health').value.trim();
   const armor = document.getElementById('armor').value.trim();
@@ -599,7 +704,7 @@ function generateFaction() {
   const hasCustomScale = scale && scale !== DEFAULTS.scale && scale !== DEFAULTS.scaleAlt;
 
   const hasAdvancedModelData = models.some(model => typeof model === 'object');
-  if (models.length > 0 || colorInput || logo || hasCustomScale || skinAllowed || allowedSkins.length > 0) {
+  if (models.length > 0 || colorInput || logo || hasCustomScale || skinAllowed || bodygroupsAllowed || allowedSkins.length > 0 || Object.keys(allowedBodygroups).length > 0) {
     lines.push('');
     if (models.length === 1 && !hasAdvancedModelData) {
       pushField('model', JSON.stringify(models[0]));
@@ -616,9 +721,17 @@ function generateFaction() {
     if (logo) pushField('logo', JSON.stringify(logo));
     if (hasCustomScale) pushField('scale', scale);
     if (skinAllowed) pushField('skinAllowed', 'true');
+    if (bodygroupsAllowed) pushField('bodygroupsAllowed', 'true');
     if (allowedSkins.length > 0) {
       pushTableStart('allowedSkins');
       allowedSkins.forEach(skin => lines.push(`        ${skin},`));
+      lines.push('    },');
+    }
+    if (Object.keys(allowedBodygroups).length > 0) {
+      pushTableStart('allowedBodygroups');
+      Object.entries(allowedBodygroups).forEach(([bodygroupIndex, values]) => {
+        lines.push(`        [${bodygroupIndex}] = { ${values.join(', ')} },`);
+      });
       lines.push('    },');
     }
   }
@@ -749,6 +862,7 @@ function fillExampleFaction() {
   document.getElementById('npc-relations-list').innerHTML = '';
   document.getElementById('commands-list').innerHTML = '';
   document.getElementById('allowed-skins-list').innerHTML = '';
+  document.getElementById('allowed-bodygroups-list').innerHTML = '';
   document.getElementById('faction-scale').value = '';
   document.getElementById('faction-bloodcolor').value = '';
 
@@ -771,6 +885,7 @@ function fillExampleFaction() {
   document.getElementById('pay-timer').value = '300';
 
   document.getElementById('skin-allowed').checked = false;
+  document.getElementById('bodygroups-allowed').checked = false;
   document.getElementById('recognizes-globally').checked = false;
   document.getElementById('globally-recognized').checked = false;
   document.getElementById('member-auto-recognition').checked = false;
@@ -823,3 +938,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
+

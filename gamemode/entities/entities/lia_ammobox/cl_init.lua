@@ -2,13 +2,7 @@
     self:DrawModel()
 end
 
-ENT.DrawInfo = {
-    {
-        text = function(ent) return "Ammo Box" end,
-        posY = 0
-    },
-    {
-        text = function(ent) return "Refills your active weapon" end,
-        posY = 40
-    }
-}
+function ENT:onDrawEntityInfo(alpha)
+    lia.util.drawEntText(self, L("liaAmmoBoxName"), 0, alpha)
+    lia.util.drawEntText(self, L("liaAmmoBoxDesc"), 40, alpha)
+end

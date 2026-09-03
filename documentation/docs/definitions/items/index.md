@@ -129,11 +129,16 @@ This reference is derived only from the Lua item bases in `gamemode/items/base`.
 | `pacData` | `table` | PAC3 part data tied to the item. | `{}` |
 | `attribBoosts` | `table` | Attribute boosts applied while equipped. | None |
 
-## Stackable items
+## `base_stackable`
 
 | Field | Type | Description | Default |
 | --- | --- | --- | --- |
-| `maxStack` | `number` | Maximum units allowed in one stack. Values greater than `1` enable stacking. | `1` |
+| `name` | `string` | Display name. | `"stackableName"` |
+| `model` | `string` | World and inventory model. | `"models/props_junk/cardboard_box001a.mdl"` |
+| `width` | `number` | Inventory width in slots. | `1` |
+| `height` | `number` | Inventory height in slots. | `1` |
+| `isStackable` | `boolean` | Marks the item as using stack quantity behavior. | `true` |
+| `maxQuantity` | `number` | Maximum units allowed in one stack. | `10` |
 | `canSplit` | `boolean` | Whether players can split the stack. | `true` |
 
 ## `base_url`

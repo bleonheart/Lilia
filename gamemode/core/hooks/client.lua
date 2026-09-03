@@ -1,3 +1,692 @@
+﻿--[[
+    Hooks:
+        ShouldDrawAmmo(wpn)
+
+    Purpose:
+        Determines whether the custom ammo HUD should be drawn for the active weapon.
+
+    Category:
+        HUD
+
+    Parameters:
+        wpn (Weapon)
+            The active weapon being evaluated for ammo drawing.
+
+    Returns:
+        boolean|nil
+            Return true or false to override the ammo HUD decision. Returning nil allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("ShouldDrawAmmo", "liaExampleShouldDrawAmmo", function(wpn)
+            if wpn:GetClass() == "weapon_physgun" then
+                return false
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ShouldDrawCrosshair(client, wpn)
+
+    Purpose:
+        Determines whether the custom crosshair should be drawn for the local player.
+
+    Category:
+        HUD
+
+    Parameters:
+        client (Player)
+            The local player whose crosshair is being evaluated.
+
+        wpn (Weapon)
+            The active weapon being checked.
+
+    Returns:
+        boolean|nil
+            Return true or false to override the crosshair decision. Returning nil allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("ShouldDrawCrosshair", "liaExampleShouldDrawCrosshair", function(client, wpn)
+            if client:Crouching() and wpn:GetClass() == "weapon_pistol" then
+                return false
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ShouldDrawEntityInfo(e)
+
+    Purpose:
+        Determines whether the hovered entity should start rendering hover information.
+
+    Category:
+        HUD
+
+    Parameters:
+        e (Entity)
+            The entity currently being considered for hover info drawing.
+
+    Returns:
+        boolean|nil
+            Return true or false to override entity info visibility. Returning nil allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("ShouldDrawEntityInfo", "liaExampleShouldDrawEntityInfo", function(e)
+            if e:GetClass() == "prop_ragdoll" then
+                return false
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        CanDrawEntityHoverInfo(e, category)
+
+    Purpose:
+        Determines whether hover information should be drawn after the entity category has been resolved.
+
+    Category:
+        HUD
+
+    Parameters:
+        e (Entity)
+            The entity being evaluated.
+
+        category (string)
+            The resolved hover-info category for the entity.
+
+    Returns:
+        boolean|nil
+            Return true or false to override the hover info decision. Returning nil allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("CanDrawEntityHoverInfo", "liaExampleCanDrawEntityHoverInfo", function(e, category)
+            if category == "items" and e:getNetVar("hidden") then
+                return false
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        GetInjuredText(c)
+
+    Purpose:
+        Allows plugins or modules to override the injury text tuple added to character info panels.
+
+    Category:
+        HUD
+
+    Parameters:
+        c (Player)
+            The player whose health text is being resolved.
+
+    Returns:
+        table|nil
+            Return a table containing the localized text key and color to display. Returning nil allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("GetInjuredText", "liaExampleGetInjuredText", function(c)
+            if c:Health() > c:GetMaxHealth() * 0.9 then
+                return {"healthyStatus", Color(46, 204, 113)}
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ShouldDrawPlayerInfo(e)
+
+    Purpose:
+        Determines whether character hover info should be drawn for a player entity.
+
+    Category:
+        HUD
+
+    Parameters:
+        e (Player)
+            The player whose hover info is being evaluated.
+
+    Returns:
+        boolean|nil
+            Return false to hide the player info panel. Returning nil allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("ShouldDrawPlayerInfo", "liaExampleShouldDrawPlayerInfo", function(e)
+            if e == LocalPlayer() then
+                return false
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        DrawPlayerInfoBackground(e, panelX, panelY, panelWidth, panelHeight, a)
+
+    Purpose:
+        Allows plugins or modules to override the background drawing pass for player hover info panels.
+
+    Category:
+        HUD
+
+    Parameters:
+        e (Player)
+            The player whose info panel is being drawn.
+
+        panelX (number)
+            The left coordinate of the info panel.
+
+        panelY (number)
+            The top coordinate of the info panel.
+
+        panelWidth (number)
+            The width of the info panel.
+
+        panelHeight (number)
+            The height of the info panel.
+
+        a (number)
+            The current alpha value used for the panel fade.
+
+    Returns:
+        boolean|nil
+            Return false to suppress the default background drawing. Returning nil allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("DrawPlayerInfoBackground", "liaExampleDrawPlayerInfoBackground", function(e, panelX, panelY, panelWidth, panelHeight, a)
+            if e:isStaffOnDuty() then
+                surface.SetDrawColor(0, 0, 0, a)
+                surface.DrawOutlinedRect(panelX, panelY, panelWidth, panelHeight)
+                return false
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ModifyVoiceIndicatorText(client, voiceText, voiceType)
+
+    Purpose:
+        Allows plugins or modules to replace the text shown on the local voice indicator.
+
+    Category:
+        Voice
+
+    Parameters:
+        client (Player)
+            The local speaking player.
+
+        voiceText (string)
+            The text that will be drawn on the voice indicator.
+
+        voiceType (string)
+            The current voice range mode.
+
+    Returns:
+        string|nil
+            Return a replacement string to override the indicator text. Returning nil allows the default text to be used.
+
+    Example Usage:
+        ```lua
+        hook.Add("ModifyVoiceIndicatorText", "liaExampleModifyVoiceIndicatorText", function(client, voiceText, voiceType)
+            if voiceType == "yelling" then
+                return voiceText .. " [Broadcast]"
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        TooltipInitialize(var, panel)
+
+    Purpose:
+        Runs when the custom tooltip panel is initialized for an item tooltip.
+
+    Category:
+        UI
+
+    Parameters:
+        var (Panel)
+            The tooltip panel being initialized.
+
+        panel (Panel)
+            The source panel that requested the tooltip.
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        hook.Add("TooltipInitialize", "liaExampleTooltipInitialize", function(var, panel)
+            var:SetMouseInputEnabled(false)
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        TooltipPaint(var, w, h)
+
+    Purpose:
+        Allows plugins or modules to override the tooltip paint pass for item tooltips.
+
+    Category:
+        UI
+
+    Parameters:
+        var (Panel)
+            The tooltip panel being painted.
+
+        w (number)
+            The current tooltip width.
+
+        h (number)
+            The current tooltip height.
+
+    Returns:
+        boolean|nil
+            Return true to signal that the tooltip paint was handled. Returning nil allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("TooltipPaint", "liaExampleTooltipPaint", function(var, w, h)
+            if var.isItemTooltip then
+                surface.SetDrawColor(255, 255, 255, 10)
+                surface.DrawOutlinedRect(0, 0, w, h)
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        TooltipLayout(var)
+
+    Purpose:
+        Allows plugins or modules to signal that a tooltip should use the custom item-tooltip layout path.
+
+    Category:
+        UI
+
+    Parameters:
+        var (Panel)
+            The tooltip panel being laid out.
+
+    Returns:
+        boolean|nil
+            Return true to use the custom layout handling. Returning nil allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("TooltipLayout", "liaExampleTooltipLayout", function(var)
+            if var.isItemTooltip then
+                return true
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        DrawLiliaModelView(client, entity)
+
+    Purpose:
+        Runs during the custom model panel draw pass so plugins or modules can render extra clientside attachments.
+
+    Category:
+        UI
+
+    Parameters:
+        client (Panel)
+            The model panel requesting the draw pass.
+
+        entity (Entity)
+            The clientside model entity being rendered.
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        hook.Add("DrawLiliaModelView", "liaExampleDrawLiliaModelView", function(client, entity)
+            if IsValid(entity.weapon) then
+                entity.weapon:SetNoDraw(false)
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        OnChatReceived(client, chatType, text, anonymous)
+
+    Purpose:
+        Allows plugins or modules to adjust incoming chat text before it is added to the local chatbox.
+
+    Category:
+        Chatbox
+
+    Parameters:
+        client (Player)
+            The player who sent the message.
+
+        chatType (string)
+            The resolved chat class for the message.
+
+        text (string)
+            The parsed chat text about to be displayed.
+
+        anonymous (boolean)
+            Whether the message is being shown anonymously.
+
+    Returns:
+        string|nil
+            Return a replacement string to override the displayed message text. Returning nil allows the default text to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("OnChatReceived", "liaExampleOnChatReceived", function(client, chatType, text, anonymous)
+            if chatType == "radio" then
+                return "[Encrypted] " .. text
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ItemShowEntityMenu(entity)
+
+    Purpose:
+        Runs when the local player opens the entity interaction menu for a world item.
+
+    Category:
+        Inventory
+
+    Parameters:
+        entity (Entity)
+            The item entity that triggered the menu.
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        hook.Add("ItemShowEntityMenu", "liaExampleItemShowEntityMenu", function(entity)
+            if entity:isItem() then
+                surface.PlaySound("buttons/button14.wav")
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        CanRunItemAction(tempItem, key)
+
+    Purpose:
+        Determines whether a specific item action should be included in the entity interaction menu.
+
+    Category:
+        Inventory
+
+    Parameters:
+        tempItem (table)
+            The temporary item table prepared for menu action checks.
+
+        key (string)
+            The item function key being evaluated.
+
+    Returns:
+        boolean|nil
+            Return false to suppress the item action. Returning nil allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("CanRunItemAction", "liaExampleCanRunItemAction", function(tempItem, key)
+            if key == "drop" and tempItem.player:Crouching() then
+                return false
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        ShouldShowQuickMenu()
+
+    Purpose:
+        Determines whether the context-menu quick menu should open.
+
+    Category:
+        UI
+
+    Parameters:
+        None
+
+    Returns:
+        boolean|nil
+            Return false to block the quick menu from opening. Returning nil allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("ShouldShowQuickMenu", "liaExampleShouldShowQuickMenu", function()
+            if IsValid(lia.gui.character) then
+                return false
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        PreLiliaLoaded()
+
+    Purpose:
+        Runs just before clientside options are loaded and the `LiliaLoaded` hook is fired.
+
+    Category:
+        Initialization
+
+    Parameters:
+        None
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        hook.Add("PreLiliaLoaded", "liaExamplePreLiliaLoaded", function()
+            print("[MyModule] preparing client state")
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        GetMainMenuPosition(character)
+
+    Purpose:
+        Allows plugins or modules to provide an override position and angle for the character main menu scene.
+
+    Category:
+        Main Menu
+
+    Parameters:
+        character (Character)
+            The character whose main menu position is being resolved.
+
+    Returns:
+        Vector|nil, Angle|nil
+            Return a position and angle to override the default main menu placement. Returning nil values allows the default behavior to continue.
+
+    Example Usage:
+        ```lua
+        hook.Add("GetMainMenuPosition", "liaExampleGetMainMenuPosition", function(character)
+            if character and character:getFaction() == FACTION_CITIZEN then
+                return Vector(0, 0, 0), Angle(0, 90, 0)
+            end
+        end)
+        ```
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        DrawCharInfo(Player c, Character character, table info)
+
+    Purpose:
+        Allows modules to append additional formatted lines to the hover-info panel for a player's active character.
+
+    Category:
+        HUD
+
+    Parameters:
+        c (Player)
+            The player whose hover information is being assembled.
+
+        character (Character)
+            The player's active character object.
+
+        info (table)
+            The mutable array of line entries that will be rendered in the hover-info panel.
+
+    Example Usage:
+        ```lua
+        hook.Add("DrawCharInfo", "liaExampleDrawCharInfo", function(c, character, info)
+            info[#info + 1] = {character:getFaction() or "Unknown", Color(200, 200, 255)}
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        DrawEntityInfo(Entity e, number a, table|nil pos)
+
+    Purpose:
+        Draws hover information for entities or player ragdolls after the core hover system has decided they should be shown.
+
+    Category:
+        HUD
+
+    Parameters:
+        e (Entity)
+            The entity whose hover information is being drawn. This may be a player when a ragdoll resolves back to its owner.
+
+        a (number)
+            The current fade alpha used for the hover info.
+
+        pos (table|nil)
+            An optional screen-position table with `x` and `y` fields. When nil, the hook should derive its own position from the entity.
+
+    Example Usage:
+        ```lua
+        hook.Add("DrawEntityInfo", "liaExampleDrawEntityInfo", function(e, a, pos)
+            if e:isDoor() then
+                local screenPos = pos or e:GetPos():ToScreen()
+                draw.SimpleText("Door", "DermaDefault", screenPos.x, screenPos.y, Color(255, 255, 255, a), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+            end
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
+--[[
+    Hooks:
+        DisplayPlayerHUDInformation(Player client, table hudInfos)
+
+    Purpose:
+        Allows modules to append structured HUD panels for the local player during the main HUD paint pass.
+
+    Category:
+        HUD
+
+    Parameters:
+        client (Player)
+            The local player whose HUD is being drawn.
+
+        hudInfos (table)
+            The mutable array of HUD panel definitions that the renderer will draw after this hook finishes.
+
+    Example Usage:
+        ```lua
+        hook.Add("DisplayPlayerHUDInformation", "liaExampleDisplayPlayerHUDInformation", function(client, hudInfos)
+            hudInfos[#hudInfos + 1] = {
+                text = "Example HUD",
+                position = {
+                    x = ScrW() * 0.5,
+                    y = 40
+                }
+            }
+        end)
+        ```
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+]]
 local GM = GM or GAMEMODE
 local RealTime, FrameTime = RealTime, FrameTime
 local mathApproach = math.Approach
@@ -39,27 +728,27 @@ local nextUpdate = 0
 local healthPercent = {
     {
         threshold = 0.2,
-        text = "Critical Condition",
+        text = L("criticalCondition"),
         color = Color(192, 57, 43)
     },
     {
         threshold = 0.4,
-        text = "Serious Injury",
+        text = L("seriousInjury"),
         color = Color(231, 76, 60)
     },
     {
         threshold = 0.6,
-        text = "Moderate Injury",
+        text = L("moderateInjury"),
         color = Color(255, 152, 0)
     },
     {
         threshold = 0.8,
-        text = "Minor Injury",
+        text = L("minorInjury"),
         color = Color(255, 193, 7)
     },
     {
         threshold = 1.0,
-        text = "Healthy",
+        text = L("healthyStatus"),
         color = Color(46, 204, 113)
     }
 }
@@ -79,7 +768,7 @@ local ForceDrawCrosshairWeapon = {
 }
 
 local function getHUDFont(size, suffix)
-    return "LiliaHUDFont." .. tostring(size) .. (suffix or "")
+    return "HUDFont." .. tostring(size) .. (suffix or "")
 end
 
 local function isToolgunHUDHidden(client)
@@ -233,6 +922,57 @@ local function buildPlayerInfoSections(descriptionRows, infoRows, defaultInfoTit
     return sections
 end
 
+local function fitDescriptionLine(text, maxWidth, font, suffix)
+    surface.SetFont(font)
+    local trimmed = string.Trim(text or "")
+    local candidate = trimmed .. (suffix or "")
+    while trimmed ~= "" and surface.GetTextSize(candidate) > maxWidth do
+        trimmed = string.Trim(trimmed:sub(1, -2))
+        candidate = trimmed .. (suffix or "")
+    end
+    return candidate ~= "" and candidate or (suffix or "")
+end
+
+local function wrapPlayerDescription(text, maxWidth, font, maxLines)
+    local source = string.Trim(tostring(text or ""):gsub("%s+", " "))
+    if source == "" then return {""} end
+    surface.SetFont(font)
+    local lines = {}
+    local remaining = source
+    local truncated = false
+    while remaining ~= "" and #lines < maxLines do
+        if surface.GetTextSize(remaining) <= maxWidth then
+            lines[#lines + 1] = remaining
+            remaining = ""
+            break
+        end
+
+        local lastFitIndex, lastSpaceIndex
+        for i = 1, #remaining do
+            local chunk = remaining:sub(1, i)
+            if surface.GetTextSize(chunk) <= maxWidth then
+                lastFitIndex = i
+                if chunk:sub(-1):match("%s") then lastSpaceIndex = i end
+            else
+                break
+            end
+        end
+
+        if not lastFitIndex then
+            lines[#lines + 1] = fitDescriptionLine(remaining:sub(1, 1), maxWidth, font)
+            remaining = remaining:sub(2):gsub("^%s+", "")
+        else
+            local splitIndex = lastSpaceIndex or lastFitIndex
+            lines[#lines + 1] = string.Trim(remaining:sub(1, splitIndex))
+            remaining = remaining:sub(splitIndex + 1):gsub("^%s+", "")
+        end
+    end
+
+    if remaining ~= "" then truncated = true end
+    if truncated and #lines > 0 then lines[#lines] = fitDescriptionLine(lines[#lines], maxWidth, font, "(...)") end
+    return lines
+end
+
 local function canDrawAmmo(wpn)
     if not IsValid(wpn) or wpn.DrawAmmo == false then return false end
     local hookResult = hook.Run("ShouldDrawAmmo", wpn)
@@ -351,11 +1091,6 @@ local function RenderEntities()
                     if IsValid(netPlayer) then
                         local p = toScreen(ent:LocalToWorld(ent:OBBCenter()))
                         hook.Run("DrawEntityInfo", netPlayer, a, p)
-                    elseif ent.DrawInfo then
-                        for _, info in ipairs(ent.DrawInfo) do
-                            local text = isfunction(info.text) and info.text(ent) or info.text
-                            lia.util.drawEntText(ent, text, info.posY, a)
-                        end
                     elseif ent.onDrawEntityInfo then
                         ent.onDrawEntityInfo(ent, a)
                     else
@@ -470,7 +1205,7 @@ function GM:DrawCharInfo(c, character, info)
 
         info[#info + 1] = {
             label = "Condition",
-            value = injured[1]
+            value = L(injured[1])
         }
     end
 end
@@ -494,7 +1229,7 @@ function GM:DrawEntityInfo(e, a, pos)
         e.liaNameLines = lia.util.wrapText(name, ScrW() * width, getHUDFont(17))
     end
 
-    local desc = hook.Run("GetDisplayedDescription", e, true) or ch and ch.getDesc(ch) or "No character found!"
+    local desc = hook.Run("GetDisplayedDescription", e, true) or ch and ch.getDesc(ch) or L("noChar")
     if desc ~= e.liaDescCache then
         e.liaDescCache = desc
         e.liaDescLines = nil
@@ -509,7 +1244,7 @@ function GM:DrawEntityInfo(e, a, pos)
     if e.liaDescLines == nil or e.liaDescWrapWidth ~= descriptionWrapWidth then
         local wrappedDesc = e.liaDescCache or desc
         if #wrappedDesc > 250 then wrappedDesc = wrappedDesc:sub(1, 250) .. "..." end
-        e.liaDescLines = lia.util.wrapText(wrappedDesc, descriptionWrapWidth, getHUDFont(17), 3, "(...)")
+        e.liaDescLines = wrapPlayerDescription(wrappedDesc, descriptionWrapWidth, getHUDFont(17), 3)
         e.liaDescWrapWidth = descriptionWrapWidth
     end
 
@@ -820,7 +1555,7 @@ function GM:ItemShowEntityMenu(entity)
     end
 
     if IsValid(liaItemDermaMenu) then liaItemDermaMenu:Remove() end
-    liaItemDermaMenu = DermaMenu()
+    liaItemDermaMenu = vgui.Create("liaDermaMenu")
     local tempItem = table.Copy(itemTable)
     tempItem.player = LocalPlayer()
     tempItem.entity = entity
@@ -828,7 +1563,7 @@ function GM:ItemShowEntityMenu(entity)
         if key == "combine" then continue end
         if hook.Run("CanRunItemAction", tempItem, key) == false then continue end
         if isfunction(fn.onCanRun) and not fn.onCanRun(tempItem) then continue end
-        liaItemDermaMenu:AddOption(fn.name or key, function()
+        liaItemDermaMenu:AddOption(L(fn.name or key), function()
             if fn.sound then surface.PlaySound(fn.sound) end
             if not fn.onClick or fn.onClick(tempItem) ~= false then
                 net.Start("liaInvAct")
@@ -873,7 +1608,7 @@ function GM:HUDPaintBackground()
         end
     end
 
-    if not isToolgunHUDHidden(client) and BRANCH ~= "x86-64" then draw.SimpleText("We recommend the use of the x86-64 Garry's Mod Branch on your installation, consider swapping as soon as possible.", getHUDFont(17), ScrW() * 0.5, ScrH() * 0.97, Color(255, 255, 255, 10), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+    if not isToolgunHUDHidden(client) and BRANCH ~= "x86-64" then draw.SimpleText(L("switchTo64Bit"), getHUDFont(17), ScrW() * 0.5, ScrH() * 0.97, Color(255, 255, 255, 10), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
 end
 
 function GM:OnContextMenuOpen()
@@ -907,7 +1642,7 @@ function GM:CharListLoaded()
 end
 
 function GM:ForceDermaSkin()
-    return lia.config.get("DermaSkin", "Lilia Skin")
+    return lia.config.get("DermaSkin", L("liliaSkin"))
 end
 
 function GM:DermaSkinChanged()
@@ -1046,12 +1781,12 @@ end
 function GM:CharLoaded(character)
     if not character then return end
     timer.Simple(0.5, function()
-        if lia.webcontent.image and lia.webcontent.image.stored then
+        if lia.webimage and lia.webimage.stored then
             local baseDir = "lilia/webimages/"
             local missingImages = {}
-            for name, data in pairs(lia.webcontent.image.stored) do
+            for name, data in pairs(lia.webimage.stored) do
                 if data and data.url then
-                    local cached = lia.webcontent.image.get(name)
+                    local cached = lia.webimage.get(name)
                     if not cached then
                         local cleanName = name:gsub("%.%w+$", "")
                         local found = false
@@ -1078,19 +1813,19 @@ function GM:CharLoaded(character)
                 local function downloadNext(index)
                     if index > #missingImages then return end
                     local entry = missingImages[index]
-                    lia.webcontent.image.download(entry.name, entry.url, function(mat, fromCache, errorMsg) timer.Simple(0.1, function() downloadNext(index + 1) end) end, entry.flags)
+                    lia.webimage.download(entry.name, entry.url, function(mat, fromCache, errorMsg) timer.Simple(0.1, function() downloadNext(index + 1) end) end, entry.flags)
                 end
 
                 downloadNext(1)
             end
         end
 
-        if lia.webcontent.sound and lia.webcontent.sound.stored then
+        if lia.websound and lia.websound.stored then
             local baseDir = "lilia/websounds/"
             local missingSounds = {}
-            for name, url in pairs(lia.webcontent.sound.stored) do
+            for name, url in pairs(lia.websound.stored) do
                 if url and isstring(url) then
-                    local cached = lia.webcontent.sound.get(name)
+                    local cached = lia.websound.get(name)
                     if not cached then
                         local savePath = baseDir .. name
                         if not file.Exists(savePath, "DATA") then
@@ -1107,7 +1842,7 @@ function GM:CharLoaded(character)
                 local function downloadNext(index)
                     if index > #missingSounds then return end
                     local entry = missingSounds[index]
-                    lia.webcontent.sound.download(entry.name, entry.url, function(path, fromCache, errorMsg) timer.Simple(0.1, function() downloadNext(index + 1) end) end)
+                    lia.websound.download(entry.name, entry.url, function(path, fromCache, errorMsg) timer.Simple(0.1, function() downloadNext(index + 1) end) end)
                 end
 
                 downloadNext(1)
@@ -1117,7 +1852,7 @@ function GM:CharLoaded(character)
 end
 
 function GM:PrePlayerDraw(client)
-    if lia.camera.shouldHidePlayer(client) then
+    if lia.view.shouldHidePlayer(client) then
         client:DrawShadow(false)
         return true
     end

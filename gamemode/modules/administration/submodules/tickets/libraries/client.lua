@@ -1,10 +1,20 @@
-function MODULE:PopulateAdminTabs(pages)
+﻿function MODULE:PopulateAdminTabs(pages)
     return
 end
 
 MODULE.TicketFrames = MODULE.TicketFrames or {}
 local xpos = xpos or 20
 local ypos = ypos or 20
+local function getThemeAccent()
+    local theme = lia.color.theme or {}
+    return theme.accent or theme.header or theme.theme or Color(184, 132, 74)
+end
+
+local function getThemeText()
+    local theme = lia.color.theme or {}
+    return theme.text or Color(230, 238, 236)
+end
+
 local function drawRoundedPanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
@@ -22,7 +32,7 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
                 local existingText = messageEntry:GetValue() or ""
                 messageEntry:SetText(existingText ~= "" and existingText .. "\n" .. message or message)
                 messageEntry:GotoTextEnd()
-                lia.webcontent.sound.playButtonSound("ui/hint.wav")
+                lia.websound.playButtonSound("ui/hint.wav")
             end
             return
         end
@@ -37,7 +47,7 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
     local messageWidth = frameWidth - actionWidth - contentPadding * 3
     local claimedValid = IsValid(claimed) and claimed:IsPlayer()
     local claimedByLocal = claimedValid and claimed == LocalPlayer()
-    local title = claimedValid and string.format("%s - Claimed by %s", requester:Nick(), claimed:Nick()) or requester:Nick()
+    local title = claimedValid and L("ticketTitleClaimed", requester:Nick(), claimed:Nick()) or requester:Nick()
     local frm = vgui.Create("liaFrame")
     frm:SetSize(frameWidth, frameHeight)
     frm:SetPos(xpos, ypos)
@@ -48,8 +58,8 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
     frm:SetDraggable(true)
     frm:SetSizable(false)
     frm.Paint = function(panel, w, h)
-        local accent = lia.color.theme.accent
-        local textColor = lia.color.theme.text
+        local accent = getThemeAccent()
+        local textColor = getThemeText()
         local headerAccent = panel.headerColor or accent
         drawRoundedPanel(0, 0, w, h, 9, Color(2, 13, 18, 248), Color(headerAccent.r, headerAccent.g, headerAccent.b, 150))
         drawRoundedPanel(1, 1, w - 2, h - 2, 8, Color(5, 21, 27, 245))
@@ -78,8 +88,8 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
     msg:SetDrawBorder(false)
     msg:SetVerticalScrollbarEnabled(true)
     msg.Paint = function(panel, w, h)
-        local accent = lia.color.theme.accent
-        local textColor = lia.color.theme.text
+        local accent = getThemeAccent()
+        local textColor = getThemeText()
         drawRoundedPanel(0, 0, w, h, 6, Color(3, 16, 21, 245), Color(accent.r, accent.g, accent.b, 80))
         panel:DrawTextEntryText(textColor, Color(accent.r, accent.g, accent.b, 70), Color(accent.r, accent.g, accent.b, 255))
     end
@@ -103,12 +113,12 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
         btn:SetTall(30)
         btn:SetText("")
         btn.Disabled = disabled
-        btn.label = textKey
+        btn.label = L(textKey)
         btn.icon = buttonIcons[textKey]
         btn.primary = primary
         btn.Paint = function(button, w, h)
-            local accent = lia.color.theme.accent
-            local textColor = lia.color.theme.text
+            local accent = getThemeAccent()
+            local textColor = getThemeText()
             local disabledColor = Color(120, 130, 132)
             local hovered = button:IsHovered() and not button.Disabled
             local pressed = button:IsDown() and not button.Disabled
@@ -129,10 +139,10 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
         btn.DoClick = function()
             if btn.Disabled then return end
             clickFunc()
-            lia.webcontent.sound.playButtonSound()
+            lia.websound.playButtonSound()
         end
 
-        if disabled then btn:SetTooltip("You cannot perform this action on your own ticket.") end
+        if disabled then btn:SetTooltip(L("ticketActionSelf")) end
         return btn
     end
 
@@ -147,7 +157,7 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
         if not IsValid(frm) then return end
         if not shouldClose then
             if claimedValid and claimed ~= LocalPlayer() then
-                chat.AddText(Color(255, 150, 0), "[" .. "ERROR" .. "] " .. "Case has already been claimed")
+                chat.AddText(Color(255, 150, 0), "[" .. L("error") .. "] " .. L("caseAlreadyClaimed"))
                 surface.PlaySound("common/wpn_denyselect.wav")
                 return
             end
@@ -156,7 +166,7 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
             net.WriteEntity(requester)
             net.SendToServer()
             shouldClose = true
-            claimButton.label = "Close case"
+            claimButton.label = L("closeCase")
         else
             net.Start("liaTicketSystemClose")
             net.WriteEntity(requester)
@@ -166,11 +176,11 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
 
     local closeButton = vgui.Create("DButton", frm)
     closeButton:SetText("")
-    closeButton:SetTooltip("Close")
+    closeButton:SetTooltip(L("close"))
     closeButton:SetSize(30, 30)
     closeButton:SetPos(frameWidth - 36, 7)
     closeButton.Paint = function(button, w, h)
-        local accent = lia.color.theme.accent
+        local accent = getThemeAccent()
         local color = button:IsHovered() and Color(235, 105, 95) or Color(accent.r, accent.g, accent.b, 220)
         surface.SetDrawColor(color)
         surface.DrawLine(10, 10, w - 10, h - 10)

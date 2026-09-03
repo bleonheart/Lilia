@@ -31,7 +31,7 @@ const TEXT_EDITABLE_TYPES = new Set<ComponentType>([
   ComponentType.liaCustomFontButton,
   ComponentType.liaNotice,
   ComponentType.liaNoticePanel,
-  ComponentType.liaActionCircle,
+  ComponentType.liaLockCircle,
 ]);
 
 interface CanvasProps {
@@ -786,7 +786,7 @@ const Canvas: React.FC<CanvasProps> = ({ state, viewState, onSelect, onToggleSel
                   </div>
               );
           }
-          if (liaDefinition.preview === 'actionCircle') {
+          if (liaDefinition.preview === 'lockCircle') {
               const uppercase = Boolean(option('uppercase', true));
               const duration = Number(option('duration', 8));
               const holdTime = Number(option('holdTime', 1));

@@ -28,7 +28,7 @@ This page documents hooks in the options category.
 ---
 
 <details class="realm-shared" id="function-initializedoptions">
-<summary><span class="summary-main"><a id="InitializedOptions"></a>InitializedOptions()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/option.lua#L89" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="InitializedOptions"></a>InitializedOptions()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/option.lua#L102" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="initializedoptions"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -59,7 +59,7 @@ This page documents hooks in the options category.
 ---
 
 <details class="realm-shared" id="function-optionadded">
-<summary><span class="summary-main"><a id="OptionAdded"></a>OptionAdded(key, option)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/option.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OptionAdded"></a>OptionAdded(key, option)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/option.lua#L14" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="optionadded"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -96,7 +96,7 @@ This page documents hooks in the options category.
 ---
 
 <details class="realm-shared" id="function-optionchanged">
-<summary><span class="summary-main"><a id="OptionChanged"></a>OptionChanged(key, oldValue, newValue)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/option.lua#L28" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OptionChanged"></a>OptionChanged(key, oldValue, newValue)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/option.lua#L41" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="optionchanged"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -134,7 +134,7 @@ This page documents hooks in the options category.
 ---
 
 <details class="realm-server" id="function-optionreceived">
-<summary><span class="summary-main"><a id="OptionReceived"></a>OptionReceived(client, key, value)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/option.lua#L58" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OptionReceived"></a>OptionReceived(client, key, value)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/option.lua#L71" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="optionreceived"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

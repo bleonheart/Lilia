@@ -1,4 +1,15 @@
-local PANEL = {}
+﻿local PANEL = {}
+local function getFrameColors()
+    local theme = lia.color.theme or {}
+    local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
+    return {
+        accent = accent,
+        text = theme.text or Color(225, 238, 238),
+        muted = Color(155, 178, 179),
+        surface = Color(6, 18, 23, 226)
+    }
+end
+
 local function drawFramePanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
@@ -7,7 +18,7 @@ end
 function PANEL:Init()
     self.bool_alpha = true
     self.bool_lite = false
-    self.title = "Title"
+    self.title = L("title")
     self.center_title = ""
     self.blurAmount = 6
     self.blurPasses = 0
@@ -52,9 +63,13 @@ function PANEL:Init()
 
     self.cls = vgui.Create("Button", self)
     self.cls:SetText("")
-    self.cls.Paint = function(_, w, h) draw.SimpleText("X", "LiliaFont.18", w * 0.5, h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+    self.cls.Paint = function(_, w, h)
+        local colors = getFrameColors()
+        draw.SimpleText("X", "LiliaFont.18", w * 0.5, h * 0.5, colors.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+
     self.cls.DoClick = function()
-        lia.webcontent.sound.playButtonSound()
+        lia.websound.playButtonSound()
         if self.deleteOnClose then
             self:AlphaTo(0, 0.1, 0, function() if IsValid(self) then self:Remove() end end)
         else
@@ -63,11 +78,11 @@ function PANEL:Init()
     end
 
     self.cls.DoRightClick = function()
-        local DM = DermaMenu()
-        DM:AddOption("Transparency", function() self.bool_alpha = not self.bool_alpha end, self.bool_alpha and "icon16/bullet_green.png" or "icon16/bullet_red.png")
+        local DM = lia.derma.dermaMenu()
+        DM:AddOption(L("transparency"), function() self.bool_alpha = not self.bool_alpha end, self.bool_alpha and "icon16/bullet_green.png" or "icon16/bullet_red.png")
         local boolInput = self:IsKeyboardInputEnabled()
-        DM:AddOption("Move From Menu", function() self:SetKeyboardInputEnabled(not boolInput) end, not boolInput and "icon16/bullet_green.png" or "icon16/bullet_red.png")
-        DM:AddOption("Close Window", function() self:Remove() end, "icon16/cross.png")
+        DM:AddOption(L("moveFromMenu"), function() self:SetKeyboardInputEnabled(not boolInput) end, not boolInput and "icon16/bullet_green.png" or "icon16/bullet_red.png")
+        DM:AddOption(L("closeWindow"), function() self:Remove() end, "icon16/cross.png")
     end
 
     self.resizer = vgui.Create("DButton", self)
@@ -254,9 +269,8 @@ end
 
 function PANEL:Paint(w, h)
     if self.backgroundBlur then Derma_DrawBackgroundBlur(self, self.backgroundBlurTime) end
-    local accent = lia.color.theme.accent or lia.color.theme.maincolor
-    local colors = lia.color.returnMainAdjustedColors()
-    drawFramePanel(0, 0, w, h, 10, lia.color.theme.background, Color(accent.r, accent.g, accent.b, 72))
+    local colors = getFrameColors()
+    drawFramePanel(0, 0, w, h, 10, colors.surface, Color(colors.accent.r, colors.accent.g, colors.accent.b, 72))
     if not self.bool_lite then
         if self.iconMat then
             surface.SetMaterial(self.iconMat)
@@ -398,7 +412,7 @@ function PANEL:Init()
     self:MakePopup()
     self:Center()
     self:SetDraggable(true)
-    self:SetTitle("Inventory")
+    self:SetTitle(L("inv"))
 end
 
 function PANEL:setInventory(inventory)

@@ -1,7 +1,7 @@
 ﻿ENT.Type = "anim"
-ENT.PrintName = "Storage"
+ENT.PrintName = L("storage")
 ENT.Author = "Samael"
-ENT.Contact = "liliaplayer"
+ENT.Contact = "@liliaplayer"
 ENT.Category = "Lilia"
 ENT.Spawnable = false
 ENT.isStorageEntity = true
@@ -19,8 +19,8 @@ function ENT:getStorageInfo()
     local storageInfo = lia.inventory.getStorage(model:lower())
     if not storageInfo then
         storageInfo = {
-            name = "Storage Container",
-            desc = "A generic storage container.",
+            name = lia.lang.resolveToken("@storageContainer"),
+            desc = lia.lang.resolveToken("@storageContainerDesc"),
             invType = "GridInv",
             invData = {
                 w = 4,

@@ -39,5 +39,9 @@ luac.out
 *.x86_64
 *.hex
 .vscode/*
-/site/tools/__pycache__
-/site
+/documentation/docs/tools
+*.bat
+/documentation/site
+/documentation/reports
+/__pycache__
+fieldaudit.md

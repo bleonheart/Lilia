@@ -237,7 +237,7 @@ This page documents hooks in the ui category.
 ---
 
 <details class="realm-client" id="function-drawliliamodelview">
-<summary><span class="summary-main"><a id="DrawLiliaModelView"></a>DrawLiliaModelView(client, entity)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L331" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="DrawLiliaModelView"></a>DrawLiliaModelView(client, entity)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L367" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="drawliliamodelview"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -418,7 +418,7 @@ This page documents hooks in the ui category.
 ---
 
 <details class="realm-client" id="function-setupquickmenu">
-<summary><span class="summary-main"><a id="SetupQuickMenu"></a>SetupQuickMenu(menu)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/panels/quick.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="SetupQuickMenu"></a>SetupQuickMenu(menu)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/derma/panels/panels.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="setupquickmenu"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -456,7 +456,7 @@ This page documents hooks in the ui category.
 ---
 
 <details class="realm-client" id="function-shouldshowquickmenu">
-<summary><span class="summary-main"><a id="ShouldShowQuickMenu"></a>ShouldShowQuickMenu()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L464" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="ShouldShowQuickMenu"></a>ShouldShowQuickMenu()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L500" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="shouldshowquickmenu"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -494,7 +494,7 @@ This page documents hooks in the ui category.
 ---
 
 <details class="realm-client" id="function-tooltipinitialize">
-<summary><span class="summary-main"><a id="TooltipInitialize"></a>TooltipInitialize(var, panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L234" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="TooltipInitialize"></a>TooltipInitialize(var, panel)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L270" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="tooltipinitialize"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -531,7 +531,7 @@ This page documents hooks in the ui category.
 ---
 
 <details class="realm-client" id="function-tooltiplayout">
-<summary><span class="summary-main"><a id="TooltipLayout"></a>TooltipLayout(var)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L301" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="TooltipLayout"></a>TooltipLayout(var)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L337" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="tooltiplayout"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -574,7 +574,7 @@ This page documents hooks in the ui category.
 ---
 
 <details class="realm-client" id="function-tooltippaint">
-<summary><span class="summary-main"><a id="TooltipPaint"></a>TooltipPaint(var, w, h)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L264" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="TooltipPaint"></a>TooltipPaint(var, w, h)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/hooks/client.lua#L300" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="tooltippaint"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

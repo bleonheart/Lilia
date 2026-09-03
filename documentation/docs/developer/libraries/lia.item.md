@@ -1117,7 +1117,7 @@ The item library manages registered item definitions and base items under `lia.i
 ---
 
 <details class="realm-shared" id="function-getweaponname">
-<summary><span class="summary-main"><a id="GetWeaponName"></a>GetWeaponName(weaponTable)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L213" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="GetWeaponName"></a>GetWeaponName(weaponTable)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L226" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="getweaponname"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1158,7 +1158,7 @@ The item library manages registered item definitions and base items under `lia.i
 ---
 
 <details class="realm-server" id="function-handleitemtransferrequest">
-<summary><span class="summary-main"><a id="HandleItemTransferRequest"></a>HandleItemTransferRequest(client, itemID, x, y, targetInvID)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L84" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="HandleItemTransferRequest"></a>HandleItemTransferRequest(client, itemID, x, y, targetInvID)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L97" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="handleitemtransferrequest"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1204,7 +1204,7 @@ The item library manages registered item definitions and base items under `lia.i
 ---
 
 <details class="realm-shared" id="function-initializeditems">
-<summary><span class="summary-main"><a id="InitializedItems"></a>InitializedItems()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L169" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="InitializedItems"></a>InitializedItems()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L182" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="initializeditems"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1235,7 +1235,7 @@ The item library manages registered item definitions and base items under `lia.i
 ---
 
 <details class="realm-shared" id="function-itemdefaultfunctions">
-<summary><span class="summary-main"><a id="ItemDefaultFunctions"></a>ItemDefaultFunctions(functions)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L121" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="ItemDefaultFunctions"></a>ItemDefaultFunctions(functions)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L134" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="itemdefaultfunctions"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1271,7 +1271,7 @@ The item library manages registered item definitions and base items under `lia.i
 ---
 
 <details class="realm-shared" id="function-onitemcreated">
-<summary><span class="summary-main"><a id="OnItemCreated"></a>OnItemCreated(item)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L189" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnItemCreated"></a>OnItemCreated(item)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L202" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onitemcreated"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1307,7 +1307,7 @@ The item library manages registered item definitions and base items under `lia.i
 ---
 
 <details class="realm-shared" id="function-onitemoverridden">
-<summary><span class="summary-main"><a id="OnItemOverridden"></a>OnItemOverridden(itemDef, overrides)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L241" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnItemOverridden"></a>OnItemOverridden(itemDef, overrides)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L254" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onitemoverridden"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1344,7 +1344,7 @@ The item library manages registered item definitions and base items under `lia.i
 ---
 
 <details class="realm-shared" id="function-onitemregistered">
-<summary><span class="summary-main"><a id="OnItemRegistered"></a>OnItemRegistered(itemDef)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L145" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnItemRegistered"></a>OnItemRegistered(itemDef)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L158" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onitemregistered"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1380,7 +1380,7 @@ The item library manages registered item definitions and base items under `lia.i
 ---
 
 <details class="realm-server" id="function-onplayerdroppeditem">
-<summary><span class="summary-main"><a id="OnPlayerDroppedItem"></a>OnPlayerDroppedItem(client, itemEntity)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L1" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnPlayerDroppedItem"></a>OnPlayerDroppedItem(client, itemEntity)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L14" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onplayerdroppeditem"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1418,7 +1418,7 @@ The item library manages registered item definitions and base items under `lia.i
 ---
 
 <details class="realm-server" id="function-onplayerrotateitem">
-<summary><span class="summary-main"><a id="OnPlayerRotateItem"></a>OnPlayerRotateItem(client, item, rotated)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L55" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnPlayerRotateItem"></a>OnPlayerRotateItem(client, item, rotated)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L68" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onplayerrotateitem"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -1457,7 +1457,7 @@ The item library manages registered item definitions and base items under `lia.i
 ---
 
 <details class="realm-server" id="function-onplayertakeitem">
-<summary><span class="summary-main"><a id="OnPlayerTakeItem"></a>OnPlayerTakeItem(client, item)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L28" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="OnPlayerTakeItem"></a>OnPlayerTakeItem(client, item)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/core/libraries/item.lua#L41" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="onplayertakeitem"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">

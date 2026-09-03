@@ -1,5 +1,11 @@
 ﻿local PANEL = {}
 local renderedIcons = {}
+local function getThemeColors()
+    local theme = lia.color and lia.color.theme or {}
+    local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
+    return accent, theme.text or Color(232, 240, 240)
+end
+
 local function drawPanel(x, y, w, h, radius, color, outline)
     lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
     if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
@@ -76,7 +82,7 @@ function PANEL:setItemType(itemTypeOrID)
         self.itemType = itemTypeOrID
     end
 
-    assert(item, string.format("Invalid item type or ID %s", tostring(item)))
+    assert(item, L("invalidItemTypeOrID", tostring(item)))
     self.liaToolTip = true
     self.itemTable = item
     self:SetModel(item:getModel())
@@ -154,7 +160,7 @@ function PANEL:PerformLayout(w, h)
 end
 
 function PANEL:PaintBehind(w, h)
-    local accent = lia.color.theme.accent
+    local accent = select(1, getThemeColors())
     if self.isDragPreview then
         drawPanel(0, 0, w, h, 5, Color(255, 255, 255, 7), Color(accent.r, accent.g, accent.b, 100))
         return
