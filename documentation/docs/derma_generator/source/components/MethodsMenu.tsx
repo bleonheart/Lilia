@@ -157,7 +157,7 @@ const MethodsMenu: React.FC<MethodsMenuProps> = ({ element, isOpen, onClose, onS
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-neutral-900 border border-neutral-700 rounded-lg shadow-2xl w-[800px] h-[600px] flex flex-col overflow-hidden">
+      <div className="bg-neutral-900 border border-neutral-700 rounded-lg shadow-2xl w-[800px] flex flex-col overflow-hidden" style={{ height: 'min(720px, 90vh)' }}>
         {/* Header */}
         <div className="h-12 border-b border-neutral-700 flex items-center justify-between px-4 bg-neutral-800">
           <div className="flex items-center gap-2">
@@ -232,12 +232,6 @@ const MethodsMenu: React.FC<MethodsMenuProps> = ({ element, isOpen, onClose, onS
                         >
                             <Trash2 className="w-4 h-4" /> Clear
                         </button>
-                        <button 
-                            onClick={handleClose}
-                            className="px-4 py-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-300 hover:bg-neutral-700 text-sm font-medium flex items-center gap-1.5"
-                        >
-                            <LogOut className="w-4 h-4" /> Close
-                        </button>
                     </div>
                 </>
             ) : (
@@ -247,6 +241,15 @@ const MethodsMenu: React.FC<MethodsMenuProps> = ({ element, isOpen, onClose, onS
                 </div>
             )}
           </div>
+        </div>
+
+        <div className="shrink-0 border-t px-4 flex items-center justify-end" style={{ height: 64, backgroundColor: '#450a0a', borderColor: '#991b1b' }}>
+          <button
+            onClick={handleClose}
+            className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-500 text-sm font-medium flex items-center gap-1.5 transition-colors"
+          >
+            <LogOut className="w-4 h-4" /> Close
+          </button>
         </div>
       </div>
     </div>
