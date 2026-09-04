@@ -1,33 +1,4 @@
-﻿--[[
-    Hooks:
-        SetupQuickMenu(Panel menu)
-
-    Purpose:
-        Allows modules to populate the quick settings menu before it is sized and shown.
-
-    Category:
-        UI
-
-    Parameters:
-        menu (Panel)
-            The quick menu panel instance that exposes helper methods like `addButton`, `addCheck`, and `addSpacer`.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("SetupQuickMenu", "liaExampleSetupQuickMenu", function(menu)
-            menu:addButton("Example Action", function()
-                LocalPlayer():ChatPrint("Example clicked.")
-            end, "Runs an example quick action.")
-        end)
-        ```
-
-    Realm:
-        Client
-]]
-local cacheKeys, cache, len = {}, {}, 0
+﻿local cacheKeys, cache, len = {}, {}, 0
 timer.Create("derma_convar_fix", 0.5, 0, function()
     if len == 0 then return end
     local name

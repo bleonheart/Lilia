@@ -1,319 +1,11 @@
-﻿--[[
-    Hooks:
-        OnPlayerSwitchClass(client, class, oldClass)
-
-    Purpose:
-        Runs after a character switches from one class to another through `joinClass`.
-
-    Category:
-        Character
-
-    Parameters:
-        client (Player)
-            The player whose character switched classes.
-
-        class (number|string)
-            The new class identifier assigned to the character.
-
-        oldClass (number|string)
-            The previous class identifier.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("OnPlayerSwitchClass", "liaExampleOnPlayerSwitchClass", function(client, class, oldClass)
-            print(client:Nick(), oldClass, class)
-        end)
-        ```
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        OnCharAttribUpdated(client, self, key, value)
-
-    Purpose:
-        Runs after a character attribute has been updated and synced to the owning client.
-
-    Category:
-        Character
-
-    Parameters:
-        client (Player)
-            The player who owns the character.
-
-        self (Character)
-            The character whose attribute changed.
-
-        key (string)
-            The attribute identifier that changed.
-
-        value (number)
-            The new attribute value.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("OnCharAttribUpdated", "liaExampleOnCharAttribUpdated", function(client, self, key, value)
-            print("Attribute updated:", key, value)
-        end)
-        ```
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        OnCharAttribBoosted(client, self, attribID, boostID, boostAmount)
-
-    Purpose:
-        Runs after an attribute boost has been added, removed, or cleared.
-
-    Category:
-        Character
-
-    Parameters:
-        client (Player)
-            The player who owns the character, if valid.
-
-        self (Character)
-            The character whose boost data changed.
-
-        attribID (string)
-            The boosted attribute identifier.
-
-        boostID (string)
-            The boost source identifier.
-
-        boostAmount (number|boolean)
-            The applied boost amount, or `true` when a boost was removed.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("OnCharAttribBoosted", "liaExampleOnCharAttribBoosted", function(client, self, attribID, boostID, boostAmount)
-            print("Boost changed:", attribID, boostID)
-        end)
-        ```
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        OnCharFlagsGiven(ply, self, addedFlags)
-
-    Purpose:
-        Runs after new flags have been granted to a character.
-
-    Category:
-        Character
-
-    Parameters:
-        ply (Player)
-            The player who owns the character.
-
-        self (Character)
-            The character that received new flags.
-
-        addedFlags (string)
-            The flag characters that were added.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("OnCharFlagsGiven", "liaExampleOnCharFlagsGiven", function(ply, self, addedFlags)
-            print("Flags granted:", addedFlags)
-        end)
-        ```
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        OnCharFlagsTaken(ply, self, removedFlags)
-
-    Purpose:
-        Runs after flags have been removed from a character.
-
-    Category:
-        Character
-
-    Parameters:
-        ply (Player)
-            The player who owns the character.
-
-        self (Character)
-            The character that lost flags.
-
-        removedFlags (string)
-            The flag characters that were removed.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("OnCharFlagsTaken", "liaExampleOnCharFlagsTaken", function(ply, self, removedFlags)
-            print("Flags removed:", removedFlags)
-        end)
-        ```
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        CharPostSave(self)
-
-    Purpose:
-        Runs after a character's field-backed variables have been persisted to the database.
-
-    Category:
-        Character
-
-    Parameters:
-        self (Character)
-            The character that was saved.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("CharPostSave", "liaExampleCharPostSave", function(self)
-            print("Saved character", self:getID())
-        end)
-        ```
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        OnCharKick(self, client)
-
-    Purpose:
-        Runs after a character has been kicked back to character selection.
-
-    Category:
-        Character
-
-    Parameters:
-        self (Character)
-            The character that was kicked.
-
-        client (Player)
-            The player removed from the character.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("OnCharKick", "liaExampleOnCharKick", function(self, client)
-            print("Kicked character", self:getID())
-        end)
-        ```
-
-    Realm:
-        Server
-]]
---[[
-    Hooks:
-        OnCharPermakilled(self, time)
-
-    Purpose:
-        Runs after a character has been banned by `ban`, including permanent bans.
-
-    Category:
-        Character
-
-    Parameters:
-        self (Character)
-            The character that was banned.
-
-        time (number|nil)
-            The temporary ban duration passed to `ban`, or nil for a permanent ban.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("OnCharPermakilled", "liaExampleOnCharPermakilled", function(self, time)
-            print("Character banned", self:getID(), time)
-        end)
-        ```
-
-    Realm:
-        Server
-]]
---[[
-    Folder: Developer - Meta Tables
-    File: character.md
-]]
---[[
-    Character
-
-    Character metadata helpers for lookup, recognition, persistence, and state management.
-]]
---[[
-    Overview:
-        The character meta table wraps a loaded character instance and exposes helpers for identity lookup, attribute and flag access, recognition state, character data storage, networking, and server-side lifecycle actions such as syncing, saving, banning, and deletion.
-]]
-local characterMeta = lia.meta.character or {}
+﻿local characterMeta = lia.meta.character or {}
 characterMeta.__index = characterMeta
 characterMeta.id = characterMeta.id or 0
 characterMeta.vars = characterMeta.vars or {}
---[[
-    Purpose:
-        Returns the numeric ID assigned to this character.
-
-    Returns:
-        number
-            The character ID.
-
-    Example Usage:
-        ```lua
-        local charID = character:getID()
-        print("Character ID:", charID)
-        ```
-
-    Realm:
-        Shared
-]]
 function characterMeta:getID()
     return self.id
 end
 
---[[
-    Purpose:
-        Resolves and caches the player currently using this character, if any.
-
-    Returns:
-        Player|nil
-            The owning player when found.
-
-    Example Usage:
-        ```lua
-        local owner = character:getPlayer()
-        if IsValid(owner) then print(owner:Nick()) end
-        ```
-
-    Realm:
-        Shared
-]]
 function characterMeta:getPlayer()
     if IsValid(self.player) then return self.player end
     for _, v in player.Iterator() do
@@ -332,27 +24,6 @@ function characterMeta:getPlayer()
     end
 end
 
---[[
-    Purpose:
-        Returns the name this character should display to a specific viewer.
-
-    Parameters:
-        client (Player)
-            The player viewing this character.
-
-    Returns:
-        string
-            The true name, a fake recognized name, or the localized unknown label.
-
-    Example Usage:
-        ```lua
-        local shownName = targetCharacter:getDisplayedName(viewer)
-        viewer:ChatPrint(shownName)
-        ```
-
-    Realm:
-        Shared
-]]
 function characterMeta:getDisplayedName(client)
     local isRecognitionEnabled = lia.config.get("RecognitionEnabled", true)
     if not isRecognitionEnabled then return self:getName() end
@@ -367,56 +38,12 @@ function characterMeta:getDisplayedName(client)
     return L("unknown")
 end
 
---[[
-    Purpose:
-        Checks whether the character has at least the requested amount of money.
-
-    Parameters:
-        amount (number)
-            The required amount.
-
-    Returns:
-        boolean
-            `true` if the character has enough money.
-
-    Example Usage:
-        ```lua
-        if character:hasMoney(500) then
-            print("Character can afford this purchase.")
-        end
-        ```
-
-    Realm:
-        Shared
-]]
 function characterMeta:hasMoney(amount)
     amount = tonumber(amount) or 0
     if amount < 0 then return false end
     return self:getMoney() >= amount
 end
 
---[[
-    Purpose:
-        Checks whether the character owns any of the supplied flags.
-
-    Parameters:
-        flagStr (string)
-            One or more flag characters to test.
-
-    Returns:
-        boolean
-            `true` if any requested flag is present.
-
-    Example Usage:
-        ```lua
-        if character:hasFlags("pet") then
-            print("Character has at least one of those flags.")
-        end
-        ```
-
-    Realm:
-        Shared
-]]
 function characterMeta:hasFlags(flagStr)
     local flags = self:getFlags()
     for i = 1, #flagStr do
@@ -426,29 +53,6 @@ function characterMeta:hasFlags(flagStr)
     return false
 end
 
---[[
-    Purpose:
-        Returns an attribute value after applying any active boosts for that attribute.
-
-    Parameters:
-        key (string)
-            The attribute ID.
-        default (number)
-            Fallback value when the attribute is unset.
-
-    Returns:
-        number
-            The current effective attribute value.
-
-    Example Usage:
-        ```lua
-        local strength = character:getAttrib("str", 0)
-        print("Strength:", strength)
-        ```
-
-    Realm:
-        Shared
-]]
 function characterMeta:getAttrib(key, default)
     local att = self:getAttribs()[key] or default or 0
     local boosts = self:getVar("boosts", {})[key]
@@ -460,89 +64,16 @@ function characterMeta:getAttrib(key, default)
     return att
 end
 
---[[
-    Purpose:
-        Checks whether this character normally recognizes another character ID.
-
-    Parameters:
-        id (number|table)
-            A character ID or character object.
-
-    Returns:
-        boolean
-            `true` unless a hook explicitly rejects recognition.
-
-    Example Usage:
-        ```lua
-        if viewerCharacter:doesRecognize(targetCharacter) then
-            print("This character is recognized.")
-        end
-        ```
-
-    Realm:
-        Shared
-]]
 function characterMeta:doesRecognize(id)
     if not isnumber(id) and id.getID then id = id:getID() end
     return hook.Run("IsCharRecognized", self, id) ~= false
 end
 
---[[
-    Purpose:
-        Checks whether this character uses a fake recognized name for another character.
-
-    Parameters:
-        id (number|table)
-            A character ID or character object.
-
-    Returns:
-        boolean
-            `true` unless a hook explicitly rejects fake recognition.
-
-    Example Usage:
-        ```lua
-        if viewerCharacter:doesFakeRecognize(targetCharacter) then
-            print("A fake recognized name is being used.")
-        end
-        ```
-
-    Realm:
-        Shared
-]]
 function characterMeta:doesFakeRecognize(id)
     if not isnumber(id) and id.getID then id = id:getID() end
     return hook.Run("IsCharFakeRecognized", self, id) ~= false
 end
 
---[[
-    Purpose:
-        Stores arbitrary character data, optionally replicating it and persisting it on the server.
-
-    Parameters:
-        k (string|table)
-            A single key or a table of key-value pairs.
-        v (any)
-            The value for a single key update.
-        noReplication (boolean)
-            Whether to skip sending the updated data over the network.
-        receiver (Player)
-            An optional player to receive replicated data.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:setData("title", "Quartermaster")
-        character:setData({
-            rank = "Captain",
-            callsign = "Echo-3"
-        })
-        ```
-
-    Realm:
-        Shared
-]]
 function characterMeta:setData(k, v, noReplication, receiver)
     if not self.dataVars then self.dataVars = {} end
     local toNetwork = {}
@@ -602,29 +133,6 @@ function characterMeta:setData(k, v, noReplication, receiver)
     end
 end
 
---[[
-    Purpose:
-        Retrieves stored character data, checking the cache first and the database on the server when needed.
-
-    Parameters:
-        key (string|nil)
-            The key to fetch, or `nil` to return the full data table.
-        default (any)
-            The fallback value if the key is missing.
-
-    Returns:
-        any
-            The stored value, the full data table, or the fallback.
-
-    Example Usage:
-        ```lua
-        local title = character:getData("title", "Citizen")
-        local allData = character:getData()
-        ```
-
-    Realm:
-        Shared
-]]
 function characterMeta:getData(key, default)
     self.dataVars = self.dataVars or {}
     if not key then return self.dataVars end
@@ -645,53 +153,12 @@ function characterMeta:getData(key, default)
     return value
 end
 
---[[
-    Purpose:
-        Checks whether the character is currently banned.
-
-    Returns:
-        boolean
-            `true` if the ban is permanent or still active.
-
-    Example Usage:
-        ```lua
-        if character:isBanned() then
-            print("This character cannot be selected right now.")
-        end
-        ```
-
-    Realm:
-        Shared
-]]
 function characterMeta:isBanned()
     local banned = self:getBanned()
     return banned ~= 0 and (banned == -1 or banned > os.time())
 end
 
 if SERVER then
-    --[[
-    Purpose:
-        Marks another character as recognized, optionally storing a fake display name.
-
-    Parameters:
-        character (number|table)
-            A character ID or character object to recognize.
-        name (string|nil)
-            A fake name to store instead of normal recognition.
-
-    Returns:
-        boolean
-            `true` after the recognition data is updated.
-
-    Example Usage:
-        ```lua
-        observerCharacter:recognize(targetCharacter)
-        observerCharacter:recognize(targetCharacter, "John Doe")
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:recognize(character, name)
         local id
         if isnumber(character) then
@@ -711,29 +178,6 @@ if SERVER then
         return true
     end
 
-    --[[
-    Purpose:
-        Moves the character into a class if the class exists and passes eligibility checks.
-
-    Parameters:
-        class (string|number|nil)
-            The class identifier to join.
-        isForced (boolean)
-            Whether to bypass `lia.class.canBe`.
-
-    Returns:
-        boolean
-            `true` if the class was joined.
-
-    Example Usage:
-        ```lua
-        local joined = character:joinClass(CLASS_MEDIC)
-        print("Joined class:", joined)
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:joinClass(class, isForced)
         if not class then
             self:kickClass()
@@ -762,21 +206,6 @@ if SERVER then
         end
     end
 
-    --[[
-    Purpose:
-        Removes the character from its current class and falls back to the faction default when possible.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:kickClass()
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:kickClass()
         local client = self:getPlayer()
         if not client then return end
@@ -796,27 +225,6 @@ if SERVER then
         end
     end
 
-    --[[
-    Purpose:
-        Adds to an attribute without exceeding the configured maximum, then syncs it to the owner.
-
-    Parameters:
-        key (string)
-            The attribute ID.
-        value (number)
-            The amount to add.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:updateAttrib("stm", 5)
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:updateAttrib(key, value)
         local client = self:getPlayer()
         local attribute = lia.attribs.list[key]
@@ -835,27 +243,6 @@ if SERVER then
         end
     end
 
-    --[[
-    Purpose:
-        Sets an attribute to an exact value and syncs it to the owner.
-
-    Parameters:
-        key (string)
-            The attribute ID.
-        value (number)
-            The new raw value.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:setAttrib("str", 15)
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:setAttrib(key, value)
         local client = self:getPlayer()
         local attribute = lia.attribs.list[key]
@@ -873,30 +260,6 @@ if SERVER then
         end
     end
 
-    --[[
-    Purpose:
-        Adds or replaces a temporary boost on an attribute.
-
-    Parameters:
-        boostID (string)
-            A unique identifier for the boost source.
-        attribID (string)
-            The attribute being boosted.
-        boostAmount (number)
-            The amount to apply.
-
-    Returns:
-        any
-            The result of `setVar`.
-
-    Example Usage:
-        ```lua
-        character:addBoost("adrenaline", "stm", 10)
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:addBoost(boostID, attribID, boostAmount)
         local boosts = self:getVar("boosts", {})
         boosts[attribID] = boosts[attribID] or {}
@@ -905,28 +268,6 @@ if SERVER then
         return self:setVar("boosts", boosts, nil, self:getPlayer())
     end
 
-    --[[
-    Purpose:
-        Removes one temporary boost from an attribute.
-
-    Parameters:
-        boostID (string)
-            The boost identifier to remove.
-        attribID (string)
-            The attribute the boost belongs to.
-
-    Returns:
-        any
-            The result of `setVar`.
-
-    Example Usage:
-        ```lua
-        character:removeBoost("adrenaline", "stm")
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:removeBoost(boostID, attribID)
         local boosts = self:getVar("boosts", {})
         boosts[attribID] = boosts[attribID] or {}
@@ -935,22 +276,6 @@ if SERVER then
         return self:setVar("boosts", boosts, nil, self:getPlayer())
     end
 
-    --[[
-    Purpose:
-        Clears every active attribute boost on the character.
-
-    Returns:
-        any
-            The result of `setVar`.
-
-    Example Usage:
-        ```lua
-        character:clearAllBoosts()
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:clearAllBoosts()
         local client = self:getPlayer()
         local boosts = self:getVar("boosts", {})
@@ -962,25 +287,6 @@ if SERVER then
         return self:setVar("boosts", {}, nil, client)
     end
 
-    --[[
-    Purpose:
-        Replaces the character's entire flag string and triggers flag callbacks.
-
-    Parameters:
-        flags (string)
-            The complete set of flags to store.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:setFlags("pet")
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:setFlags(flags)
         local oldFlags = self:getFlags()
         self.vars.flags = flags
@@ -1009,25 +315,6 @@ if SERVER then
         end
     end
 
-    --[[
-    Purpose:
-        Adds any missing flags from the supplied string.
-
-    Parameters:
-        flags (string)
-            The flags to grant.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:giveFlags("ab")
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:giveFlags(flags)
         local addedFlags = ""
         local ply = self:getPlayer()
@@ -1046,25 +333,6 @@ if SERVER then
         end
     end
 
-    --[[
-    Purpose:
-        Removes any matching flags from the supplied string.
-
-    Parameters:
-        flags (string)
-            The flags to revoke.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:takeFlags("b")
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:takeFlags(flags)
         local oldFlags = self:getFlags()
         local newFlags = oldFlags
@@ -1084,27 +352,6 @@ if SERVER then
         end
     end
 
-    --[[
-    Purpose:
-        Persists the character's field-backed variables to the database.
-
-    Parameters:
-        callback (function|nil)
-            Runs after a successful save.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:save(function()
-            print("Character saved.")
-        end)
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:save(callback)
         if self.isBot then return end
         local shouldSave = hook.Run("CharPreSave", self)
@@ -1121,26 +368,6 @@ if SERVER then
         end
     end
 
-    --[[
-    Purpose:
-        Sends this character's networked state to one player or every player.
-
-    Parameters:
-        receiver (Player|nil)
-            The player to sync to, or `nil` to sync to everyone.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:sync()
-        character:sync(adminPlayer)
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:sync(receiver)
         if receiver == nil then
             for _, v in player.Iterator() do
@@ -1192,25 +419,6 @@ if SERVER then
         end
     end
 
-    --[[
-    Purpose:
-        Applies the character to its owning player and optionally syncs inventories and character vars.
-
-    Parameters:
-        noNetworking (boolean)
-            Whether to skip syncing inventories and character data.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:setup()
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:setup(noNetworking)
         local client = self:getPlayer()
         if IsValid(client) then
@@ -1239,21 +447,6 @@ if SERVER then
         end
     end
 
-    --[[
-    Purpose:
-        Removes the owning player from this character and returns them to the selection state.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:kick()
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:kick()
         local client = self:getPlayer()
         client:KillSilent()
@@ -1278,26 +471,6 @@ if SERVER then
         hook.Run("OnCharKick", self, client)
     end
 
-    --[[
-    Purpose:
-        Bans the character until a timestamp or permanently, then saves and kicks it.
-
-    Parameters:
-        time (number|nil)
-            Ban duration in seconds. `nil` creates a permanent ban.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:ban(3600)
-        character:ban()
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:ban(time)
         time = tonumber(time)
         local value
@@ -1313,91 +486,21 @@ if SERVER then
         hook.Run("OnCharPermakilled", self, time or nil)
     end
 
-    --[[
-    Purpose:
-        Deletes the character through the character library.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:delete()
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:delete()
         lia.char.delete(self:getID(), self:getPlayer())
     end
 
-    --[[
-    Purpose:
-        Removes the character from the loaded character cache.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        character:destroy()
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:destroy()
         local id = self:getID()
         lia.char.removeCharacter(id)
     end
 
-    --[[
-    Purpose:
-        Gives money to the owning player through the player money helper.
-
-    Parameters:
-        amount (number)
-            The amount to add.
-
-    Returns:
-        boolean
-            `false` if the player is not valid, otherwise the result of `addMoney`.
-
-    Example Usage:
-        ```lua
-        character:giveMoney(250)
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:giveMoney(amount)
         local client = self:getPlayer()
         if not IsValid(client) then return false end
         return client:addMoney(amount)
     end
 
-    --[[
-    Purpose:
-        Removes money from the owning player by applying a negative money change.
-
-    Parameters:
-        amount (number)
-            The amount to remove.
-
-    Returns:
-        boolean
-            Always returns `true`.
-
-    Example Usage:
-        ```lua
-        character:takeMoney(100)
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:takeMoney(amount)
         amount = math.abs(amount)
         self:giveMoney(-amount)
@@ -1405,24 +508,6 @@ if SERVER then
         return true
     end
 
-    --[[
-    Purpose:
-        Checks whether this character is set as the player's main character.
-
-    Returns:
-        boolean
-            `true` when the owner's main character ID matches this character.
-
-    Example Usage:
-        ```lua
-        if character:isMainCharacter() then
-            print("This is the player's main character.")
-        end
-        ```
-
-    Realm:
-        Server
-]]
     function characterMeta:isMainCharacter()
         local client = self:getPlayer()
         if not IsValid(client) then return false end

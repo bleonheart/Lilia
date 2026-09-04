@@ -1,42 +1,4 @@
-﻿--[[
-    Hooks:
-        ShowPlayerOptions(Player target, table options)
-
-    Purpose:
-        Allows modules to append clickable player actions to the scoreboard options menu for a target player.
-
-    Category:
-        Administration
-
-    Parameters:
-        target (Player)
-            The player whose options menu is being built.
-
-        options (table)
-            The mutable array of option tables consumed by the scoreboard UI.
-
-    Returns:
-        nil
-
-    Example Usage:
-        ```lua
-        hook.Add("ShowPlayerOptions", "liaExampleShowPlayerOptions", function(target, options)
-            if target:getChar() then
-                options[#options + 1] = {
-                    name = "Print Name",
-                    image = "icon16/information.png",
-                    func = function()
-                        print(target:getChar():getName())
-                    end
-                }
-            end
-        end)
-        ```
-
-    Realm:
-        Client
-]]
-local MODULE = MODULE
+﻿local MODULE = MODULE
 local flagsData
 local charListRequestID = 0
 local CHAR_LIST_PAGE_SIZE = 100

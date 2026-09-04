@@ -1,146 +1,4 @@
-﻿--[[
-    Folder: Developer - Libraries
-    File: lia.inventory.md
-]]
---[[
-    Inventory
-
-    Inventory helpers for registering inventory types, creating and loading inventory instances, managing persistent storage definitions, and opening inventory panels.
-]]
---[[
-    Overview:
-        The inventory library centralizes shared inventory behavior under `lia.inventory`. It registers inventory type structures, creates inventory objects, loads and deletes server-side inventory records, manages storage and vehicle trunk definitions, handles overflow after size changes, and opens single or dual inventory interfaces on the client.
-]]
---[[
-    Hooks:
-        CreateInventoryPanel(table inventory, Panel|nil parent)
-
-    Purpose:
-        Allows the clientside inventory interface to be created for a specific inventory.
-
-    Category:
-        Inventory
-
-    Parameters:
-        inventory (table)
-            The inventory instance that needs a panel.
-
-        parent (Panel|nil)
-            Optional parent panel for the created inventory panel.
-
-    Example Usage:
-        ```lua
-        hook.Add("CreateInventoryPanel", "liaExampleCreateInventoryPanel", function(inventory, parent)
-            print("[MyModule] handled CreateInventoryPanel")
-        end)
-        ```
-
-    Returns:
-        Panel
-            The created inventory panel.
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        InventoryOpened(Panel panel, table inventory)
-
-    Purpose:
-        Called after an inventory panel has been created and opened.
-
-    Category:
-        Inventory
-
-    Parameters:
-        panel (Panel)
-            The inventory panel that was opened.
-
-        inventory (table)
-            The inventory instance displayed by the panel.
-
-    Example Usage:
-        ```lua
-        hook.Add("InventoryOpened", "liaExampleInventoryOpened", function(panel, inventory)
-            if not IsValid(panel) then return end
-            panel:SetTooltip("InventoryOpened handled by MyModule")
-        end)
-        ```
-
-    Returns:
-        None
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        InventoryClosed(Panel panel, table inventory)
-
-    Purpose:
-        Called when an inventory panel is removed or closed.
-
-    Category:
-        Inventory
-
-    Parameters:
-        panel (Panel)
-            The inventory panel that was closed.
-
-        inventory (table)
-            The inventory instance that was displayed by the panel.
-
-    Example Usage:
-        ```lua
-        hook.Add("InventoryClosed", "liaExampleInventoryClosed", function(panel, inventory)
-            if not IsValid(panel) then return end
-            panel:SetTooltip("InventoryClosed handled by MyModule")
-        end)
-        ```
-
-    Returns:
-        None
-
-    Realm:
-        Client
-]]
---[[
-    Hooks:
-        OnCreateDualInventoryPanels(Panel panel1, Panel panel2, table inventory1, table inventory2)
-
-    Purpose:
-        Called after two inventory panels have been created and positioned for a dual-inventory view.
-
-    Category:
-        Inventory
-
-    Parameters:
-        panel1 (Panel)
-            The panel displaying the first inventory.
-
-        panel2 (Panel)
-            The panel displaying the second inventory.
-
-        inventory1 (table)
-            The first inventory instance.
-
-        inventory2 (table)
-            The second inventory instance.
-
-    Example Usage:
-        ```lua
-        hook.Add("OnCreateDualInventoryPanels", "liaExampleOnCreateDualInventoryPanels", function(panel1, panel2, inventory1, inventory2)
-            print("[MyModule] handled OnCreateDualInventoryPanels")
-        end)
-        ```
-
-    Returns:
-        None
-
-    Realm:
-        Client
-]]
-lia.inventory = lia.inventory or {}
+﻿lia.inventory = lia.inventory or {}
 lia.inventory.types = lia.inventory.types or {}
 lia.inventory.storage = lia.inventory.storage or {}
 lia.inventory.instances = lia.inventory.instances or {}
@@ -169,28 +27,6 @@ local function checkType(typeID, struct, expected, prefix)
     end
 end
 
---[[
-    Purpose:
-        Registers a new inventory type structure under `lia.inventory.types`.
-
-    Parameters:
-        typeID (string)
-            Unique identifier used to reference the inventory type.
-
-        invTypeStruct (table)
-            Inventory type structure containing the required metatable fields and server methods.
-
-    Returns:
-        None
-
-    Example Usage:
-        ```lua
-        lia.inventory.newType("grid", inventoryType)
-        ```
-
-    Realm:
-        Shared
-]]
 function lia.inventory.newType(typeID, invTypeStruct)
     assert(not lia.inventory.types[typeID], L("duplicateInventoryType", typeID))
     assert(istable(invTypeStruct), L("expectedTableArg", 2))
@@ -199,26 +35,6 @@ function lia.inventory.newType(typeID, invTypeStruct)
     lia.inventory.types[typeID] = invTypeStruct
 end
 
---[[
-    Purpose:
-        Creates a new inventory object from a registered inventory type without loading or assigning persistent storage.
-
-    Parameters:
-        typeID (string)
-            Identifier of the registered inventory type to instantiate.
-
-    Returns:
-        table
-            A new inventory object with copied configuration and an empty item table.
-
-    Example Usage:
-        ```lua
-        local inventory = lia.inventory.new("grid")
-        ```
-
-    Realm:
-        Shared
-]]
 function lia.inventory.new(typeID)
     local class = lia.inventory.types[typeID]
     assert(class ~= nil, L("invalidInventoryType", typeID))
@@ -244,31 +60,6 @@ if SERVER then
         MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 200, 0), "[DevMode] ", Color(255, 255, 255), table.concat(parts, " "), "\n")
     end
 
-    --[[
-        Purpose:
-            Loads an inventory by its persistent ID, using the cached instance unless `noCache` is enabled.
-
-        Parameters:
-            id (number)
-                Persistent inventory ID to load.
-
-            noCache (boolean|nil)
-                Whether to bypass an existing cached inventory instance.
-
-        Returns:
-            Deferred
-                A deferred that resolves with the loaded inventory instance.
-
-        Example Usage:
-            ```lua
-            lia.inventory.loadByID(invID):next(function(inventory)
-                if inventory then inventory:sync(client) end
-            end)
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.loadByID(id, noCache)
         local instance = lia.inventory.instances[id]
         if instance and not noCache then
@@ -289,31 +80,6 @@ if SERVER then
         return lia.inventory.loadFromDefaultStorage(id, noCache)
     end
 
-    --[[
-        Purpose:
-            Loads an inventory from the default database tables and restores its saved data and items.
-
-        Parameters:
-            id (number)
-                Persistent inventory ID to load.
-
-            noCache (boolean|nil)
-                Whether to bypass an existing cached inventory instance.
-
-        Returns:
-            Deferred
-                A deferred that resolves with the loaded inventory instance, or nil if no record exists.
-
-        Example Usage:
-            ```lua
-            lia.inventory.loadFromDefaultStorage(invID, true):next(function(inventory)
-                if inventory then inventory:onLoaded() end
-            end)
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.loadFromDefaultStorage(id, noCache)
         local started = SysTime()
         return deferred.all({lia.db.select(INV_FIELDS, INV_TABLE, "invID = " .. id, 1), lia.db.select(DATA_FIELDS, DATA_TABLE, "invID = " .. id)}):next(function(res)
@@ -348,31 +114,6 @@ if SERVER then
         end)
     end
 
-    --[[
-        Purpose:
-            Creates and persists a new inventory instance of the given type.
-
-        Parameters:
-            typeID (string)
-                Identifier of the registered inventory type to create.
-
-            initialData (table|nil)
-                Optional data table assigned to the new inventory instance.
-
-        Returns:
-            Deferred
-                A deferred that resolves with the newly created inventory instance.
-
-        Example Usage:
-            ```lua
-            lia.inventory.instance("grid", {char = character:getID()}):next(function(inventory)
-                character:setInv(inventory)
-            end)
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.instance(typeID, initialData)
         local invType = lia.inventory.types[typeID]
         if not istable(invType) then
@@ -399,30 +140,6 @@ if SERVER then
         end)
     end
 
-    --[[
-        Purpose:
-            Loads every inventory associated with a character ID.
-
-        Parameters:
-            charID (number|string)
-                Character ID whose inventories should be loaded.
-
-        Returns:
-            Deferred
-                A deferred that resolves with the loaded inventory instances.
-
-        Example Usage:
-            ```lua
-            lia.inventory.loadAllFromCharID(character:getID()):next(function(inventories)
-                for _, inventory in pairs(inventories) do
-                    inventory:sync(client)
-                end
-            end)
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.loadAllFromCharID(charID)
         local originalCharID = charID
         local started = SysTime()
@@ -441,25 +158,6 @@ if SERVER then
         end)
     end
 
-    --[[
-        Purpose:
-            Deletes an inventory and its related data from persistent storage, then destroys the cached instance if present.
-
-        Parameters:
-            id (number)
-                Persistent inventory ID to delete.
-
-        Returns:
-            None
-
-        Example Usage:
-            ```lua
-            lia.inventory.deleteByID(invID)
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.deleteByID(id)
         lia.db.delete(DATA_TABLE, "invID = " .. id)
         lia.db.delete(INV_TABLE, "invID = " .. id)
@@ -468,62 +166,12 @@ if SERVER then
         if instance then instance:destroy() end
     end
 
-    --[[
-        Purpose:
-            Destroys all inventory instances currently associated with a character.
-
-        Parameters:
-            character (Character)
-                Character whose inventories should be cleaned up.
-
-        Returns:
-            None
-
-        Example Usage:
-            ```lua
-            lia.inventory.cleanUpForCharacter(character)
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.cleanUpForCharacter(character)
         for _, inventory in pairs(character:getInv(true)) do
             inventory:destroy()
         end
     end
 
-    --[[
-        Purpose:
-            Removes items that no longer fit in an inventory and stores them as character overflow data.
-
-        Parameters:
-            inv (table)
-                Inventory instance being checked for overflow.
-
-            character (Character)
-                Character that owns the inventory.
-
-            oldW (number)
-                Previous inventory width used for overflow metadata.
-
-            oldH (number)
-                Previous inventory height used for overflow metadata.
-
-        Returns:
-            boolean
-                True if one or more items overflowed and were stored, otherwise false.
-
-        Example Usage:
-            ```lua
-            if lia.inventory.checkOverflow(inventory, character, oldW, oldH) then
-                client:notifyWarning("Some items no longer fit in your inventory.")
-            end
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.checkOverflow(inv, character, oldW, oldH)
         local overflow, toRemove = {}, {}
         for _, item in pairs(inv:getItems()) do
@@ -555,33 +203,6 @@ if SERVER then
         return false
     end
 
-    --[[
-        Purpose:
-            Registers a world storage definition for a model.
-
-        Parameters:
-            model (string)
-                Model path used as the storage lookup key.
-
-            data (table)
-                Storage definition containing `name`, `invType`, and `invData`, with optional description data.
-
-        Returns:
-            table
-                The registered storage definition.
-
-        Example Usage:
-            ```lua
-            lia.inventory.registerStorage("models/props_junk/wood_crate001a.mdl", {
-                name = "Crate",
-                invType = "grid",
-                invData = {w = 4, h = 4}
-            })
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.registerStorage(model, data)
         assert(isstring(model), L("modelMustBeString"))
         assert(istable(data), L("dataMustBeTable"))
@@ -594,58 +215,11 @@ if SERVER then
         return data
     end
 
-    --[[
-        Purpose:
-            Retrieves a registered storage definition by model.
-
-        Parameters:
-            model (string)
-                Model path used to look up storage data.
-
-        Returns:
-            table|nil
-                The matching storage definition, or nil if none exists.
-
-        Example Usage:
-            ```lua
-            local storage = lia.inventory.getStorage(entity:GetModel())
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.getStorage(model)
         if not model then return end
         return lia.inventory.storage[model:lower()]
     end
 
-    --[[
-        Purpose:
-            Registers a vehicle trunk storage definition for a vehicle class.
-
-        Parameters:
-            vehicleClass (string)
-                Vehicle class used as the trunk lookup key.
-
-            data (table)
-                Trunk definition containing `name`, `invType`, and `invData`, with optional description data.
-
-        Returns:
-            table
-                The registered trunk definition.
-
-        Example Usage:
-            ```lua
-            lia.inventory.registerTrunk("prop_vehicle_jeep", {
-                name = "Vehicle Trunk",
-                invType = "grid",
-                invData = {w = 6, h = 3}
-            })
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.registerTrunk(vehicleClass, data)
         assert(isstring(vehicleClass), L("vehicleClassMustBeString"))
         assert(istable(data), "Data must be a table")
@@ -662,51 +236,12 @@ if SERVER then
         return data
     end
 
-    --[[
-        Purpose:
-            Retrieves a registered vehicle trunk definition by vehicle class.
-
-        Parameters:
-            vehicleClass (string)
-                Vehicle class used to look up trunk data.
-
-        Returns:
-            table|nil
-                The matching trunk definition, or nil if the class is not registered as a trunk.
-
-        Example Usage:
-            ```lua
-            local trunk = lia.inventory.getTrunk(vehicle:GetClass())
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.getTrunk(vehicleClass)
         if not vehicleClass then return end
         local trunkData = lia.inventory.storage[vehicleClass:lower()]
         return trunkData and trunkData.isTrunk and trunkData or nil
     end
 
-    --[[
-        Purpose:
-            Returns every registered vehicle trunk definition.
-
-        Parameters:
-            None
-
-        Returns:
-            table
-                Table of registered trunk definitions keyed by their lowercase trunk keys.
-
-        Example Usage:
-            ```lua
-            local trunks = lia.inventory.getAllTrunks()
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.getAllTrunks()
         local trunks = {}
         for key, data in pairs(lia.inventory.storage) do
@@ -715,26 +250,6 @@ if SERVER then
         return trunks
     end
 
-    --[[
-        Purpose:
-            Returns registered storage definitions, optionally excluding vehicle trunks.
-
-        Parameters:
-            includeTrunks (boolean|nil)
-                Set to false to return only non-trunk storage definitions.
-
-        Returns:
-            table
-                Registered storage definitions keyed by lowercase model or vehicle class.
-
-        Example Usage:
-            ```lua
-            local storageOnly = lia.inventory.getAllStorage(false)
-            ```
-
-        Realm:
-            Server
-    ]]
     function lia.inventory.getAllStorage(includeTrunks)
         if includeTrunks ~= false then
             return lia.inventory.storage
@@ -747,29 +262,6 @@ if SERVER then
         end
     end
 else
-    --[[
-        Purpose:
-            Creates and opens a clientside panel for an inventory.
-
-        Parameters:
-            inventory (table)
-                Inventory instance to display.
-
-            parent (Panel|nil)
-                Optional parent panel for the created inventory panel.
-
-        Returns:
-            Panel
-                The created inventory panel.
-
-        Example Usage:
-            ```lua
-            local panel = lia.inventory.show(inventory)
-            ```
-
-        Realm:
-            Client
-    ]]
     function lia.inventory.show(inventory, parent)
         local globalName = "inv" .. inventory.id
         if IsValid(lia.gui[globalName]) then lia.gui[globalName]:Remove() end
@@ -785,32 +277,6 @@ else
         return panel
     end
 
-    --[[
-        Purpose:
-            Opens two inventory panels side by side and links their close behavior.
-
-        Parameters:
-            inventory1 (table)
-                First inventory instance to display.
-
-            inventory2 (table)
-                Second inventory instance to display.
-
-            parent (Panel|nil)
-                Optional parent panel for the created inventory panels.
-
-        Returns:
-            table|nil
-                A table containing both created panels, or nil if panel creation fails.
-
-        Example Usage:
-            ```lua
-            local panels = lia.inventory.showDual(characterInv, storageInv)
-            ```
-
-        Realm:
-            Client
-    ]]
     function lia.inventory.showDual(inventory1, inventory2, parent)
         if not inventory1 or not inventory1.id or not inventory2 or not inventory2.id then
             lia.error("Invalid inventories provided to showDual")
