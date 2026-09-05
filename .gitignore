@@ -40,6 +40,9 @@ luac.out
 *.hex
 .vscode/*
 /documentation/docs/tools
+!/documentation/docs/tools/
+!/documentation/docs/tools/derma_generator/
+!/documentation/docs/tools/derma_generator/**
 *.bat
 /documentation/site
 /documentation/reports
