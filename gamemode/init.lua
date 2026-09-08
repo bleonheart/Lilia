@@ -3,7 +3,7 @@ local networkStrings = {"liaWeaponOverrideUpdate", "BodygrouperMenu", "Bodygroup
 DeriveGamemode("sandbox")
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
-AddCSLuaFile("core/libraries/loader.lua")
+AddCSLuaFile("core/libraries/loader/core.lua")
 include("shared.lua")
 for _, fontFile in ipairs(fontFiles) do
     resource.AddSingleFile(fontFile)
