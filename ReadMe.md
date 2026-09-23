@@ -92,7 +92,3 @@ Lilia is distributed under the GNU General Public License v3.0.
 See [License](./License) for details.
 
 ---
-
-<p align="center">
- <strong>Build the framework once. Shape the roleplay experience around it.</strong>
-</p>
