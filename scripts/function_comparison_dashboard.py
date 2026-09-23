@@ -1993,7 +1993,8 @@ class FunctionComparisonReportGenerator:
     """Main class for generating comprehensive function comparison reports"""
 
     def __init__(self, base_path: str = None, docs_path: str = None, language_file: str = None,
-                 modules_paths: List[str] = None, generate_module_docs: bool = True):
+                 modules_paths: List[str] = None, generate_module_docs: bool = True,
+                 audit_scope: str = "combined"):
         self.base_path = Path(base_path) if base_path else DEFAULT_GAMEMODE_ROOT
         self.docs_path = Path(docs_path) if docs_path else DEFAULT_DOCS_ROOT
         
@@ -2014,6 +2015,9 @@ class FunctionComparisonReportGenerator:
             else:
                 self.language_file = str(lang_file_path)
         self.generate_module_docs = generate_module_docs
+        if audit_scope not in {"combined", "lilia", "modules"}:
+            raise ValueError(f"Unsupported audit scope: {audit_scope}")
+        self.audit_scope = audit_scope
         # ``lilia_rp`` is kept as a sibling gamemode and consumes part of the
         # Lilia API.  Keep this optional so the dashboard still works in
         # checkouts that only contain Lilia.
@@ -2049,7 +2053,7 @@ class FunctionComparisonReportGenerator:
         lang_keys = self._get_localization_keys_with_arg_counts()
 
         
-        lua_files = list(self.base_path.rglob("*.lua"))
+        lua_files = [path for root in self._analysis_roots() for path in root.rglob("*.lua")]
 
         for lua_file in lua_files:
             
@@ -2065,7 +2069,7 @@ class FunctionComparisonReportGenerator:
                 content = self._remove_lua_comments(content)
 
                 
-                mismatches.extend(self._check_file_for_arg_mismatches(content, str(lua_file.relative_to(self.base_path)), lang_keys))
+                mismatches.extend(self._check_file_for_arg_mismatches(content, self._path_ref_for_report(lua_file), lang_keys))
 
             except Exception as e:
                 print(f"Warning: Error scanning {lua_file}: {e}")
@@ -2089,20 +2093,8 @@ class FunctionComparisonReportGenerator:
             )
 
         scan_roots: List[Tuple[Path, str]] = []
-        gamemode_root = Path(self.base_path)
-        for rel in ["core/libraries", "core/meta", "entities", "items", "modules"]:
-            root = gamemode_root / rel
-            if root.exists():
-                scan_roots.append((root, str(gamemode_root)))
-
-        for modules_base in (Path(p) for p in (self.modules_paths or [])):
-            if modules_base.exists():
-                scan_roots.append((modules_base, str(modules_base)))
-
-            if modules_base.name.lower() == "modules":
-                sibling = modules_base.parent / "devmodules"
-                if sibling.exists():
-                    scan_roots.append((sibling, str(sibling)))
+        for root in self._analysis_roots():
+            scan_roots.append((root, str(root)))
 
         field_assign_l = re.compile(r'^\s*([A-Za-z_][\w\.\[\]:]*)\s*=\s*L\s*\(\s*')
         field_assign_resolve = re.compile(
@@ -3049,17 +3041,28 @@ class FunctionComparisonReportGenerator:
         print(f"Compared {len(language_keys)} language files, found {len(all_keys)} total unique keys")
         return missing_keys
 
-    def _iter_workspace_roots(self) -> List[Path]:
-        """Return repository and configured module roots that exist on disk."""
+    def _analysis_roots(self) -> List[Path]:
+        """Return only the source roots selected for this audit run."""
+        if self.audit_scope == "lilia":
+            candidates = [self.base_path]
+        elif self.audit_scope == "modules":
+            candidates = [Path(path) for path in (self.modules_paths or [])]
+        else:
+            candidates = [self.base_path, *[Path(path) for path in (self.modules_paths or [])]]
+
         roots: List[Path] = []
-        for root in [self.base_path, *[Path(p) for p in (self.modules_paths or [])]]:
+        for root in candidates:
             try:
                 resolved = root.resolve()
             except Exception:
                 resolved = root
-            if root.exists() and resolved not in roots:
+            if root.is_dir() and resolved not in roots:
                 roots.append(resolved)
         return roots
+
+    def _iter_workspace_roots(self) -> List[Path]:
+        """Backward-compatible alias for the explicitly selected analysis roots."""
+        return self._analysis_roots()
 
     def _iter_lua_sources(self, roots: Optional[Iterable[Path]] = None) -> Iterable[Tuple[Path, str]]:
         """Yield each source file once, with comments and markdown examples removed.
@@ -3241,10 +3244,14 @@ class FunctionComparisonReportGenerator:
             if not modules_base.exists():
                 continue
             for child in modules_base.iterdir():
-                if child.is_dir():
+                if child.is_dir() and child.name.lower() not in {
+                    "docs", "documentation", "languages", "_disabled"
+                }:
                     add_module(child, "external")
                     for module_lua in child.rglob("module.lua"):
-                        add_module(module_lua.parent, "external")
+                        relative_parts = {part.lower() for part in module_lua.relative_to(child).parts}
+                        if not relative_parts & {"docs", "documentation", "languages", "_disabled"}:
+                            add_module(module_lua.parent, "external")
 
         return sorted(roots_by_path.values(), key=lambda info: len(str(info["path"])), reverse=True)
 
@@ -4593,7 +4600,10 @@ class FunctionComparisonReportGenerator:
         
         print("Analyzing function documentation...")
         function_results = self._run_function_comparison()
-        lilia_rp_cross_usage = self._find_lilia_rp_cross_usage(function_results)
+        lilia_rp_cross_usage = (
+            self._find_lilia_rp_cross_usage(function_results)
+            if self.audit_scope == "combined" else []
+        )
 
         
         print("Analyzing hooks documentation...")
@@ -4616,7 +4626,6 @@ class FunctionComparisonReportGenerator:
         if self.generate_module_docs:
             print("Scanning Sam's Modules for undocumented items...")
             modules_scan = self._scan_modules_for_undocumented()
-            self._ensure_module_meta_examples(modules_scan)
 
         
         print("Comparing language files...")
@@ -5083,7 +5092,7 @@ class FunctionComparisonReportGenerator:
         standard_hooks: Set[str] = set()  
 
         
-        lua_files = list(self.base_path.rglob("*.lua"))
+        lua_files = [path for root in self._analysis_roots() for path in root.rglob("*.lua")]
 
         for lua_file in lua_files:
             
@@ -5396,11 +5405,16 @@ class FunctionComparisonReportGenerator:
                 lang_file_str = lang_file_str.replace(r'E:\Server', r'D:\GMOD\Server')
 
             language_source_available = Path(lang_file_str).is_file()
+            localization_root = (
+                Path(self.modules_paths[0])
+                if self.audit_scope == "modules" and self.modules_paths
+                else self.base_path
+            )
             if language_source_available:
-                framework_data = analyze_data(lang_file_str, str(self.base_path))
+                framework_data = analyze_data(lang_file_str, str(localization_root))
             else:
-                usage_data = _scan_localization_usage(str(self.base_path))
-                framework_data = _analyze_localization_data({}, {}, {}, str(self.base_path))
+                usage_data = _scan_localization_usage(str(localization_root))
+                framework_data = _analyze_localization_data({}, {}, {}, str(localization_root))
                 framework_data["usage_data"] = usage_data
                 framework_data["total_hits"] = sum(len(usages) for usages in usage_data.values())
                 framework_data["source_available"] = False
@@ -5503,8 +5517,7 @@ class FunctionComparisonReportGenerator:
             getfont_count = 0
             
             
-            workspace_paths = [str(self.base_path)]
-            workspace_paths.extend(self.modules_paths)
+            workspace_paths = [str(path) for path in self._analysis_roots()]
             
             for workspace_path in workspace_paths:
                 workspace_path_obj = Path(workspace_path)
@@ -5696,11 +5709,7 @@ class FunctionComparisonReportGenerator:
             re.IGNORECASE,
         )
 
-        scan_roots = [self.base_path]
-        for mp in (self.modules_paths or []):
-            mp_path = Path(mp)
-            if mp_path.exists():
-                scan_roots.append(mp_path)
+        scan_roots = self._analysis_roots()
 
         all_lua_files: List[Path] = []
         for root in scan_roots:
@@ -6820,7 +6829,9 @@ class FunctionComparisonReportGenerator:
         return sorted(results, key=lambda item: (item["module_name"].lower(), item["module_scope"], item["module_path"].lower()))
 
     def _ensure_module_meta_examples(self, modules_scan: List[Dict[str, Any]]) -> None:
-        """Create a small usable ``docs/meta.md`` for modules exposing meta methods."""
+        """Deprecated: audits must never create or modify documentation files."""
+        return
+        # Retained below only as historical context for older dashboard builds.
         for entry in modules_scan or []:
             meta_names = sorted(set(entry.get("meta_functions", []) or entry.get("undoc_meta_functions", [])), key=str.lower)
             if not meta_names:
@@ -8282,31 +8293,32 @@ class FunctionComparisonReportGenerator:
         return output_file
 
     def save_reports(self, data: CombinedReportData, output_file: str = None) -> List[str]:
-        """Generate the framework report plus a report inside every module root."""
-        # The framework report must not contain Sam Module findings.  Keep the
-        # cross-library analysis correct in the full snapshot, but scope this
-        # artifact to the framework before writing it.
-        framework_data = self._scope_data_to_path(data, self.base_path)
-        framework_data.modules_scan = []
-        framework_data.module_net_messages_misregistered = []
-        framework_data.module_net_messages_undefined = []
-        framework_data.net_messages_direction_issues = [
-            issue for issue in data.net_messages_direction_issues
-            if any(self._path_is_within_module(site.get("file"), self.base_path)
-                   for site in (issue.get("sender_sites", []) + issue.get("receiver_sites", [])))
-        ]
-        framework_data.module_file_placement_issues = [
-            issue for issue in framework_data.module_file_placement_issues
-            if not issue.get("module_path")
-        ]
-        framework_data.module_derma_panels_outside_folder = []
-        framework_data.modules_data = [
-            entry for entry in (data.modules_data or [])
-            if not entry.get("module_path") or self._path_is_within_module(entry.get("module_path"), self.base_path)
-        ]
-        report_files = [self.save_report(framework_data, output_file)]
-        reports_dir = self._get_reports_dir()
-        reports_dir.mkdir(parents=True, exist_ok=True)
+        """Generate one combined report at the module-root plus one per module.
+
+        When external modules are configured, the combined report is written
+        beside the module directories.  This keeps the export self-contained:
+        ``modules_root/comparison_report.md`` summarizes the scan and every
+        ``modules_root/<module>/comparison_report.md`` contains that module's
+        scoped report.  The documentation reports directory remains the
+        fallback when no external module root exists.
+        """
+        module_roots = [Path(path) for path in (self.modules_paths or []) if Path(path).is_dir()]
+        report_root = module_roots[0] if module_roots else self._get_reports_dir()
+        report_root.mkdir(parents=True, exist_ok=True)
+
+        if output_file is None:
+            combined_output = report_root / "comparison_report.md"
+        else:
+            combined_output = Path(output_file)
+            if not combined_output.is_absolute():
+                combined_output = report_root / combined_output
+            combined_output.parent.mkdir(parents=True, exist_ok=True)
+
+        combined_output.write_text(
+            self.generate_markdown_report(data),
+            encoding="utf-8",
+        )
+        report_files = [str(combined_output)]
 
         for target in self._build_report_targets(data):
             if target.module_path is None:
@@ -8931,7 +8943,11 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Serve a live local dashboard for the function comparison report.")
+    parser = argparse.ArgumentParser(
+        description="Serve a live local dashboard for the function comparison report.",
+        epilog=("For isolated Markdown exports use scripts/audit_lilia.py or "
+                "scripts/audit_modules.py. --export-reports retains the combined dashboard export."),
+    )
     parser.add_argument("--host", default="127.0.0.1", help="Host interface to bind the local server to.")
     parser.add_argument("--port", type=int, default=8765, help="Port for the local dashboard server.")
     parser.add_argument("--base-path", default=str(DEFAULT_GAMEMODE_ROOT), help="Path to the Lilia gamemode directory.")
@@ -8948,7 +8964,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--export-reports",
         action="store_true",
-        help="Generate lilia.md and one Markdown report per detected module, then exit.",
+        help="Legacy combined export; prefer audit_lilia.py or audit_modules.py for isolated reports.",
     )
     parser.add_argument("--quiet", "-q", action="store_true", help="Reduce console logging.")
     return parser.parse_args()
