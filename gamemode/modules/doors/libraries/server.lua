@@ -352,8 +352,12 @@ function MODULE:InitPostEntity()
         end
     end
 
-    timer.Simple(1, function() lia.doors.cleanupCorruptedData() end)
-    timer.Simple(3, function() lia.doors.verifyDatabaseSchema() end)
+    timer.Simple(1, function()
+        lia.db.waitForTablesToLoad():next(function()
+            lia.doors.cleanupCorruptedData()
+            lia.doors.verifyDatabaseSchema()
+        end)
+    end)
 end
 
 function MODULE:PlayerUse(client, door)
