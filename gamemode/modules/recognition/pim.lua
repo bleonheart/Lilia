@@ -15,7 +15,7 @@ end
 
 local function promptName(ply, cb)
     if lia.config.get("FakeNamesEnabled", false) then
-        ply:requestString("@recogFakeNamePrompt", "", function(nm)
+        ply:requestString("Enter fake name", "", function(nm)
             nm = (nm or ""):Trim()
             cb(nm == "" and ply:getChar():getName() or nm)
         end, ply:getChar():getName())
@@ -56,28 +56,28 @@ local function doRange(ply, lvl)
 end
 
 lia.playerinteract.addAction("recognizeInWhisperRange", {
-    category = "@recognition",
+    category = "Recognition",
     shouldShow = function(ply) return hasPlayersInRange(ply, 1) end,
     onRun = function(ply) doRange(ply, 1) end,
     serverOnly = true
 })
 
 lia.playerinteract.addAction("recognizeInTalkRange", {
-    category = "@recognition",
+    category = "Recognition",
     shouldShow = function(ply) return hasPlayersInRange(ply, 3) end,
     onRun = function(ply) doRange(ply, 3) end,
     serverOnly = true
 })
 
 lia.playerinteract.addAction("recognizeInYellRange", {
-    category = "@recognition",
+    category = "Recognition",
     shouldShow = function(ply) return hasPlayersInRange(ply, 4) end,
     onRun = function(ply) doRange(ply, 4) end,
     serverOnly = true
 })
 
 lia.playerinteract.addInteraction("giveRecognitionToPerson", {
-    category = "@recognition",
+    category = "Recognition",
     serverOnly = true,
     shouldShow = function(ply, tgt)
         if not canRecog(ply) then return false end

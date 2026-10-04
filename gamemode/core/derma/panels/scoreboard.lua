@@ -82,7 +82,7 @@ local function getPlayerRankText(ply, char)
         end
     end
 
-    if rank == "" then rank = L("none") end
+    if rank == "" then rank = "None" end
     return rank
 end
 
@@ -226,8 +226,8 @@ function PANEL:Init()
     for _, factionInfo in ipairs(sortedFactions) do
         local facID, facData = factionInfo.id, factionInfo.data
         local facColor = team.GetColor(facID)
-        local factionTitle = string.upper(L(facData.name))
-        local factionSubtitle = facData.scoreboardSubtitle and L(facData.scoreboardSubtitle) or ""
+        local factionTitle = string.upper(tostring(facData.name))
+        local factionSubtitle = facData.scoreboardSubtitle and tostring(facData.scoreboardSubtitle) or ""
         local facCat = layout:Add("DCollapsibleCategory")
         facCat:SetLabel("")
         facCat:SetExpanded(true)
@@ -360,7 +360,7 @@ function PANEL:Init()
                             textX = textX + 30
                         end
 
-                        draw.SimpleText(string.upper(L(clsData.name)), "LiliaFont.15b", textX, centerY, tintColor(mutedTextColor, headerClassColor, 0.45, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(string.upper(tostring(clsData.name)), "LiliaFont.15b", textX, centerY, tintColor(mutedTextColor, headerClassColor, 0.45, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                         local count = IsValid(list) and list:ChildCount() or 0
                         draw.SimpleText(count == 1 and "1 PLAYER" or count .. " PLAYERS", "LiliaFont.16", w - 14, centerY, mutedTextColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
                     end
@@ -375,7 +375,7 @@ function PANEL:Init()
                     classLabel:SetFont("LiliaFont.15b")
                     classLabel:SetTextColor(color_white)
                     classLabel:SetExpensiveShadow(1, Color(0, 0, 0, 170))
-                    classLabel:SetText(string.upper(L(clsData.name)))
+                    classLabel:SetText(string.upper(tostring(clsData.name)))
                     classLabel:SizeToContents()
                     classLabel:SetMouseInputEnabled(false)
                     classLabel:SetVisible(false)
@@ -507,7 +507,7 @@ function PANEL:addPlayer(ply, parent)
     slot.model:setHidden(slot.lastHidden)
     local initialOpts = {}
     hook.Run("ShowPlayerOptions", ply, initialOpts)
-    if #initialOpts > 0 then slot.model:SetTooltip(L("sbOptions")) end
+    if #initialOpts > 0 then slot.model:SetTooltip("Scoreboard Options.") end
     slot.model.DoClick = function()
         local opts = {}
         hook.Run("ShowPlayerOptions", ply, opts)
@@ -516,7 +516,7 @@ function PANEL:addPlayer(ply, parent)
         frame:SetSize(360, 450)
         frame:Center()
         frame:MakePopup()
-        frame:SetTitle(L("sbOptions"))
+        frame:SetTitle("Scoreboard Options.")
         frame:LiteMode()
         self.playerOptionFrames[#self.playerOptionFrames + 1] = frame
         frame.OnRemove = function()
@@ -548,7 +548,7 @@ function PANEL:addPlayer(ply, parent)
                     surface.DrawTexturedRect(8, (h - 16) * 0.5, 16, 16)
                 end
 
-                draw.SimpleText(L(option.name), "LiliaFont.17", 32, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(tostring(option.name), "LiliaFont.17", 32, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             end
 
             button.DoClick = function()

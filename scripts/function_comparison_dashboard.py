@@ -6752,10 +6752,14 @@ class FunctionComparisonReportGenerator:
             symbols = self._extract_shared_symbols(content)
             framework_functions.update(symbols["functions"])
             framework_hooks.update(symbols["hooks"])
-        try:
-            framework_hooks.update(self._scan_hook_registrations_with_signatures()[0])
-        except Exception:
-            pass
+        # In modules-only mode the general hook scanner intentionally walks
+        # the external module roots. Treating that result as framework hooks
+        # would incorrectly classify every module hook as Lilia-owned.
+        if self.audit_scope != "modules":
+            try:
+                framework_hooks.update(self._scan_hook_registrations_with_signatures()[0])
+            except Exception:
+                pass
         documented_hooks = self._read_all_documented_hooks()
         documented_functions = self._get_documented_library_functions() | self._get_documented_meta_functions()
         results: List[Dict] = []

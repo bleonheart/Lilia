@@ -129,12 +129,12 @@ local DefaultFunctions = {
                 return false
             end
 
-            target:requestBinaryQuestion(L("itemGiveRequest", client:Name(), item.name), "@yes", "@no", function(choice)
+            target:requestBinaryQuestion(string.format("%s wants to give you a %s. Accept?", client:Name(), item.name), "Yes", "No", function(choice)
                 if choice == 0 then
                     inv:addAccessRule(canTransferItemsFromInventoryUsingGiveForward)
                     targetInv:addAccessRule(canTransferItemsFromInventoryUsingGiveForward)
-                    client:setAction(L("givingItemTo", item.name, target:Name()), lia.config.get("ItemGiveSpeed", 6))
-                    target:setAction(L("givingYouItem", client:Name(), item.name), lia.config.get("ItemGiveSpeed", 6))
+                    client:setAction(string.format("Giving %s to %s", item.name, target:Name()), lia.config.get("ItemGiveSpeed", 6))
+                    target:setAction(string.format("%s is giving you a %s", client:Name(), item.name), lia.config.get("ItemGiveSpeed", 6))
                     client:doStaredAction(target, function()
                         local res = hook.Run("HandleItemTransferRequest", client, item:getID(), nil, nil, targetInv:getID())
                         if not res then return end
@@ -177,9 +177,9 @@ function lia.item.applyWeaponOverride(uniqueID)
 end
 
 function lia.item.getItemByID(itemID)
-    assert(isnumber(itemID), L("itemIDNumberRequired"))
+    assert(isnumber(itemID), "Item ID must be a number")
     local item = lia.item.instances[itemID]
-    if not item then return nil, L("itemNotFound") end
+    if not item then return nil, "Item not found" end
     local location = "unknown"
     if item.invID then
         local inventory = lia.item.getInv(item.invID)
@@ -194,16 +194,16 @@ function lia.item.getItemByID(itemID)
 end
 
 function lia.item.getInstancedItemByID(itemID)
-    assert(isnumber(itemID), L("itemIDNumberRequired"))
+    assert(isnumber(itemID), "Item ID must be a number")
     local item = lia.item.instances[itemID]
-    if not item then return nil, L("itemNotFound") end
+    if not item then return nil, "Item not found" end
     return item
 end
 
 function lia.item.getItemDataByID(itemID)
-    assert(isnumber(itemID), L("itemIDNumberRequired"))
+    assert(isnumber(itemID), "Item ID must be a number")
     local item = lia.item.instances[itemID]
-    if not item then return nil, L("itemNotFound") end
+    if not item then return nil, "Item not found" end
     return item.data
 end
 
@@ -214,9 +214,9 @@ function lia.item.load(path, baseID, isBaseItem)
         lia.item.register(uniqueID, baseID, isBaseItem, path)
     elseif path:find("%.txt$") then
         local formatted = path:gsub("\\", "/"):lower()
-        if not formatted:find("^lilia/") then lia.error("[Lilia] " .. L("textFileLuaRequired", path) .. "\n") end
+        if not formatted:find("^lilia/") then lia.error("[Lilia] " .. string.format("Text file found at '%s'  to use it properly, it needs to be a .lua file.", path) .. "\n") end
     else
-        lia.error("[Lilia] " .. L("invalidItemNaming", path) .. "\n")
+        lia.error("[Lilia] " .. string.format("Item at '%s' follows an invalid naming convention!", path) .. "\n")
     end
 end
 
@@ -229,15 +229,15 @@ function lia.item.getInv(invID)
 end
 
 function lia.item.addRarities(name, color)
-    assert(isstring(name), L("vendorRarityNameString"))
-    assert(IsColor(color), L("vendorColorMustBeColor"))
+    assert(isstring(name), "Rarity name must be a string")
+    assert(IsColor(color), "Color must be a Color")
     lia.item.rarities[name] = color
 end
 
 function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
-    assert(isstring(uniqueID), L("itemUniqueIDString"))
+    assert(isstring(uniqueID), "uniqueID must be a string")
     local baseTable = lia.item.base[baseID] or lia.meta.item
-    if baseID then assert(baseTable, L("itemBaseNotFound", uniqueID, baseID)) end
+    if baseID then assert(baseTable, string.format("Item base not found for item %s with base ID %s", uniqueID, baseID)) end
     local targetTable = isBaseItem and lia.item.base or lia.item.list
     if luaGenerated then
         ITEM = setmetatable({
@@ -252,11 +252,11 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
         })
 
         ITEM.__tostring = baseTable.__tostring
-        ITEM.desc = "@noDesc"
+        ITEM.desc = "No Description"
         ITEM.uniqueID = uniqueID
         ITEM.base = baseID
         ITEM.isBase = isBaseItem
-        ITEM.category = ITEM.category or "@misc"
+        ITEM.category = ITEM.category or "Miscellaneous"
         ITEM.functions = table.Copy(baseTable.functions or DefaultFunctions)
         hook.Run("ItemDefaultFunctions", ITEM.functions)
     else
@@ -272,11 +272,11 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
         })
 
         ITEM.__tostring = baseTable.__tostring
-        ITEM.desc = "@noDesc"
+        ITEM.desc = "No Description"
         ITEM.uniqueID = uniqueID
         ITEM.base = baseID
         ITEM.isBase = isBaseItem
-        ITEM.category = ITEM.category or "@misc"
+        ITEM.category = ITEM.category or "Miscellaneous"
         ITEM.functions = ITEM.functions or table.Copy(baseTable.functions or DefaultFunctions)
         hook.Run("ItemDefaultFunctions", ITEM.functions)
     end
@@ -297,24 +297,24 @@ function lia.item.localizeDefinition(itemDef)
     if not istable(itemDef) then return end
     for funcName, funcTable in pairs(itemDef.functions or {}) do
         if isstring(funcTable.name) then
-            funcTable.name = lia.lang.resolveToken(funcTable.name)
+            funcTable.name = (string.gsub(tostring(funcTable.name), "^@", "", 1))
         else
-            funcTable.name = lia.lang.resolveToken("@" .. funcName)
+            funcTable.name = (string.gsub(tostring("@" .. funcName), "^@", "", 1))
         end
 
-        if isstring(funcTable.tip) then funcTable.tip = lia.lang.resolveToken(funcTable.tip) end
+        if isstring(funcTable.tip) then funcTable.tip = (string.gsub(tostring(funcTable.tip), "^@", "", 1)) end
     end
 
-    if isstring(itemDef.name) then itemDef.name = lia.lang.resolveToken(itemDef.name) end
-    if isstring(itemDef.desc) then itemDef.desc = lia.lang.resolveToken(itemDef.desc) end
-    if isstring(itemDef.category) then itemDef.category = lia.lang.resolveToken(itemDef.category) end
+    if isstring(itemDef.name) then itemDef.name = (string.gsub(tostring(itemDef.name), "^@", "", 1)) end
+    if isstring(itemDef.desc) then itemDef.desc = (string.gsub(tostring(itemDef.desc), "^@", "", 1)) end
+    if isstring(itemDef.category) then itemDef.category = (string.gsub(tostring(itemDef.category), "^@", "", 1)) end
 end
 
 function lia.item.registerItem(id, base, properties)
-    assert(isstring(id), L("itemUniqueIDString"))
+    assert(isstring(id), "uniqueID must be a string")
     if properties ~= nil and not istable(properties) then
         local errorMsg = string.format("properties must be a table or nil, got %s (type: %s)", tostring(properties), type(properties))
-        lia.error(string.format("[Lilia] registerItem called with invalid properties for item '%s': %s\n", id, errorMsg))
+        lia.error(string.format("[Lilia] registerItem called with invalid properties for item ('%s'): %s\n", id, errorMsg))
         properties = {}
     end
 
@@ -343,7 +343,7 @@ function lia.item.registerItem(id, base, properties)
 end
 
 function lia.item.overrideItem(uniqueID, overrides)
-    assert(isstring(uniqueID), L("itemUniqueIDString"))
+    assert(isstring(uniqueID), "uniqueID must be a string")
     assert(istable(overrides), "overrides must be a table")
     if not lia.item.pendingOverrides[uniqueID] then lia.item.pendingOverrides[uniqueID] = {} end
     for key, value in pairs(overrides) do
@@ -375,7 +375,7 @@ end
 
 function lia.item.new(uniqueID, id)
     id = id and tonumber(id) or id
-    assert(isnumber(id), L("itemNonNumberID"))
+    assert(isnumber(id), "Item Non Number ID")
     if lia.item.instances[id] and lia.item.instances[id].uniqueID == uniqueID then return lia.item.instances[id] end
     local stockItem = lia.item.list[uniqueID]
     if stockItem then
@@ -392,13 +392,13 @@ function lia.item.new(uniqueID, id)
         hook.Run("OnItemCreated", item)
         return item
     else
-        error("[Lilia] " .. L("unknownItem", tostring(uniqueID)) .. "\n")
+        error("[Lilia] " .. string.format("An inventory has an unknown item '%s'", tostring(uniqueID)) .. "\n")
     end
 end
 
 function lia.item.registerInv(invType, w, h)
     local GridInv = FindMetaTable("GridInv")
-    assert(GridInv, L("gridInvNotFound"))
+    assert(GridInv, "Grid Inventory Not Found")
     local inventory = GridInv:extend("GridInv" .. invType)
     inventory.invType = invType
     function inventory:getWidth()
@@ -432,7 +432,7 @@ end
 
 function lia.item.createInv(w, h, id)
     local GridInv = FindMetaTable("GridInv")
-    assert(GridInv, L("gridInvNotFound"))
+    assert(GridInv, "Grid Inventory Not Found")
     local instance = GridInv:new()
     instance.id = id
     instance.data = {
@@ -543,10 +543,10 @@ end
 
 if SERVER then
     function lia.item.setItemDataByID(itemID, key, value, receivers, noSave, noCheckEntity)
-        assert(isnumber(itemID), L("itemIDNumberRequired"))
-        assert(isstring(key), L("itemKeyString"))
+        assert(isnumber(itemID), "Item ID must be a number")
+        assert(isstring(key), "Item Key String")
         local item = lia.item.instances[itemID]
-        if not item then return false, L("itemNotFound") end
+        if not item then return false, "Item not found" end
         item:setData(key, value, receivers, noSave, noCheckEntity)
         return true
     end
@@ -560,7 +560,7 @@ if SERVER then
         local d = deferred.new()
         local itemTable = lia.item.list[uniqueID]
         if not itemTable then
-            d:reject(L("invalidItemInstantiate", tostring(uniqueID)))
+            d:reject(string.format("An inventory has a missing item '%s'", tostring(uniqueID)))
             return d
         end
 
@@ -661,7 +661,7 @@ if SERVER then
             if reason and reason:find("An inventory has a missing item") then
                 lia.error(reason)
             else
-                lia.error(L("failedToSpawnItem", tostring(reason or L("unknownError"))))
+                lia.error(string.format("Failed to spawn item: %s", tostring(reason or "Unknown error")))
             end
 
             if callback then callback(nil) end
@@ -708,8 +708,8 @@ hook.Add("InitializedModules", "liaItems", function()
 
             local properties = {
                 name = hook.Run("GetWeaponName", wep) or override.name or className,
-                desc = override.desc or L("weaponsDesc"),
-                category = override.category or isGrenade and L("itemCatGrenades") or L("weapons"),
+                desc = override.desc or "A Weapon.",
+                category = override.category or isGrenade and "Grenades" or "Weapons",
                 model = override.model or wep.WorldModel or wep.WM or "models/props_c17/suitcase_passenger_physics.mdl",
                 class = override.class or className,
                 width = override.width or size.width,
@@ -747,13 +747,13 @@ hook.Add("InitializedModules", "liaItems", function()
             local itemName
             if isArc9Ammo then
                 ammoType = className:gsub("^arc9_ammo_", ""):gsub("_", " "):lower():gsub("(%a)([%w_']*)", function(first, rest) return first:upper() .. rest end)
-                itemName = override.name or L("generatedArc9AmmoName", ammoType)
+                itemName = override.name or string.format("[ARC9] %s Ammunition", ammoType)
             elseif isArccwAmmo then
                 ammoType = className:gsub("^arccw_ammo_", ""):gsub("_", " "):lower():gsub("(%a)([%w_']*)", function(first, rest) return first:upper() .. rest end)
-                itemName = override.name or L("generatedArccwAmmoName", ammoType)
+                itemName = override.name or string.format("[ARCCW] %s Ammunition", ammoType)
             elseif isTfaAmmo then
                 ammoType = className:gsub("^tfa_ammo_", ""):gsub("_", " "):lower():gsub("(%a)([%w_']*)", function(first, rest) return first:upper() .. rest end)
-                itemName = override.name or L("generatedTfaAmmoName", ammoType)
+                itemName = override.name or string.format("[TFA] %s Ammunition", ammoType)
             else
                 itemName = override.name or className
                 ammoType = className
@@ -761,8 +761,8 @@ hook.Add("InitializedModules", "liaItems", function()
 
             local properties = {
                 name = itemName,
-                desc = override.desc or L("generatedAmmoBoxDesc", ammoType),
-                category = override.category or L("itemCatAmmunition"),
+                desc = override.desc or string.format("A box of %s ammunition", ammoType),
+                category = override.category or "Ammunition",
                 model = override.model or "models/items/boxsrounds.mdl",
                 entityid = override.entityid or entityID,
                 width = override.width or 1,
@@ -817,7 +817,7 @@ hook.Add("InitializedModules", "liaItems", function()
             lia.item.localizeDefinition(item)
             hook.Run("OnItemOverridden", item, overrides)
         else
-            lia.error("[Lilia] Cannot override item '" .. tostring(uniqueID) .. "': item not found\n")
+            lia.error("[Lilia] Cannot override item ('" .. tostring(uniqueID) .. "'): item not found\n")
         end
     end
 
@@ -874,11 +874,11 @@ else
 
     local function GetWeaponDisplayName(className, weaponTable, overrideData)
         local value = overrideData and overrideData.name or weaponTable.PrintName or className
-        return tostring(L(value))
+        return tostring(tostring(value))
     end
 
     local function GetWeaponItemCategory(weaponTable, overrideData)
-        return tostring(overrideData and overrideData.category or weaponTable.Category or L("weapons"))
+        return tostring(overrideData and overrideData.category or weaponTable.Category or "Weapons")
     end
 
     local function NormalizeFilter(value)
@@ -954,7 +954,7 @@ else
 
     hook.Add("PopulateConfigurationButtons", "liaWeaponItemsConfig", function(pages)
         pages[#pages + 1] = {
-            name = L("weaponItemsConfig"),
+            name = "Weapon Items Config",
             shouldShow = function() return hook.Run("CanPlayerModifyConfig", LocalPlayer()) ~= false end,
             drawFunc = function(parent)
                 parent:Clear()
@@ -1011,7 +1011,7 @@ else
                 header:SetTall(76)
                 header.Paint = function(_, w)
                     local _, textColor = GetWeaponConfigTheme()
-                    draw.SimpleText(L("weaponItemsConfig"), "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                    draw.SimpleText("Weapon Items Config", "LiliaFont.30", 8, 4, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                     draw.SimpleText("Manage generated weapon items and runtime SWEP overrides.", "LiliaFont.17", 8, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                     local accent = GetWeaponConfigTheme()
                     surface.SetDrawColor(accent.r, accent.g, accent.b, 60)
@@ -1050,7 +1050,7 @@ else
                 end
 
                 categoryFilter:AddChoice("All Categories", "__all", true)
-                local searchBar = CreateSearchBox(toolbar, L("searchWeapons"))
+                local searchBar = CreateSearchBox(toolbar, "Search Weapons...")
                 searchBar:Dock(FILL)
                 local body = shell:Add("DPanel")
                 body:Dock(FILL)
@@ -1577,8 +1577,8 @@ else
 end
 
 lia.item.registerItem("lia_ammobox", "base_entities", {
-    name = "@liaAmmoBoxItemName",
-    desc = "@liaAmmoBoxItemDesc",
+    name = "Ammo Box Crate",
+    desc = "A placeable ammo box that refills the weapon you are holding.",
     model = "models/items/boxsrounds.mdl",
     category = "entities",
     width = 1,

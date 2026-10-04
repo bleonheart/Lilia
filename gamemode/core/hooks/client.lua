@@ -39,27 +39,27 @@ local nextUpdate = 0
 local healthPercent = {
     {
         threshold = 0.2,
-        text = L("criticalCondition"),
+        text = "Critical Condition",
         color = Color(192, 57, 43)
     },
     {
         threshold = 0.4,
-        text = L("seriousInjury"),
+        text = "Serious Injury",
         color = Color(231, 76, 60)
     },
     {
         threshold = 0.6,
-        text = L("moderateInjury"),
+        text = "Moderate Injury",
         color = Color(255, 152, 0)
     },
     {
         threshold = 0.8,
-        text = L("minorInjury"),
+        text = "Minor Injury",
         color = Color(255, 193, 7)
     },
     {
         threshold = 1.0,
-        text = L("healthyStatus"),
+        text = "Healthy",
         color = Color(46, 204, 113)
     }
 }
@@ -516,7 +516,7 @@ function GM:DrawCharInfo(c, character, info)
 
         info[#info + 1] = {
             label = "Condition",
-            value = L(injured[1])
+            value = tostring(injured[1])
         }
     end
 end
@@ -540,7 +540,7 @@ function GM:DrawEntityInfo(e, a, pos)
         e.liaNameLines = lia.util.wrapText(name, ScrW() * width, getHUDFont(17))
     end
 
-    local desc = hook.Run("GetDisplayedDescription", e, true) or ch and ch.getDesc(ch) or L("noChar")
+    local desc = hook.Run("GetDisplayedDescription", e, true) or ch and ch.getDesc(ch) or "No character found!"
     if desc ~= e.liaDescCache then
         e.liaDescCache = desc
         e.liaDescLines = nil
@@ -874,7 +874,7 @@ function GM:ItemShowEntityMenu(entity)
         if key == "combine" then continue end
         if hook.Run("CanRunItemAction", tempItem, key) == false then continue end
         if isfunction(fn.onCanRun) and not fn.onCanRun(tempItem) then continue end
-        liaItemDermaMenu:AddOption(L(fn.name or key), function()
+        liaItemDermaMenu:AddOption(tostring(fn.name or key), function()
             if fn.sound then surface.PlaySound(fn.sound) end
             if not fn.onClick or fn.onClick(tempItem) ~= false then
                 net.Start("liaInvAct")
@@ -919,7 +919,7 @@ function GM:HUDPaintBackground()
         end
     end
 
-    if not isToolgunHUDHidden(client) and BRANCH ~= "x86-64" then draw.SimpleText(L("switchTo64Bit"), getHUDFont(17), ScrW() * 0.5, ScrH() * 0.97, Color(255, 255, 255, 10), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+    if not isToolgunHUDHidden(client) and BRANCH ~= "x86-64" then draw.SimpleText("We recommend the use of the x86-64 Garry's Mod Branch on your installation, consider swapping as soon as possible.", getHUDFont(17), ScrW() * 0.5, ScrH() * 0.97, Color(255, 255, 255, 10), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
 end
 
 function GM:OnContextMenuOpen()
@@ -953,7 +953,7 @@ function GM:CharListLoaded()
 end
 
 function GM:ForceDermaSkin()
-    return lia.config.get("DermaSkin", L("liliaSkin"))
+    return lia.config.get("DermaSkin", "Lilia Skin")
 end
 
 function GM:DermaSkinChanged()

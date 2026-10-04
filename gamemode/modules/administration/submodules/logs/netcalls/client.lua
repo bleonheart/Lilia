@@ -2,7 +2,7 @@
 net.Receive("liaSendLogsCategories", function()
     local categories = net.ReadTable()
     if not categories or #categories == 0 then
-        chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
+        chat.AddText(Color(255, 0, 0), "Failed to retrieve logs.")
         return
     end
 
@@ -20,6 +20,6 @@ net.Receive("liaSendLogsCategories", function()
     if IsValid(logsPanel) then
         MODULE:CreateLogsUI(logsPanel, categories)
     else
-        chat.AddText(Color(255, 100, 100), L("logsPanelError"))
+        chat.AddText(Color(255, 100, 100), "Logs panel not found. Please reopen the logs tab.")
     end
 end)

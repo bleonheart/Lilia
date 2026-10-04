@@ -15,7 +15,7 @@ function PANEL:Init()
 end
 
 function PANEL:updatePointsLeft()
-    self.leftLabel:SetText(L("pointsLeft"):upper() .. ": " .. self.left)
+    self.leftLabel:SetText(("Points Left"):upper() .. ": " .. self.left)
 end
 
 function PANEL:onDisplay()
@@ -108,7 +108,7 @@ function PANEL:setAttribute(key, attribute)
     self.key = key
     local startingMax = lia.attribs.list[key].startingMax or nil
     self.name:SetText(attribute.name)
-    self:SetTooltip((attribute.desc or L("noDesc")) .. (startingMax and " " .. L("max", startingMax) or ""))
+    self:SetTooltip((attribute.desc or "No Description") .. (startingMax and " " .. string.format("Max: %s", startingMax) or ""))
 end
 
 function PANEL:delta(delta)

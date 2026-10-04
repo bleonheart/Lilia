@@ -6,8 +6,8 @@ end
 
 function lia.chat.register(chatType, data)
     data.arguments = data.arguments or {}
-    data.syntax = lia.lang.resolveToken(lia.command.buildSyntaxFromArguments(data.arguments))
-    data.desc = isstring(data.desc) and lia.lang.resolveToken(data.desc) or data.desc or ""
+    data.syntax = (string.gsub(tostring(lia.command.buildSyntaxFromArguments(data.arguments)), "^@", "", 1))
+    data.desc = isstring(data.desc) and (string.gsub(tostring(data.desc), "^@", "", 1)) or data.desc or ""
     if data.prefix then
         local prefixes = istable(data.prefix) and data.prefix or {data.prefix}
         local processed, lookup = {}, {}
@@ -51,7 +51,7 @@ function lia.chat.register(chatType, data)
 
     data.color = data.color or (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150)
     data.format = data.format or "chatFormat"
-    data.onChatAdd = data.onChatAdd or function(speaker, text, anonymous) chat.AddText(lia.chat.timestamp(false), (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), L(data.format, anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, chatType) or IsValid(speaker) and speaker:Name() or L("console"), text)) end
+    data.onChatAdd = data.onChatAdd or function(speaker, text, anonymous) chat.AddText(lia.chat.timestamp(false), (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), string.format(tostring(data.format), anonymous and "Someone" or hook.Run("GetDisplayedName", speaker, chatType) or IsValid(speaker) and speaker:Name() or "Console", text)) end
     if data.prefix then
         local rawPrefixes = istable(data.prefix) and data.prefix or {data.prefix}
         local aliases, lookup = {}, {}

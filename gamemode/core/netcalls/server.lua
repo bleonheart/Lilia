@@ -42,8 +42,8 @@ local function getWeaponItemDefaults(className)
     }
     return {
         name = hook.Run("GetWeaponName", wep) or className,
-        desc = L("weaponsDesc"),
-        category = isGrenade and L("itemCatGrenades") or L("weapons"),
+        desc = "A Weapon.",
+        category = isGrenade and "Grenades" or "Weapons",
         model = wep.WorldModel or wep.WM or "models/props_c17/suitcase_passenger_physics.mdl",
         class = className,
         width = size.width,
@@ -251,21 +251,21 @@ net.Receive("liaKickCharacter", function(_, client)
             hook.Run("TrackOfflineFactionTransfer", characterID, oldFactionID, defaultFaction, client, "kickToBase")
             lia.db.updateTable({
                 faction = defaultFaction.uniqueID
-            }, nil, "characters", "id = " .. characterID):next(function() lia.char.setCharDatabase(characterID, "factionKickWarn", true) end):catch(function(err) lia.error(L("failedToUpdateCharacterFaction") .. " " .. tostring(err)) end)
-        end):catch(function(err) lia.error(L("failedToQueryCharacterFaction") .. " " .. tostring(err)) end)
+            }, nil, "characters", "id = " .. characterID):next(function() lia.char.setCharDatabase(characterID, "factionKickWarn", true) end):catch(function(err) lia.error("Failed To Update Character Faction" .. " " .. tostring(err)) end)
+        end):catch(function(err) lia.error("Failed to query character faction:" .. " " .. tostring(err)) end)
     end
 end)
 
 net.Receive("liaCheckSeed", function(_, client)
     local sentSteamID = net.ReadString()
     if not sentSteamID or sentSteamID == "" then
-        lia.adminstrator.notifyAdmin(L("steamIDMissing", client:Name(), client:SteamID()))
+        lia.adminstrator.notifyAdmin(string.format("The SteamID of player %s (%s) wasn't received properly. This can signify tampering with net messages.", client:Name(), client:SteamID()))
         lia.log.add(client, "steamIDMissing", client:Name(), client:SteamID())
         return
     end
 
     if client:SteamID() ~= sentSteamID then
-        lia.adminstrator.notifyAdmin(L("steamIDMismatch", client:Name(), client:SteamID(), sentSteamID))
+        lia.adminstrator.notifyAdmin(string.format("The SteamID of player %s (%s) is different than the saved one (%s).", client:Name(), client:SteamID(), sentSteamID))
         lia.log.add(client, "steamIDMismatch", client:Name(), client:SteamID(), sentSteamID)
     end
 end)
@@ -287,9 +287,9 @@ net.Receive("liaCheckHack", function(_, client)
         if client:getChar() then
             local timestamp = os.date("%Y-%m-%d %H:%M:%S")
             local severity = "High"
-            hook.Run("AddWarning", client:getChar():getID(), client:Nick(), client:SteamID(), timestamp, L("cheaterWarningReason"), "System", "SYSTEM", severity)
+            hook.Run("AddWarning", client:getChar():getID(), client:Nick(), client:SteamID(), timestamp, "Cheating or exploiting", "System", "SYSTEM", severity)
             local charID = client:getChar():getID()
-            local message = L("staffLogCheaterFlagged", client:Name(), charID, client:SteamID64(), severity)
+            local message = string.format("%s (Character %s | Steam64ID: %s) was flagged for cheating. Severity: %s.", client:Name(), charID, client:SteamID64(), severity)
             StaffAddTextShadowed(Color(255, 0, 0), "CHEAT", Color(255, 255, 255), message, function(staff)
                 local permission = staff:hasPrivilege("receiveCheaterNotifications")
                 lia.debug("[Permissions]", "Permission Check for net.Receive liaCheckHack StaffAddTextShadowed recipient", "targetPlayer=", tostring(staff:Name()), "hasPrivilege(receiveCheaterNotifications)=", tostring(permission), "finalResult=", tostring(permission))
@@ -311,7 +311,7 @@ net.Receive("liaVerifyCheatsResponse", function(_, client)
 end)
 
 local function getEntityDisplayName(ent)
-    if not IsValid(ent) then return L("unknownEntity") end
+    if not IsValid(ent) then return "Unknown Entity" end
     if ent:GetClass() == "lia_item" and ent.getItemTable then
         local item = ent:getItemTable()
         if item and item.getName then
@@ -377,7 +377,7 @@ end)
 net.Receive("liaCharChoose", function(_, client)
     local function response(message)
         net.Start("liaCharChoose")
-        net.WriteString(L(message or "", client))
+        net.WriteString(string.format(tostring(message or ""), client))
         net.Send(client)
     end
 
@@ -414,7 +414,7 @@ net.Receive("liaCharChoose", function(_, client)
                     end
 
                     local unloadedCount = lia.char.unloadUnusedCharacters(client, id)
-                    if unloadedCount > 0 then lia.information(L("unloadedUnusedCharacters") .. " " .. unloadedCount .. " " .. L("forPlayer") .. " " .. client:Name()) end
+                    if unloadedCount > 0 then lia.information("Unloaded" .. " " .. unloadedCount .. " " .. "unused characters for" .. " " .. client:Name()) end
                     hook.Run("PrePlayerLoadedChar", client, character, currentChar)
                     character:setup()
                     hook.Run("PlayerLoadedChar", client, character, currentChar)
@@ -444,7 +444,7 @@ net.Receive("liaCharChoose", function(_, client)
             end
 
             local unloadedCount = lia.char.unloadUnusedCharacters(client, id)
-            if unloadedCount > 0 then lia.information(L("unloadedUnusedCharacters") .. " " .. unloadedCount .. " " .. L("forPlayer") .. " " .. client:Name()) end
+            if unloadedCount > 0 then lia.information("Unloaded" .. " " .. unloadedCount .. " " .. "unused characters for" .. " " .. client:Name()) end
             hook.Run("PrePlayerLoadedChar", client, character, currentChar)
             character:setup()
             hook.Run("PlayerLoadedChar", client, character, currentChar)
@@ -473,7 +473,7 @@ net.Receive("liaCharChoose", function(_, client)
     end
 
     local unloadedCount = lia.char.unloadUnusedCharacters(client, id)
-    if unloadedCount > 0 then lia.information(L("unloadedUnusedCharacters") .. " " .. unloadedCount .. " " .. L("forPlayer") .. " " .. client:Name()) end
+    if unloadedCount > 0 then lia.information("Unloaded" .. " " .. unloadedCount .. " " .. "unused characters for" .. " " .. client:Name()) end
     hook.Run("PrePlayerLoadedChar", client, character, currentChar)
     character:setup()
     hook.Run("PlayerLoadedChar", client, character, currentChar)
@@ -485,7 +485,7 @@ net.Receive("liaCharCreate", function(_, client)
     local function response(id, message, ...)
         net.Start("liaCharCreate")
         net.WriteUInt(id or 0, 32)
-        net.WriteString(L(message or "", client, ...))
+        net.WriteString(string.format(tostring(message or ""), client, ...))
         net.Send(client)
     end
 
@@ -534,7 +534,7 @@ net.Receive("liaCharCreate", function(_, client)
                 local currentChar = client:getChar()
                 if currentChar then currentChar:save() end
                 local unloadedCount = lia.char.unloadUnusedCharacters(client, id)
-                if unloadedCount > 0 then lia.information(L("unloadedUnusedCharacters") .. " " .. unloadedCount .. " " .. L("forPlayer") .. " " .. client:Name()) end
+                if unloadedCount > 0 then lia.information("Unloaded" .. " " .. unloadedCount .. " " .. "unused characters for" .. " " .. client:Name()) end
                 hook.Run("PrePlayerLoadedChar", client, character, currentChar)
                 character:setup()
                 hook.Run("PlayerLoadedChar", client, character, currentChar)
@@ -621,7 +621,7 @@ net.Receive("liaStaffDiscordResponse", function(_, client)
     if not character or character:getFaction() ~= FACTION_STAFF then return end
     client:setLiliaData("staffDiscord", discord)
     local steamID = client:SteamID()
-    local description = L("staffCharacterDiscordSteamID", discord, steamID)
+    local description = string.format("Staff Character - Discord: %s, SteamID: %s", discord, steamID)
     character:setDesc(description)
     client:notifySuccessLocalized("staffDescUpdated")
 end)
@@ -732,12 +732,12 @@ net.Receive("liaKeybindServer", function(_, ply)
     if isRelease then
         if data.release and data.serverOnly then
             local success, err = pcall(data.release, player)
-            if not success then lia.error(L("keybindReleaseCallbackError") .. tostring(err)) end
+            if not success then lia.error("Keybind release callback error: " .. tostring(err)) end
         end
     else
         if data.callback and data.serverOnly then
             local success, err = pcall(data.callback, player)
-            if not success then lia.error(L("keybindCallbackError") .. tostring(err)) end
+            if not success then lia.error("Keybind callback error: " .. tostring(err)) end
         end
     end
 end)
@@ -754,7 +754,7 @@ net.Receive("liaRequestDropdown", function(_, client)
     for _, opt in ipairs(allowed) do
         local optionText = opt
         if istable(opt) then optionText = opt[1] end
-        if isstring(optionText) and optionText:sub(1, 1) == "@" then optionText = L(optionText:sub(2)) end
+        if isstring(optionText) and optionText:sub(1, 1) == "@" then optionText = tostring(optionText:sub(2)) end
         if string.lower(tostring(optionText)) == string.lower(tostring(selectedOption)) then
             isValid = true
             break
@@ -798,7 +798,7 @@ net.Receive("liaOptionsRequest", function(_, client)
         for _, a in ipairs(allowed) do
             local allowedText = a
             if istable(a) then allowedText = a[1] end
-            if isstring(allowedText) and allowedText:sub(1, 1) == "@" then allowedText = L(allowedText:sub(2)) end
+            if isstring(allowedText) and allowedText:sub(1, 1) == "@" then allowedText = tostring(allowedText:sub(2)) end
             if string.lower(tostring(allowedText)) == string.lower(tostring(opt)) then
                 ok = true
                 break
@@ -1110,9 +1110,9 @@ net.Receive("liaNetMessage", function(_, client)
     local args = net.ReadTable()
     if lia.net.registry[name] then
         local success, err = pcall(lia.net.registry[name], client, unpack(args))
-        if not success then lia.error(L("netMessageCallbackError", name, tostring(err))) end
+        if not success then lia.error(string.format("Error in net message callback ('%s'): %s", name, tostring(err))) end
     else
-        lia.error(L("unregisteredNetMessage", name))
+        lia.error(string.format("Received unregistered net message: %s", name))
     end
 end)
 
@@ -1146,7 +1146,7 @@ local function findOption(options, label, ply)
     if isfunction(options) then options = options(ply) end
     if not istable(options) then return nil end
     for k, v in pairs(options) do
-        if k == label or lia.lang.resolveToken(k) == label then return v end
+        if k == label or (string.gsub(tostring(k), "^@", "", 1)) == label then return v end
         if v.options then
             local found = findOption(v.options, label, ply)
             if found then return found end
@@ -1161,7 +1161,7 @@ local function buildResponsePayload(response)
         local payload = {}
         local function pushLine(line)
             if isstring(line) then
-                payload[#payload + 1] = lia.lang.resolveToken(line)
+                payload[#payload + 1] = (string.gsub(tostring(line), "^@", "", 1))
             elseif line ~= nil then
                 payload[#payload + 1] = tostring(line)
             end
@@ -1178,7 +1178,7 @@ local function buildResponsePayload(response)
         end
         return #payload > 0 and payload or nil
     end
-    return {lia.lang.resolveToken(tostring(response))}
+    return {(string.gsub(tostring(tostring(response)), "^@", "", 1))}
 end
 
 local function dialogFactionMatches(ply, requirement)
@@ -1234,7 +1234,7 @@ local function setupNPCType(client, npc)
         npc:SetModel("models/Barney.mdl")
         if npcData.BodyGroups and istable(npcData.BodyGroups) then lia.util.applyBodygroups(npc, npcData.BodyGroups) end
         if npcData.Skin then npc:SetSkin(npcData.Skin) end
-        npc.NPCName = npcData.PrintName or L("npc")
+        npc.NPCName = npcData.PrintName or "NPC"
         npc:setNetVar("uniqueID", npcType)
         npc:setNetVar("NPCName", npc.NPCName)
         npc:SetMoveType(MOVETYPE_VPHYSICS)
@@ -1310,7 +1310,7 @@ net.Receive("liaNpcDialogRequestResponse", function(_, ply)
     if isfunction(option.Response) then
         local success, result = pcall(option.Response, ply, npc)
         if not success then
-            ErrorNoHalt(string.format("[Lilia] Dialog response error for '%s': %s\n", label, tostring(result)))
+            ErrorNoHalt(string.format("[Lilia] Dialog response error for ('%s'): %s\n", label, tostring(result)))
             return
         end
 
@@ -1658,14 +1658,14 @@ local function getGroupLevelForPermissionSummary(groupName, visited)
     if defaultGroups[groupName] then return defaultGroups[groupName] end
     local groupData = lia.admin.groups and lia.admin.groups[groupName]
     if not groupData then return 1 end
-    local inheritance = groupData._info and groupData._info.inheritance or "user"
+    local inheritance = groupData._info and groupData._info.inheritance or "user("
     if inheritance == groupName then return 1 end
     return getGroupLevelForPermissionSummary(inheritance, visited)
 end
 
 local function getDefaultPermissionValueForSummary(groupName, privilege, visited)
     visited = visited or {}
-    local visitKey = tostring(groupName) .. ":" .. tostring(privilege)
+    local visitKey = tostring(groupName) .. "):" .. tostring(privilege)
     if visited[visitKey] then return false end
     visited[visitKey] = true
     local privilegeMinAccess = lia.admin.privileges and lia.admin.privileges[privilege]

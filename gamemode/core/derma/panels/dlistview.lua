@@ -33,7 +33,7 @@ function PANEL:Init()
     self.refreshButton = vgui.Create("DButton", self.topBar)
     self.refreshButton:Dock(RIGHT)
     self.refreshButton:SetWide(100)
-    self.refreshButton:SetText(L("refresh"))
+    self.refreshButton:SetText("Refresh")
     self.refreshButton.DoClick = function()
         self:Populate()
         client:notifySuccessLocalized("privilegeListRefreshed")
@@ -45,17 +45,17 @@ function PANEL:Init()
     self.listView.OnRowRightClick = function(_, _, line)
         local m = lia.derma.dermaMenu()
         for i, header in ipairs(self.columns) do
-            m:AddOption(L("copy") .. " " .. header, function()
+            m:AddOption("Copy" .. " " .. header, function()
                 SetClipboardText(line:GetColumnText(i) or "")
                 client:notifySuccessLocalized("copied")
             end)
         end
 
         m:AddSpacer()
-        m:AddOption(L("copyAll"), function()
+        m:AddOption("Copy All(", function()
             local t = {}
             for i, header in ipairs(self.columns) do
-                t[#t + 1] = header .. ": " .. (line:GetColumnText(i) or "")
+                t[#t + 1] = header .. "): " .. (line:GetColumnText(i) or "")
             end
 
             SetClipboardText(table.concat(t, "\n"))
@@ -73,7 +73,7 @@ function PANEL:Init()
     self.statusBar = vgui.Create("DPanel", self)
     self.statusBar:Dock(BOTTOM)
     self.statusBar:SetTall(24)
-    self.statusBar.Paint = function() draw.SimpleText(L("total") .. " " .. tostring(self.visibleCount or 0), "LiliaFont.17", 5, 4, lia.color.theme.gray or Color(200, 200, 200, 255), TEXT_ALIGN_LEFT) end
+    self.statusBar.Paint = function() draw.SimpleText("Total" .. " " .. tostring(self.visibleCount or 0), "LiliaFont.17", 5, 4, lia.color.theme.gray or Color(200, 200, 200, 255), TEXT_ALIGN_LEFT) end
 end
 
 function PANEL:SetWindowTitle(t)

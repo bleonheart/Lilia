@@ -11,7 +11,7 @@ net.Receive("liaSendLogsCategoriesRequest", function(_, client)
     if not hook.Run("CanPlayerSeeLogs", client) then return end
     local categories = {}
     for _, v in pairs(lia.log.types) do
-        categories[v.category or L("uncategorized")] = true
+        categories[v.category or "Uncategorized"] = true
     end
 
     local catList = {}

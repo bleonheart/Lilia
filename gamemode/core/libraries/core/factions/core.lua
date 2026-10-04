@@ -3,14 +3,14 @@ lia.faction.indices = lia.faction.indices or {}
 lia.faction.teams = lia.faction.teams or {}
 local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group01/male_02.mdl", "models/player/group01/male_03.mdl", "models/player/group01/male_04.mdl", "models/player/group01/male_05.mdl", "models/player/group01/male_06.mdl", "models/player/group01/female_01.mdl", "models/player/group01/female_02.mdl", "models/player/group01/female_03.mdl", "models/player/group01/female_04.mdl", "models/player/group01/female_05.mdl", "models/player/group01/female_06.mdl"}
 function lia.faction.register(uniqueID, data)
-    assert(isstring(uniqueID), L("factionUniqueIDString"))
-    assert(istable(data), L("dataMustBeTable"))
+    assert(isstring(uniqueID), "Faction Unique ID String")
+    assert(istable(data), "Data must be a table")
     local existing = lia.faction.teams[uniqueID]
     local constantName = "FACTION_" .. string.upper(uniqueID)
     local providedIndex = tonumber(data.index)
     local constantIndex = tonumber(_G[constantName])
     local index = providedIndex or constantIndex or existing and existing.index or table.Count(lia.faction.teams) + 1
-    assert(not lia.faction.indices[index] or lia.faction.indices[index] == existing, L("factionIndexInUse"))
+    assert(not lia.faction.indices[index] or lia.faction.indices[index] == existing, "Faction Index In Use")
     local faction = existing or {
         index = index,
         isDefault = true
@@ -22,8 +22,8 @@ function lia.faction.register(uniqueID, data)
 
     faction.index = index
     faction.uniqueID = uniqueID
-    faction.name = lia.lang.resolveToken(faction.name) or lia.lang.resolveToken("@unknown")
-    faction.desc = lia.lang.resolveToken(faction.desc) or lia.lang.resolveToken("@noDesc")
+    faction.name = (string.gsub(tostring(faction.name), "^@", "", 1)) or "Unknown"
+    faction.desc = (string.gsub(tostring(faction.desc), "^@", "", 1)) or "No Description"
     faction.color = faction.color or Color(150, 150, 150)
     faction.models = faction.models or DefaultModels
     if faction.skinAllowed == nil then faction.skinAllowed = false end
@@ -34,7 +34,7 @@ function lia.faction.register(uniqueID, data)
     if overrideDesc then faction.desc = overrideDesc end
     local overrideModels = hook.Run("OverrideFactionModels", uniqueID, faction.models)
     if overrideModels then faction.models = overrideModels end
-    team.SetUp(faction.index, faction.name or L and L("unknown") or "unknown", faction.color or Color(125, 125, 125))
+    team.SetUp(faction.index, faction.name or L and "Unknown" or "unknown", faction.color or Color(125, 125, 125))
     lia.faction.cacheModels(faction.models)
     lia.faction.indices[faction.index] = faction
     lia.faction.teams[uniqueID] = faction
@@ -117,17 +117,17 @@ function lia.faction.loadFromDir(directory)
 
         lia.loader.include(directory .. "/" .. v, "shared")
         if not FACTION.name then
-            FACTION.name = "@unknown"
-            lia.error(L("factionMissingName", niceName))
+            FACTION.name = "Unknown"
+            lia.error(string.format("Faction '%s' is missing a name. You need to add a FACTION.name", niceName))
         end
 
         if not FACTION.desc then
-            FACTION.desc = "@noDesc"
-            lia.error(L("factionMissingDesc", niceName))
+            FACTION.desc = "No Description"
+            lia.error(string.format("Faction '%s' is missing a description. You need to add a FACTION.desc", niceName))
         end
 
-        FACTION.name = lia.lang.resolveToken(FACTION.name)
-        FACTION.desc = lia.lang.resolveToken(FACTION.desc)
+        FACTION.name = (string.gsub(tostring(FACTION.name), "^@", "", 1))
+        FACTION.desc = (string.gsub(tostring(FACTION.desc), "^@", "", 1))
         local overrideName = hook.Run("OverrideFactionName", niceName, FACTION.name)
         if overrideName then FACTION.name = overrideName end
         local overrideDesc = hook.Run("OverrideFactionDesc", niceName, FACTION.desc)
@@ -135,7 +135,7 @@ function lia.faction.loadFromDir(directory)
         local overrideModels = hook.Run("OverrideFactionModels", niceName, FACTION.models)
         if overrideModels then FACTION.models = overrideModels end
         if not FACTION.color then FACTION.color = Color(150, 150, 150) end
-        team.SetUp(FACTION.index, FACTION.name or L("unknown"), FACTION.color or Color(125, 125, 125))
+        team.SetUp(FACTION.index, FACTION.name or "Unknown", FACTION.color or Color(125, 125, 125))
         FACTION.models = FACTION.models or DefaultModels
         FACTION.uniqueID = FACTION.uniqueID or niceName
         if FACTION.skinAllowed == nil then FACTION.skinAllowed = false end
@@ -519,8 +519,8 @@ function lia.faction.getDefaultClass(id)
 end
 
 FACTION_STAFF = lia.faction.register("staff", {
-    name = "@factionStaffName",
-    desc = "@factionStaffDesc",
+    name = "Staff on Duty",
+    desc = "The Staff",
     color = Color(255, 56, 252),
     isDefault = false,
     models = {"models/player/police.mdl"},

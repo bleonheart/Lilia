@@ -9,7 +9,7 @@ function PANEL:Init()
     self.title:SetLineWidth(2)
     local lbl = self.title:Add("DLabel")
     lbl:SetFont("LiliaFont.18")
-    lbl:SetText(tostring(L("summary")):upper())
+    lbl:SetText(tostring("Summary"):upper())
     lbl:SizeToContents()
     lbl:Dock(FILL)
     lbl:DockMargin(8, 0, 8, 0)
@@ -32,7 +32,7 @@ function PANEL:Init()
     self.create:Dock(BOTTOM)
     self.create:DockMargin(0, 12, 0, 0)
     self.create:SetTall(44)
-    self.create:SetText((L("create") .. " " .. L("character")):upper())
+    self.create:SetText(("Create" .. " " .. "Character"):upper())
     self.create.DoClick = function()
         local createPanel = lia.gui and lia.gui.charCreate
         if IsValid(createPanel) and isfunction(createPanel.onFinish) then createPanel:onFinish() end
@@ -57,19 +57,19 @@ function PANEL:buildDefaultSummary(context)
     local name = context.name or context.charName
     local desc = context.desc or context.description
     summary[#summary + 1] = {
-        title = L("name"),
+        title = "Name",
         value = tostring(name or "")
     }
 
     summary[#summary + 1] = {
-        title = L("desc"),
+        title = "Description",
         value = tostring(desc or "")
     }
 
     local faction = context.faction and lia.faction.indices[context.faction] or nil
     summary[#summary + 1] = {
-        title = L("faction"),
-        value = faction and tostring(faction.name or "") or ""
+        title = "Faction",
+        value = faction and tostring(faction.name or "") or "("
     }
 
     local attribLines = {}
@@ -92,14 +92,14 @@ function PANEL:buildDefaultSummary(context)
             local attr = lia.attribs.list[k]
             local attrName = attr and attr.name or tostring(k)
             local v = tonumber(attribs[k]) or 0
-            attribLines[#attribLines + 1] = tostring(attrName) .. ": " .. tostring(v)
+            attribLines[#attribLines + 1] = tostring(attrName) .. "): " .. tostring(v)
         end
     end
 
     if #attribLines > 0 then
         summary[#summary + 1] = {
-            title = L("attributesModuleName"),
-            value = table.concat(attribLines, "\n")
+            title = "Attributes",
+            value = table.concat(attribLines, "\n(")
         }
     end
 
@@ -113,12 +113,12 @@ function PANEL:buildDefaultSummary(context)
     table.sort(idKeys, function(a, b) return tostring(a) < tostring(b) end)
     for _, k in ipairs(idKeys) do
         local v = identifications[k]
-        if v ~= nil then idLines[#idLines + 1] = tostring(k) .. ": " .. tostring(v) end
+        if v ~= nil then idLines[#idLines + 1] = tostring(k) .. "): " .. tostring(v) end
     end
 
     if #idLines > 0 then
         summary[#summary + 1] = {
-            title = L("identifications"),
+            title = "Identifications",
             value = table.concat(idLines, "\n")
         }
     end

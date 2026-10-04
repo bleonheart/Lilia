@@ -581,7 +581,7 @@ lia.color.registerTheme("Coral", {
     chatListen = Color(168, 240, 170)
 })
 
-lia.config.add("Theme", "@theme", "Teal", function(_, newValue)
+lia.config.add("Theme", "Theme", "Teal", function(_, newValue)
     if CLIENT then
         if not lia.color.themes[newValue] then
             newValue = "Teal"
@@ -591,8 +591,8 @@ lia.config.add("Theme", "@theme", "Teal", function(_, newValue)
         lia.color.applyTheme(newValue, true)
     end
 end, {
-    desc = "@themeDesc",
-    category = "@core",
+    desc = "Selects the visual theme for the user interface.",
+    category = "Core",
     type = "Table",
     options = function()
         local themes = {}

@@ -17,7 +17,7 @@ function lia.font.loadFonts()
 end
 
 function lia.font.register(fontName, fontData)
-    if not (isstring(fontName) and istable(fontData)) then return lia.error(L("invalidFont")) end
+    if not (isstring(fontName) and istable(fontData)) then return lia.error("[Font] Invalid font name or data provided.") end
     if #fontName > 63 then return end
     if fontData.font and #fontData.font > 63 then return end
     lia.font.stored[fontName] = SERVER and {
@@ -309,12 +309,12 @@ if CLIENT then
     end)
 end
 
-lia.config.add("Font", "@font", "Montserrat Medium", function()
+lia.config.add("Font", "Font", "Montserrat Medium", function()
     if not CLIENT then return end
     hook.Run("RefreshFonts")
 end, {
-    desc = "@fontDesc",
-    category = "@core",
+    desc = "Font Description",
+    category = "Core",
     type = "Table",
     options = function()
         if lia.font and isfunction(lia.font.getAvailableFonts) then return lia.font.getAvailableFonts() end

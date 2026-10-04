@@ -14,7 +14,7 @@ function ENT:onDrawEntityInfo(alpha)
     item.entity, item.data = self, self:getNetVar("data") or oldD
     local infoTable = {
         {
-            text = L(item.getName and item:getName() or item.name),
+            text = tostring(item.getName and item:getName() or item.name),
             yOffset = 0
         }
     }

@@ -22,14 +22,14 @@ local function checkType(typeID, struct, expected, prefix)
         local actualValue = struct[key]
         local expectedTypeString = isstring(expectedType) and expectedType or type(expectedType)
         local fieldName = prefix .. key
-        assert(type(actualValue) == expectedTypeString, L("invTypeMismatch", fieldName, expectedTypeString, typeID, type(actualValue)))
+        assert(type(actualValue) == expectedTypeString, string.format("Inventory type mismatch for field %s: expected %s (ID: %s), got %s", fieldName, expectedTypeString, typeID, type(actualValue)))
         if istable(expectedType) then checkType(typeID, actualValue, expectedType, prefix .. key .. ".") end
     end
 end
 
 function lia.inventory.newType(typeID, invTypeStruct)
-    assert(not lia.inventory.types[typeID], L("duplicateInventoryType", typeID))
-    assert(istable(invTypeStruct), L("expectedTableArg", 2))
+    assert(not lia.inventory.types[typeID], string.format("Duplicate inventory type %s", typeID))
+    assert(istable(invTypeStruct), string.format("Expected table for argument #%s", 2))
     checkType(typeID, invTypeStruct, InvTypeStructType)
     debug.getregistry()[invTypeStruct.className] = invTypeStruct
     lia.inventory.types[typeID] = invTypeStruct
@@ -37,7 +37,7 @@ end
 
 function lia.inventory.new(typeID)
     local class = lia.inventory.types[typeID]
-    assert(class ~= nil, L("invalidInventoryType", typeID))
+    assert(class ~= nil, string.format("Invalid inventory type %s", typeID))
     return setmetatable({
         items = {},
         config = table.Copy(class.config)
@@ -51,7 +51,7 @@ if SERVER then
     local DATA_TABLE = "invdata"
     local ITEMS_TABLE = "items"
     local function inventoryDevLog(...)
-        if not lia.devmode then return end
+        if not lia.DevMode then return end
         local parts = {...}
         for i = 1, #parts do
             parts[i] = tostring(parts[i])
@@ -76,7 +76,7 @@ if SERVER then
             end
         end
 
-        assert(isnumber(id) and id >= 0, L("noInventoryLoader", tostring(id)))
+        assert(isnumber(id) and id >= 0, string.format("No inventories implement loadFromStorage for ID %s", tostring(id)))
         return lia.inventory.loadFromDefaultStorage(id, noCache)
     end
 
@@ -89,7 +89,7 @@ if SERVER then
             local typeID = results.invType
             local invType = lia.inventory.types[typeID]
             if not invType then
-                lia.error(L("inventoryInvalidType", id, typeID))
+                lia.error(string.format("Inventory %s has invalid type %s", id, typeID))
                 return
             end
 
@@ -105,11 +105,11 @@ if SERVER then
             lia.inventory.instances[id] = instance
             instance:onLoaded()
             return instance:loadItems():next(function()
-                if lia.devmode then inventoryDevLog(string.format("Loaded inventory %s for char %s in %.3fs", tostring(id), tostring(instance.data.char or "nil"), SysTime() - started)) end
+                if lia.DevMode then inventoryDevLog(string.format("Loaded inventory %s for char %s in %.3fs", tostring(id), tostring(instance.data.char or "nil"), SysTime() - started)) end
                 return instance
             end)
         end, function(err)
-            lia.information(L("failedLoadInventory", tostring(id)))
+            lia.information(string.format("Failed to load inventory %s", tostring(id)))
             lia.information(err)
         end)
     end
@@ -124,11 +124,11 @@ if SERVER then
 
             ErrorNoHalt("[Lilia] Inventory type mismatch: '" .. tostring(typeID) .. "' does not match any registered type. This may be a leftover reference to an old inventory type. Available types: " .. table.concat(available, ", ") .. "\n")
             local d = deferred.new()
-            d:reject(L("invalidInventoryType", tostring(typeID)))
+            d:reject(string.format("Invalid inventory type %s", tostring(typeID)))
             return d
         end
 
-        assert(initialData == nil or istable(initialData), L("initialDataMustBeTable"))
+        assert(initialData == nil or istable(initialData), "initialData must be a table for lia.inventory.instance")
         initialData = initialData or {}
         return invType:initializeStorage(initialData):next(function(id)
             local instance = invType:new()
@@ -145,15 +145,15 @@ if SERVER then
         local started = SysTime()
         charID = tonumber(charID)
         if not charID then
-            lia.error(L("charIDMustBeNumber") .. " (received: " .. tostring(originalCharID) .. ", type: " .. type(originalCharID) .. ")")
-            return deferred.reject(L("charIDMustBeNumber"))
+            lia.error("charID must be a number" .. " (received: " .. tostring(originalCharID) .. ", type: " .. type(originalCharID) .. ")")
+            return deferred.reject("charID must be a number")
         end
         return lia.db.select({"invID"}, INV_TABLE, "charID = " .. charID):next(function(res)
             local rows = res.results or {}
-            if lia.devmode then inventoryDevLog("Loading", tostring(#rows), "inventories for char", tostring(charID)) end
+            if lia.DevMode then inventoryDevLog("Loading", tostring(#rows), "inventories for char", tostring(charID)) end
             return deferred.map(rows, function(result) return lia.inventory.loadByID(tonumber(result.invID)) end)
         end):next(function(inventories)
-            if lia.devmode then inventoryDevLog(string.format("Finished loading inventories for char %s in %.3fs", tostring(charID), SysTime() - started)) end
+            if lia.DevMode then inventoryDevLog(string.format("Finished loading inventories for char %s in %.3fs", tostring(charID), SysTime() - started)) end
             return inventories
         end)
     end
@@ -204,13 +204,13 @@ if SERVER then
     end
 
     function lia.inventory.registerStorage(model, data)
-        assert(isstring(model), L("modelMustBeString"))
-        assert(istable(data), L("dataMustBeTable"))
-        assert(isstring(data.name), L("storageNameRequired"))
-        assert(isstring(data.invType), L("inventoryTypeRequired"))
-        assert(istable(data.invData), L("inventoryDataRequired"))
-        data.name = lia.lang.resolveToken(data.name)
-        if isstring(data.desc) then data.desc = lia.lang.resolveToken(data.desc) end
+        assert(isstring(model), "Model must be a string")
+        assert(istable(data), "Data must be a table")
+        assert(isstring(data.name), "Storage name is required")
+        assert(isstring(data.invType), "Inventory type is required")
+        assert(istable(data.invData), "Inventory data is required")
+        data.name = (string.gsub(tostring(data.name), "^@", "", 1))
+        if isstring(data.desc) then data.desc = (string.gsub(tostring(data.desc), "^@", "", 1)) end
         lia.inventory.storage[model:lower()] = data
         return data
     end
@@ -221,13 +221,13 @@ if SERVER then
     end
 
     function lia.inventory.registerTrunk(vehicleClass, data)
-        assert(isstring(vehicleClass), L("vehicleClassMustBeString"))
+        assert(isstring(vehicleClass), "Vehicle class must be a string")
         assert(istable(data), "Data must be a table")
-        assert(isstring(data.name), L("trunkNameRequired"))
-        assert(isstring(data.invType), L("inventoryTypeRequired"))
-        assert(istable(data.invData), L("inventoryDataRequired"))
-        data.name = lia.lang.resolveToken(data.name)
-        if isstring(data.desc) then data.desc = lia.lang.resolveToken(data.desc) end
+        assert(isstring(data.name), "Trunk name is required")
+        assert(isstring(data.invType), "Inventory type is required")
+        assert(istable(data.invData), "Inventory data is required")
+        data.name = (string.gsub(tostring(data.name), "^@", "", 1))
+        if isstring(data.desc) then data.desc = (string.gsub(tostring(data.desc), "^@", "", 1)) end
         if not data.invData.w then data.invData.w = lia.config.get("trunkInvW", 10) end
         if not data.invData.h then data.invData.h = lia.config.get("trunkInvH", 2) end
         data.isTrunk = true
@@ -284,7 +284,7 @@ else
         end
 
         if lia.inventory.dualInventoryOpen then
-            lia.notify(L("inventoryAlreadyOpen"), "error")
+            lia.notify("An inventory is already open.", "error")
             return nil
         end
 

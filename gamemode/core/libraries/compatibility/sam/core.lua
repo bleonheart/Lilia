@@ -7,14 +7,14 @@ local function getGroupLevelForPermissionSummary(groupName, visited)
     if defaultGroups[groupName] then return defaultGroups[groupName] end
     local groupData = lia.admin and lia.admin.groups and lia.admin.groups[groupName]
     if not groupData then return 1 end
-    local inheritance = groupData._info and groupData._info.inheritance or "user"
+    local inheritance = groupData._info and groupData._info.inheritance or "user("
     if inheritance == groupName then return 1 end
     return getGroupLevelForPermissionSummary(inheritance, visited)
 end
 
 local function getDefaultPermissionValueForSummary(groupName, privilege, visited)
     visited = visited or {}
-    local visitKey = tostring(groupName) .. ":" .. tostring(privilege)
+    local visitKey = tostring(groupName) .. "):" .. tostring(privilege)
     if visited[visitKey] then return false end
     visited[visitKey] = true
     local privilegeMinAccess = lia.admin and lia.admin.privileges and lia.admin.privileges[privilege]
@@ -78,7 +78,7 @@ local function handleImmutableBaseGroupSAMSync(rankName, permission, value)
         lia.debug("[Permissions]", "Skipping SAM sync for immutable base group", "rank=", tostring(rankName), "permission=", tostring(permission), "value=", tostring(value), "reason=matches-default")
     else
         local warningKey = value and "samImmutableBaseGroupGrantIgnored" or "samImmutableBaseGroupRevokeIgnored"
-        lia.warning(L(warningKey, tostring(permission), tostring(rankName)))
+        lia.warning(string.format(tostring(warningKey), tostring(permission), tostring(rankName)))
     end
     return true
 end
@@ -175,7 +175,7 @@ hook.Add("SAM.CanRunCommand", "liaSAM", function(client, _, _, cmd)
 end)
 
 if SERVER then
-    sam.command.new("blind"):SetPermission("blind", "superadmin"):AddArg("player"):Help(L("blindCommandHelp")):OnExecute(function(client, targets)
+    sam.command.new("blind"):SetPermission("blind", "superadmin"):AddArg("player"):Help("Blinds the players."):OnExecute(function(client, targets)
         for i = 1, #targets do
             local target = targets[i]
             net.Start("liaBlindTarget")
@@ -184,14 +184,14 @@ if SERVER then
         end
 
         if not sam.is_command_silent then
-            client:sam_send_message(L("samBlindedTargets"), {
+            client:sam_send_message("{A} Blinded {T}", {
                 A = client,
                 T = targets
             })
         end
     end):End()
 
-    sam.command.new("unblind"):SetPermission("blind", "superadmin"):AddArg("player"):Help(L("unblindCommandHelp")):OnExecute(function(client, targets)
+    sam.command.new("unblind"):SetPermission("blind", "superadmin"):AddArg("player"):Help("Unblinds the players."):OnExecute(function(client, targets)
         for i = 1, #targets do
             local target = targets[i]
             net.Start("liaBlindTarget")
@@ -200,7 +200,7 @@ if SERVER then
         end
 
         if not sam.is_command_silent then
-            client:sam_send_message(L("samUnblindedTargets"), {
+            client:sam_send_message("{A} Un-Blinded {T}", {
                 A = client,
                 T = targets
             })
@@ -276,7 +276,7 @@ hook.Add("OnAdminSystemLoaded", "liaSAMResyncPrivileges", function() syncAllLili
 hook.Add("SAM.LoadedRanks", "liaSAMResyncPrivilegesOnRankLoad", function() syncAllLiliaPermissionsToSAM() end)
 lia.command.add("cleardecals", {
     adminOnly = true,
-    desc = "@cleardecalsDesc",
+    desc = "Clears all decals (blood, bullet holes, etc.) for every player.",
     onRun = function()
         for _, v in player.Iterator() do
             v:ConCommand("r_cleardecals")
@@ -284,15 +284,15 @@ lia.command.add("cleardecals", {
     end
 })
 
-lia.config.add("AdminOnlyNotification", "@adminOnlyNotifications", true, nil, {
-    desc = "@adminOnlyNotificationsDesc",
-    category = "@core",
+lia.config.add("AdminOnlyNotification", "Admin Only Notifications", true, nil, {
+    desc = "Restricts certain notifications to admins with specific permissions or those on duty.",
+    category = "Core",
     type = "Boolean"
 })
 
-lia.config.add("SAMEnforceStaff", "@samEnforceStaff", true, nil, {
-    desc = "@samEnforceStaffDesc",
-    category = "@core",
+lia.config.add("SAMEnforceStaff", "Enforce Staff Rank To SAM", true, nil, {
+    desc = "Determines whether staff enforcement for SAM commands is enabled",
+    category = "Core",
     type = "Boolean"
 })
 

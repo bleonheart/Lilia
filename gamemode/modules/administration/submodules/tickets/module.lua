@@ -1,12 +1,12 @@
-﻿MODULE.Name = "@tickets"
+﻿MODULE.Name = "Tickets"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "@ticketDesc"
+MODULE.desc = "Sends a support ticket to staff."
 MODULE.NetworkStrings = {"liaActiveTickets", "liaClearAllTicketFrames", "liaRequestActiveTickets", "liaRequestTicketsCount", "liaTicketsCount", "liaTicketSystem", "liaTicketSystemClaim", "liaTicketSystemClose", "liaViewClaims",}
 MODULE.Privileges = {
     ["alwaysSeeTickets"] = {
-        Name = "@alwaysSeeTickets",
+        Name = "Always See Tickets",
         MinAccess = "superadmin",
-        Category = "@tickets",
+        Category = "Tickets",
     },
 }

@@ -5,7 +5,7 @@
 }
 
 local function getEntityDisplayName(ent)
-    if not IsValid(ent) then return L("unknownEntity") end
+    if not IsValid(ent) then return "Unknown Entity" end
     if ent:GetClass() == "lia_item" and ent.getItemTable then
         local item = ent:getItemTable()
         if item and item.getName then
@@ -105,7 +105,7 @@ function MODULE:populateEntityTabPanel(entPanel)
     entPanel:DockPadding(6, 6, 6, 6)
     entPanel.Paint = nil
     if #owners == 0 then
-        local message = self.entityTabRequestPending and L("loading") or "No tracked player-created entities found."
+        local message = self.entityTabRequestPending and "Loading..." or "No tracked player-created entities found."
         local label = vgui.Create("DLabel", entPanel)
         label:Dock(TOP)
         label:SetTall(32)
@@ -135,7 +135,7 @@ function MODULE:populateEntityTabPanel(entPanel)
             }
         end)
 
-        hook.Add("HUDPaint", "EntityViewHUD", function() draw.SimpleText(L("pressInstructions"), "LiliaFont.25", ScrW() / 2, ScrH() - 50, color_white, TEXT_ALIGN_CENTER) end)
+        hook.Add("HUDPaint", "EntityViewHUD", function() draw.SimpleText("Press A/D to rotate | W/S to move camera vertically | Press SPACE to exit", "LiliaFont.25", ScrW() / 2, ScrH() - 50, color_white, TEXT_ALIGN_CENTER) end)
         hook.Add("Think", "EntityViewRotate", function()
             if input.IsKeyDown(KEY_A) then yaw = yaw - FrameTime() * 100 end
             if input.IsKeyDown(KEY_D) then yaw = yaw + FrameTime() * 100 end
@@ -167,7 +167,7 @@ function MODULE:populateEntityTabPanel(entPanel)
         ownerPanel.Paint = function() end
         local searchSheet = vgui.Create("liaSheet", ownerPanel)
         searchSheet:Dock(FILL)
-        searchSheet:SetPlaceholderText(L("searchEntities"))
+        searchSheet:SetPlaceholderText("Search Entities...")
         for _, entry in ipairs(list) do
             local ent = Entity(entry.entIndex or -1)
             local entValid = IsValid(ent)
@@ -199,7 +199,7 @@ function MODULE:populateEntityTabPanel(entPanel)
                 local btn = btnLayout:Add("liaButton")
                 btn:SetWide(120)
                 btn:SetTall(60)
-                btn:SetText(L(key))
+                btn:SetText(tostring(key))
                 btn:SetEnabled(enabled ~= false)
                 btn.DoClick = func
             end
@@ -246,7 +246,7 @@ function MODULE:populateEntityTabPanel(entPanel)
         end
 
         searchSheet:Refresh()
-        sheetContainer:AddSheet(owner .. " - " .. #list .. " " .. L("entities"), ownerPanel)
+        sheetContainer:AddSheet(owner .. " - " .. #list .. " " .. "Entities", ownerPanel)
     end
 end
 
@@ -262,7 +262,7 @@ function MODULE:PopulateAdminTabs(pages)
     if canViewEntityTab then
         self:requestEntityTabData()
         pages[#pages + 1] = {
-            name = "@playerEntities",
+            name = "Player Entities",
             icon = "icon16/bricks.png",
             drawFunc = function(entPanel)
                 self.entityTabPanel = entPanel

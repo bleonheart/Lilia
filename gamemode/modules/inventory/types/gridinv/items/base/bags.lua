@@ -1,7 +1,7 @@
-﻿ITEM.name = "@bagName"
-ITEM.desc = "@bagDesc"
+﻿ITEM.name = "Bag"
+ITEM.desc = "A bag to hold more items."
 ITEM.model = "models/props_c17/suitcase001a.mdl"
-ITEM.category = "@storage"
+ITEM.category = "Storage"
 ITEM.isBag = true
 ITEM.invWidth = 2
 ITEM.invHeight = 2
@@ -76,7 +76,7 @@ end
 
 lia.inventory = lia.inventory or {}
 ITEM.functions.Open = {
-    tip = "@openTip",
+    tip = "Opens the container.",
     icon = "icon16/briefcase.png",
     onRun = function(item)
         local client = item.player

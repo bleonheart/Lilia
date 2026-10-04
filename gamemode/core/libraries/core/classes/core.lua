@@ -22,8 +22,8 @@ function lia.class.getMergedBodygroups(character)
 end
 
 function lia.class.register(uniqueID, data)
-    assert(isstring(uniqueID), L("itemUniqueIDString"))
-    assert(istable(data), L("classDataTable"))
+    assert(isstring(uniqueID), "uniqueID must be a string")
+    assert(istable(data), "Class Data Table")
     local existing
     local constantName = "CLASS_" .. string.upper(uniqueID)
     local providedIndex = tonumber(data.index)
@@ -49,11 +49,11 @@ function lia.class.register(uniqueID, data)
 
     class.index = index
     class.uniqueID = uniqueID
-    class.name = lia.lang.resolveToken(class.name) or lia.lang.resolveToken("@unknown")
-    class.desc = lia.lang.resolveToken(class.desc) or lia.lang.resolveToken("@noDesc")
+    class.name = (string.gsub(tostring(class.name), "^@", "", 1)) or "Unknown"
+    class.desc = (string.gsub(tostring(class.desc), "^@", "", 1)) or "No Description"
     class.limit = class.limit or 0
     if not class.faction or not team.Valid(class.faction) then
-        lia.error(L("classNoValidFaction", uniqueID))
+        lia.error(string.format("Class '%s' does not have a valid faction!", uniqueID))
         return
     end
 
@@ -84,34 +84,34 @@ function lia.class.loadFromDir(directory)
             uniqueID = niceName
         }
 
-        CLASS.name = "@unknown"
-        CLASS.desc = "@noDesc"
+        CLASS.name = "Unknown"
+        CLASS.desc = "No Description"
         CLASS.limit = 0
         lia.loader.include(directory .. "/" .. v, "shared")
         if not CLASS.faction or not team.Valid(CLASS.faction) then
-            lia.error(L("classNoValidFaction", niceName))
+            lia.error(string.format("Class '%s' does not have a valid faction!", niceName))
             CLASS = nil
             continue
         end
 
         if not CLASS.OnCanBe then CLASS.OnCanBe = function() return true end end
-        CLASS.name = lia.lang.resolveToken(CLASS.name)
-        CLASS.desc = lia.lang.resolveToken(CLASS.desc)
+        CLASS.name = (string.gsub(tostring(CLASS.name), "^@", "", 1))
+        CLASS.desc = (string.gsub(tostring(CLASS.desc), "^@", "", 1))
         lia.class.list[index] = CLASS
         CLASS = nil
     end
 end
 
 function lia.class.canBe(client, class)
-    if not lia.class.list then return false, L("classNoInfo") end
+    if not lia.class.list then return false, "Class information not found." end
     local info = lia.class.list[class]
-    if not info then return false, L("classNoInfo") end
-    if client:Team() ~= info.faction then return false, L("classWrongTeam") end
+    if not info then return false, "Class information not found." end
+    if client:Team() ~= info.faction then return false, "You are not in the correct team to join this class." end
     local character = client:getChar()
-    if character and character:getClass() == class then return false, L("alreadyInClass") end
+    if character and character:getClass() == class then return false, "You are already in this class" end
     local currentCount = #lia.class.getPlayers(info.index)
-    if info.limit > 0 and currentCount >= info.limit then return false, L("classFull") end
-    if info.isDefault == false and lia.class.hasWhitelist(class) and character and not character:getClasswhitelists()[class] then return false, L("classWhitelistRequired") end
+    if info.limit > 0 and currentCount >= info.limit then return false, "This class is currently full." end
+    if info.isDefault == false and lia.class.hasWhitelist(class) and character and not character:getClasswhitelists()[class] then return false, "You must be whitelisted to join this class." end
     local hookResult = hook.Run("CanPlayerJoinClass", client, class, info)
     if hookResult == false then return false end
     if info.OnCanBe then

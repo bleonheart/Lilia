@@ -1,17 +1,17 @@
-﻿MODULE.Name = "@warnsModuleName"
+﻿MODULE.Name = "Warnings"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "@warnsModuleName"
+MODULE.desc = "Warnings"
 MODULE.NetworkStrings = {"liaAllWarnings", "liaPlayerWarnings", "liaRequestAllWarnings", "liaRequestRemoveWarning", "liaRequestWarningsCount", "liaWarningsCount",}
 MODULE.Privileges = {
     ["viewPlayerWarnings"] = {
-        Name = "@viewPlayerWarnings",
+        Name = "View Player Warnings",
         MinAccess = "admin",
-        Category = "@warning",
+        Category = "Warning",
     },
     ["canRemoveWarns"] = {
-        Name = "@canRemoveWarns",
+        Name = "Can Remove Warns",
         MinAccess = "superadmin",
-        Category = "@warning",
+        Category = "Warning",
     },
 }

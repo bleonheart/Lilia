@@ -47,10 +47,10 @@ function PANEL:canCreateCharacter()
         if lia.faction.hasWhitelist(team.index) then valid[#valid + 1] = team.index end
     end
 
-    if #valid == 0 then return false, L("unableToJoinFactions") end
+    if #valid == 0 then return false, "You are unable to join any factions" end
     self.validFactions = valid
     local maxChars = hook.Run("GetMaxPlayerChar", LocalPlayer()) or lia.config.get("MaxCharacters", 5)
-    if lia.characters and #lia.characters >= maxChars then return false, L("maxCharactersReached") end
+    if lia.characters and #lia.characters >= maxChars then return false, "You have reached the maximum number of characters" end
     local ok, reason = hook.Run("ShouldMenuButtonShow", "create")
     if ok == false then return false, reason end
     return true
@@ -87,17 +87,17 @@ function PANEL:onFinish()
 
     timer.Create("liaFailedToCreate", 60, 1, function()
         if not IsValid(self) or not self.creating then return end
-        fail(L("unknownError"))
+        fail("Unknown error")
     end)
 end
 
 function PANEL:showError(msg, ...)
     if IsValid(self.error) then self.error:Remove() end
     if not msg or msg == "" then return end
-    assert(IsValid(self.content), L("noStepAvailable"))
+    assert(IsValid(self.content), "No step is available")
     local err = self.content:Add("DLabel")
     err:SetFont("LiliaFont.18")
-    err:SetText(L(msg, ...))
+    err:SetText(string.format(tostring(msg), ...))
     err:SetTextColor(color_white)
     err:Dock(TOP)
     err:SetTall(32)
@@ -123,19 +123,19 @@ function PANEL:showMessage(msg, ...)
         return
     end
 
-    if IsValid(self.message) then self.message:SetText(L(msg, ...):upper()) end
+    if IsValid(self.message) then self.message:SetText(string.format(tostring(msg), ...):upper()) end
     local lbl = self:Add("DLabel")
     lbl:SetFont("LiliaFont.16")
     lbl:SetTextColor(lia.gui.character.color)
     lbl:Dock(FILL)
     lbl:SetContentAlignment(5)
-    lbl:SetText(L(msg, ...):upper())
+    lbl:SetText(string.format(tostring(msg), ...):upper())
     self.message = lbl
 end
 
 function PANEL:addStep(step, priority)
-    assert(IsValid(step), L("invalidPanelForStep"))
-    assert(step.isCharCreateStep, L("panelMustInherit"))
+    assert(IsValid(step), "Invalid panel for step")
+    assert(step.isCharCreateStep, "Panel must inherit liaCharacterCreateStep")
     if isnumber(priority) then
         table.insert(self.steps, priority, step)
     else
@@ -277,7 +277,7 @@ function PANEL:onStepChanged(oldStep, newStep)
         btn:SetWide(w + 40)
     end
 
-    if L(key):upper() ~= self.next:GetText() then self.next:AlphaTo(0, 0.5) end
+    if tostring(key):upper() ~= self.next:GetText() then self.next:AlphaTo(0, 0.5) end
     local function show()
         if not IsValid(newStep) then return end
         local parent = self.content
@@ -296,9 +296,9 @@ function PANEL:onStepChanged(oldStep, newStep)
         newStep:SetVisible(true)
         newStep:onDisplay()
         newStep:InvalidateChildren(true)
-        if L(key):upper() ~= self.next:GetText() then
+        if tostring(key):upper() ~= self.next:GetText() then
             self.next:SetAlpha(0)
-            sizeButton(self.next, L(key):upper())
+            sizeButton(self.next, tostring(key):upper())
         end
 
         self.next:AlphaTo(255, 0.5)
@@ -344,7 +344,7 @@ function PANEL:Init()
     self.content:DockMargin(margin, 64, margin, 0)
     self.content:SetPaintBackground(false)
     self.model = self.content:Add("liaModelPanel")
-    if not IsValid(self.model) then return self:showError(L("failedToCreateModelPanel")) end
+    if not IsValid(self.model) then return self:showError("Failed to create model panel") end
     self.model:SetWide(0)
     self.model:Dock(LEFT)
     self.model:SetModel("models/error.mdl")
@@ -364,12 +364,12 @@ function PANEL:Init()
     end
 
     self.prev = self.buttons:Add("liaMediumButton")
-    sizeButton(self.prev, L("back"):upper())
+    sizeButton(self.prev, ("Back"):upper())
     self.prev:Dock(LEFT)
     self.prev.DoClick = function() self:previousStep() end
     self.prev:SetAlpha(0)
     self.next = self.buttons:Add("liaMediumButton")
-    sizeButton(self.next, L("next"):upper())
+    sizeButton(self.next, ("Next"):upper())
     self.next:Dock(RIGHT)
     self.next.DoClick = function() self:nextStep() end
     self.steps = {}

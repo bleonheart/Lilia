@@ -10,29 +10,29 @@
     search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
     search:SetFont("LiliaFont.17")
-    search:SetPlaceholderText(L("search"))
+    search:SetPlaceholderText("Search...")
     search:SetTextColor(Color(200, 200, 200))
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
     local columns = {
         {
-            name = L("timestamp"),
+            name = "Timestamp",
             field = "timestamp"
         },
         {
-            name = L("warned"),
+            name = "Warned",
             field = "warnedDisplay"
         },
         {
-            name = L("admin"),
+            name = "Admin",
             field = "adminDisplay"
         },
         {
-            name = L("warningMessage"),
+            name = "Warning Message",
             field = "message"
         },
         {
-            name = L("warningSeverity"),
+            name = "Severity",
             field = "severity"
         }
     }
@@ -41,10 +41,10 @@
         list:AddColumn(col.name)
     end
 
-    list:AddMenuOption(L("copyRow"), function(rowData)
+    list:AddMenuOption("Copy Row", function(rowData)
         local rowString = ""
         for i, column in ipairs(columns) do
-            local header = column.name or L("columnWithNumber", i)
+            local header = column.name or string.format("Column %s", i)
             local value = tostring(rowData[i] or "")
             rowString = rowString .. header .. " " .. value .. " | "
         end

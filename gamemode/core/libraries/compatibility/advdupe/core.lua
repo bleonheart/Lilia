@@ -36,4 +36,4 @@ hook.Add("CanTool", "liaAdvDupe", function(client, _, tool)
     if not CheckDuplicationScale(client, toolobj.Entities) then return false end
 end)
 
-lia.log.addType("dupeCrashAttempt", function(client) return L("dupeCrashAttemptLog", IsValid(client) and client:Name() or L("unknown"), IsValid(client) and client:SteamID() or L("na")) end, L("categorySecurity"))
+lia.log.addType("dupeCrashAttempt", function(client) return string.format("Player '%s' [%s] attempted to duplicate oversized entities.", IsValid(client) and client:Name() or "Unknown", IsValid(client) and client:SteamID() or "N/A") end, "Security")

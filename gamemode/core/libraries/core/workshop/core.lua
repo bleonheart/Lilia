@@ -6,7 +6,7 @@ if SERVER then
     function lia.workshop.addWorkshop(id)
         id = tostring(id)
         if not lia.workshop.ids[id] then
-            lia.bootstrap(L("workshopDownloader"), L("workshopDownloading", id))
+            lia.bootstrap("Workshop Downloader", string.format("Downloading workshop %s", id))
             lia.workshop.ids[id] = true
         end
     end
@@ -15,7 +15,7 @@ if SERVER then
         id = tostring(id)
         if not lia.workshop.known[id] then
             lia.workshop.known[id] = true
-            lia.bootstrap(L("workshopDownloader"), L("workshopAdded", id))
+            lia.bootstrap("Workshop Downloader", string.format("Added workshop %s to download list", id))
         end
     end
 
@@ -178,7 +178,7 @@ else
         end
 
         if #needed == 0 then
-            lia.bootstrap(L("workshopDownloader"), L("workshopAllInstalled"))
+            lia.bootstrap("Workshop Downloader", "All workshop addons already installed. Skipping download.")
             return
         end
 
@@ -188,15 +188,15 @@ else
                 if fi and fi.size then totalSize = totalSize + fi.size end
                 pending = pending - 1
                 if pending <= 0 then
-                    lia.derma.requestPopupQuestion(L("workshopConfirmMount", formatSize(totalSize)), {
+                    lia.derma.requestPopupQuestion(string.format("Download %s of workshop content?", formatSize(totalSize)), {
                         {
-                            L("yes"),
+                            "Yes",
                             function()
                                 net.Start("liaWorkshopDownloaderRequest")
                                 net.SendToServer()
                             end
                         },
-                        {L("no")}
+                        {"No"}
                     })
                 end
             end)
@@ -222,7 +222,7 @@ else
             return
         end
 
-        if remountedAny or not lia.workshop.hasContentToDownload() then lia.bootstrap(L("workshopDownloader"), L("workshopAllInstalled")) end
+        if remountedAny or not lia.workshop.hasContentToDownload() then lia.bootstrap("Workshop Downloader", "All workshop addons already installed. Skipping download.") end
     end
 
     local workshopSearchIcon = Material("icon16/magnifier.png", "smooth")
@@ -257,7 +257,7 @@ else
 
     local function formatWorkshopTime(value)
         local timestamp = tonumber(value)
-        if not timestamp or timestamp <= 0 then return L("unknown") end
+        if not timestamp or timestamp <= 0 then return "Unknown" end
         return os.date("%Y-%m-%d %H:%M:%S", timestamp)
     end
 
@@ -447,7 +447,7 @@ else
                 searchEntry:SetFont("LiliaFont.16")
                 searchEntry:SetTextColor(Color(225, 236, 236))
                 searchEntry:SetCursorColor(getWorkshopThemeColors())
-                searchEntry:SetPlaceholderText(L("searchAddons"))
+                searchEntry:SetPlaceholderText("Search addons...")
                 searchEntry:SetPaintBackground(false)
                 searchEntry:SetPaintBorderEnabled(false)
                 local sectionLabel = listPanel:Add("DLabel")
@@ -479,14 +479,14 @@ else
                     local empty = listCanvas:Add("DLabel")
                     empty:Dock(TOP)
                     empty:SetTall(80)
-                    empty:SetText(L("noWorkshopAddonsFound"))
+                    empty:SetText("No workshop addons found. Make sure the server has configured workshop content.")
                     empty:SetContentAlignment(5)
                     empty:SetTextColor(Color(150, 170, 170))
                     empty:SetFont("LiliaFont.18")
                     detailPanel.Paint = function(_, w, h)
                         local accent = getWorkshopThemeColors()
                         drawWorkshopPanel(0, 0, w, h, 7, Color(5, 18, 23, 190), Color(accent.r, accent.g, accent.b, 45))
-                        draw.SimpleText(L("noWorkshopAddonsFound"), "LiliaFont.20", w * 0.5, h * 0.5, Color(150, 170, 170), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                        draw.SimpleText("No workshop addons found. Make sure the server has configured workshop content.", "LiliaFont.20", w * 0.5, h * 0.5, Color(150, 170, 170), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                     end
                     return
                 end
@@ -549,7 +549,7 @@ else
                     workshopButton:SetSize(142, 42)
                     local function buildMountButton()
                         if IsValid(mountButton) then mountButton:Remove() end
-                        local label = record.mounted and "MOUNTED" or string.upper(tostring(L("mount")))
+                        local label = record.mounted and "MOUNTED" or string.upper(tostring("Mount"))
                         mountButton = createWorkshopButton(header, label, workshopMountIcon, true, function()
                             workshopDebug(record.id, "DownloadUGC", "Starting download", "title=" .. tostring(record.title))
                             debugAddonState(record.id, "Before DownloadUGC")
@@ -718,7 +718,7 @@ else
                         local record = {
                             id = tostring(row.id),
                             info = fi,
-                            title = tostring(fi.title or L("idPrefix", row.id)),
+                            title = tostring(fi.title or string.format("ID: %s", row.id)),
                             sizeText = fi.size and formatSize(fi.size) or "0 B",
                             mounted = mounted(row.id),
                             percent = string.format("%.2f%%", share)

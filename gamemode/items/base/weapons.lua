@@ -53,7 +53,7 @@ ITEM.functions.Unequip = {
             item:setData("ammo", weapon:Clip1())
             client:StripWeapon(item.class)
         else
-            lia.error(L("weaponDoesNotExist", item.class))
+            lia.error(string.format("Weapon '%s' does not exist", item.class))
         end
 
         client:EmitSound(item.unequipSound or "items/ammo_pickup.wav", 80)
@@ -96,7 +96,7 @@ ITEM.functions.Equip = {
             weapon:SetClip1(item:getData("ammo", 0))
             if item.onEquipWeapon then item:onEquipWeapon(client, weapon) end
         else
-            lia.error(L("weaponDoesNotExist", item.class))
+            lia.error(string.format("Weapon '%s' does not exist", item.class))
         end
         return false
     end,
@@ -117,7 +117,7 @@ function ITEM:onLoadout()
             client:RemoveAmmo(weapon:Clip1(), weapon:GetPrimaryAmmoType())
             weapon:SetClip1(self:getData("ammo", 0))
         else
-            lia.error(L("weaponDoesNotExist", self.class))
+            lia.error(string.format("Weapon '%s' does not exist", self.class))
         end
     end
 end
@@ -132,7 +132,7 @@ end
 if CLIENT then
     function ITEM:getName()
         local override = lia.item.WeaponOverrides and lia.item.WeaponOverrides[self.class]
-        if override and override.name then return isstring(override.name) and L(override.name) or override.name end
+        if override and override.name then return isstring(override.name) and tostring(override.name) or override.name end
         local weapon = weapons.GetStored(self.class)
         if weapon and weapon.PrintName then return language.GetPhrase(weapon.PrintName) end
         return self.name

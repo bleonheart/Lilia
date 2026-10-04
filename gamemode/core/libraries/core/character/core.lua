@@ -164,7 +164,7 @@ end
 lia.char.registerVar("name", {
     field = "name",
     fieldType = "string",
-    default = L("defaultCharName"),
+    default = "John Doe",
     index = 1,
     onValidate = function(value, data, client)
         local name, override = hook.Run("GetDefaultCharName", client, data.faction, data)
@@ -196,7 +196,7 @@ lia.char.registerVar("name", {
 lia.char.registerVar("desc", {
     field = "desc",
     fieldType = "text",
-    default = L("descMinLen", lia.config.get("MinDescLen", 16)),
+    default = string.format("Description must be at least %s characters long.", lia.config.get("MinDescLen", 16)),
     index = 2,
     onValidate = function(value, data, client)
         local desc, override = hook.Run("GetDefaultCharDesc", client, data.faction, data)
@@ -374,7 +374,7 @@ lia.char.registerVar("faction", {
     onSet = function(character, value)
         local oldVar = character:getFaction()
         local faction = lia.faction.indices[value]
-        assert(faction, L("invalidFactionIndex", tostring(value)))
+        assert(faction, string.format("%s is an invalid faction index", tostring(value)))
         local client = character:getPlayer()
         client:SetTeam(value)
         character.vars.faction = faction.uniqueID
@@ -522,7 +522,7 @@ lia.char.registerVar("attribs", {
                 local count = 0
                 for k, v in pairs(value) do
                     local max = hook.Run("GetAttributeStartingMax", client, k)
-                    if max and v > max then return false, L("attribTooHigh", lia.attribs.list[k].name) end
+                    if max and v > max then return false, string.format("%s too high", lia.attribs.list[k].name) end
                     count = count + v
                 end
 
@@ -650,7 +650,7 @@ if SERVER then
             createTime = timeStamp,
             lastJoinTime = timeStamp,
             steamID = data.steamID,
-            faction = data.faction or L("unknown"),
+            faction = data.faction or "Unknown",
             money = data.money,
             recognition = data.recognition or "",
             fakenames = ""
@@ -681,7 +681,7 @@ if SERVER then
 
     function lia.char.restore(client, callback, id)
         local function charDevLog(...)
-            if not lia.devmode then return end
+            if not lia.DevMode then return end
             local parts = {...}
             for i = 1, #parts do
                 parts[i] = tostring(parts[i])
@@ -702,12 +702,12 @@ if SERVER then
         local condition = "schema = '" .. lia.db.escape(gamemode) .. "' AND steamID = " .. lia.db.convertDataType(steamID)
         if id then condition = condition .. " AND id = " .. id end
         local query = "SELECT " .. fields .. " FROM lia_characters WHERE " .. condition
-        if lia.devmode then charDevLog("Restoring characters for", steamID, id and ("char " .. tostring(id)) or "(all chars)") end
+        if lia.DevMode then charDevLog("Restoring characters for", steamID, id and ("char " .. tostring(id)) or "(all chars)") end
         lia.db.query(query, function(data)
             local characters = {}
             local results = data or {}
             local done = 0
-            if lia.devmode then charDevLog("Character restore query returned", tostring(#results), "rows for", steamID) end
+            if lia.DevMode then charDevLog("Character restore query returned", tostring(#results), "rows for", steamID) end
             if #results == 0 then
                 if callback then callback(characters) end
                 return
@@ -717,7 +717,7 @@ if SERVER then
                 local charStarted = SysTime()
                 local charId = tonumber(v.id)
                 if not charId then
-                    lia.error(L("invalidCharacterID", data.name or "nil"))
+                    lia.error(string.format("[Lilia] Cannot load character '%s' with invalid ID!", data.name or "nil"))
                     continue
                 end
 
@@ -772,24 +772,24 @@ if SERVER then
                 lia.inventory.loadAllFromCharID(charId):next(function(inventories)
                     if #inventories == 0 then
                         local promise = hook.Run("CreateDefaultInventory", character)
-                        assert(promise ~= nil, L("noDefaultInventory"))
+                        assert(promise ~= nil, "No default inventory available")
                         return promise:next(function(inventory)
-                            assert(inventory ~= nil, L("noDefaultInventory"))
+                            assert(inventory ~= nil, "No default inventory available")
                             return {inventory}
                         end)
                     end
                     return inventories
                 end, function(err)
-                    lia.information(L("failedLoadInventories", tostring(charId)))
+                    lia.information(string.format("Failed to load inventories for %s", tostring(charId)))
                     lia.information(err)
                     if IsValid(client) then client:notifyErrorLocalized("fixInventoryError") end
                 end):next(function(inventories)
                     character.vars.inv = inventories
                     lia.char.loaded[charId] = character
                     done = done + 1
-                    if lia.devmode then charDevLog(string.format("Character %s restored with %s inventories in %.3fs", tostring(charId), tostring(#inventories), SysTime() - charStarted)) end
+                    if lia.DevMode then charDevLog(string.format("Character %s restored with %s inventories in %.3fs", tostring(charId), tostring(#inventories), SysTime() - charStarted)) end
                     if done == #results and callback then callback(characters) end
-                    if done == #results and lia.devmode then charDevLog(string.format("Finished restoring %s character(s) for %s in %.3fs", tostring(#results), steamID, SysTime() - restoreStarted)) end
+                    if done == #results and lia.DevMode then charDevLog(string.format("Finished restoring %s character(s) for %s in %.3fs", tostring(#results), steamID, SysTime() - restoreStarted)) end
                 end)
             end
         end)
@@ -814,7 +814,7 @@ if SERVER then
     end
 
     function lia.char.delete(id, client)
-        assert(isnumber(id), L("idMustBeNumber"))
+        assert(isnumber(id), "id must be a number")
         local playersToSync = {}
         for _, ply in player.Iterator() do
             if IsValid(ply) and ply.liaCharList and table.HasValue(ply.liaCharList, id) then table.insert(playersToSync, ply) end
@@ -901,7 +901,7 @@ if SERVER then
 
                 local promise = lia.db.updateTable(updateData, nil, "characters", "id = " .. charIDsafe)
                 if deferred.isPromise(promise) then
-                    promise:catch(function(err) lia.information(L("charSetDataSQLError", "UPDATE lia_characters SET " .. fieldName, err)) end)
+                    promise:catch(function(err) lia.information(string.format("lia.char.setCharData SQL Error, q=%s, Error = %s", "UPDATE lia_characters SET " .. fieldName, err)) end)
                 elseif promise == false then
                     return false
                 end
@@ -1063,7 +1063,7 @@ if SERVER then
                             if callback then callback(character) end
                         end
                     end, function(err)
-                        lia.information(L("failedToLoadInventoriesForCharacter") .. " " .. charID .. ": " .. tostring(err))
+                        lia.information("Failed to load inventories for character " .. " (" .. charID .. "): " .. tostring(err))
                         if callback then callback(nil) end
                     end)
                 end)
@@ -1116,7 +1116,7 @@ if SERVER then
                     if callback then callback(character) end
                 end
             end, function(err)
-                lia.information(L("failedToLoadInventoriesForCharacter") .. " " .. charID .. ": " .. tostring(err))
+                lia.information("Failed to load inventories for character " .. " (" .. charID .. "): " .. tostring(err))
                 if callback then callback(nil) end
             end)
         end)

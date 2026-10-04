@@ -1,6 +1,6 @@
 ﻿ENT.Type = "anim"
 ENT.Base = "base_anim"
-ENT.PrintName = L("dialogNPCName")
+ENT.PrintName = "Dialog NPC"
 ENT.Author = "Samael"
 ENT.Contact = "@liliaplayer"
 ENT.Category = "Lilia"

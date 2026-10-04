@@ -3,7 +3,7 @@ lia.module.list = lia.module.list or {}
 local function loadPermissions(Privileges)
     if not Privileges or not istable(Privileges) then return end
     for privID, privilegeData in pairs(Privileges) do
-        local privilegeName = lia.lang.resolveToken(privilegeData.Name or privID)
+        local privilegeName = (string.gsub(tostring(privilegeData.Name or privID), "^@", "", 1))
         local privilegeCategory = privilegeData.Category or MODULE.name
         lia.admin.registerPrivilege({
             Name = privilegeName,
@@ -91,7 +91,7 @@ local function loadExtras(path)
         ["client.lua"] = 7,
     }
 
-    local ModuleFolders = {"config", "definitions", "dependencies", "libs", "hooks", "libraries", "commands", "netcalls", "meta", "derma",}
+    local ModuleFolders = {"libs", "hooks", "libraries", "commands", "netcalls", "meta", "derma",}
     lia.lang.loadFromDir(path .. "/languages")
     lia.faction.loadFromDir(path .. "/factions")
     lia.class.loadFromDir(path .. "/classes")
@@ -155,9 +155,9 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
         folder = path,
         module = existing or prev,
         uniqueID = uniqueID,
-        name = L("unknown"),
-        desc = L("noDesc"),
-        author = L("anonymous"),
+        name = "Unknown",
+        desc = "No Description",
+        author = "Anonymous",
         enabled = true,
         IsValid = function() return true end
     }
@@ -172,10 +172,10 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
     MODULE.loading = true
     MODULE.path = path
     MODULE.variable = variable
-    MODULE.name = lia.lang.resolveToken(MODULE.name)
-    MODULE.desc = lia.lang.resolveToken(MODULE.desc)
+    MODULE.name = (string.gsub(tostring(MODULE.name), "^@", "", 1))
+    MODULE.desc = (string.gsub(tostring(MODULE.desc), "^@", "", 1))
     if not file.Exists(coreFile, "LUA") then
-        lia.bootstrap(L("moduleSkipped"), L("moduleSkipMissing", uniqueID, lowerVar))
+        lia.bootstrap("Module Skipped", string.format("Skipping module '%s' - missing %s.lua", uniqueID, lowerVar))
         _G[variable] = prev
         return
     end
@@ -190,9 +190,9 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
 
     if uniqueID ~= "schema" and not enabled then
         if disableReason then
-            lia.bootstrap(L("moduleDisabledTitle"), disableReason)
+            lia.bootstrap("Module Disabled", disableReason)
         else
-            lia.bootstrap(L("moduleDisabledTitle"), MODULE.name)
+            lia.bootstrap("Module Disabled", MODULE.name)
         end
 
         _G[variable] = prev
@@ -223,7 +223,7 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
         lia.module.list[uniqueID] = MODULE
         if not skipSubmodules then loadSubmodules(path) end
         if MODULE.ModuleLoaded then MODULE:ModuleLoaded() end
-        if string.StartsWith(path, engine.ActiveGamemode():gsub("\\", "/") .. "/modules") then lia.bootstrap(L("module"), L("moduleFinishedLoading", MODULE.name)) end
+        if string.StartsWith(path, engine.ActiveGamemode():gsub("\\", "/") .. "/modules") then lia.bootstrap("Module", string.format("Finished Loading Module '%s'", MODULE.name)) end
         _G[variable] = prev
     end
 end
@@ -241,7 +241,7 @@ function lia.module.initialize()
     end
 
     for id in pairs(collectModuleIDs("lilia/gamemode/modules")) do
-        if not preloadIDs[id] and gamemodeIDs[id] then lia.bootstrap(L("module"), L("modulePreloadSuggestion", id, schemaPath)) end
+        if not preloadIDs[id] and gamemodeIDs[id] then lia.bootstrap("Module", string.format("Module '%s' is overridden by the schema. Place it in %s/preload for faster loading", id, schemaPath)) end
     end
 
     lia.module.loadFromDir("lilia/gamemode/modules", "module", preloadIDs)

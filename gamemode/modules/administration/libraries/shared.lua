@@ -13,7 +13,7 @@ function lia.admin.canUseDebugProperties(client)
 end
 
 properties.Add("TogglePropBlacklist", {
-    MenuLabel = L("togglePropBlacklist"),
+    MenuLabel = "Toggle Prop Blacklist",
     Order = 900,
     MenuIcon = "icon16/link.png",
     Filter = function(_, ent, ply)
@@ -43,8 +43,8 @@ properties.Add("TogglePropBlacklist", {
 })
 
 lia.command.add("sayall", {
-    desc = "@sendsPhraseToAllChatTypes",
-    privilege = "@adminChat",
+    desc = "Sends a phrase to all registered chat types",
+    privilege = "Admin Chat",
     adminOnly = true,
     arguments = {
         {
@@ -72,7 +72,7 @@ lia.command.add("sayall", {
 })
 
 properties.Add("ToggleCarBlacklist", {
-    MenuLabel = L("toggleCarBlacklist"),
+    MenuLabel = "Toggle Car Blacklist",
     Order = 901,
     MenuIcon = "icon16/link.png",
     Filter = function(_, ent, ply)
@@ -102,7 +102,7 @@ properties.Add("ToggleCarBlacklist", {
 })
 
 properties.Add("copytoclipboard", {
-    MenuLabel = L("copyModelClipboard"),
+    MenuLabel = "Copy Model to Clipboard",
     Order = 999,
     MenuIcon = "icon16/cup.png",
     Filter = function(_, ent)
@@ -119,7 +119,7 @@ properties.Add("copytoclipboard", {
 })
 
 properties.Add("CopyBodygroupsByName", {
-    MenuLabel = L("copyBodygroupsByName"),
+    MenuLabel = "Copy Bodygroups (Name)",
     Order = 998,
     MenuIcon = "icon16/group.png",
     Filter = function(_, ent)
@@ -142,7 +142,7 @@ properties.Add("CopyBodygroupsByName", {
 })
 
 properties.Add("CopyBodygroupsByID", {
-    MenuLabel = L("copyBodygroupsByID"),
+    MenuLabel = "Copy Bodygroups (ID)",
     Order = 997,
     MenuIcon = "icon16/group.png",
     Filter = function(_, ent)
@@ -165,7 +165,7 @@ properties.Add("CopyBodygroupsByID", {
 })
 
 properties.Add("CopySkin", {
-    MenuLabel = L("copySkinClipboard"),
+    MenuLabel = "Copy Skin to Clipboard",
     Order = 996,
     MenuIcon = "icon16/palette.png",
     Filter = function(_, ent)
@@ -180,7 +180,7 @@ properties.Add("CopySkin", {
     end,
 })
 
-lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
+lia.util.setPositionCallback("Faction Spawn Adder", {
     onRun = function(pos, client, typeId)
         if SERVER then
             local factionID = net.ReadString()
@@ -205,7 +205,7 @@ lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
         else
             local names, idByDisplay = {}, {}
             for k, v in pairs(lia.faction.teams or {}) do
-                local display = L(v.name) or v.name or k
+                local display = tostring(v.name) or v.name or k
                 names[#names + 1] = display
                 idByDisplay[display] = k
             end
@@ -215,7 +215,7 @@ lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
                 return
             end
 
-            lia.derma.requestDropdown("@factionSpawnAdderTitle", names, function(selection)
+            lia.derma.requestDropdown("Faction Spawn Adder", names, function(selection)
                 if not selection or selection == false then return end
                 local factionID = idByDisplay[selection]
                 if not factionID then return end
@@ -238,7 +238,7 @@ lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
                 local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
                 for factionID, factionSpawns in pairs(spawns or {}) do
                     local factionInfo = lia.faction.get(factionID)
-                    local label = factionInfo and (factionInfo.name and L(factionInfo.name) or factionID) or factionID
+                    local label = factionInfo and (factionInfo.name and tostring(factionInfo.name) or factionID) or factionID
                     for i = 1, #(factionSpawns or {}) do
                         local data = factionSpawns[i]
                         local pos = data.pos or data.position
@@ -287,7 +287,7 @@ lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
     serverOnly = true
 })
 
-lia.util.setPositionCallback(L("classSpawnAdderTitle"), {
+lia.util.setPositionCallback("Class Spawn Adder", {
     onRun = function(pos, client, typeId)
         if SERVER then
             local classID = net.ReadString()
@@ -325,7 +325,7 @@ lia.util.setPositionCallback(L("classSpawnAdderTitle"), {
                 return
             end
 
-            lia.derma.requestDropdown("@classSpawnAdderTitle", names, function(selection)
+            lia.derma.requestDropdown("Class Spawn Adder", names, function(selection)
                 if not selection or selection == false then return end
                 local classID = idByDisplay[selection]
                 if not classID then return end
@@ -399,7 +399,7 @@ lia.util.setPositionCallback(L("classSpawnAdderTitle"), {
     serverOnly = true
 })
 
-lia.util.setPositionCallback(L("sitRoomTitle"), {
+lia.util.setPositionCallback("Sit Room", {
     onRun = function(pos, client, typeId)
         if SERVER then
             local name = net.ReadString()
@@ -408,9 +408,9 @@ lia.util.setPositionCallback(L("sitRoomTitle"), {
             rooms[name] = pos
             lia.data.set("sitrooms", rooms)
             client:notifySuccessLocalized("sitroomSet")
-            lia.log.add(client, "sitRoomSet", L("sitroomSetDetail", name, tostring(pos)), L("logSetSitroom"))
+            lia.log.add(client, "sitRoomSet", string.format("Name: %s | Position: %s", name, tostring(pos)), "Set the administration room location")
         elseif CLIENT then
-            client:requestString("@enterNamePrompt", L("enterSitroomPrompt") .. ":", function(name)
+            client:requestString("Enter Name", "Enter the name of the Administration Room(" .. "):", function(name)
                 if name == false then return end
                 if not name or name == "" then
                     client:notifyErrorLocalized("invalidName")

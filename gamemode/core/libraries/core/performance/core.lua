@@ -102,25 +102,13 @@ if SERVER then
     hook.Add("PropBreak", "liaPerformancePropBreak", function(_, entity) if IsValid(entity) and IsValid(entity:GetPhysicsObject()) then constraint.RemoveAll(entity) end end)
 else
     local col = Color(115, 148, 248)
-    local function ClearLuaMemory()
-        local before = collectgarbage("count")
-        collectgarbage("collect")
-        local after = collectgarbage("count")
-        local freed = math.Round((before - after) / 1024)
-        local now = math.Round(after / 1024)
-        if freed > 0 then MsgC(col, "[LuaGC] Freed " .. freed .. " MB — now using " .. now .. " MB.\n") end
-    end
-
+    -- Forcing a full Lua GC can panic the client Lua interface during a gamemode
+    -- refresh. Let GMod's incremental collector manage this instead.
+    timer.Remove("lua_gc")
     concommand.Add("luamemory", function()
-        local before = collectgarbage("count")
-        collectgarbage("collect")
-        local after = collectgarbage("count")
-        local freed = math.Round((before - after) / 1024)
-        local now = math.Round(after / 1024)
-        MsgC(col, "[LuaGC] Freed " .. freed .. " MB — now using " .. now .. " MB.\n")
+        local used = math.Round(collectgarbage("count") / 1024)
+        MsgC(col, "[LuaGC] Using " .. used .. " MB.\n")
     end)
-
-    timer.Create("lua_gc", 30, 0, ClearLuaMemory)
 end
 
 local function ApplyConvars()

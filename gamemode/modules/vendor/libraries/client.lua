@@ -11,9 +11,9 @@ end
 function MODULE:AddToAdminStickHUD(client, target, information)
     if not IsValid(target) or not target.IsVendor then return end
     local name = target:getName()
-    if name and name ~= "" then table.insert(information, L("vendorNameLabel") .. name) end
+    if name and name ~= "" then table.insert(information, "Vendor Name: " .. name) end
     local animation = lia.vendor.getVendorProperty(target, "animation")
-    if animation and animation ~= "" then table.insert(information, L("animation") .. ":" .. animation) end
+    if animation and animation ~= "" then table.insert(information, "Animation(" .. "):" .. animation) end
     local itemCount = 0
     if target.items then
         for _, itemData in pairs(target.items) do
@@ -21,7 +21,7 @@ function MODULE:AddToAdminStickHUD(client, target, information)
         end
     end
 
-    table.insert(information, L("vendorItemCount") .. ": " .. itemCount)
+    table.insert(information, "Item Count(" .. "): " .. itemCount)
     local factionNames = {}
     if target.factions then
         for factionID, _ in pairs(target.factions) do
@@ -31,14 +31,14 @@ function MODULE:AddToAdminStickHUD(client, target, information)
     end
 
     if #factionNames > 0 then
-        table.insert(information, L("allowedFactions") .. ":")
+        table.insert(information, "Allowed Factions(" .. "):")
         for _, factionName in ipairs(factionNames) do
             table.insert(information, "- " .. factionName)
         end
 
         table.insert(information, "")
     else
-        table.insert(information, L("allFactionsLabel"))
+        table.insert(information, "Factions: All")
     end
 
     local classNames = {}
@@ -50,7 +50,7 @@ function MODULE:AddToAdminStickHUD(client, target, information)
     end
 
     if #classNames > 0 then
-        table.insert(information, L("allowedClasses") .. ":")
+        table.insert(information, "Allowed Classes(" .. "):")
         for _, className in ipairs(classNames) do
             table.insert(information, "- " .. className)
         end

@@ -37,7 +37,7 @@ function Inventory:getItemsByUniqueID(uniqueID, onlyMain)
 end
 
 function Inventory:register(typeID)
-    assert(isstring(typeID), L("registerTypeString", self.className))
+    assert(isstring(typeID), string.format("Expected argument #1 of %s.register to be a string", self.className))
     self.typeID = typeID
     self.config = {
         data = {}
@@ -60,7 +60,7 @@ function Inventory:new()
 end
 
 function Inventory:tostring()
-    return L(self.className) .. "[" .. tostring(self.id) .. "]"
+    return tostring(self.className) .. "[" .. tostring(self.id) .. "]"
 end
 
 function Inventory:getType()
@@ -137,8 +137,8 @@ if SERVER then
     end
 
     function Inventory:syncItemAdded(item)
-        assert(istable(item) and item.getID, L("cannotSyncNonItem"))
-        assert(self.items[item:getID()], L("itemDoesNotBelong", item:getID(), self.id))
+        assert(istable(item) and item.getID, "Cannot sync non-item")
+        assert(self.items[item:getID()], string.format("Item %s does not belong to %s", item:getID(), self.id))
         local recipients = self:getRecipients()
         item:sync(recipients)
         net.Start("liaInventoryAdd")
@@ -177,7 +177,7 @@ if SERVER then
     end
 
     function Inventory:removeItem(itemID, preserveItem)
-        assert(isnumber(itemID), L("itemIDNumberRequired"))
+        assert(isnumber(itemID), "Item ID must be a number")
         local d = deferred.new()
         local instance = self.items[itemID]
         if instance then
@@ -290,7 +290,7 @@ if SERVER then
                 if not uniqueID or not isstring(uniqueID) then continue end
                 local itemTable = lia.item.list[uniqueID]
                 if not itemTable then
-                    lia.error(L("inventoryInvalidItem", self.id, uniqueID, itemID))
+                    lia.error(string.format("Inventory %s contains invalid item %s (%s)", self.id, uniqueID, itemID))
                     continue
                 end
 

@@ -25,7 +25,7 @@ function PANEL:Init()
     self.radius = 12
     self.icon = ""
     self.icon_size = 16
-    self.text = L("button")
+    self.text = "Button"
     self.col = Color(13, 30, 35, 225)
     self.col_hov = (lia.color.theme and lia.color.theme.button_hovered) or Color(16, 34, 40, 235)
     self._customColor = false

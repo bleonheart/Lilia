@@ -5,14 +5,14 @@
             type = "string"
         },
     },
-    desc = "@icDesc",
+    desc = "Says something in-character.",
     format = "icFormat",
     onGetColor = function(speaker)
         local client = LocalPlayer()
         if client:getTracedEntity() == speaker then return (lia.color.theme and lia.color.theme.chatListen) or Color(168, 240, 170) end
         return (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150)
     end,
-    onChatAdd = function(speaker, text, anonymous) chat.AddText(lia.chat.timestamp(false), (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), L("icFormat", anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or L("console"), text)) end,
+    onChatAdd = function(speaker, text, anonymous) chat.AddText(lia.chat.timestamp(false), (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), string.format("%s says \"%s\"", anonymous and "Someone" or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or "CONSOLE", text)) end,
     onCanHear = function(speaker, listener)
         if speaker == listener then return true end
         if speaker:EyePos():Distance(listener:EyePos()) <= lia.config.get("TalkRange", 280) then return true end
@@ -27,7 +27,7 @@ lia.chat.register("meclose", {
             type = "string"
         },
     },
-    desc = "@mecloseDesc",
+    desc = "Displays a close-range emote action.",
     format = "emoteFormat",
     onGetColor = lia.chat.classes.ic.onGetColor,
     onCanHear = lia.config.get("WhisperRange", 70),
@@ -43,7 +43,7 @@ lia.chat.register("actions", {
             type = "string"
         },
     },
-    desc = "@actionsDesc",
+    desc = "Displays a general action.",
     format = "emoteFormat",
     onGetColor = function(speaker)
         local client = LocalPlayer()
@@ -61,7 +61,7 @@ lia.chat.register("mefar", {
             type = "string"
         },
     },
-    desc = "@mefarDesc",
+    desc = "Displays a far-range emote action.",
     format = "emoteFormat",
     onGetColor = lia.chat.classes.ic.onGetColor,
     onCanHear = lia.config.get("YellRange", 840),
@@ -77,7 +77,7 @@ lia.chat.register("itclose", {
             type = "string"
         },
     },
-    desc = "@itcloseDesc",
+    desc = "Displays an in-character message at close range.",
     onChatAdd = function(_, text) chat.AddText((lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), "**" .. text) end,
     onCanHear = lia.config.get("WhisperRange", 70),
     prefix = {"/itclose"},
@@ -92,7 +92,7 @@ lia.chat.register("itfar", {
             type = "string"
         },
     },
-    desc = "@itfarDesc",
+    desc = "Displays an in-character message at far range.",
     onChatAdd = function(_, text) chat.AddText((lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), "**" .. text) end,
     onCanHear = lia.config.get("YellRange", 840),
     prefix = {"/itfar"},
@@ -101,7 +101,7 @@ lia.chat.register("itfar", {
 })
 
 lia.chat.register("coinflip", {
-    desc = "@coinflipDesc",
+    desc = "Flips a coin and displays the result.",
     format = "coinflipFormat",
     onCanHear = lia.config.get("TalkRange", 280),
     prefix = {"/coinflip"},
@@ -121,7 +121,7 @@ lia.chat.register("me", {
             type = "string"
         },
     },
-    desc = "@meDesc",
+    desc = "Performs an emote action.",
     format = "emoteFormat",
     onGetColor = lia.chat.classes.ic.onGetColor,
     onCanHear = function(speaker, listener)
@@ -141,7 +141,7 @@ lia.chat.register("globalme", {
             type = "string"
         },
     },
-    desc = "@globalMeDesc",
+    desc = "Performs an globally seen emote action.",
     format = "emoteFormat",
     onGetColor = lia.chat.classes.ic.onGetColor,
     onCanHear = function() return true end,
@@ -157,7 +157,7 @@ lia.chat.register("it", {
             type = "string"
         },
     },
-    desc = "@itDesc",
+    desc = "Displays an in-character descriptive message.",
     onChatAdd = function(_, text) chat.AddText(lia.chat.timestamp(false), (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), "**" .. text) end,
     onCanHear = function(speaker, listener)
         if speaker == listener then return true end
@@ -176,7 +176,7 @@ lia.chat.register("w", {
             type = "string"
         },
     },
-    desc = "@wDesc",
+    desc = "Whispers a message.",
     format = "whisperFormat",
     onGetColor = lia.chat.classes.ic.onGetColor,
     onCanHear = function(speaker, listener)
@@ -194,7 +194,7 @@ lia.chat.register("y", {
             type = "string"
         },
     },
-    desc = "@yDesc",
+    desc = "Yells a message.",
     format = "yellFormat",
     onGetColor = lia.chat.classes.ic.onGetColor,
     onCanHear = function(speaker, listener)
@@ -212,7 +212,7 @@ lia.chat.register("looc", {
             type = "string"
         },
     },
-    desc = "@loocDesc",
+    desc = "Out-of-character chat with a cooldown.",
     onCanSay = function(speaker)
         local delay = lia.config.get("LOOCDelay", false)
         if speaker:isStaff() and lia.config.get("LOOCDelayAdmin", false) and delay > 0 and speaker.liaLastLOOC then
@@ -227,14 +227,14 @@ lia.chat.register("looc", {
     end,
     onChatAdd = function(speaker, text)
         local chatColor = (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150)
-        local name = hook.Run("GetDisplayedName", speaker, "looc") or IsValid(speaker) and speaker:Name() or L("console")
+        local name = hook.Run("GetDisplayedName", speaker, "looc") or IsValid(speaker) and speaker:Name() or "CONSOLE"
         local iconPath = hook.Run("GetUsergroupIcon", IsValid(speaker) and speaker:GetUserGroup() or nil, nil, speaker)
         if isstring(iconPath) and iconPath ~= "" then
-            chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. L("looc") .. "] ", lia.util.getMaterial(iconPath), " ", chatColor, name, ": " .. text)
+            chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. "LOOC" .. "] ", lia.util.getMaterial(iconPath), " (", chatColor, name, "): " .. text)
             return
         end
 
-        chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. L("looc") .. "] ", chatColor, name, ": " .. text)
+        chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. "LOOC" .. "] (", chatColor, name, "): " .. text)
     end,
     onCanHear = function(speaker, listener)
         if speaker == listener then return true end
@@ -247,7 +247,7 @@ lia.chat.register("looc", {
 })
 
 lia.chat.register("roll", {
-    desc = "@rollDesc",
+    desc = "Rolls a dice and displays the result.",
     format = "rollFormat",
     onGetColor = function(speaker)
         local client = LocalPlayer()
@@ -274,14 +274,14 @@ lia.chat.register("pm", {
             type = "string"
         },
     },
-    desc = "@pmDesc",
+    desc = "Sends a private message to a specified player.",
     format = "pmFormat",
     onGetColor = function(speaker)
         local client = LocalPlayer()
         if client:getTracedEntity() == speaker then return (lia.color.theme and lia.color.theme.chatListen) or Color(168, 240, 170) end
         return (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150)
     end,
-    onChatAdd = function(speaker, text) chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. L("pm") .. "] ", (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), speaker:Name(), ": " .. text) end,
+    onChatAdd = function(speaker, text) chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. "pm" .. "] (", (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), speaker:Name(), "): " .. text) end,
     filter = "pm",
     deadCanChat = true
 })
@@ -293,7 +293,7 @@ lia.chat.register("eventlocal", {
             type = "string"
         },
     },
-    desc = "@eventlocalDesc",
+    desc = "Sends a local event message (admin only).",
     onCanSay = function(speaker)
         local canSay = speaker:hasPrivilege("localEventChat")
         lia.debug("[Permissions]", "Permission Check for chat eventlocal onCanSay", "hasPrivilege(localEventChat)=", tostring(canSay), "finalResult=", tostring(canSay))
@@ -315,7 +315,7 @@ lia.chat.register("event", {
             type = "string"
         },
     },
-    desc = "@eventDesc",
+    desc = "Sends an event message to everyone (admin only).",
     onCanSay = function(speaker)
         local canSay = speaker:hasPrivilege("eventChat")
         lia.debug("[Permissions]", "Permission Check for chat event onCanSay", "hasPrivilege(eventChat)=", tostring(canSay), "finalResult=", tostring(canSay))
@@ -333,7 +333,7 @@ lia.chat.register("ooc", {
             type = "string"
         },
     },
-    desc = "@oocDesc",
+    desc = "Out-of-character chat for general discussion.",
     onCanSay = function(speaker, text)
         local oocBlocked = lia.config.get("OOCBlocked", false)
         local canBypassOOCBlock = speaker:hasPrivilege("bypassOOCBlock")
@@ -370,14 +370,14 @@ lia.chat.register("ooc", {
     onCanHear = function() return true end,
     onChatAdd = function(speaker, text)
         local chatColor = (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150)
-        local name = hook.Run("GetDisplayedName", speaker, "ooc") or IsValid(speaker) and speaker:Name() or L("console")
+        local name = hook.Run("GetDisplayedName", speaker, "ooc") or IsValid(speaker) and speaker:Name() or "CONSOLE"
         local iconPath = hook.Run("GetUsergroupIcon", IsValid(speaker) and speaker:GetUserGroup() or nil, nil, speaker)
         if isstring(iconPath) and iconPath ~= "" then
-            chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. L("ooc") .. "] ", lia.util.getMaterial(iconPath), " ", chatColor, name, ": " .. text)
+            chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. "OOC" .. "] ", lia.util.getMaterial(iconPath), " (", chatColor, name, "): " .. text)
             return
         end
 
-        chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), " [" .. L("ooc") .. "] ", chatColor, name, ": " .. text)
+        chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), " [" .. "OOC" .. "] (", chatColor, name, "): " .. text)
     end,
     prefix = {"//", "/ooc"},
     noSpaceAfter = true,
@@ -391,13 +391,13 @@ lia.chat.register("me's", {
             type = "string"
         },
     },
-    desc = "@mesDesc",
+    desc = "Displays an action in possessive form.",
     format = "mePossessiveFormat",
     onCanHear = lia.config.get("TalkRange", 280),
     onChatAdd = function(speaker, text, anonymous)
         local texCol = (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150)
         if LocalPlayer():getTracedEntity() == speaker then texCol = (lia.color.theme and lia.color.theme.chatListen) or Color(168, 240, 170) end
-        chat.AddText(texCol, L("mePossessiveFormat", anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or language.GetPhrase("#Console"), ""), texCol, text)
+        chat.AddText(texCol, string.format("**%s's %s", anonymous and "Someone" or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or language.GetPhrase("#Console"), ""), texCol, text)
     end,
     prefix = {"/me's", "/action's"},
     filter = "actions",
@@ -411,12 +411,12 @@ lia.chat.register("mefarfar", {
             type = "string"
         },
     },
-    desc = "@mefarfarDesc",
+    desc = "Displays an exaggerated far-range action.",
     format = "emoteFormat",
     onChatAdd = function(speaker, text, anonymous)
         local texCol = (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150)
         if LocalPlayer():getTracedEntity() == speaker then texCol = (lia.color.theme and lia.color.theme.chatListen) or Color(168, 240, 170) end
-        chat.AddText(texCol, L("emoteFormat", anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or language.GetPhrase("#Console"), ""), texCol, text)
+        chat.AddText(texCol, string.format("**%s %s", anonymous and "Someone" or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or language.GetPhrase("#Console"), ""), texCol, text)
     end,
     onCanHear = lia.config.get("YellRange", 840) * 2,
     prefix = {"/mefarfar", "/actionyy", "/meyy"},
@@ -431,7 +431,7 @@ lia.chat.register("help", {
             type = "string"
         },
     },
-    desc = "@helpDesc",
+    desc = "Sends a help message to staff.",
     onCanSay = function() return true end,
     onCanHear = function(speaker, listener)
         local isStaffOnDuty = listener:isStaffOnDuty()
@@ -442,7 +442,7 @@ lia.chat.register("help", {
         if canHear then return true end
         return false
     end,
-    onChatAdd = function(speaker, text) chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. L("help") .. "] ", (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), speaker:GetName(), ": " .. text) end
+    onChatAdd = function(speaker, text) chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. "HELP" .. "] (", (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), speaker:GetName(), "): " .. text) end
 })
 
 lia.chat.register("adminchat", {
@@ -452,7 +452,7 @@ lia.chat.register("adminchat", {
             type = "string"
         },
     },
-    desc = "@adminchatDesc",
+    desc = "Sends a message to admin chat.",
     onCanSay = function(speaker)
         local canSay = speaker:hasPrivilege("adminChat")
         lia.debug("[Permissions]", "Permission Check for chat adminchat onCanSay", "hasPrivilege(adminChat)=", tostring(canSay), "finalResult=", tostring(canSay))
@@ -467,7 +467,7 @@ lia.chat.register("adminchat", {
         if canHear then return true end
         return false
     end,
-    onChatAdd = function(speaker, text) chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. L("adminChat") .. "] ", (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), speaker:GetName(), ": " .. text) end,
+    onChatAdd = function(speaker, text) chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. "Admin Chat" .. "] (", (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), speaker:GetName(), "): " .. text) end,
     prefix = {"/adminchat", "/ac"}
 })
 

@@ -366,7 +366,7 @@ net.Receive("liaProvideServerPassword", function()
     local pw = net.ReadString()
     if not isstring(pw) or pw == "" then return end
     SetClipboardText(pw)
-    chat.AddText(Color(0, 200, 0), L("serverPasswordCopied"))
+    chat.AddText(Color(0, 200, 0), "Server password copied to clipboard.")
 end)
 
 net.Receive("liaBlindTarget", function()
@@ -384,7 +384,7 @@ net.Receive("liaInventoryData", function()
     local value = net.ReadType()
     local instance = lia.inventory.instances[id]
     if not instance then
-        lia.error(L("invDataNoInstance", key, id))
+        lia.error(string.format("Got data %s for non-existent instance %s", key, id))
         return
     end
 
@@ -636,7 +636,7 @@ net.Receive("liaActBar", function()
 
     local text = net.ReadString()
     local time = net.ReadFloat()
-    local displayText = text:sub(1, 1) == "@" and L(text:sub(2)) or text
+    local displayText = text:sub(1, 1) == "@" and tostring(text:sub(2)) or text
     if IsValid(lia.gui.actionCircle) then lia.gui.actionCircle:Remove() end
     lia.gui = lia.gui or {}
     local pnl = vgui.Create("liaLockCircle")
@@ -653,7 +653,7 @@ net.Receive("liaOpenInvMenu", function()
     local targetInv = lia.inventory.instances[index]
     local myInv = client:getChar():getInv()
     local panels = lia.inventory.showDual(myInv, targetInv)
-    if panels and panels[1] and panels[2] then panels[2]:SetTitle(L("inventoryTitle", target:getChar():getName())) end
+    if panels and panels[1] and panels[2] then panels[2]:SetTitle(string.format("%s's Inventory", target:getChar():getName())) end
 end)
 
 lia.net.readBigTable("liaSendTableUI", function(data) lia.util.createTableUI(data.title, data.columns, data.data, data.options, data.characterID) end)
@@ -723,7 +723,7 @@ net.Receive("liaProvideInteractOptions", function()
 
     local isInteraction = kind == "interaction"
     if optionCount == 0 then return end
-    lia.playerinteract.openMenu(optionsMap, isInteraction, isInteraction and L("playerInteractions") or L("actionsMenu"), isInteraction and lia.keybind.get(L("interactionMenu"), KEY_TAB) or lia.keybind.get(L("personalActions"), KEY_G), "liaRunInteraction", true)
+    lia.playerinteract.openMenu(optionsMap, isInteraction, isInteraction and "Player Interactions" or "Actions Menu", isInteraction and lia.keybind.get("Interaction Menu", KEY_TAB) or lia.keybind.get("Personal Actions", KEY_G), "liaRunInteraction", true)
 end)
 
 net.Receive("liaRequestDropdown", function()
@@ -872,7 +872,7 @@ net.Receive("liaBinaryQuestionRequest", function()
     table.insert(lia.notices, notice)
     notice.isQuery = true
     notice.text:SetText("")
-    notice.text:SetText(L(questionKey))
+    notice.text:SetText(tostring(questionKey))
     notice:SetPos(ScrW() / 2 - notice:GetWide() / 2, 4)
     notice:SetTall(36 * 2.3)
     notice:CalcWidth(120)
@@ -904,7 +904,7 @@ net.Receive("liaBinaryQuestionRequest", function()
         if notice.opt1 and IsValid(notice.opt1) then
             notice.opt1:SetAlpha(255)
             notice.opt1:SetSize(notice:GetWide() / 3 - 5, 25)
-            notice.opt1:SetText(L(option1Key, L("yes")) .. L("keyBind", "F7"))
+            notice.opt1:SetText(string.format(tostring(option1Key), "Yes") .. string.format(" (%s)", "F7"))
             notice.opt1:SetPos(0, notice:GetTall() - notice.opt1:GetTall())
             notice.opt1:CenterHorizontal(0.166)
             notice.opt1:SetAlpha(0)
@@ -929,7 +929,7 @@ net.Receive("liaBinaryQuestionRequest", function()
         if notice.opt2 and IsValid(notice.opt2) then
             notice.opt2:SetAlpha(255)
             notice.opt2:SetSize(notice:GetWide() / 3 - 5, 25)
-            notice.opt2:SetText(L(option2Key, L("no")) .. L("keyBind", "F8"))
+            notice.opt2:SetText(string.format(tostring(option2Key), "No") .. string.format(" (%s)", "F8"))
             notice.opt2:SetPos(0, notice:GetTall() - notice.opt2:GetTall())
             notice.opt2:CenterHorizontal(0.5)
             notice.opt2:SetAlpha(0)
@@ -953,7 +953,7 @@ net.Receive("liaBinaryQuestionRequest", function()
         if notice.cancelBtn and IsValid(notice.cancelBtn) then
             notice.cancelBtn:SetAlpha(255)
             notice.cancelBtn:SetSize(notice:GetWide() / 3 - 5, 25)
-            notice.cancelBtn:SetText(L("cancel") .. L("keyBind", "F9"))
+            notice.cancelBtn:SetText("Cancel" .. string.format(" (%s)", "F9"))
             notice.cancelBtn:SetPos(0, notice:GetTall() - notice.cancelBtn:GetTall())
             notice.cancelBtn:CenterHorizontal(0.833)
             notice.cancelBtn:SetAlpha(0)
@@ -1134,7 +1134,7 @@ net.Receive("liaRequestNPCSelection", function()
     frame:SetSize(800, 600)
     frame:Center()
     frame:MakePopup()
-    frame:SetTitle(L("selectNPCType"))
+    frame:SetTitle("Select NPC Type")
     local scroll = vgui.Create("liaScrollPanel", frame)
     scroll:Dock(FILL)
     scroll:DockMargin(20, 20, 20, 20)
@@ -1159,7 +1159,7 @@ net.Receive("liaRequestNPCSelection", function()
     closeBtn:Dock(BOTTOM)
     closeBtn:SetTall(60)
     closeBtn:DockMargin(20, 10, 20, 20)
-    closeBtn:SetText(L("cancel"))
+    closeBtn:SetText("Cancel")
     closeBtn.DoClick = function() frame:Close() end
 end)
 
@@ -1229,9 +1229,9 @@ net.Receive("liaNetMessage", function()
     if lia.net.isCacheHit(name, args) then return end
     if lia.net.registry[name] then
         local success, err = pcall(lia.net.registry[name], LocalPlayer(), unpack(args))
-        if not success then lia.error(L("netMessageCallbackError", name, tostring(err))) end
+        if not success then lia.error(string.format("Error in net message callback ('%s'): %s", name, tostring(err))) end
     else
-        lia.error(L("unregisteredNetMessage", name))
+        lia.error(string.format("Received unregistered net message: %s", name))
     end
 
     lia.net.addToCache(name, args)
@@ -1268,8 +1268,8 @@ net.Receive("liaAssureClientSideAssets", function()
         })
     end
 
-    lia.information(L("downloadQueueSize") .. ": " .. #downloadQueue)
-    lia.information(L("processingWithMaxConcurrentDownloads") .. ": " .. maxConcurrent)
+    lia.information("Download queue size:(" .. "): " .. #downloadQueue)
+    lia.information("Processing with max concurrent downloads:(" .. "): " .. maxConcurrent)
     local function processNextDownload()
         if #downloadQueue == 0 then return end
         local download = table.remove(downloadQueue, 1)
@@ -1279,12 +1279,12 @@ net.Receive("liaAssureClientSideAssets", function()
                 activeDownloads = activeDownloads - 1
                 if material then
                     completedImages = completedImages + 1
-                    if not fromCache then lia.information(L("imageDownloaded") .. ": " .. download.name) end
+                    if not fromCache then lia.information("Image downloaded(" .. "): " .. download.name) end
                 else
                     failedImages = failedImages + 1
-                    local errorMessage = errorMsg or L("unknownError")
-                    lia.warning(L("imageFailed") .. ": " .. download.name .. " - " .. errorMessage)
-                    chat.AddText(Color(255, 100, 100), L("imageDownload"), Color(255, 255, 255), L("failedToDownloadImage", download.name, errorMessage))
+                    local errorMessage = errorMsg or "Unknown error"
+                    lia.warning("Image failed(" .. "): " .. download.name .. " - " .. errorMessage)
+                    chat.AddText(Color(255, 100, 100), "Image Download", Color(255, 255, 255), string.format("Failed to download image %s: %s", download.name, errorMessage))
                 end
 
                 processNextDownload()
@@ -1296,8 +1296,8 @@ net.Receive("liaAssureClientSideAssets", function()
                     completedSounds = completedSounds + 1
                 else
                     failedSounds = failedSounds + 1
-                    local errorMessage = errorMsg or L("unknownError")
-                    chat.AddText(Color(255, 100, 100), L("soundDownload"), Color(255, 255, 255), L("failedToDownloadSound", download.name, errorMessage))
+                    local errorMessage = errorMsg or "Unknown error"
+                    chat.AddText(Color(255, 100, 100), "[Sound Download] ", Color(255, 255, 255), string.format("Failed to download: %s (%s)", download.name, errorMessage))
                 end
 
                 processNextDownload()
@@ -1318,21 +1318,21 @@ net.Receive("liaAssureClientSideAssets", function()
                 local imageStats = lia.webimage.getStats()
                 local soundStats = lia.websound.getStats()
                 lia.bootstrap("AssetDownload", "===========================================")
-                lia.bootstrap("AssetDownload", L("assetDownloadComplete"))
-                lia.bootstrap("AssetDownload", L("downloadSummary"))
-                lia.bootstrap("AssetDownload", L("assetSummaryImagesCompleted", completedImages, totalImages, failedImages))
-                lia.bootstrap("AssetDownload", L("assetSummarySoundsCompleted", completedSounds, totalSounds, failedSounds))
-                lia.bootstrap("AssetDownload", L("currentStatistics"))
-                lia.bootstrap("AssetDownload", L("imagesDownloaded", imageStats.downloaded, imageStats.stored))
-                lia.bootstrap("AssetDownload", L("soundsDownloaded", soundStats.downloaded, soundStats.stored))
-                lia.bootstrap("AssetDownload", L("combinedDownloaded", imageStats.downloaded + soundStats.downloaded, imageStats.stored + soundStats.stored))
+                lia.bootstrap("AssetDownload", "=== CLIENT-SIDE ASSETS DOWNLOAD COMPLETE ===")
+                lia.bootstrap("AssetDownload", "Download Summary")
+                lia.bootstrap("AssetDownload", string.format("Images: %d/%d completed (%d failed)", completedImages, totalImages, failedImages))
+                lia.bootstrap("AssetDownload", string.format("Sounds: %d/%d completed (%d failed)", completedSounds, totalSounds, failedSounds))
+                lia.bootstrap("AssetDownload", "Current Statistics")
+                lia.bootstrap("AssetDownload", string.format("Images: %d downloaded | %d stored", imageStats.downloaded, imageStats.stored))
+                lia.bootstrap("AssetDownload", string.format("Sounds: %d downloaded | %d stored", soundStats.downloaded, soundStats.stored))
+                lia.bootstrap("AssetDownload", string.format("Combined: %d downloaded | %d stored", imageStats.downloaded + soundStats.downloaded, imageStats.stored + soundStats.stored))
                 lia.bootstrap("AssetDownload", "===========================================")
                 if failedImages > 0 or failedSounds > 0 then
-                    lia.warning(L("warningAssetsFailedToDownload"))
-                    if failedImages > 0 then chat.AddText(Color(255, 150, 100), L("assetDownloadLabel"), Color(255, 255, 255), L("assetsDownloadWarning", failedImages, L("assetTypeImages"))) end
-                    if failedSounds > 0 then chat.AddText(Color(255, 150, 100), L("assetDownloadLabel"), Color(255, 255, 255), L("assetsDownloadWarning", failedSounds, L("assetTypeSounds"))) end
+                    lia.warning("WARNING: Some assets failed to download. Check console output above for details.")
+                    if failedImages > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), string.format("Warning: %s %s failed to download.", failedImages, "image(s)")) end
+                    if failedSounds > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), string.format("Warning: %s %s failed to download.", failedSounds, "sound(s)")) end
                 else
-                    chat.AddText(Color(100, 255, 100), L("assetDownloadLabel"), Color(255, 255, 255), L("allAssetsDownloadedSuccessfully"))
+                    chat.AddText(Color(100, 255, 100), "[Asset Download] ", Color(255, 255, 255), "All assets downloaded successfully.")
                 end
             end)
         end
@@ -1406,7 +1406,7 @@ net.Receive("liaDoorPerm", function()
         panel.access[client] = access
         for _, v in ipairs(panel.access:GetLines()) do
             if v.player == client then
-                v:SetColumnText(2, L(lia.doors.AccessLabels[access or 0]))
+                v:SetColumnText(2, tostring(lia.doors.AccessLabels[access or 0]))
                 return
             end
         end
@@ -1433,7 +1433,7 @@ local function uiCreate()
     panel:SetZPos(999999)
     panel:MoveToFront()
     panel:SetTitle("")
-    panel:SetCenterTitle(L("downloadingWorkshopAddonsTitle"))
+    panel:SetCenterTitle("Downloading Workshop Addons")
     panel:ShowAnimation()
     panel.bar = vgui.Create("liaProgressBar", panel)
     panel.bar:SetPos(pad, h * 0.65 - bh / 2)
@@ -1482,7 +1482,7 @@ local function start()
     totalDownloads = #seq
     remainingDownloads = totalDownloads
     if totalDownloads == 0 then
-        lia.bootstrap(L("workshopDownloader"), L("workshopAllInstalled"))
+        lia.bootstrap("Workshop Downloader", "All workshop addons already installed. Skipping download.")
         return
     end
 
@@ -1498,10 +1498,10 @@ local function start()
         end
 
         local id = seq[idx]
-        lia.bootstrap(L("workshopDownloader"), L("workshopDownloading", id))
+        lia.bootstrap("Workshop Downloader", string.format("Downloading workshop %s", id))
         steamworks.DownloadUGC(id, function(path)
             remainingDownloads = remainingDownloads - 1
-            lia.bootstrap(L("workshopDownloader"), L("workshopDownloadComplete", id))
+            lia.bootstrap("Workshop Downloader", string.format("Completed workshop %s", id))
             if path then
                 local rel = gmaPath(id)
                 local data = file.Read(path, "GAME")
@@ -1603,7 +1603,7 @@ net.Receive("SeeModelTable", function()
     local frame = vgui.Create("liaFrame")
     frame:setScaledSize(520, math.min(ScrH() * 0.82, 820))
     frame:SetPos(ScrW() - frame:GetWide() - 48, math.max(48, (ScrH() - frame:GetTall()) * 0.5))
-    frame:SetTitle(L("wardrobeSelectTitle"))
+    frame:SetTitle("Model Wardrobe")
     frame:MakePopup()
     frame:DockPadding(12, 34, 12, 12)
     local function positionWardrobeCloseButton(this)
@@ -1627,7 +1627,7 @@ net.Receive("SeeModelTable", function()
     titleLabel:Dock(FILL)
     titleLabel:DockMargin(8, 0, 8, 0)
     titleLabel:SetFont("LiliaFont.18")
-    titleLabel:SetText(L("selectModel"):upper())
+    titleLabel:SetText(("Select a model"):upper())
     titleLabel:SetTextColor(lia.color.theme and lia.color.theme.text or color_white)
     titleLabel:SetContentAlignment(5)
     local hint = frame:Add("DLabel")
@@ -1637,9 +1637,9 @@ net.Receive("SeeModelTable", function()
     hint:SetFont("LiliaFont.16")
     hint:SetTextColor(Color(220, 220, 220))
     hint:SetContentAlignment(5)
-    hint:SetText(L("rotateInstruction", "A", "D"))
+    hint:SetText(string.format("Use %s and %s to rotate the model.", "A", "D"))
     local confirmButton = vgui.Create("DButton", frame)
-    confirmButton:SetText(L("wardrobeConfirmButton"))
+    confirmButton:SetText("Confirm")
     confirmButton:Dock(BOTTOM)
     confirmButton:SetTall(40)
     confirmButton:SetColor(Color(255, 255, 255))
@@ -1765,7 +1765,7 @@ net.Receive("SeeModelTable", function()
             net.SendToServer()
             frame:Close()
         else
-            chat.AddText(Color(255, 0, 0), L("wardrobeSelectError"))
+            chat.AddText(Color(255, 0, 0), "Failed to load wardrobe models.")
         end
     end
 

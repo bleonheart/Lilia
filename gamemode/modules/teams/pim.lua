@@ -22,7 +22,7 @@ end
 
 lia.playerinteract.addInteraction("inviteToFaction", {
     serverOnly = true,
-    category = "@factionManagement",
+    category = "Faction Management",
     shouldShow = canInviteToFaction,
     onRun = function(client, target)
         if not SERVER or not canInviteToFaction(client, target) then return end
@@ -47,7 +47,7 @@ lia.playerinteract.addInteraction("inviteToFaction", {
             return
         end
 
-        target:requestBinaryQuestion("@joinFactionTitle", "@joinFactionPrompt", "@yes", "@no", function(choice)
+        target:requestBinaryQuestion("Join Faction", "Do you want to join this faction?", "Yes", "No", function(choice)
             if not IsValid(client) or not IsValid(target) then return end
             if choice ~= 0 then
                 client:notifyInfoLocalized("inviteDeclined")
@@ -75,7 +75,7 @@ lia.playerinteract.addInteraction("inviteToFaction", {
 
 lia.playerinteract.addInteraction("inviteToClass", {
     serverOnly = true,
-    category = "@factionManagement",
+    category = "Faction Management",
     shouldShow = canInviteToClass,
     onRun = function(client, target)
         if not SERVER or not canInviteToClass(client, target) then return end
@@ -88,7 +88,7 @@ lia.playerinteract.addInteraction("inviteToClass", {
             return
         end
 
-        target:requestBinaryQuestion("@joinClass", "@joinClassPrompt", "@yes", "@no", function(choice)
+        target:requestBinaryQuestion("Join Class", "Do you want to join this class?", "Yes", "No", function(choice)
             if not IsValid(client) or not IsValid(target) then return end
             if choice ~= 0 then
                 client:notifyInfoLocalized("inviteDeclined")

@@ -3,7 +3,7 @@ lia.flag.list = lia.flag.list or {}
 function lia.flag.add(flag, desc, callback)
     if lia.flag.list[flag] then return end
     lia.flag.list[flag] = {
-        desc = desc and lia.lang.resolveToken(desc) or desc,
+        desc = desc and (string.gsub(tostring(desc), "^@", "", 1)) or desc,
         callback = callback
     }
 end
@@ -23,17 +23,17 @@ if SERVER then
     end
 end
 
-lia.flag.add("C", "@flagSpawnVehicles")
-lia.flag.add("z", "@flagSpawnSweps")
-lia.flag.add("E", "@flagSpawnSents")
-lia.flag.add("L", "@flagSpawnEffects")
-lia.flag.add("r", "@flagSpawnRagdolls")
-lia.flag.add("e", "@flagSpawnProps")
-lia.flag.add("n", "@flagSpawnNpcs")
-lia.flag.add("Z", "@flagInviteToYourFaction")
-lia.flag.add("X", "@flagInviteToYourClass")
-lia.flag.add("F", "@flagViewFactionRoster")
-lia.flag.add("p", "@flagPhysgun", function(client, isGiven)
+lia.flag.add("C", "Gives Access to spawning vehicles.")
+lia.flag.add("z", "Gives Access to spawning SWEPS.")
+lia.flag.add("E", "Gives Access to spawning SENTs.")
+lia.flag.add("L", "Gives Access to spawning Effects.")
+lia.flag.add("r", "Gives Access to spawning ragdolls.")
+lia.flag.add("e", "Gives Access to spawning props.")
+lia.flag.add("n", "Gives Access to spawning NPCs.")
+lia.flag.add("Z", "Gives Access to inviting to your faction.")
+lia.flag.add("X", "Gives Access to inviting to your class.")
+lia.flag.add("F", "Gives Access to viewing your faction roster.")
+lia.flag.add("p", "Gives Access to Physgun.", function(client, isGiven)
     if isGiven then
         client:Give("weapon_physgun")
         client:SelectWeapon("weapon_physgun")
@@ -42,7 +42,7 @@ lia.flag.add("p", "@flagPhysgun", function(client, isGiven)
     end
 end)
 
-lia.flag.add("t", "@flagToolgun", function(client, isGiven)
+lia.flag.add("t", "Gives Access to Toolgun", function(client, isGiven)
     if isGiven then
         client:Give("gmod_tool")
         client:SelectWeapon("gmod_tool")
@@ -180,7 +180,7 @@ if CLIENT then
                 searchEntry:SetFont("LiliaFont.16")
                 searchEntry:SetTextColor(Color(225, 236, 236))
                 searchEntry:SetCursorColor(getFlagThemeColors())
-                searchEntry:SetPlaceholderText(L("searchFlags"))
+                searchEntry:SetPlaceholderText("Search Flags")
                 searchEntry:SetPaintBackground(false)
                 searchEntry:SetPaintBackground(false)
                 searchEntry:SetPaintBorderEnabled(false)
@@ -243,7 +243,7 @@ if CLIENT then
                     header:DockMargin(0, 0, 0, 12)
                     header.Paint = function(_, w, h)
                         drawFlagPanel(0, 0, w, h, 7, Color(5, 18, 23, 218), Color(accent.r, accent.g, accent.b, 58))
-                        draw.SimpleText(L("flag") .. " '" .. record.name .. "'", "LiliaFont.26", 28, 24, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                        draw.SimpleText("Flag" .. " '" .. record.name .. "'", "LiliaFont.26", 28, 24, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                         draw.SimpleText(record.description ~= "" and record.description or "No description available.", "LiliaFont.16", 28, 60, Color(165, 187, 188), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                         local granted = hasFlag(record)
                         local statusColor = granted and Color(60, 225, 160) or Color(180, 195, 196)
@@ -279,7 +279,7 @@ if CLIENT then
                     addFlagInfoRow(infoSection, "Status", function() return hasFlag(record) and "Granted" or "Not Granted" end, function() return hasFlag(record) and Color(60, 225, 160) or Color(180, 195, 196) end)
                     addFlagInfoRow(infoSection, "Character", function()
                         local char = client:getChar()
-                        return char and tostring(char:getName() or L("unknown")) or L("none")
+                        return char and tostring(char:getName() or "Unknown") or "None"
                     end)
 
                     infoSection.PerformLayout = function(self) self:SetTall(48 + 46 * 3 + 14) end
@@ -344,7 +344,7 @@ if CLIENT then
                                 surface.DrawRect(0, 8, 3, h - 16)
                             end
 
-                            draw.SimpleText(L("flag") .. " '" .. record.name .. "'", "LiliaFont.18", 16, 17, active and Color(245, 249, 249) or Color(220, 231, 231), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                            draw.SimpleText("Flag" .. " '" .. record.name .. "'", "LiliaFont.18", 16, 17, active and Color(245, 249, 249) or Color(220, 231, 231), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                             draw.SimpleText(record.description, "LiliaFont.15", 16, 48, Color(145, 169, 170), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                             local granted = hasFlag(record)
                             local statusColor = granted and Color(60, 225, 160) or Color(150, 170, 170)

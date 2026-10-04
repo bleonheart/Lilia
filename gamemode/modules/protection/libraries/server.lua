@@ -67,14 +67,14 @@ function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
             local damageCooldown = lia.config.get("OnDamageCharacterSwitchCooldownTimer", 15)
             local switchCooldown = lia.config.get("CharacterSwitchCooldownTimer", 5)
             if damageCooldown > 0 and client.LastDamaged and client.LastDamaged > CurTime() - damageCooldown then
-                lia.log.add(client, "permissionDenied", L("logSwitchCharRecentDamage"))
-                return false, L("tookDamageSwitchCooldown")
+                lia.log.add(client, "permissionDenied", "switch character (recent damage)")
+                return false, "You took damage too recently to switch characters!"
             end
 
             local loginTime = character:getLoginTime()
             if switchCooldown > 0 and loginTime + switchCooldown > os.time() then
-                lia.log.add(client, "permissionDenied", L("logSwitchCharCooldown"))
-                return false, L("switchCooldown")
+                lia.log.add(client, "permissionDenied", "switch character (cooldown)")
+                return false, "You are on cooldown!"
             end
         end
     end
@@ -208,16 +208,16 @@ function MODULE:PlayerAuthed(client, steamid)
     local steamName = client:SteamName()
     local steamID = steamid
     if KnownCheaters[steamID64] or KnownCheaters[ownerSteamID64] then
-        lia.adminstrator.applyPunishment(client, L("usingThirdPartyCheats"), false, true, 0)
-        lia.adminstrator.notifyAdmin(L("bannedCheaterNotify", steamName, steamID))
+        lia.adminstrator.applyPunishment(client, "using third-party cheats", false, true, 0)
+        lia.adminstrator.notifyAdmin(string.format("%s (%s) was banned for cheating or using an alt of a cheater.", steamName, steamID))
         lia.log.add(nil, "cheaterBanned", steamName, steamID)
         return
     end
 
     lia.db.selectOne({"reason"}, "bans", "playerSteamID = " .. ownerSteamID64):next(function(banRecord)
         if not IsValid(client) or not banRecord then return end
-        lia.adminstrator.applyPunishment(client, L("familySharedAccountBlacklisted"), false, true, 0)
-        lia.adminstrator.notifyAdmin(L("bannedAltNotify", steamName, steamID))
+        lia.adminstrator.applyPunishment(client, "using a family-shared account that is blacklisted", false, true, 0)
+        lia.adminstrator.notifyAdmin(string.format("%s (%s) was banned for using a family-shared account that is blacklisted.", steamName, steamID))
         lia.log.add(nil, "altBanned", steamName, steamID)
     end)
 
@@ -226,10 +226,10 @@ function MODULE:PlayerAuthed(client, steamid)
     local function punishIfBlacklisted(id, isAlt)
         local reason = blacklistedSteamIDs[id]
         if reason and not whitelistedSteamIDs[id] then
-            reason = reason ~= true and reason or L("familySharedAccountBlacklisted")
+            reason = reason ~= true and reason or "using a family-shared account that is blacklisted"
             lia.adminstrator.applyPunishment(client, reason, false, true, 0)
             if isAlt then
-                lia.adminstrator.notifyAdmin(L("bannedAltNotify", steamName, steamID))
+                lia.adminstrator.notifyAdmin(string.format("%s (%s) was banned for using a family-shared account that is blacklisted.", steamName, steamID))
                 lia.log.add(nil, "altBanned", steamName, steamID)
             end
             return true
@@ -238,8 +238,8 @@ function MODULE:PlayerAuthed(client, steamid)
 
     if punishIfBlacklisted(steamID64) then return end
     if lia.config.get("AltsDisabled", false) and client:isFamilySharedAccount() then
-        lia.adminstrator.applyPunishment(client, L("familySharingDisabled"), true, false)
-        lia.adminstrator.notifyAdmin(L("kickedAltNotify", steamName, steamID))
+        lia.adminstrator.applyPunishment(client, "family sharing (alts are disabled)", true, false)
+        lia.adminstrator.notifyAdmin(string.format("%s (%s) was kicked for family sharing.", steamName, steamID))
     else
         punishIfBlacklisted(ownerSteamID64, true)
     end
@@ -252,7 +252,7 @@ function MODULE:PlayerSay(client, message)
     local hasIPAddress = string.match(message, "%d+%.%d+%.%d+%.%d+(:%d*)?")
     local hasBadWords = string.find(string.upper(message), string.upper("clone")) and string.find(string.upper(message), string.upper("liascript"))
     if hasIPAddress then
-        lia.adminstrator.applyPunishment(client, L("ipInChat"), true, false)
+        lia.adminstrator.applyPunishment(client, "Typing IP addresses in chat", true, false)
         return ""
     elseif hasBadWords then
         return ""
@@ -397,8 +397,8 @@ function MODULE:PlayerInitialSpawn(client)
                 if client:getChar() then
                     local timestamp = os.date("%Y-%m-%d %H:%M:%S")
                     local severity = "High"
-                    hook.Run("AddWarning", client:getChar():getID(), client:Nick(), client:SteamID(), timestamp, L("cheaterWarningReason"), "System", "SYSTEM", severity)
-                    local message = L("staffLogCheaterFlagged", client:Name(), client:getChar():getID(), client:SteamID64(), severity)
+                    hook.Run("AddWarning", client:getChar():getID(), client:Nick(), client:SteamID(), timestamp, "Cheating or exploiting", "System", "SYSTEM", severity)
+                    local message = string.format("%s (Character %s | Steam64ID: %s) was flagged for cheating. Severity: %s.", client:Name(), client:getChar():getID(), client:SteamID64(), severity)
                     StaffAddTextShadowed(Color(255, 0, 0), "CHEAT", Color(255, 255, 255), message, function(staff)
                         local permission = staff:hasPrivilege("receiveCheaterNotifications")
                         lia.debug("[Permissions]", "Permission Check for protection StaffAddTextShadowed recipient", "targetPlayer=", tostring(staff:Name()), "hasPrivilege(receiveCheaterNotifications)=", tostring(permission), "finalResult=", tostring(permission))

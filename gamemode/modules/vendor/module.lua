@@ -1,18 +1,18 @@
-﻿MODULE.name = "@vendor"
+﻿MODULE.name = "Vendor"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "@npcVendorDescription"
+MODULE.desc = "Provides NPC vendors who can buy and sell items with stock management and dialogue-driven transactions."
 MODULE.NetworkStrings = {"liaVendorAllowClass", "liaVendorAllowFaction", "liaVendorBuyPrice", "liaVendorDeletePreset", "liaVendorExit", "liaVendorFaction", "liaVendorFactionBuyScale", "liaVendorFactionSellScale", "liaVendorInitialSync", "liaVendorLoadPreset", "liaVendorMaxStock", "liaVendorMode", "liaVendorOpen", "liaVendorRequestData", "liaVendorSavePreset", "liaVendorSellPrice", "liaVendorStock", "liaVendorSync", "liaVendorSyncMessages", "liaVendorTrade",}
 MODULE.Privileges = {
     ["canEditVendors"] = {
-        Name = "@canEditVendors",
+        Name = "Can Edit Vendors",
         MinAccess = "superadmin",
-        Category = "@vendors",
+        Category = "Vendors",
     },
     ["canCreateVendorPresets"] = {
-        Name = "@canCreateVendorPresets",
+        Name = "Can Create Vendor Presets",
         MinAccess = "admin",
-        Category = "@vendors",
+        Category = "Vendors",
     },
 }
 

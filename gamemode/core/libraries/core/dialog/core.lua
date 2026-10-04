@@ -63,7 +63,7 @@ function lia.dialog.resolveDialogTypeIdentifier(value)
     if not isstring(value) or value == "" or value == "none" then return value end
     if lia.dialog.stored and lia.dialog.stored[value] then return value end
     for uniqueID, data in pairs(lia.dialog.stored or {}) do
-        local displayName = lia.lang.resolveToken(data.PrintName or uniqueID)
+        local displayName = (string.gsub(tostring(data.PrintName or uniqueID), "^@", "", 1))
         if displayName == value then return uniqueID end
     end
     return value
@@ -108,7 +108,7 @@ end
 function lia.dialog.getCompatibleDialogOptions(npc)
     local options = {}
     for uniqueID, data in pairs(lia.dialog.stored or {}) do
-        if lia.dialog.isConversationDialogData(data) and lia.dialog.isDialogCompatibleWithEntity(npc, data) then options[#options + 1] = {lia.lang.resolveToken(data.PrintName or uniqueID), uniqueID} end
+        if lia.dialog.isConversationDialogData(data) and lia.dialog.isDialogCompatibleWithEntity(npc, data) then options[#options + 1] = {(string.gsub(tostring(data.PrintName or uniqueID), "^@", "", 1)), uniqueID} end
     end
 
     table.sort(options, function(a, b) return a[1] < b[1] end)
@@ -434,7 +434,7 @@ if SERVER then
             end
             return resolved
         end
-        return lia.lang.resolveToken(value)
+        return (string.gsub(tostring(value), "^@", "", 1))
     end
 
     local function addResponseMetadata(entry, source)
@@ -457,7 +457,7 @@ if SERVER then
         if not istable(tbl) then return tbl end
         local out = {}
         for label, info in pairs(tbl) do
-            local resolvedLabel = lia.lang.resolveToken(label)
+            local resolvedLabel = (string.gsub(tostring(label), "^@", "", 1))
             local entry = {}
             if istable(info) then
                 for k, v in pairs(info) do
@@ -483,7 +483,7 @@ if SERVER then
 
     local function resolveDialogData(data)
         if not istable(data) then return data end
-        data.PrintName = lia.lang.resolveToken(data.PrintName)
+        data.PrintName = (string.gsub(tostring(data.PrintName), "^@", "", 1))
         data.Greeting = resolveDialogValue(data.Greeting)
         if istable(data.Conversation) then data.Conversation = sanitizeConversationTable(data.Conversation) end
         return data
@@ -701,7 +701,7 @@ else
         configID = configID or "appearance"
         if not IsValid(npc) then return end
         local frame = vgui.Create("liaFrame")
-        frame:SetTitle(L("customizeNPC"))
+        frame:SetTitle("Customize NPC")
         frame:SetSize(800, 700)
         frame:Center()
         frame:MakePopup()
@@ -758,10 +758,10 @@ else
                     bgPanel:Dock(TOP)
                     bgPanel:SetTall(40)
                     bgPanel.Paint = function() end
-                    local bgLabel = vgui.Create("DLabel", bgPanel)
+                    local bgLabel = vgui.Create("DLabel(", bgPanel)
                     bgLabel:Dock(LEFT)
                     bgLabel:SetWide(120)
-                    bgLabel:SetText(bgName .. ":")
+                    bgLabel:SetText(bgName .. "):")
                     bgLabel:SetContentAlignment(6)
                     local bgSlider = vgui.Create("DNumSlider", bgPanel)
                     bgSlider:Dock(FILL)
@@ -777,7 +777,7 @@ else
 
         local nameLabel = vgui.Create("DLabel", scroll)
         nameLabel:Dock(TOP)
-        nameLabel:SetText(L("npcNameLabel"))
+        nameLabel:SetText("NPC Name:")
         nameLabel:SetTall(20)
         nameLabel:DockMargin(0, 5, 0, 5)
         local nameEntry = vgui.Create("liaEntry", scroll)
@@ -787,7 +787,7 @@ else
         nameEntry:DockMargin(0, 0, 0, 10)
         local modelLabel = vgui.Create("DLabel", scroll)
         modelLabel:Dock(TOP)
-        modelLabel:SetText(L("modelPathLabel"))
+        modelLabel:SetText("Model Path:")
         modelLabel:SetTall(20)
         modelLabel:DockMargin(0, 5, 0, 5)
         local modelEntry = vgui.Create("liaEntry", scroll)
@@ -820,7 +820,7 @@ else
         if hasBodygroups then
             local bodygroupLabel = vgui.Create("DLabel", scroll)
             bodygroupLabel:Dock(TOP)
-            bodygroupLabel:SetText(L("bodygroups") .. ":")
+            bodygroupLabel:SetText("Bodygroups(" .. "):")
             bodygroupLabel:SetTall(20)
             bodygroupLabel:DockMargin(0, 5, 0, 5)
             local bodygroupPanel = vgui.Create("DPanel", scroll)
@@ -839,7 +839,7 @@ else
         if hasSkin then
             local skinLabel = vgui.Create("DLabel", scroll)
             skinLabel:Dock(TOP)
-            skinLabel:SetText(L("skin") .. ":")
+            skinLabel:SetText("Skin(" .. "):")
             skinLabel:SetTall(20)
             skinLabel:DockMargin(0, 5, 0, 5)
             skinSlider = vgui.Create("DNumSlider", scroll)
@@ -886,15 +886,15 @@ else
         if hasAnimations then
             local animationLabel = vgui.Create("DLabel", scroll)
             animationLabel:Dock(TOP)
-            animationLabel:SetText(L("animation") .. ":")
+            animationLabel:SetText("Animation(" .. "):")
             animationLabel:SetTall(20)
             animationLabel:DockMargin(0, 5, 0, 5)
             animationCombo = vgui.Create("liaComboBox", scroll)
             animationCombo:Dock(TOP)
             animationCombo:SetTall(25)
             animationCombo:DockMargin(0, 0, 0, 10)
-            animationCombo:SetValue(selectedAnimation == "auto" and L("npcAnimationAuto") or selectedAnimation)
-            animationCombo:AddChoice(L("npcAnimationAuto"), "auto")
+            animationCombo:SetValue(selectedAnimation == "auto" and "Auto (idle animation)" or selectedAnimation)
+            animationCombo:AddChoice("Auto (idle animation)", "auto")
             for _, animName in ipairs(availableAnimations) do
                 animationCombo:AddChoice(animName, animName)
             end
@@ -914,13 +914,13 @@ else
             refreshBtn:Dock(TOP)
             refreshBtn:SetTall(25)
             refreshBtn:DockMargin(0, 5, 0, 10)
-            refreshBtn:SetText(L("refreshAnimationList"))
+            refreshBtn:SetText("Refresh Animation List")
             refreshBtn.DoClick = function()
                 if IsValid(npc) then
                     local sequences = npc:GetSequenceList()
                     if sequences and #sequences > 0 then
                         animationCombo:Clear()
-                        animationCombo:AddChoice(L("npcAnimationAuto"), "auto")
+                        animationCombo:AddChoice("Auto (idle animation)", "auto")
                         for _, animName in ipairs(sequences) do
                             animationCombo:AddChoice(animName, animName)
                         end
@@ -935,7 +935,7 @@ else
         else
             local noAnimLabel = vgui.Create("DLabel", scroll)
             noAnimLabel:Dock(TOP)
-            noAnimLabel:SetText(L("noAnimationsFoundForModel"))
+            noAnimLabel:SetText("No animations found for this model.")
             noAnimLabel:SetTall(20)
             noAnimLabel:DockMargin(0, 5, 0, 5)
             noAnimLabel:SetTextColor(Color(255, 100, 100))
@@ -943,7 +943,7 @@ else
             refreshAnimBtn:Dock(TOP)
             refreshAnimBtn:SetTall(25)
             refreshAnimBtn:DockMargin(0, 5, 0, 10)
-            refreshAnimBtn:SetText(L("tryRefreshAnimations"))
+            refreshAnimBtn:SetText("Try Refresh Animations")
             refreshAnimBtn.DoClick = function()
                 if IsValid(npc) then
                     local sequences = npc:GetSequenceList()
@@ -964,14 +964,14 @@ else
         if canConfigureDialogType then
             local dialogTypeLabel = vgui.Create("DLabel", scroll)
             dialogTypeLabel:Dock(TOP)
-            dialogTypeLabel:SetText(L("dialogTypeLabel"))
+            dialogTypeLabel:SetText("Dialog Type:")
             dialogTypeLabel:SetTall(20)
             dialogTypeLabel:DockMargin(0, 15, 0, 5)
             dialogTypeCombo = vgui.Create("liaComboBox", scroll)
             dialogTypeCombo:Dock(TOP)
             dialogTypeCombo:SetTall(30)
             dialogTypeCombo:DockMargin(0, 0, 0, 10)
-            dialogTypeCombo:AddChoice(L("noneNoDialog"), "none")
+            dialogTypeCombo:AddChoice("None (No Dialog)", "none")
             for _, option in ipairs(lia.dialog.getCompatibleDialogOptions(npc)) do
                 dialogTypeCombo:AddChoice(option[1], option[2])
             end
@@ -1007,7 +1007,7 @@ else
         local applyBtn = vgui.Create("liaButton", scroll)
         applyBtn:Dock(TOP)
         applyBtn:SetTall(35)
-        applyBtn:SetText(L("applyCustomizations"))
+        applyBtn:SetText("Apply Customizations")
         applyBtn:DockMargin(0, 5, 0, 10)
         applyBtn.DoClick = function()
             local nameValue = nameEntry:GetValue() or ""
@@ -1054,7 +1054,7 @@ else
             separator.Paint = function(_, w, h) draw.RoundedBox(0, 0, 0, w, h, Color(100, 100, 100, 100)) end
             local otherLabel = vgui.Create("DLabel", scroll)
             otherLabel:Dock(TOP)
-            otherLabel:SetText(L("otherConfigurations"))
+            otherLabel:SetText("Other Configurations:")
             otherLabel:SetTall(20)
             otherLabel:SetTextColor(color_white)
             otherLabel:DockMargin(0, 5, 0, 5)
@@ -1063,7 +1063,7 @@ else
                     local configBtn = vgui.Create("liaButton", scroll)
                     configBtn:Dock(TOP)
                     configBtn:SetTall(30)
-                    configBtn:SetText(lia.lang.resolveToken(config.name or config.id) or L("configuration"))
+                    configBtn:SetText((string.gsub(tostring(config.name or config.id), "^@", "", 1)) or "Configuration")
                     configBtn:DockMargin(0, 5, 0, 5)
                     configBtn.DoClick = function()
                         frame:Close()
@@ -1076,7 +1076,7 @@ else
         local cancelBtn = vgui.Create("liaButton", scroll)
         cancelBtn:Dock(TOP)
         cancelBtn:SetTall(30)
-        cancelBtn:SetText(L("cancel"))
+        cancelBtn:SetText("Cancel")
         cancelBtn:DockMargin(0, 5, 0, 10)
         cancelBtn.DoClick = function() frame:Close() end
     end
@@ -1786,8 +1786,8 @@ local function canAccessNPCConfigurations(ply)
 end
 
 lia.dialog.registerConfiguration("appearance", {
-    name = "@npcConfigAppearanceName",
-    description = "@npcConfigAppearanceDesc",
+    name = "Appearance",
+    description = "Rename NPCs and adjust their models, skins, bodygroups, and animations.",
     order = 0,
     shouldShow = function(ply) return canAccessNPCConfigurations(ply) end
 })
@@ -1820,7 +1820,7 @@ if SERVER then
                 npc.uniqueID = dialogType
                 npc:setNetVar("uniqueID", dialogType)
                 if dialogType == "" then
-                    npc.NPCName = L("unconfiguredNPC")
+                    npc.NPCName = "Unconfigured NPC"
                     npc:setNetVar("NPCName", npc.NPCName)
                     hook.Run("UpdateEntityPersistence", npc)
                     hook.Run("SaveData")
@@ -1849,7 +1849,7 @@ if SERVER then
                 if trimmedName ~= "" then
                     npc.NPCName = trimmedName
                 else
-                    npc.NPCName = L("npc")
+                    npc.NPCName = "NPC"
                 end
             end
 
@@ -1898,7 +1898,7 @@ if SERVER then
 
             npc:setAnim()
             npc.customData = customData
-            if not npc.NPCName or npc.NPCName == "" then npc.NPCName = L("npc") end
+            if not npc.NPCName or npc.NPCName == "" then npc.NPCName = "NPC" end
             npc:setNetVar("NPCName", npc.NPCName)
             hook.Run("UpdateEntityPersistence", npc)
             hook.Run("SaveData")
@@ -1958,7 +1958,7 @@ else
     })
 
     properties.Add("liaConfigureNPC", {
-        MenuLabel = L("configureNPC"),
+        MenuLabel = "Configure NPC",
         Order = 100,
         MenuIcon = "icon16/wrench.png",
         Filter = function(_, ent, ply)

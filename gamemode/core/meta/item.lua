@@ -1,8 +1,8 @@
 ﻿local ITEM = lia.meta.item or {}
 debug.getregistry().Item = lia.meta.item
 ITEM.__index = ITEM
-ITEM.name = "@invalidName"
-ITEM.desc = ITEM.desc or "@invalidDescription"
+ITEM.name = "Invalid name!"
+ITEM.desc = ITEM.desc or "Invalid description"
 ITEM.id = ITEM.id or 0
 ITEM.uniqueID = "undefined"
 ITEM.isItem = true
@@ -29,7 +29,7 @@ function ITEM:getQuantity()
 end
 
 function ITEM:tostring()
-    return L("item") .. "[" .. self.uniqueID .. "][" .. self.id .. "]"
+    return "Item" .. "[" .. self.uniqueID .. "][" .. self.id .. "]"
 end
 
 function ITEM:getID()
@@ -126,9 +126,9 @@ end
 
 function ITEM:printData()
     self:print(true)
-    lia.information(L("itemData") .. ":")
+    lia.information("ITEM DATA(" .. "):")
     for k, v in pairs(self.data) do
-        lia.information(L("itemDataEntry", k, v))
+        lia.information(string.format("[%s] = %s", k, v))
     end
 end
 
@@ -343,7 +343,7 @@ if SERVER then
     end
 
     function ITEM:interact(action, client, entity, data)
-        assert(client:IsPlayer() and IsValid(client), L("itemActionNoPlayer"))
+        assert(client:IsPlayer() and IsValid(client), "Item action cannot be performed without a player")
         local canInteract, reason = hook.Run("CanPlayerInteractItem", client, action, self, data)
         if canInteract == false then
             if reason then client:notifyErrorLocalized(reason) end
@@ -413,7 +413,7 @@ if SERVER then
 end
 
 function ITEM:getCategory()
-    return self.category or lia.lang.resolveToken("@misc")
+    return self.category or "Miscellaneous"
 end
 
 lia.meta.item = ITEM

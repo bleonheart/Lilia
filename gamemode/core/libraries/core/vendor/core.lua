@@ -3,7 +3,7 @@ lia.vendor.stored = lia.vendor.stored or {}
 lia.vendor.editor = lia.vendor.editor or {}
 lia.vendor.presets = lia.vendor.presets or {}
 lia.vendor.defaults = {
-    name = L("vendorDefaultName"),
+    name = "Jane Doe",
     desc = "",
     preset = "none",
     animation = "idle_all_01",
@@ -17,19 +17,19 @@ lia.vendor.defaults = {
 
 if SERVER then
     local function getTextValue(value)
-        if value == nil or value == "" then return L("none") end
+        if value == nil or value == "" then return "None" end
         return tostring(value)
     end
 
     local function getModeText(mode)
-        if mode == VENDOR_SELLANDBUY then return L("buyOnlynSell") end
-        if mode == VENDOR_BUYONLY then return L("buyOnly") end
-        if mode == VENDOR_SELLONLY then return L("sellOnly") end
-        return L("none")
+        if mode == VENDOR_SELLANDBUY then return "Buy and Sell" end
+        if mode == VENDOR_BUYONLY then return "Buy Only" end
+        if mode == VENDOR_SELLONLY then return "Sell Only" end
+        return "None"
     end
 
     local function getEnabledText(enabled)
-        return enabled and L("enabled") or L("disabled")
+        return enabled and "Enabled" or "Disabled"
     end
 
     local function getItemName(itemType)
@@ -46,7 +46,7 @@ if SERVER then
 
     addEditor("name", function() return net.ReadString() end, function(vendor, client, name)
         local oldName = vendor:getName()
-        if not name or name == "" then name = lia.vendor.defaults.name or L("vendorDefaultName") end
+        if not name or name == "" then name = lia.vendor.defaults.name or "Jane Doe" end
         vendor:setName(name)
         client:notifyLocalized("vendorNameChanged", getTextValue(oldName), getTextValue(name))
     end)
@@ -111,13 +111,13 @@ if SERVER then
     addEditor("faction", function() return net.ReadUInt(8), net.ReadBool() end, function(vendor, client, factionID, allowed)
         local faction = lia.faction.indices[factionID]
         vendor:setFactionAllowed(factionID, allowed)
-        client:notifyLocalized("vendorFactionChanged", faction and L(faction.name) or tostring(factionID), getEnabledText(allowed))
+        client:notifyLocalized("vendorFactionChanged", faction and tostring(faction.name) or tostring(factionID), getEnabledText(allowed))
     end)
 
     addEditor("class", function() return net.ReadUInt(8), net.ReadBool() end, function(vendor, client, classID, allowed)
         local class = lia.class.list[classID]
         vendor:setClassAllowed(classID, allowed)
-        client:notifyLocalized("vendorClassChanged", class and L(class.name) or tostring(classID), getEnabledText(allowed))
+        client:notifyLocalized("vendorClassChanged", class and tostring(class.name) or tostring(classID), getEnabledText(allowed))
     end)
 
     addEditor("model", function() return net.ReadString() end, function(vendor, client, model)
@@ -240,8 +240,8 @@ else
 end
 
 function lia.vendor.addPreset(name, items)
-    assert(isstring(name), L("vendorPresetNameString"))
-    assert(istable(items), L("vendorPresetItemsTable"))
+    assert(isstring(name), "Preset name must be a string")
+    assert(istable(items), "Preset items must be a table")
     local validItems = {}
     for itemType, itemData in pairs(items) do
         if lia.item.list[itemType] then validItems[itemType] = itemData end

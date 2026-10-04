@@ -158,7 +158,7 @@ end
 
 local function quickLocalized(value)
     if not value or value == "" then return value end
-    local localized = L(value)
+    local localized = tostring(value)
     if localized and localized ~= "" then return localized end
     return value
 end
@@ -212,7 +212,7 @@ function QuickPanel:Init()
     if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end
     lia.gui.quick = self
     refreshQuickPalette()
-    self:SetSkin(lia.config.get("DermaSkin", L("liliaSkin")))
+    self:SetSkin(lia.config.get("DermaSkin", "Lilia Skin"))
     self:SetTitle("")
     self:SetAlphaBackground(false)
     self:SetDraggable(false)

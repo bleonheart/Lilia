@@ -135,7 +135,7 @@ end
 
 lia.command.add("fixpac", {
     adminOnly = false,
-    desc = "@pacFixCommandDesc",
+    desc = "Clears PAC3 caches and restarts PAC3 to fix any outfit issues.",
     onRun = function(client)
         timer.Simple(0, function() if IsValid(client) then client:ConCommand("pac_clear_parts") end end)
         timer.Simple(0.5, function()
@@ -152,7 +152,7 @@ lia.command.add("fixpac", {
 
 lia.command.add("pacenable", {
     adminOnly = false,
-    desc = "@pacEnableCommandDesc",
+    desc = "Enables PAC3 (Player Appearance Customizer).",
     onRun = function(client)
         client:ConCommand("pac_enable 1")
         client:notifySuccessLocalized("pacenable_success")
@@ -161,26 +161,26 @@ lia.command.add("pacenable", {
 
 lia.command.add("pacdisable", {
     adminOnly = false,
-    desc = "@pacDisableCommandDesc",
+    desc = "Disables PAC3 (Player Appearance Customizer).",
     onRun = function(client)
         client:ConCommand("pac_enable 0")
         client:notifyInfoLocalized("pacdisable_message")
     end
 })
 
-lia.config.add("BlockPackURLoad", "@blockPackUrlLoad", true, nil, {
-    desc = "@blockPackUrlLoadDesc",
-    category = "@core",
+lia.config.add("BlockPackURLoad", "Block Pack URL Load", true, nil, {
+    desc = "Determines whether loading PAC3 packs from a URL should be blocked.",
+    category = "Core",
     noNetworking = false,
     schemaOnly = false,
     type = "Boolean"
 })
 
 lia.admin.registerPrivilege({
-    Name = "@canUsePAC3",
+    Name = "Can Use PAC3",
     ID = "canUsePAC3",
     MinAccess = "admin",
-    Category = "@compatibility"
+    Category = "Compatibility"
 })
 
 local function canUsePAC3(client)
@@ -192,4 +192,4 @@ end
 
 hook.Add("PrePACEditorOpen", "RestrictPAC3Editor", function(ply) if not canUsePAC3(ply) then return false end end)
 hook.Add("pac_CanWearParts", "RestrictPAC3Wearing", function(ply) if not canUsePAC3(ply) then return false end end)
-lia.flag.add("P", "@flagPac3")
+lia.flag.add("P", "Gives Access to PAC3.")

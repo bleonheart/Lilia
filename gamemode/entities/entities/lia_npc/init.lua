@@ -18,17 +18,17 @@
     self.uniqueID = self.uniqueID or ""
     self:setNetVar("uniqueID", self.uniqueID)
     if self.uniqueID == "" or not self.uniqueID then
-        self.NPCName = L("unconfiguredNPC")
+        self.NPCName = "Unconfigured NPC"
     else
         if SERVER then
             local npcData = lia.dialog.getNPCData(self.uniqueID)
             if npcData and npcData.PrintName then
                 self.NPCName = npcData.PrintName
             else
-                self.NPCName = self.NPCName or L("unconfiguredNPC")
+                self.NPCName = self.NPCName or "Unconfigured NPC"
             end
         else
-            self.NPCName = self.NPCName or L("unconfiguredNPC")
+            self.NPCName = self.NPCName or "Unconfigured NPC"
         end
     end
 

@@ -71,7 +71,7 @@ end)
 
 net.Receive("liaAdminModeSwapCharacter", function()
     local id = net.ReadInt(32)
-    assert(isnumber(id), L("idMustBeNumber"))
+    assert(isnumber(id), "id must be a number")
     local d = deferred.new()
     net.Receive("liaCharChoose", function()
         local message = net.ReadString()
@@ -96,7 +96,7 @@ end)
 net.Receive("liaManagesitrooms", function()
     local rooms = net.ReadTable() or {}
     local frame = vgui.Create("liaFrame")
-    frame:SetTitle(L("manageSitRooms"))
+    frame:SetTitle("Manage Administration Rooms")
     frame:SetSize(640, 420)
     frame:Center()
     frame:MakePopup()
@@ -118,14 +118,14 @@ net.Receive("liaManagesitrooms", function()
             local btn = vgui.Create("liaButton", entry)
             btn:Dock(RIGHT)
             btn:SetWide(80)
-            btn:SetText(L(key))
+            btn:SetText(tostring(key))
             btn.DoClick = function()
                 net.Start("liaManagesitroomsAction")
                 net.WriteUInt(action, 2)
                 net.WriteString(name)
                 if action == 2 then
                     local prompt = vgui.Create("liaFrame")
-                    prompt:SetTitle(L("renameSitroomTitle"))
+                    prompt:SetTitle("Rename Administration Room")
                     prompt:SetSize(300, 100)
                     prompt:Center()
                     prompt:MakePopup()
@@ -133,7 +133,7 @@ net.Receive("liaManagesitrooms", function()
                     txt:Dock(FILL)
                     local ok = vgui.Create("liaButton", prompt)
                     ok:Dock(BOTTOM)
-                    ok:SetText(string.upper(L("ok")))
+                    ok:SetText(string.upper("ok"))
                     ok.DoClick = function()
                         net.WriteString(txt:GetValue())
                         net.SendToServer()
@@ -166,7 +166,7 @@ net.Receive("liaAllPks", function()
     search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
     search:SetFont("LiliaFont.17")
-    search:SetPlaceholderText(L("search"))
+    search:SetPlaceholderText("Search...")
     search:SetTextColor(Color(200, 200, 200))
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
@@ -176,19 +176,19 @@ net.Receive("liaAllPks", function()
     panelRef:SizeToChildren(false, true)
     local columns = {
         {
-            name = L("timestamp"),
+            name = "Timestamp",
             field = "timestamp"
         },
         {
-            name = L("character"),
+            name = "Character",
             field = "character"
         },
         {
-            name = L("submitter"),
+            name = "Submitter",
             field = "submitter"
         },
         {
-            name = L("evidence"),
+            name = "Evidence",
             field = "evidence"
         }
     }
@@ -201,8 +201,8 @@ net.Receive("liaAllPks", function()
         list:Clear()
         filter = string.lower(filter or "")
         for _, c in ipairs(cases) do
-            local charInfo = string.format("%s (%s, %s)", c.player or L("na"), c.steamID or L("na"), c.charID or L("na"))
-            local submitInfo = string.format("%s (%s)", c.submitterName or L("na"), c.submitterSteamID or L("na"))
+            local charInfo = string.format("%s (%s, %s)", c.player or "N/A", c.steamID or "N/A", c.charID or "N/A")
+            local submitInfo = string.format("%s (%s)", c.submitterName or "N/A", c.submitterSteamID or "N/A")
             local timestamp = os.date("%Y-%m-%d %H:%M:%S", tonumber(c.timestamp) or 0)
             local lineData = {timestamp, charInfo, submitInfo, c.evidence or ""}
             local searchStr = table.concat(lineData, " ") .. " " .. (c.reason or "")
@@ -222,42 +222,42 @@ net.Receive("liaAllPks", function()
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    list:AddMenuOption(L("copySubmitter"), function(rowData) if rowData.submitter and rowData.submitterSteamID then SetClipboardText(string.format("%s (%s)", rowData.submitter, rowData.submitterSteamID)) end end, "icon16/page_copy.png")
-    list:AddMenuOption(L("copyReason"), function(rowData) if rowData.reason then SetClipboardText(rowData.reason) end end, "icon16/page_copy.png")
-    list:AddMenuOption(L("copyEvidence"), function(rowData) if rowData.evidence then SetClipboardText(rowData.evidence) end end, "icon16/page_copy.png")
-    list:AddMenuOption(L("copySteamID"), function(rowData) if rowData.steamID then SetClipboardText(rowData.steamID) end end, "icon16/page_copy.png")
-    list:AddMenuOption(L("viewEvidence"), function(rowData) if rowData.evidence and rowData.evidence:match("^https?://") then gui.OpenURL(rowData.evidence) end end, "icon16/world.png")
-    list:AddMenuOption(L("banCharacter"), function(rowData)
+    list:AddMenuOption("Copy Submitter", function(rowData) if rowData.submitter and rowData.submitterSteamID then SetClipboardText(string.format("%s (%s)", rowData.submitter, rowData.submitterSteamID)) end end, "icon16/page_copy.png")
+    list:AddMenuOption("Copy Reason", function(rowData) if rowData.reason then SetClipboardText(rowData.reason) end end, "icon16/page_copy.png")
+    list:AddMenuOption("Copy Evidence", function(rowData) if rowData.evidence then SetClipboardText(rowData.evidence) end end, "icon16/page_copy.png")
+    list:AddMenuOption("Copy Steam ID", function(rowData) if rowData.steamID then SetClipboardText(rowData.steamID) end end, "icon16/page_copy.png")
+    list:AddMenuOption("View Evidence", function(rowData) if rowData.evidence and rowData.evidence:match("^https?://") then gui.OpenURL(rowData.evidence) end end, "icon16/world.png")
+    list:AddMenuOption("Ban Character", function(rowData)
         if not rowData.charID then return end
         local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
         if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charban") then LocalPlayer():ConCommand('say "/charban ' .. rowData.charID .. '"') end
     end, "icon16/cancel.png")
 
-    list:AddMenuOption(L("wipeCharacter"), function(rowData)
+    list:AddMenuOption("Wipe Character", function(rowData)
         if not rowData.charID then return end
         local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
         if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipe") then LocalPlayer():ConCommand('say "/charwipe ' .. rowData.charID .. '"') end
     end, "icon16/user_delete.png")
 
-    list:AddMenuOption(L("unbanCharacter"), function(rowData)
+    list:AddMenuOption("Unban Character", function(rowData)
         if not rowData.charID then return end
         local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
         if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunban") then LocalPlayer():ConCommand('say "/charunban ' .. rowData.charID .. '"') end
     end, "icon16/accept.png")
 
-    list:AddMenuOption(L("banCharacterOffline"), function(rowData)
+    list:AddMenuOption("Ban Character (Offline)", function(rowData)
         if not rowData.charID then return end
         local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
         if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charbanoffline") then LocalPlayer():ConCommand('say "/charbanoffline ' .. rowData.charID .. '"') end
     end, "icon16/cancel.png")
 
-    list:AddMenuOption(L("wipeCharacterOffline"), function(rowData)
+    list:AddMenuOption("Wipe Character (Offline)", function(rowData)
         if not rowData.charID then return end
         local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
         if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipeoffline") then LocalPlayer():ConCommand('say "/charwipeoffline ' .. rowData.charID .. '"') end
     end, "icon16/user_delete.png")
 
-    list:AddMenuOption(L("unbanCharacterOffline"), function(rowData)
+    list:AddMenuOption("Unban Character (Offline)", function(rowData)
         if not rowData.charID then return end
         local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
         if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then LocalPlayer():ConCommand('say "/charunbanoffline ' .. rowData.charID .. '"') end
@@ -314,7 +314,7 @@ net.Receive("liaDisplayCharList", function()
     local columns = {
         {
             name = "name",
-            field = L("name")
+            field = "Name"
         },
         {
             name = "description",
@@ -322,11 +322,11 @@ net.Receive("liaDisplayCharList", function()
         },
         {
             name = "faction",
-            field = L("faction")
+            field = "Faction"
         },
         {
             name = "banned",
-            field = L("banned")
+            field = "Banned"
         },
         {
             name = "banningAdminName",
@@ -342,7 +342,7 @@ net.Receive("liaDisplayCharList", function()
         },
         {
             name = "charMoney",
-            field = L("money")
+            field = "Money"
         },
         {
             name = "lastUsed",
@@ -357,12 +357,12 @@ net.Receive("liaDisplayCharList", function()
         })
     end
 
-    local _, listView = lia.util.createTableUI(L("charlistTitle", targetSteamIDsafe), columns, sendData)
+    local _, listView = lia.util.createTableUI(string.format("Charlist for SteamID: %s", targetSteamIDsafe), columns, sendData)
     if IsValid(listView) then
         for _, line in ipairs(listView:GetLines()) do
             local dataIndex = line:GetID()
             local rowData = sendData[dataIndex]
-            if rowData and rowData.Banned == L("yes") then
+            if rowData and rowData.Banned == "Yes" then
                 line.DoPaint = line.Paint
                 line.Paint = function(pnl, w, h)
                     surface.SetDrawColor(200, 100, 100)
@@ -389,32 +389,32 @@ net.Receive("liaDisplayCharList", function()
             local dMenu = lia.derma.dermaMenu()
             if IsValid(owner) then
                 if lia.command.hasAccess(LocalPlayer(), "charban") then
-                    local opt1 = dMenu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand('say "/charban ' .. ln.CharID .. '"') end)
+                    local opt1 = dMenu:AddOption("Ban Character", function() LocalPlayer():ConCommand('say "/charban ' .. ln.CharID .. '"') end)
                     opt1:SetIcon("icon16/cancel.png")
                 end
 
                 if lia.command.hasAccess(LocalPlayer(), "charwipe") then
-                    local opt1_5 = dMenu:AddOption(L("wipeCharacter"), function() LocalPlayer():ConCommand('say "/charwipe ' .. ln.CharID .. '"') end)
+                    local opt1_5 = dMenu:AddOption("Wipe Character", function() LocalPlayer():ConCommand('say "/charwipe ' .. ln.CharID .. '"') end)
                     opt1_5:SetIcon("icon16/user_delete.png")
                 end
 
                 if lia.command.hasAccess(LocalPlayer(), "charunban") then
-                    local opt2 = dMenu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand('say "/charunban ' .. ln.CharID .. '"') end)
+                    local opt2 = dMenu:AddOption("Unban Character", function() LocalPlayer():ConCommand('say "/charunban ' .. ln.CharID .. '"') end)
                     opt2:SetIcon("icon16/accept.png")
                 end
             else
                 if lia.command.hasAccess(LocalPlayer(), "charbanoffline") then
-                    local opt3 = dMenu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand('say "/charbanoffline ' .. ln.CharID .. '"') end)
+                    local opt3 = dMenu:AddOption("Ban Character (Offline)", function() LocalPlayer():ConCommand('say "/charbanoffline ' .. ln.CharID .. '"') end)
                     opt3:SetIcon("icon16/cancel.png")
                 end
 
                 if lia.command.hasAccess(LocalPlayer(), "charwipeoffline") then
-                    local opt3_5 = dMenu:AddOption(L("wipeCharacterOffline"), function() LocalPlayer():ConCommand('say "/charwipeoffline ' .. ln.CharID .. '"') end)
+                    local opt3_5 = dMenu:AddOption("Wipe Character (Offline)", function() LocalPlayer():ConCommand('say "/charwipeoffline ' .. ln.CharID .. '"') end)
                     opt3_5:SetIcon("icon16/user_delete.png")
                 end
 
                 if lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then
-                    local opt4 = dMenu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand('say "/charunbanoffline ' .. ln.CharID .. '"') end)
+                    local opt4 = dMenu:AddOption("Unban Character (Offline)", function() LocalPlayer():ConCommand('say "/charunbanoffline ' .. ln.CharID .. '"') end)
                     opt4:SetIcon("icon16/accept.png")
                 end
             end

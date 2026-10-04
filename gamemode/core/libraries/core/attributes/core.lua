@@ -19,8 +19,8 @@ function lia.attribs.register(uniqueID, data)
     end
 
     attribute.uniqueID = uniqueID
-    attribute.name = attribute.name and lia.lang.resolveToken(attribute.name) or lia.lang.resolveToken("@unknown")
-    attribute.desc = attribute.desc and lia.lang.resolveToken(attribute.desc) or lia.lang.resolveToken("@noDesc")
+    attribute.name = attribute.name and (string.gsub(tostring(attribute.name), "^@", "", 1)) or "Unknown"
+    attribute.desc = attribute.desc and (string.gsub(tostring(attribute.desc), "^@", "", 1)) or "No Description"
     lia.attribs.list[uniqueID] = attribute
     return attribute
 end

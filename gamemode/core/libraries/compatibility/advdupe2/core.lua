@@ -41,7 +41,7 @@ hook.Add("PreRegisterTOOL", "BetterDupeLoad", function(tool, class)
         if CLIENT then return true end
         if not ply.CurrentDupe or not ply.CurrentDupe.Entities then return false end
         if ply.AdvDupe2.Pasting or ply.AdvDupe2.Downloading then
-            AdvDupe2.Notify(ply, L("advDupeBusy"), NOTIFY_ERROR)
+            AdvDupe2.Notify(ply, "Better Duplicator is busy.", NOTIFY_ERROR)
             return false
         end
 
@@ -61,7 +61,7 @@ hook.Add("PreRegisterTOOL", "BetterDupeLoad", function(tool, class)
         ply.AdvDupe2.Angle.pitch = 0
         ply.AdvDupe2.Angle.roll = 0
         ply.AdvDupe2.Pasting = true
-        ply.AdvDupe2.Name = L("betterDupeName")
+        ply.AdvDupe2.Name = "Better dupe"
         ply.AdvDupe2.Revision = 5
         AdvDupe2.InitPastingQueue(ply, ply.AdvDupe2.Position, ply.AdvDupe2.Angle, nil, true, true, true, tobool(ply:GetInfo("advdupe2_paste_protectoveride")))
     end
@@ -76,4 +76,4 @@ hook.Add("AdvDupe_FinishPasting", "Betterdupe_AdvDupe_FinishPasting", function(t
     ply.tempBetterDupe = nil
 end)
 
-lia.log.addType("dupeCrashAttempt", function(client) return L("dupeCrashAttemptLog", IsValid(client) and client:Name() or L("unknown"), IsValid(client) and client:SteamID() or L("na")) end, L("categorySecurity"))
+lia.log.addType("dupeCrashAttempt", function(client) return string.format("Player '%s' [%s] attempted to duplicate oversized entities.", IsValid(client) and client:Name() or "Unknown", IsValid(client) and client:SteamID() or "N/A") end, "Security")

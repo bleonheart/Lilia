@@ -1,7 +1,7 @@
-﻿MODULE.name = "@inv"
+﻿MODULE.name = "Inventory"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "@inventorySystemDescription"
+MODULE.desc = "Implements a modular grid-based inventory with item stacking, weight limits, and support for hot-loading additional modules."
 MODULE.NetworkStrings = {"liaRestoreOverflowItems",}
 MODULE.Dependencies = {
     {

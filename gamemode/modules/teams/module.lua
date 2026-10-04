@@ -1,17 +1,17 @@
-﻿MODULE.name = "@teamsModuleName"
+﻿MODULE.name = "Teams"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "@teamsSystemDescription"
+MODULE.desc = "Manages teams and factions with whitelist support and admin controls."
 MODULE.NetworkStrings = {"liaFactionMembers", "liaFactionMemberDetails", "liaKickCharacterToBase", "liaRequestFactionMembers", "liaRequestFactionMemberDetails", "liaSaveFactionNote"}
 MODULE.Privileges = {
     ["canManageFactions"] = {
-        Name = "@canManageFactions",
+        Name = "Can Manage Factions",
         MinAccess = "admin",
-        Category = "@factionManagement",
+        Category = "Faction Management",
     },
     ["manageWhitelists"] = {
-        Name = "@manageWhitelists",
+        Name = "Manage Whitelists",
         MinAccess = "admin",
-        Category = "@factionManagement",
+        Category = "Faction Management",
     },
 }

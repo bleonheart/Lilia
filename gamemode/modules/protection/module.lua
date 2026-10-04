@@ -1,17 +1,17 @@
-﻿MODULE.name = "@protection"
+﻿MODULE.name = "Protection"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "@anticheatDescription"
+MODULE.desc = "Provides anti-cheat and anti-exploit protections."
 MODULE.NetworkStrings = {"liaVerifyCheats", "liaRequestEntityTabData", "liaEntityTabData"}
 MODULE.Privileges = {
     ["canSeeAltingNotifications"] = {
-        Name = "@canSeeAltingNotifications",
+        Name = "Can See Alting Notifications",
         MinAccess = "admin",
-        Category = "@exploiting",
+        Category = "Exploiting",
     },
     ["teleportToEntity"] = {
-        Name = "@teleportToEntity",
+        Name = "Staff Permission  Teleport to Entity",
         MinAccess = "admin",
-        Category = "@exploiting",
+        Category = "Exploiting",
     },
 }

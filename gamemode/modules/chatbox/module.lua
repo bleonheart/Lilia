@@ -1,42 +1,42 @@
-﻿MODULE.name = "@chatboxModuleName"
+﻿MODULE.name = "Chat Box"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "@chatSystemDescription"
+MODULE.desc = "Replaces the default chat with a configurable box that supports colored text, command parsing, and dedicated staff channels."
 MODULE.NetworkStrings = {"liaChatboxAddFilteredWord", "liaChatboxRemoveFilteredWord", "liaChatboxRequestFilteredWords", "liaChatboxSyncFilteredWords"}
 MODULE.Privileges = {
     ["noOOCCooldown"] = {
-        Name = "@noOOCCooldown",
+        Name = "No OOC Cooldown",
         MinAccess = "admin",
-        Category = "@categoryChat",
+        Category = "Chat",
     },
     ["adminChat"] = {
-        Name = "@adminChat",
+        Name = "Admin Chat",
         MinAccess = "superadmin",
-        Category = "@categoryChat",
+        Category = "Chat",
     },
     ["localEventChat"] = {
-        Name = "@localEventChat",
+        Name = "Local Event Chat",
         MinAccess = "admin",
-        Category = "@categoryChat",
+        Category = "Chat",
     },
     ["eventChat"] = {
-        Name = "@eventChat",
+        Name = "Event Chat",
         MinAccess = "admin",
-        Category = "@categoryChat",
+        Category = "Chat",
     },
     ["accessHelpChat"] = {
-        Name = "@accessHelpChat",
+        Name = "Always Have Access to Help Chat",
         MinAccess = "superadmin",
-        Category = "@categoryChat",
+        Category = "Chat",
     },
     ["bypassOOCBlock"] = {
-        Name = "@bypassOOCBlockPrivilege",
+        Name = "Bypass OOC Block",
         MinAccess = "superadmin",
-        Category = "@categoryChat",
+        Category = "Chat",
     },
     ["manageChatFilter"] = {
-        Name = "@manageChatFilter",
+        Name = "Manage Chat Filter",
         MinAccess = "superadmin",
-        Category = "@categoryChat",
+        Category = "Chat",
     },
 }

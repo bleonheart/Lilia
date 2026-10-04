@@ -40,7 +40,7 @@ end
 function lia.camera.canOverrideView(client)
     if not IsValid(client) then return false end
     if lia.camera.isCharacterMenuOpen() then return false end
-    if IsValid(client:GetVehicle()) then return false end
+    if client:InVehicle() then return false end
     if hook.Run("ShouldDisableThirdperson", client) == true then return false end
     local ragdoll = client:GetRagdollEntity()
     return lia.option.get("thirdPersonEnabled", false) and lia.config.get("ThirdPersonEnabled", true) and client:getChar() and not IsValid(ragdoll)
@@ -487,7 +487,7 @@ end)
 
 hook.Add("ShouldDrawLocalPlayer", "liaThirdPersonShouldDrawLocalPlayer", function()
     local client = LocalPlayer()
-    if not IsValid(client) or IsValid(client:GetVehicle()) then return end
+    if not IsValid(client) or client:InVehicle() then return end
     if lia.camera.isUsingThirdPersonCamera(client) then return true end
     if lia.camera.canUseRealisticView(client) then return true end
     if lia.camera.shouldDrawBodyForFreelook(client) then return true end
@@ -535,7 +535,7 @@ end)
 
 lia.keybind.add("freelook", {
     keyBind = KEY_ALT,
-    desc = "@freelookKeybindDesc",
+    desc = "Hold Freelook",
     category = "Camera",
     onPress = function() lia.camera.setManualFreelook(true) end,
     onRelease = function() lia.camera.setManualFreelook(false) end

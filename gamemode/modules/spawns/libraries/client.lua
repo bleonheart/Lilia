@@ -9,7 +9,7 @@ local function getHUDFont(size)
 end
 
 local function resolveText(key, fallback, ...)
-    local value = L(key, ...)
+    local value = string.format(tostring(key), ...)
     if not isstring(value) or value == key then return fallback end
     return value
 end

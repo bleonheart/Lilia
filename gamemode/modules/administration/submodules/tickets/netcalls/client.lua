@@ -11,25 +11,25 @@ net.Receive("liaActiveTickets", function()
     search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
     search:SetFont("LiliaFont.17")
-    search:SetPlaceholderText(L("search"))
+    search:SetPlaceholderText("Search...")
     search:SetTextColor(Color(200, 200, 200))
     local list = ticketPanel:Add("liaTable")
     list:Dock(FILL)
     local columns = {
         {
-            name = L("timestamp"),
+            name = "Timestamp",
             field = "timestamp"
         },
         {
-            name = L("requester"),
+            name = "Requester",
             field = "requesterDisplay"
         },
         {
-            name = L("admin"),
+            name = "Admin",
             field = "adminDisplay"
         },
         {
-            name = L("message"),
+            name = "Message",
             field = "message"
         }
     }
@@ -38,10 +38,10 @@ net.Receive("liaActiveTickets", function()
         list:AddColumn(col.name)
     end
 
-    list:AddMenuOption(L("copyRow"), function(rowData)
+    list:AddMenuOption("Copy Row", function(rowData)
         local rowString = ""
         for i, column in ipairs(columns) do
-            local header = column.name or L("columnWithNumber", i)
+            local header = column.name or string.format("Column %s", i)
             local value = tostring(rowData[i] or "")
             rowString = rowString .. header .. " " .. value .. " | "
         end
@@ -62,7 +62,7 @@ net.Receive("liaActiveTickets", function()
             end
 
             local ts = os.date("%Y-%m-%d %H:%M:%S", t.timestamp or os.time())
-            local adminDisplay = L("unassigned")
+            local adminDisplay = "Unassigned"
             if t.admin then
                 local adminPly = lia.util.getBySteamID(t.admin)
                 local adminName = IsValid(adminPly) and adminPly:Nick() or t.admin
@@ -90,7 +90,7 @@ net.Receive("liaActiveTickets", function()
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    list:AddMenuOption(L("noOptionsAvailable"), function() end)
+    list:AddMenuOption("No options available", function() end)
     search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
 end)
@@ -100,10 +100,10 @@ net.Receive("liaViewClaims", function()
     local steamid = net.ReadString()
     if steamid and steamid ~= "" and steamid ~= " " then
         local v = tbl[steamid]
-        lia.information(L("claimRecordLast", v.name, v.claims, string.NiceTime(os.time() - v.lastclaim)))
+        lia.information(string.format("%s - %s claims - last claim %s ago", v.name, v.claims, string.NiceTime(os.time() - v.lastclaim)))
     else
         for _, v in pairs(tbl) do
-            lia.information(L("claimRecord", v.name, v.claims))
+            lia.information(string.format("%s - %s claims", v.name, v.claims))
         end
     end
 end)
@@ -124,7 +124,7 @@ net.Receive("liaTicketSystemClaim", function()
     local requesterSteamID = IsValid(requester) and requester:SteamID() or nil
     for _, v in pairs(MODULE.TicketFrames) do
         if v.requesterSteamID == requesterSteamID then
-            v:SetTitle(requester:Nick() .. " - " .. L("claimedBy") .. " " .. pl:Nick())
+            v:SetTitle(requester:Nick() .. " - " .. "Claimed by" .. " " .. pl:Nick())
             local bu = v:GetChildren()[11]
             if not bu or not IsValid(bu) then return end
             bu.DoClick = function()

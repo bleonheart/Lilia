@@ -77,7 +77,7 @@
             end
         end)
 
-        client:setAction(L("enteringVehicle"), delay, function()
+        client:setAction("Entering Vehicle...", delay, function()
             timer.Remove(timerID)
             if IsValid(entity) then entity.IsBeingEntered = false end
             if not IsValid(entity) or not IsValid(client) then return end
@@ -149,34 +149,34 @@ hook.Add("CanProperty", "SIMFPHYS_CanProperty", function(client, property, ent)
     end
 end)
 
-lia.config.add("DamageInCars", "@takeDamageInCars", true, nil, {
-    desc = "@takeDamageInCarsDesc",
-    category = "@core",
+lia.config.add("DamageInCars", "Take Damage in Cars", true, nil, {
+    desc = "Whether or not you take damage while in cars",
+    category = "Core",
     type = "Boolean"
 })
 
-lia.config.add("CarEntryDelayEnabled", "@carEntryDelayEnabled", true, nil, {
-    desc = "@carEntryDelayEnabledDesc",
-    category = "@core",
+lia.config.add("CarEntryDelayEnabled", "Car Entry Delay Enabled", true, nil, {
+    desc = "Whether entering a vehicle requires a delay.",
+    category = "Core",
     type = "Boolean"
 })
 
-lia.config.add("TimeToEnterVehicle", "@timeToEnterVehicle", 4, nil, {
-    desc = "@timeToEnterVehicleDesc",
-    category = "@core",
+lia.config.add("TimeToEnterVehicle", "Time To Enter Vehicle", 4, nil, {
+    desc = "Defines the time to enter vehicle.",
+    category = "Core",
     type = "Int",
     min = 1,
     max = 30
 })
 
-lia.config.add("DisableSimfphysHUD", "@disableSimfphysHUD", false, function()
+lia.config.add("DisableSimfphysHUD", "Disable simfphys HUD", false, function()
     if SERVER then
         for _, client in player.Iterator() do
             if IsValid(client) then client:notifyInfoLocalized("simfphysHudRestartNotice") end
         end
     end
 end, {
-    desc = "@disableSimfphysHUDDesc",
-    category = "@core",
+    desc = "Removes the simfphys HUD. This only applies after a Lua refresh or server restart.",
+    category = "Core",
     type = "Boolean"
 })

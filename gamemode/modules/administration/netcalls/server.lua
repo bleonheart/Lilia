@@ -742,12 +742,12 @@ net.Receive("liaSpawnMenuSpawnItem", function(_, client)
             ent:SetCreator(client)
         end
 
-        undo.Create(L("item"))
+        undo.Create("Item")
         undo.SetPlayer(client)
         undo.AddEntity(ent)
         local name = lia.item.list[id] and lia.item.list[id].name or id
-        undo.SetCustomUndoText(L("spawnUndoText", name))
-        undo.Finish(L("spawnUndoName", name))
+        undo.SetCustomUndoText(string.format("Undone %s", name))
+        undo.Finish(string.format("Item (%s)", name))
         lia.log.add(client, "spawnItem", name, "SpawnMenuSpawnItem")
         client:notifySuccessLocalized("logItemSpawned", name)
     end, angle_zero, {})
@@ -779,7 +779,7 @@ net.Receive("liaManagesitroomsAction", function(_, client)
             client:SetPos(targetPos)
             client:notifySuccessLocalized("sitroomTeleport", name)
             lia.log.add(client, "sendToSitRoom", client:Name(), name)
-            local message = L("staffLogTeleportedToSitRoom", client:Name(), client:SteamID64(), name)
+            local message = string.format("%s (Steam64ID: %s) teleported to sit room \"%s\".", client:Name(), client:SteamID64(), name)
             StaffAddTextShadowed(Color(123, 104, 238), "SIT", Color(255, 255, 255), message)
         end
     elseif action == 2 then
@@ -789,14 +789,14 @@ net.Receive("liaManagesitroomsAction", function(_, client)
             rooms[name] = nil
             lia.data.set("sitrooms", rooms)
             client:notifySuccessLocalized("sitroomRenamed")
-            lia.log.add(client, "sitRoomRenamed", L("sitroomRenamedDetail", name, newName), L("logRenamedSitroom"))
+            lia.log.add(client, "sitRoomRenamed", string.format("Old: %s | New: %s", name, newName), "Renamed administration room")
         end
     elseif action == 3 then
         if rooms[name] then
             rooms[name] = client:GetPos()
             lia.data.set("sitrooms", rooms)
             client:notifySuccessLocalized("sitroomRepositioned")
-            lia.log.add(client, "sitRoomRepositioned", L("sitroomRepositionedDetail", name, tostring(client:GetPos())), L("logRepositionedSitroom"))
+            lia.log.add(client, "sitRoomRepositioned", string.format("Name: %s | New Position: %s", name, tostring(client:GetPos())), "Repositioned administration room")
         end
     end
 end)
@@ -1061,7 +1061,7 @@ LIMIT %d OFFSET %d]], safeLimit, safeOffset)
                     Desc = row.desc,
                     Faction = row.faction,
                     SteamID = steamID,
-                    LastUsed = stored and L("onlineNow") or row.lastJoinTime,
+                    LastUsed = stored and "Online now" or row.lastJoinTime,
                     Banned = isBanned,
                     PlayTime = playTime,
                     Money = tonumber(row.money) or 0,

@@ -162,10 +162,10 @@ function GM:PlayerLoadedChar(client, character)
     if character:getFaction() == FACTION_STAFF then
         local storedDiscord = client:getLiliaData("staffDiscord")
         if storedDiscord and storedDiscord ~= "" then
-            local description = L("staffCharacterDiscordSteamID", storedDiscord, client:SteamID())
+            local description = string.format("Staff Character - Discord: %s, SteamID: %s", storedDiscord, client:SteamID())
             character:setDesc(description)
         else
-            if character:getDesc() == "" or character:getDesc():find(L("staffCharacter")) then
+            if character:getDesc() == "" or character:getDesc():find("^A Staff Character") then
                 timer.Simple(2, function()
                     if IsValid(client) and client:getChar() == character then
                         net.Start("liaStaffDiscordPrompt")
@@ -227,8 +227,8 @@ function GM:CanPlayerInteractItem(client, action, item)
     local hasNoItemCooldown = client:hasPrivilege("noItemCooldown")
     lia.debug("[Permissions]", "Permission Check for hook GM:CanPlayerInteractItem", "action=", tostring(action), "hasPrivilege(noItemCooldown)=", tostring(hasNoItemCooldown), "finalResult=", tostring(hasNoItemCooldown))
     if hasNoItemCooldown then return true end
-    if not client:Alive() then return false, L("forbiddenActionStorage") end
-    if IsValid(client:GetRagdollEntity()) then return false, L("forbiddenActionStorage") end
+    if not client:Alive() then return false, "You can't perform this action from storage." end
+    if IsValid(client:GetRagdollEntity()) then return false, "You can't perform this action from storage." end
     if action == "drop" then
         if hook.Run("CanPlayerDropItem", client, item) ~= false then
             if not client.dropDelay then
@@ -360,8 +360,8 @@ function GM:CheckPassword(steamID64, ipAddress, serverPassword, clientPassword, 
     local steamID = util.SteamIDFrom64(steamID64)
     if serverPassword ~= "" and serverPassword ~= clientPassword then
         lia.log.add(nil, "failedPassword", steamID, playerName, serverPassword, clientPassword)
-        lia.information(L("passwordsDoNotMatchFor") .. " " .. tostring(playerName) .. " (" .. tostring(steamID) .. ").")
-        return false, L("passwordsDoNotMatch")
+        lia.information("Passwords Do Not Match For" .. " " .. tostring(playerName) .. " (" .. tostring(steamID) .. ").")
+        return false, "Passwords Do Not Match"
     end
 end
 
@@ -522,7 +522,7 @@ function GM:InitializedSchema()
 end
 
 function GM:GetGameDescription()
-    return istable(SCHEMA) and tostring(SCHEMA.name) or L("defaultGameDescription")
+    return istable(SCHEMA) and tostring(SCHEMA.name) or "A Lilia Gamemode"
 end
 
 function GM:PostPlayerLoadout(client)
@@ -627,7 +627,7 @@ function GM:PlayerAuthed(client, steamid)
         lia.db.selectOne({"reason"}, "bans", "playerSteamID = " .. lia.db.convertDataType(steamid)):next(function(banData)
             if not IsValid(client) or not banData then return end
             local reason = banData.reason
-            client:Kick(L("banMessage", 0, reason or L("genericReason")))
+            client:Kick(string.format("You've been banned for %s minute(s). (%s)", 0, reason or "No reason specified."))
         end)
     end)
 end
@@ -797,7 +797,7 @@ function GM:SetupBotPlayer(client)
     local character = lia.char.new({
         name = lia.util.generateRandomName(),
         faction = faction and faction.uniqueID or "unknown",
-        desc = L("botDesc", botID),
+        desc = string.format("This is a bot. BotID is %s.", botID),
         model = model,
     }, botID, client, client:SteamID())
 
@@ -898,7 +898,7 @@ function GM:SaveData()
 
     if #data > 0 then
         lia.data.savePersistence(data)
-        lia.information(L("saved"))
+        lia.information("Data saved successfully.")
     end
 end
 
@@ -929,25 +929,25 @@ function GM:LoadData()
             repeat
                 local cls = ent.class
                 if not isstring(cls) or cls == "" then
-                    lia.error(L("invalidEntityClass"))
+                    lia.error("Invalid entity class.")
                     break
                 end
 
                 local decodedPos = lia.data.decode(ent.pos)
                 local decodedAng = lia.data.decode(ent.angles)
                 if not decodedPos then
-                    lia.error(L("invalidEntityPosition", cls))
+                    lia.error(string.format("Invalid position for %s.", cls))
                     break
                 end
 
                 if IsEntityNearby(decodedPos, cls) then
-                    lia.error(L("entityCreationAborted", cls, decodedPos.x, decodedPos.y, decodedPos.z))
+                    lia.error(string.format("Entity creation aborted: An entity of class '%s' is already nearby at position (%.2f, %.2f, %.2f).", cls, decodedPos.x, decodedPos.y, decodedPos.z))
                     break
                 end
 
                 local createdEnt = ents.Create(cls)
                 if not IsValid(createdEnt) then
-                    lia.error(L("failedEntityCreation", cls))
+                    lia.error(string.format("Failed to create entity %s.", cls))
                     break
                 end
 
@@ -977,7 +977,7 @@ function GM:LoadData()
                             lia.error(debug.traceback())
                         end
                     else
-                        lia.error(L("invalidAngleEntity", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng)))
+                        lia.error(string.format("Invalid angle for entity '%s' at %s: %s (%s)", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng)))
                         lia.error(debug.traceback())
                     end
                 end
@@ -1025,7 +1025,7 @@ function GM:LoadData()
                 local range = "(" .. table.concat(idRange, ", ") .. ")"
                 if hook.Run("ShouldDeleteSavedItems") == true then
                     lia.db.query("DELETE FROM lia_items WHERE itemID IN " .. range)
-                    lia.information(L("serverDeletedItems"))
+                    lia.information("Server Deleted Server Items (does not include Logical Items)")
                 else
                     lia.db.query("SELECT itemID, uniqueID, data FROM lia_items WHERE itemID IN " .. range, function(data)
                         if not data then return end
@@ -1150,7 +1150,7 @@ end
 
 function ClientAddText(client, ...)
     if not client or not IsValid(client) then
-        lia.error(L("invalidClientChatAddText"))
+        lia.error("Invalid client provided to chat.AddText")
         return
     end
 
@@ -1162,7 +1162,7 @@ end
 
 function ClientAddTextShadowed(client, ...)
     if not client or not IsValid(client) then
-        lia.error(L("invalidClientChatAddText"))
+        lia.error("Invalid client provided to chat.AddText")
         return
     end
 
@@ -1249,7 +1249,7 @@ function GM:CreateSalaryTimers()
                                 local finalPay = hook.Run("OnSalaryGiven", client, char, pay, charFaction, class)
                                 if isnumber(finalPay) then pay = finalPay end
                                 char:giveMoney(pay)
-                                client:notifyMoneyLocalized("salary", lia.currency.get(pay), L("salaryWord"))
+                                client:notifyMoneyLocalized("salary", lia.currency.get(pay), "Salary")
                             end
                         end
                     end
@@ -1359,8 +1359,8 @@ end
 gameevent.Listen("server_addban")
 gameevent.Listen("server_removeban")
 hook.Add("server_addban", "LiliaLogServerBan", function(data)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("admin") .. "] ")
-    MsgC(Color(255, 153, 0), L("banLogFormat", data.name, data.networkid, data.ban_length, data.ban_reason), "\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. "Admin" .. "] ")
+    MsgC(Color(255, 153, 0), string.format("[BAN] %s (%s) was banned for %s minute(s): %s", data.name, data.networkid, data.ban_length, data.ban_reason), "\n")
     lia.db.insertTable({
         player = data.name or "",
         playerSteamID = data.networkid,
@@ -1373,8 +1373,8 @@ hook.Add("server_addban", "LiliaLogServerBan", function(data)
 end)
 
 hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("admin") .. "] ")
-    MsgC(Color(255, 153, 0), L("unbanLogFormat", data.networkid), "\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. "Admin" .. "] ")
+    MsgC(Color(255, 153, 0), string.format("[UNBAN] %s was unbanned.", data.networkid), "\n")
     lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(data.networkid))
 end)
 

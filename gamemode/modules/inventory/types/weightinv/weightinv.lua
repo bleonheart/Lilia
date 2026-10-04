@@ -27,7 +27,7 @@ end
 
 function WeightInv:canAdd(item)
     if isstring(item) then item = lia.item.list[item] end
-    assert(istable(item), L("itemMustBeTable"))
+    assert(istable(item), "Item must be a table")
     return self:getWeight() + getItemWeight(item) <= self:getMaxWeight()
 end
 

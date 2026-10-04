@@ -42,7 +42,7 @@ else
     end
 
     function MODULE:ChooseCharacter(id)
-        assert(isnumber(id), L("idMustBeNumber"))
+        assert(isnumber(id), "id must be a number")
         local d = deferred.new()
         net.Receive("liaCharChoose", function()
             local message = net.ReadString()
@@ -66,7 +66,7 @@ else
 
     function MODULE:CreateCharacter(data)
         local client = LocalPlayer()
-        assert(istable(data), L("dataMustBeTable"))
+        assert(istable(data), "Data must be a table")
         local d = deferred.new()
         local payload = {}
         for key, charVar in pairs(lia.char.vars) do
@@ -81,7 +81,7 @@ else
             local value = data[key]
             if isfunction(charVar.onValidate) then
                 local results = {charVar.onValidate(value, data, client)}
-                if results[1] == false then return d:reject(L(unpack(results, 2))) end
+                if results[1] == false then return d:reject(tostring(unpack(results, 2))) end
             end
 
             payload[key] = value
@@ -109,7 +109,7 @@ else
     end
 
     function MODULE:DeleteCharacter(id)
-        assert(isnumber(id), L("idMustBeNumber"))
+        assert(isnumber(id), "id must be a number")
         net.Start("liaCharDelete")
         net.WriteUInt(id, 32)
         net.SendToServer()

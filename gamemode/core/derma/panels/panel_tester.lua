@@ -110,7 +110,7 @@ end
 setups.liaButton = function(panel) panel:SetText("Test Button") end
 setups.liaChatBox = function(panel)
     panel:setActive(true)
-    panel:addText(Color(95, 210, 135), "Panel Tester", color_white, ": Chatbox preview message")
+    panel:addText(Color(95, 210, 135), "Panel Tester(", color_white, "): Chatbox preview message")
     panel:addText(Color(130, 180, 255), "Use the entry below to test input behavior.")
 end
 

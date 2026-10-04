@@ -69,7 +69,7 @@ function lia.util.requestEntityInformation(client, entity, argTypes, callback)
         return
     end
 
-    client:requestArguments(L("entityInformation"), argTypes, function(success, information)
+    client:requestArguments("Entity Information", argTypes, function(success, information)
         if not success then
             if IsValid(entity) then entity:Remove() end
         else
@@ -379,12 +379,12 @@ if SERVER then
         local localizedColumns = {}
         for i, colInfo in ipairs(columns or {}) do
             local localizedColInfo = table.Copy(colInfo)
-            if localizedColInfo.name then localizedColInfo.name = L(localizedColInfo.name) end
+            if localizedColInfo.name then localizedColInfo.name = tostring(localizedColInfo.name) end
             localizedColumns[i] = localizedColInfo
         end
 
         local tableUIData = {
-            title = title and L(title) or L("tableListTitle"),
+            title = title and tostring(title) or "Table List",
             columns = localizedColumns,
             data = data,
             options = options or {},
@@ -601,7 +601,7 @@ else
     function lia.util.createTableUI(title, columns, data, options, charID)
         local frameWidth, frameHeight = ScrW() * 0.8, ScrH() * 0.8
         local frame = vgui.Create("liaFrame")
-        frame:SetTitle(title and L(title) or L("tableListTitle"))
+        frame:SetTitle(title and tostring(title) or "Table List")
         frame:SetSize(frameWidth, frameHeight)
         frame:Center()
         frame:MakePopup()
@@ -614,14 +614,14 @@ else
         local listView = frame:Add("liaTable")
         listView:Dock(FILL)
         for _, colInfo in ipairs(columns or {}) do
-            local localizedName = colInfo.name and L(colInfo.name) or L("na")
+            local localizedName = colInfo.name and tostring(colInfo.name) or "N/A"
             listView:AddColumn(localizedName, colInfo.width, colInfo.align, colInfo.sortable)
         end
 
         for _, row in ipairs(data) do
             local lineData = {}
             for _, colInfo in ipairs(columns) do
-                table.insert(lineData, row[colInfo.field] or L("na"))
+                table.insert(lineData, row[colInfo.field] or "N/A")
             end
 
             local line = listView:AddLine(unpack(lineData))
@@ -629,10 +629,10 @@ else
         end
 
         listView:ForceCommit()
-        listView:AddMenuOption(L("copyRow"), function(rowData)
+        listView:AddMenuOption("Copy Row", function(rowData)
             local rowString = ""
             for key, value in pairs(rowData) do
-                value = tostring(value or L("na"))
+                value = tostring(value or "N/A")
                 key = tostring(key)
                 rowString = rowString .. key:gsub("^%l", string.upper) .. " " .. value .. " | "
             end
@@ -642,11 +642,11 @@ else
         end)
 
         for _, option in ipairs(istable(options) and options or {}) do
-            listView:AddMenuOption(option.name and L(option.name) or option.name, function(rowData, rowIndex)
+            listView:AddMenuOption(option.name and tostring(option.name) or option.name, function(rowData, rowIndex)
                 if not option.net then return end
                 if option.ExtraFields then
                     local inputPanel = vgui.Create("liaFrame")
-                    inputPanel:SetTitle(L("optionsTitle", option.name))
+                    inputPanel:SetTitle(string.format("%s Options", option.name))
                     inputPanel:SetSize(300, 300 + #table.GetKeys(option.ExtraFields) * 35)
                     inputPanel:Center()
                     inputPanel:MakePopup()
@@ -665,7 +665,7 @@ else
                             local entry = vgui.Create("DTextEntry", form)
                             entry:Dock(TOP)
                             entry:DockMargin(5, 5, 5, 0)
-                            entry:SetPlaceholderText(L("typeFieldPrompt", fName))
+                            entry:SetPlaceholderText(string.format("Type %s", fName))
                             form:AddItem(entry)
                             inputs[fName] = {
                                 panel = entry,
@@ -676,7 +676,7 @@ else
                             combo:Dock(TOP)
                             combo:DockMargin(5, 5, 5, 0)
                             combo:PostInit()
-                            combo:SetValue(L("selectPrompt", fName))
+                            combo:SetValue(string.format("Select %s", fName))
                             form:AddItem(combo)
                             inputs[fName] = {
                                 panel = combo,
@@ -687,7 +687,7 @@ else
                             combo:Dock(TOP)
                             combo:DockMargin(5, 5, 5, 0)
                             combo:PostInit()
-                            combo:SetValue(L("selectPrompt", fName))
+                            combo:SetValue(string.format("Select %s", fName))
                             for _, choice in ipairs(fType) do
                                 combo:AddChoice(choice)
                             end
@@ -702,7 +702,7 @@ else
                     end
 
                     local submitButton = vgui.Create("DButton", form)
-                    submitButton:SetText(L("submit"))
+                    submitButton:SetText("Submit")
                     submitButton:Dock(TOP)
                     submitButton:DockMargin(5, 10, 5, 0)
                     form:AddItem(submitButton)
@@ -787,7 +787,7 @@ else
         local titleLabel = frame:Add("DLabel")
         titleLabel:SetPos(0, 8)
         titleLabel:SetSize(frameW, 20)
-        titleLabel:SetText(L(title or "options"))
+        titleLabel:SetText(tostring(title or "options"))
         titleLabel:SetFont("LiliaFont.17")
         titleLabel:SetColor(color_white)
         titleLabel:SetContentAlignment(5)
@@ -799,7 +799,7 @@ else
             btn:SetTall(entryH)
             btn:Dock(TOP)
             btn:DockMargin(0, 0, 0, 5)
-            btn:SetText(L(opt.name))
+            btn:SetText(tostring(opt.name))
             btn:SetFont("LiliaFont.17")
             btn:SetTextColor(color_white)
             btn:SetContentAlignment(5)

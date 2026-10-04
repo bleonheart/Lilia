@@ -123,9 +123,9 @@ end
 
 local function localizeKeybindLabel(value, ...)
     if not isstring(value) then return value end
-    local resolved = lia.lang.resolveToken(value, ...)
+    local resolved = string.format((string.gsub(tostring(value), "^@", "", 1)), ...)
     if resolved ~= value then return resolved end
-    return L(value, ...)
+    return string.format(tostring(value), ...)
 end
 
 lia.keybind.localizeValue = localizeKeybindLabel
@@ -153,7 +153,7 @@ function lia.keybind.add(k, d, desc, cb)
     local c = isstring(key) and KeybindKeys[string.lower(key)] or key
     if not c then return end
     if not istable(callbacks) or not callbacks.onPress then
-        lia.error(L("keybindAddInvalidCallbackFormat") .. " '" .. tostring(actionName) .. "'. Must use table with 'onPress' function. (Function: lia.keybind.add)")
+        lia.error("Keybind Add Invalid Callback Format" .. " '" .. tostring(actionName) .. "'. Must use table with 'onPress' function. (Function: lia.keybind.add)")
         return
     end
 
@@ -187,22 +187,22 @@ end
 
 lia.keybind.add("openInventory", {
     keyBind = KEY_NONE,
-    desc = "@openInventoryDesc",
+    desc = "Opens your inventory menu",
     onPress = function()
         local f1Menu = vgui.Create("liaMenu")
-        f1Menu:setActiveTab(L("inv"))
+        f1Menu:setActiveTab("Inventory")
     end
 })
 
 lia.keybind.add("adminMode", {
     keyBind = KEY_NONE,
-    desc = "@adminModeDesc",
+    desc = "Toggles admin mode to switch between staff and regular character",
     serverOnly = true,
     shouldRun = function(client) return client:isStaff() end,
     onPress = function(client)
         if not IsValid(client) then return end
         local steamID = client:SteamID()
-        client:ChatPrint(L("adminModeToggle"))
+        client:ChatPrint("Admin Mode Toggled")
         if client:isStaffOnDuty() then
             local oldCharID = client.oldCharID or 0
             if oldCharID > 0 then
@@ -229,7 +229,7 @@ lia.keybind.add("adminMode", {
                     timer.Simple(5, function() if IsValid(client) then hook.Remove("PostPlayerLoadedChar", hookName) end end)
                 end
 
-                lia.log.add(client, "adminMode", oldCharID, L("adminModeLogBack"))
+                lia.log.add(client, "adminMode", oldCharID, "Switched back to their IC character")
             else
                 client:notifyErrorLocalized("noPrevChar")
             end
@@ -244,7 +244,7 @@ lia.keybind.add("adminMode", {
                         net.Start("liaAdminModeSwapCharacter")
                         net.WriteInt(id, 32)
                         net.Send(client)
-                        lia.log.add(client, "adminMode", id, L("adminModeLogStaff"))
+                        lia.log.add(client, "adminMode", id, "Switched to their staff character")
                         return
                     end
                 end
@@ -265,7 +265,7 @@ lia.keybind.add("adminMode", {
                             net.Start("liaAdminModeSwapCharacter")
                             net.WriteInt(charID, 32)
                             net.Send(client)
-                            lia.log.add(client, "adminMode", charID, L("adminModeLogStaff"))
+                            lia.log.add(client, "adminMode", charID, "Switched to their staff character")
                             client:notifySuccessLocalized("staffCharCreated")
                         end
                     end)
@@ -279,7 +279,7 @@ lia.keybind.add("adminMode", {
 
 lia.keybind.add("quickTakeItem", {
     keyBind = KEY_NONE,
-    desc = "@quickTakeItemDesc",
+    desc = "Quickly takes an item from the world when looking at it",
     serverOnly = true,
     onPress = function(client)
         if not client:getChar() then return end
@@ -294,7 +294,7 @@ lia.keybind.add("quickTakeItem", {
 
 lia.keybind.add("convertEntity", {
     keyBind = KEY_NONE,
-    desc = "@convertEntityDesc",
+    desc = "Converts a world entity into an item",
     onPress = function(client)
         if not IsValid(client) or not client:getChar() then return end
         local trace = client:GetEyeTrace()
@@ -654,7 +654,7 @@ if CLIENT then
 
         local function addKeybindField(scroll, action, data, allowEdit, taken, refreshFunc)
             local description = tostring(lia.keybind.getDisplayDescription(action) or "")
-            local displayName = tostring(L(action) or action)
+            local displayName = tostring(tostring(action) or action)
             local row = scroll:Add("DPanel")
             row:Dock(TOP)
             row:SetTall(52)
@@ -766,7 +766,7 @@ if CLIENT then
                     lia.keybind.save()
                     if refreshFunc then refreshFunc() end
                     local client = LocalPlayer()
-                    if IsValid(client) then client:notifySuccess(L("keybindChanged", localizeKeybindLabel(action), getDisplayKeyName(newKey))) end
+                    if IsValid(client) then client:notifySuccess(string.format("Keybind '%s' changed to %s", localizeKeybindLabel(action), getDisplayKeyName(newKey))) end
                 end
             else
                 local valueLabel = row:Add("DLabel")
@@ -789,7 +789,7 @@ if CLIENT then
                     categories[category] = categories[category] or {}
                     categories[category][#categories[category] + 1] = {
                         key = action,
-                        name = tostring(L(action) or action),
+                        name = tostring(tostring(action) or action),
                         desc = tostring(lia.keybind.getDisplayDescription(action) or ""),
                         data = data
                     }
@@ -877,7 +877,7 @@ if CLIENT then
                 local searchEntry = toolbar:Add("liaEntry")
                 searchEntry:Dock(FILL)
                 searchEntry:DockMargin(0, 3, 10, 3)
-                searchEntry:SetPlaceholderText(L("searchKeybinds") or "Search keybinds...")
+                searchEntry:SetPlaceholderText("Search keybinds..." or "Search keybinds...")
                 searchEntry:SetFont("LiliaFont.18")
                 local body = root:Add("DPanel")
                 body:Dock(FILL)

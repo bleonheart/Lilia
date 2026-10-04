@@ -371,7 +371,7 @@ function PANEL:setActive(state)
 
                 for cmdName, cmdInfo in SortedPairs(self.commands) do
                     if not cmdName:lower():StartWith(input:sub(2):lower()) then continue end
-                    local descriptionText = cmdInfo.desc ~= "" and cmdInfo.desc or L("noDesc")
+                    local descriptionText = cmdInfo.desc ~= "" and cmdInfo.desc or "No Description"
                     addCommandRow("/" .. cmdName, descriptionText, function()
                         local syntax = cmdInfo.syntax or ""
                         self.text:SetText("/" .. cmdName .. " " .. syntax)
@@ -386,7 +386,7 @@ function PANEL:setActive(state)
                         if prefix:sub(1, 1) == "/" then
                             local cmd = prefix:gsub("^/", ""):lower()
                             if cmd ~= "" and not self.commands[cmd] and cmd:StartWith(input:sub(2):lower()) then
-                                local descriptionText = chatInfo.desc ~= "" and chatInfo.desc or L("noDesc")
+                                local descriptionText = chatInfo.desc ~= "" and chatInfo.desc or "No Description"
                                 addCommandRow(prefix, descriptionText, function()
                                     local syntax = chatInfo.syntax or ""
                                     self.text:SetText(prefix .. " " .. syntax)

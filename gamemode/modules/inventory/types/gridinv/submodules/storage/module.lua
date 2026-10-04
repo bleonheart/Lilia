@@ -1,12 +1,12 @@
-﻿MODULE.name = "@storage"
+﻿MODULE.name = "Storage"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "@storageSystemDescription"
+MODULE.desc = "Adds persistent storage containers and player vaults that integrate with the inventory for item management."
 MODULE.NetworkStrings = {"liaStorageExit", "liaStorageSetPassword", "liaStorageTransfer", "liaStorageUnlock", "liaTrunkInitStorage",}
 MODULE.Privileges = {
     ["canSpawnStorage"] = {
-        Name = "@canSpawnStorage",
+        Name = "Can Spawn Storage",
         MinAccess = "superadmin",
-        Category = "@spawnPermissions",
+        Category = "Spawn Permissions",
     }
 }
