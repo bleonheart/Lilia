@@ -1,7 +1,7 @@
-﻿if not ArcCWInstalled then return end
-ITEM.name = "arccwAttachment"
-ITEM.desc = "arccwAttachmentDesc"
-ITEM.category = "attachments"
+if not ArcCWInstalled then return end
+ITEM.name = "ArcCW Attachment"
+ITEM.desc = "An attachment for ArcCW weapons."
+ITEM.category = "Attachments"
 ITEM.model = "models/Items/BoxSRounds.mdl"
 ITEM.width = 1
 ITEM.height = 1
@@ -44,9 +44,9 @@ ITEM.functions.Unequip = {
     icon = "icon16/cross.png",
     onRun = function(item)
         if item:removeAttachment(item.player) then
-            item.player:notifySuccessLocalized("attachmentUnequipped")
+            item.player:notifySuccess(string.format("Attachment unequipped."))
         else
-            item.player:notifyErrorLocalized("attachmentUnequipFailed")
+            item.player:notifyError(string.format("Failed to unequip attachment."))
         end
         return false
     end,
@@ -60,7 +60,7 @@ ITEM.functions.Equip = {
     onRun = function(item)
         item:setData("equip", true)
         item:addAttachment(item.player)
-        item.player:notifySuccessLocalized("attachmentEquipped")
+        item.player:notifySuccess(string.format("Attachment equipped."))
         return false
     end,
     onCanRun = function(item) return not IsValid(item.entity) and item:getData("equip") ~= true end

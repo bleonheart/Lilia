@@ -45,7 +45,7 @@ function MODULE:ShowPlayerOptions(target, options)
         name = string.format("Name: %s (copy)", target:Name()),
         image = "icon16/page_copy.png",
         func = function()
-            client:notifySuccessLocalized("copiedToClipboard", target:Name(), "Name")
+            client:notifySuccess(string.format("Copied %s's %s to Clipboard", target:Name(), "Name"))
             SetClipboardText(target:Name())
         end
     })
@@ -56,7 +56,7 @@ function MODULE:ShowPlayerOptions(target, options)
         image = "icon16/page_copy.png",
         func = function()
             if target:getChar() then
-                client:notifySuccessLocalized("copiedCharID", target:getChar():getID())
+                client:notifySuccess(string.format("Copied CharID: %s to Clipboard", target:getChar():getID()))
                 SetClipboardText(target:getChar():getID())
             end
         end
@@ -66,7 +66,7 @@ function MODULE:ShowPlayerOptions(target, options)
         name = string.format("SteamID: %s (copy)", target:SteamID()),
         image = "icon16/page_copy.png",
         func = function()
-            client:notifySuccessLocalized("copiedToClipboard", target:Name(), "SteamID")
+            client:notifySuccess(string.format("Copied %s's %s to Clipboard", target:Name(), "SteamID"))
             SetClipboardText(target:SteamID())
         end
     })
@@ -5780,13 +5780,13 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                 for _, module in pairs(lia.module.list or {}) do
                     if istable(module.Privileges) and istable(module.Privileges[permissionID]) then
                         local privilege = module.Privileges[permissionID]
-                        return tostring(((isstring(privilege.Category or module.name or "Unassigned") and privilege.Category or module.name or ("Unassigned"):sub(1, 1) == "@" and privilege.Category or module.name or ("Unassigned"):sub(2) or privilege.Category or module.name or "Unassigned")))
+                        return tostring(lia.lang.resolve(privilege.Category or module.name or "Unassigned"))
                     end
                 end
 
                 if CAMI then
                     local privilege = CAMI.GetPrivilege(permissionID)
-                    if privilege and privilege.Category then return tostring(((isstring(privilege.Category) and privilege.Category:sub(1, 1) == "@" and privilege.Category:sub(2) or privilege.Category))) end
+                    if privilege and privilege.Category then return tostring(lia.lang.resolve(privilege.Category)) end
                 end
                 return tostring("Unassigned")
             end
@@ -5794,7 +5794,7 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
             local function resolvePrivilegeDescription(permissionID, name)
                 local rawDescription = lia.admin.privilegeDescriptions and lia.admin.privilegeDescriptions[permissionID] or nil
                 if rawDescription ~= nil then
-                    local description = string.Trim(tostring(((isstring(rawDescription) and rawDescription:sub(1, 1) == "@" and rawDescription:sub(2) or rawDescription)) or ""))
+                    local description = string.Trim(tostring(lia.lang.resolve(rawDescription) or ""))
                     if description ~= "" and description ~= permissionID then return description end
                 end
 
@@ -5802,7 +5802,7 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                     local privilege = istable(module.Privileges) and module.Privileges[permissionID] or nil
                     local description = privilege and (privilege.Description or privilege.Desc or privilege.description or privilege.desc or privilege.Help or privilege.help or privilege.Tooltip or privilege.tooltip) or nil
                     if description ~= nil then
-                        description = string.Trim(tostring(((isstring(description) and description:sub(1, 1) == "@" and description:sub(2) or description)) or ""))
+                        description = string.Trim(tostring(lia.lang.resolve(description) or ""))
                         if description ~= "" and description ~= permissionID then return description end
                     end
                 end

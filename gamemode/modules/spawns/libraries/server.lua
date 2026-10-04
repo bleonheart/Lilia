@@ -268,7 +268,7 @@ local function RemovedDropOnDeathItems(client)
     end
 
     local lostCount = #client.LostItems
-    if lostCount > 0 then client:notifyWarningLocalized("itemsLostOnDeath", lostCount) end
+    if lostCount > 0 then client:notifyWarning(string.format("You lost %s item(s) on death.", lostCount)) end
 end
 
 local function resolveFromEntity(ent)

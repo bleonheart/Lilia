@@ -1,9 +1,9 @@
-﻿ITEM.name = "ammoName"
+ITEM.name = "Ammo Base"
 ITEM.model = "models/props_c17/SuitCase001a.mdl"
 ITEM.width = 1
 ITEM.height = 1
 ITEM.ammo = "pistol"
-ITEM.category = "itemCatAmmunition"
+ITEM.category = "Ammunition"
 ITEM.functions.use = {
     name = "load",
     tip = "useTip",

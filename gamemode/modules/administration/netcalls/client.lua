@@ -83,7 +83,7 @@ net.Receive("liaAdminModeSwapCharacter", function()
                 hook.Run("CharLoaded", character)
             end)
         else
-            d:reject(message)
+            d:reject(lia.lang.resolve(message))
         end
     end)
 

@@ -76,7 +76,7 @@ function PANEL:Init()
         local export = self:BuildBodygroupExport()
         SetClipboardText(export)
         MsgC(Color(0, 255, 0), "[Lilia] ", color_white, export .. "\n")
-        LocalPlayer():notifySuccessLocalized("copied")
+        LocalPlayer():notifySuccess(string.format("Copied to clipboard."))
     end
 
     self.submit = self.actions:Add("liaButton")

@@ -77,8 +77,8 @@ local function handleImmutableBaseGroupSAMSync(rankName, permission, value)
     if defaultValue == value then
         lia.debug("[Permissions]", "Skipping SAM sync for immutable base group", "rank=", tostring(rankName), "permission=", tostring(permission), "value=", tostring(value), "reason=matches-default")
     else
-        local warningKey = value and "samImmutableBaseGroupGrantIgnored" or "samImmutableBaseGroupRevokeIgnored"
-        lia.warning(string.format(tostring(warningKey), tostring(permission), tostring(rankName)))
+        local warning = value and "[Lilia] Ignoring SAM request to grant privilege '%s' on immutable base usergroup '%s'. Change does not match default MinAccess behavior." or "[Lilia] Ignoring SAM request to revoke privilege '%s' on immutable base usergroup '%s'. Change does not match default MinAccess behavior."
+        lia.warning(string.format(warning, permission, rankName))
     end
     return true
 end
@@ -157,7 +157,7 @@ hook.Add("SAM.CanRunCommand", "liaSAM", function(client, _, _, cmd)
         local hasSamPermission = cmd.permission and client:HasPermission(cmd.permission) or true
         lia.debug("[Permissions]", "Permission Check for hook SAM.CanRunCommand SAM permission", "commandPermission=", tostring(cmd.permission), "HasPermission=", tostring(hasSamPermission), "finalResult=", tostring(hasSamPermission))
         if cmd.permission and not hasSamPermission then
-            client:notifyErrorLocalized("staffPermissionDenied")
+            client:notifyError(string.format("You do not have permission to use this command."))
             return false
         end
 
@@ -168,7 +168,7 @@ hook.Add("SAM.CanRunCommand", "liaSAM", function(client, _, _, cmd)
         if permission then
             return true
         else
-            client:notifyErrorLocalized("staffRestrictedCommand")
+            client:notifyError(string.format("You must be on duty or have bypass permissions to use this command."))
             return false
         end
     end

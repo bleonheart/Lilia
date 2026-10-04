@@ -1,5 +1,5 @@
-﻿ITEM.name = "aidName"
-ITEM.desc = "aidDesc"
+ITEM.name = "Aid Items"
+ITEM.desc = "Heals you bruh."
 ITEM.model = "models/weapons/w_package.mdl"
 ITEM.width = 1
 ITEM.height = 1
@@ -73,7 +73,7 @@ ITEM.functions.target = {
                 applyAidEffects(item, target, client)
                 return true
             else
-                client:notifyErrorLocalized("invalidTargetNeedLiving")
+                client:notifyError(string.format("You must be looking at a valid, living player to use this."))
                 return false
             end
         end

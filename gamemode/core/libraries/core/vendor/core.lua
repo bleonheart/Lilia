@@ -48,20 +48,20 @@ if SERVER then
         local oldName = vendor:getName()
         if not name or name == "" then name = lia.vendor.defaults.name or "Jane Doe" end
         vendor:setName(name)
-        client:notifyLocalized("vendorNameChanged", getTextValue(oldName), getTextValue(name))
+        client:notify(string.format("Changed vendor name from %s to %s.", getTextValue(oldName), getTextValue(name)))
     end)
 
     addEditor("desc", function() return net.ReadString() end, function(vendor, client, desc)
         local oldDesc = vendor:getDescription()
         vendor:setDescription(desc or "")
-        client:notifyLocalized("vendorDescriptionChanged", getTextValue(oldDesc), getTextValue(desc))
+        client:notify(string.format("Changed vendor description from %s to %s.", getTextValue(oldDesc), getTextValue(desc)))
     end)
 
     addEditor("mode", function() return net.ReadString(), net.ReadInt(8) end, function(vendor, client, itemType, mode)
         local itemName = getItemName(itemType)
         local oldMode = vendor:getTradeMode(itemType)
         vendor:setTradeMode(itemType, mode)
-        client:notifyLocalized("vendorModeChanged", itemName, getModeText(oldMode), getModeText(mode))
+        client:notify(string.format("Changed mode for %s from %s to %s.", itemName, getModeText(oldMode), getModeText(mode)))
     end)
 
     addEditor("buyPrice", function() return net.ReadString(), net.ReadInt(32) end, function(vendor, client, itemType, price)
@@ -69,7 +69,7 @@ if SERVER then
         local oldPrice = vendor:getPrice(itemType, false, client)
         vendor:setItemBuyPrice(itemType, price)
         local newPrice = vendor:getPrice(itemType, false, client)
-        client:notifyLocalized("vendorBuyPriceChanged", itemName, lia.currency.get(oldPrice), lia.currency.get(newPrice))
+        client:notify(string.format("Changed buy price for %s from %s to %s.", itemName, lia.currency.get(oldPrice), lia.currency.get(newPrice)))
     end)
 
     addEditor("sellPrice", function() return net.ReadString(), net.ReadInt(32) end, function(vendor, client, itemType, price)
@@ -77,21 +77,21 @@ if SERVER then
         local oldPrice = vendor:getPrice(itemType, true, client)
         vendor:setItemSellPrice(itemType, price)
         local newPrice = vendor:getPrice(itemType, true, client)
-        client:notifyLocalized("vendorSellPriceChanged", itemName, lia.currency.get(oldPrice), lia.currency.get(newPrice))
+        client:notify(string.format("Changed sell price for %s from %s to %s.", itemName, lia.currency.get(oldPrice), lia.currency.get(newPrice)))
     end)
 
     addEditor("stockDisable", function() return net.ReadString() end, function(vendor, client, itemType)
         local itemName = getItemName(itemType)
         local oldMax = vendor:getMaxStock(itemType)
         vendor:setMaxStock(itemType, nil)
-        client:notifyLocalized("vendorStockDisabledChanged", itemName, oldMax or 0)
+        client:notify(string.format("Disabled stock for %s. Previous max stock was %s.", itemName, oldMax or 0))
     end)
 
     addEditor("stockMax", function() return net.ReadString(), net.ReadUInt(32) end, function(vendor, client, itemType, value)
         local itemName = getItemName(itemType)
         local oldMax = vendor:getMaxStock(itemType) or 0
         vendor:setMaxStock(itemType, value)
-        client:notifyLocalized("vendorStockMaxChanged", itemName, oldMax, value)
+        client:notify(string.format("Changed max stock for %s from %s to %s.", itemName, oldMax, value))
     end)
 
     addEditor("stock", function() return net.ReadString(), net.ReadUInt(32) end, function(vendor, client, itemType, value)
@@ -99,43 +99,43 @@ if SERVER then
         local oldStock = vendor:getStock(itemType) or 0
         vendor:setStock(itemType, value)
         local newStock = vendor:getStock(itemType) or 0
-        client:notifyLocalized("vendorStockCurrentChanged", itemName, oldStock, newStock)
+        client:notify(string.format("Changed current stock for %s from %s to %s.", itemName, oldStock, newStock))
     end)
 
     addEditor("stockEnabled", function() return net.ReadBool() end, function(vendor, client, enabled)
         local oldEnabled = lia.vendor.getVendorProperty(vendor, "stockEnabled")
         lia.vendor.setVendorProperty(vendor, "stockEnabled", enabled and true or false)
-        client:notifyLocalized("vendorStockEnabledChanged", getEnabledText(oldEnabled), getEnabledText(enabled))
+        client:notify(string.format("Changed stock option from %s to %s.", getEnabledText(oldEnabled), getEnabledText(enabled)))
     end)
 
     addEditor("faction", function() return net.ReadUInt(8), net.ReadBool() end, function(vendor, client, factionID, allowed)
         local faction = lia.faction.indices[factionID]
         vendor:setFactionAllowed(factionID, allowed)
-        client:notifyLocalized("vendorFactionChanged", faction and tostring(faction.name) or tostring(factionID), getEnabledText(allowed))
+        client:notify(string.format("Set faction access for %s to %s.", faction and tostring(faction.name) or tostring(factionID), getEnabledText(allowed)))
     end)
 
     addEditor("class", function() return net.ReadUInt(8), net.ReadBool() end, function(vendor, client, classID, allowed)
         local class = lia.class.list[classID]
         vendor:setClassAllowed(classID, allowed)
-        client:notifyLocalized("vendorClassChanged", class and tostring(class.name) or tostring(classID), getEnabledText(allowed))
+        client:notify(string.format("Set class access for %s to %s.", class and tostring(class.name) or tostring(classID), getEnabledText(allowed)))
     end)
 
     addEditor("model", function() return net.ReadString() end, function(vendor, client, model)
         local oldModel = vendor:GetModel()
         vendor:setModel(model)
-        client:notifyLocalized("vendorModelChanged", getTextValue(oldModel), getTextValue(model))
+        client:notify(string.format("Changed vendor model from %s to %s.", getTextValue(oldModel), getTextValue(model)))
     end)
 
     addEditor("skin", function() return net.ReadUInt(8) end, function(vendor, client, skin)
         local oldSkin = vendor:GetSkin()
         vendor:setSkin(skin)
-        client:notifyLocalized("vendorSkinChanged", oldSkin, skin)
+        client:notify(string.format("Changed vendor skin from %s to %s.", oldSkin, skin))
     end)
 
     addEditor("bodygroup", function() return net.ReadUInt(8), net.ReadUInt(8) end, function(vendor, client, index, value)
         local oldValue = vendor:GetBodygroup(index)
         vendor:setBodyGroup(index, value)
-        client:notifyLocalized("vendorBodygroupChanged", index, oldValue, value)
+        client:notify(string.format("Changed vendor bodygroup %s from %s to %s.", index, oldValue, value))
     end)
 
     addEditor("useMoney", function() return net.ReadBool() end, function(vendor, client, useMoney)
@@ -146,19 +146,19 @@ if SERVER then
             vendor:setMoney(nil)
         end
 
-        client:notifyLocalized("vendorUseMoneyChanged", getEnabledText(oldValue), getEnabledText(useMoney))
+        client:notify(string.format("Changed vendor money usage from %s to %s.", getEnabledText(oldValue), getEnabledText(useMoney)))
     end)
 
     addEditor("money", function() return net.ReadUInt(32) end, function(vendor, client, money)
         local oldMoney = vendor.getMoney and vendor:getMoney() or 0
         vendor:setMoney(money)
-        client:notifyLocalized("vendorMoneyChanged", lia.currency.get(oldMoney), lia.currency.get(money))
+        client:notify(string.format("Changed vendor money from %s to %s.", lia.currency.get(oldMoney), lia.currency.get(money)))
     end)
 
     addEditor("preset", function() return net.ReadString() end, function(vendor, client, preset)
         local oldPreset = lia.vendor.getVendorProperty(vendor, "preset")
         vendor:applyPreset(preset)
-        client:notifyLocalized("vendorPresetChanged", getTextValue(oldPreset), getTextValue(preset))
+        client:notify(string.format("Changed vendor preset from %s to %s.", getTextValue(oldPreset), getTextValue(preset)))
     end)
 
     addEditor("animation", function()
@@ -167,7 +167,7 @@ if SERVER then
     end, function(vendor, client, animation)
         local oldAnimation = lia.vendor.getVendorProperty(vendor, "animation")
         vendor:setAnimation(animation)
-        client:notifyLocalized("vendorAnimationChanged", getTextValue(oldAnimation), getTextValue(animation))
+        client:notify(string.format("Changed vendor animation from %s to %s.", getTextValue(oldAnimation), getTextValue(animation)))
     end)
 else
     local function addEditor(name, writer)

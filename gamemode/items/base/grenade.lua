@@ -1,6 +1,6 @@
-﻿ITEM.name = "grenadeName"
-ITEM.desc = "grenadeDesc"
-ITEM.category = "itemCatGrenades"
+ITEM.name = "Grenade Base"
+ITEM.desc = "Base item for grenades."
+ITEM.category = "Grenades"
 ITEM.model = "models/weapons/w_eq_fraggrenade.mdl"
 ITEM.class = "weapon_frag"
 ITEM.width = 1
@@ -12,12 +12,12 @@ ITEM.functions.Use = {
     onRun = function(item)
         local client = item.player
         if IsValid(client:GetRagdollEntity()) then
-            client:notifyErrorLocalized("noRagdollAction")
+            client:notifyError(string.format("You cannot do that while ragdolled."))
             return false
         end
 
         if client:HasWeapon(item.class) then
-            client:notifyErrorLocalized("alreadyHaveGrenade")
+            client:notifyError(string.format("You already have this type of grenade."))
             return false
         end
 

@@ -629,13 +629,13 @@ net.Receive("liaAdminSetCharProperty", function(_, client)
     local value = net.ReadType()
     local charIDsafe = tonumber(charID)
     if not charIDsafe then
-        client:notifyErrorLocalized("invalidCharID")
+        client:notifyError(string.format("Invalid character ID."))
         return
     end
 
     lia.db.query("SELECT name, money, model FROM lia_characters WHERE id = " .. charIDsafe, function(data)
         if not data or #data == 0 then
-            client:notifyErrorLocalized("characterNotFound")
+            client:notifyError(string.format("Character not found."))
             return
         end
 
@@ -645,45 +645,45 @@ net.Receive("liaAdminSetCharProperty", function(_, client)
             if lia.char.setCharDatabase(charID, "money", moneyValue) then
                 local target = lia.char.getCharacter(charID)
                 if IsValid(target) then
-                    client:notifySuccessLocalized("setMoney", target:Name(), lia.currency.get(moneyValue))
+                    client:notifySuccess(string.format("You set %s's money to %s.", target:Name(), lia.currency.get(moneyValue)))
                 else
-                    client:notifySuccessLocalized("offlineCharMoneySet", charID, lia.currency.get(moneyValue))
+                    client:notifySuccess(string.format("Character %s's money set to %s.", charID, lia.currency.get(moneyValue)))
                 end
 
                 lia.log.add(client, "adminSetCharMoney", charID, moneyValue)
             else
-                client:notifyErrorLocalized("failedToUpdateChar")
+                client:notifyError(string.format("Failed to update character property."))
             end
         elseif property == "name" then
             local nameValue = tostring(value)
             if lia.char.setCharDatabase(charID, "name", nameValue) then
                 local target = lia.char.getCharacter(charID)
                 if IsValid(target) then
-                    client:notifySuccessLocalized("changeName", client:Name(), charData.name, nameValue)
+                    client:notifySuccess(string.format("%s changed %s's name to %s.", client:Name(), charData.name, nameValue))
                 else
-                    client:notifySuccessLocalized("offlineCharNameSet", charID, nameValue)
+                    client:notifySuccess(string.format("Character %s's name set to %s.", charID, nameValue))
                 end
 
                 lia.log.add(client, "adminSetCharName", charID, nameValue)
             else
-                client:notifyErrorLocalized("failedToUpdateChar")
+                client:notifyError(string.format("Failed to update character property."))
             end
         elseif property == "model" then
             local modelValue = tostring(value)
             if lia.char.setCharDatabase(charID, "model", modelValue) then
                 local target = lia.char.getCharacter(charID)
                 if IsValid(target) then
-                    client:notifySuccessLocalized("changeModelAdmin", client:Name(), target:Name(), modelValue)
+                    client:notifySuccess(string.format("%s changed %s's model to %s.", client:Name(), target:Name(), modelValue))
                 else
-                    client:notifySuccessLocalized("offlineCharModelSet", charID, modelValue)
+                    client:notifySuccess(string.format("Character %s's model set to %s.", charID, modelValue))
                 end
 
                 lia.log.add(client, "adminSetCharModel", charID, modelValue)
             else
-                client:notifyErrorLocalized("failedToUpdateChar")
+                client:notifyError(string.format("Failed to update character property."))
             end
         else
-            client:notifyErrorLocalized("invalidArg")
+            client:notifyError(string.format("Invalid argument."))
             return
         end
     end)
@@ -749,7 +749,7 @@ net.Receive("liaSpawnMenuSpawnItem", function(_, client)
         undo.SetCustomUndoText(string.format("Undone %s", name))
         undo.Finish(string.format("Item (%s)", name))
         lia.log.add(client, "spawnItem", name, "SpawnMenuSpawnItem")
-        client:notifySuccessLocalized("logItemSpawned", name)
+        client:notifySuccess(string.format("Item '%s' spawned in the world.", name))
     end, angle_zero, {})
 end)
 
@@ -777,7 +777,7 @@ net.Receive("liaManagesitroomsAction", function(_, client)
         if targetPos then
             client.previousSitroomPos = client:GetPos()
             client:SetPos(targetPos)
-            client:notifySuccessLocalized("sitroomTeleport", name)
+            client:notifySuccess(string.format("You have been teleported to Administration Room: %s.", name))
             lia.log.add(client, "sendToSitRoom", client:Name(), name)
             local message = string.format("%s (Steam64ID: %s) teleported to sit room \"%s\".", client:Name(), client:SteamID64(), name)
             StaffAddTextShadowed(Color(123, 104, 238), "SIT", Color(255, 255, 255), message)
@@ -788,14 +788,14 @@ net.Receive("liaManagesitroomsAction", function(_, client)
             rooms[newName] = rooms[name]
             rooms[name] = nil
             lia.data.set("sitrooms", rooms)
-            client:notifySuccessLocalized("sitroomRenamed")
+            client:notifySuccess(string.format("Administration Room renamed successfully."))
             lia.log.add(client, "sitRoomRenamed", string.format("Old: %s | New: %s", name, newName), "Renamed administration room")
         end
     elseif action == 3 then
         if rooms[name] then
             rooms[name] = client:GetPos()
             lia.data.set("sitrooms", rooms)
-            client:notifySuccessLocalized("sitroomRepositioned")
+            client:notifySuccess(string.format("Administration Room repositioned successfully."))
             lia.log.add(client, "sitRoomRepositioned", string.format("Name: %s | New Position: %s", name, tostring(client:GetPos())), "Repositioned administration room")
         end
     end
@@ -1163,20 +1163,20 @@ net.Receive("liaModifyFlags", function(_, client)
         local char = target:getChar()
         if not char then return end
         char:setFlags(flags)
-        client:notifySuccessLocalized("flagSet", client:Name(), target:Name(), flags)
+        client:notifySuccess(string.format("%s has set %s's flags to '%s'.", client:Name(), target:Name(), flags))
         return
     end
 
     lia.db.query("SELECT id, name FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steamID) .. " LIMIT 1", function(data)
         if not data or not data[1] then
-            client:notifyLocalized("playerNotFound")
+            client:notify(string.format("Player not found."))
             return
         end
 
         local charID = data[1].id
         local charName = data[1].name
         lia.char.setCharDatabase(charID, "flags", flags)
-        client:notifySuccessLocalized("flagSet", client:Name(), charName, flags)
+        client:notifySuccess(string.format("%s has set %s's flags to '%s'.", client:Name(), charName, flags))
     end)
 end)
 
@@ -1186,25 +1186,25 @@ net.Receive("liaModifyCharacterFlags", function(_, client)
     local charID = tonumber(net.ReadUInt(32))
     local flags = string.gsub(net.ReadString() or "", "%s", "")
     if not charID or charID <= 0 then
-        client:notifyErrorLocalized("charIDMustBeNumber")
+        client:notifyError(string.format("charID must be a number"))
         return
     end
 
     local loadedChar = lia.char.loaded[charID]
     if loadedChar then
         loadedChar:setFlags(flags)
-        client:notifySuccessLocalized("flagSet", client:Name(), loadedChar:getName(), flags)
+        client:notifySuccess(string.format("%s has set %s's flags to '%s'.", client:Name(), loadedChar:getName(), flags))
         return
     end
 
     lia.db.query("SELECT name FROM lia_characters WHERE id = " .. lia.db.convertDataType(charID) .. " LIMIT 1", function(data)
         if not data or not data[1] then
-            client:notifyLocalized("playerNotFound")
+            client:notify(string.format("Player not found."))
             return
         end
 
         lia.char.setCharDatabase(charID, "flags", flags)
-        client:notifySuccessLocalized("flagSet", client:Name(), data[1].name or tostring(charID), flags)
+        client:notifySuccess(string.format("%s has set %s's flags to '%s'.", client:Name(), data[1].name or tostring(charID), flags))
     end)
 end)
 

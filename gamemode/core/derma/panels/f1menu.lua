@@ -366,7 +366,7 @@ function PANEL:CreateTextEntryWithBackgroundAndLabel(parent, name, labelText, ma
             local now = CurTime()
             txt.lastErrorTime = txt.lastErrorTime or 0
             if now - txt.lastErrorTime > 1 then
-                LocalPlayer():notifyErrorLocalized("descMinLen", minLength)
+                LocalPlayer():notifyError(string.format("Description must be at least %s characters long.", minLength))
                 txt.lastErrorTime = now
             end
             return

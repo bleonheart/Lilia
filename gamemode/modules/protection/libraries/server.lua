@@ -385,13 +385,13 @@ function MODULE:PlayerInitialSpawn(client)
             hook.Run("PlayerCheatDetected", client)
             if IsValid(client) then
                 lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID())
-                client:notifyErrorLocalized("caughtCheating")
+                client:notifyError(string.format("Cheating detected. Staff have been notified."))
                 for _, p in player.Iterator() do
                     local isStaffOnDuty = p:isStaffOnDuty()
                     local hasReceiveCheaterNotifications = p:hasPrivilege("receiveCheaterNotifications")
                     local permission = isStaffOnDuty or hasReceiveCheaterNotifications
                     lia.debug("[Permissions]", "Permission Check for protection cheat recipient", "targetPlayer=", tostring(p:Name()), "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(receiveCheaterNotifications)=", tostring(hasReceiveCheaterNotifications), "finalResult=", tostring(permission))
-                    if permission then p:notifyWarningLocalized("cheaterDetectedStaff", client:Name(), client:SteamID()) end
+                    if permission then p:notifyWarning(string.format("%s (%s) was flagged for cheating.", client:Name(), client:SteamID())) end
                 end
 
                 if client:getChar() then

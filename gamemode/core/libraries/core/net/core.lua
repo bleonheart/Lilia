@@ -549,7 +549,7 @@ end
 if SERVER then
     concommand.Add("lia_net_profiler", function(ply, cmd, args)
         if IsValid(ply) then
-            ply:notifyErrorLocalized("commandConsoleOnly")
+            ply:notifyError(string.format("This command can only be run from the server console."))
             return
         end
 

@@ -9,7 +9,7 @@ local function getHUDFont(size)
 end
 
 local function resolveText(key, fallback, ...)
-    local value = string.format(tostring(key), ...)
+    local value = lia.lang.resolve(key, ...)
     if not isstring(value) or value == key then return fallback end
     return value
 end

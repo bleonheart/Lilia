@@ -1,7 +1,7 @@
-﻿MODULE.name = "mainMenuModuleName"
+MODULE.name = "Main Menu"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "mainMenuDescription"
+MODULE.desc = "Creates the in-game main menu used for selecting, creating, and managing player characters before entering the world."
 MODULE.NetworkStrings = {"liaMainCharacterSet",}
 if SERVER then
     function MODULE:SyncCharList(client)
@@ -41,6 +41,51 @@ else
         if IsValid(client) and not client:getChar() then self:OpenCharacterMenu() end
     end
 
+    function MODULE:GetMainMenuPosition(character)
+        if not character then return nil, nil end
+        if lia.config.get("MainMenuUseLastPos", true) then
+            local lastPos = character:getLastPos()
+            if lastPos then
+                local pos = lastPos.pos or lastPos.position or lastPos.Pos or lastPos.Position
+                local ang = lastPos.ang or lastPos.angles or lastPos.Ang or lastPos.Angles
+                if pos and isvector(pos) then
+                    local angles = ang and isangle(ang) and ang or Angle(0, 0, 0)
+                    return pos, angles
+                end
+            end
+
+            local client = LocalPlayer()
+            if IsValid(client) and client:getChar() then
+                local currentChar = client:getChar()
+                local currentCharID = currentChar.getID and currentChar:getID() or nil
+                local viewingCharID = character.getID and character:getID() or nil
+                if currentCharID == viewingCharID then return client:GetPos(), Angle(0, 0, 0) end
+            end
+        end
+
+        if character:getFaction() then
+            local faction = lia.faction.get(character:getFaction())
+            if faction and faction.mainMenuPosition then
+                local menuPos = faction.mainMenuPosition
+                local currentMap = lia.data.getEquivalencyMap(game.GetMap())
+                if istable(menuPos) and menuPos[currentMap] then
+                    local mapPos = menuPos[currentMap]
+                    if istable(mapPos) then
+                        return mapPos.position, mapPos.angles
+                    elseif isvector(mapPos) then
+                        return mapPos, Angle(0, 0, 0)
+                    end
+                end
+
+                if istable(menuPos) then
+                    return menuPos.position, menuPos.angles
+                elseif isvector(menuPos) then
+                    return menuPos, Angle(0, 0, 0)
+                end
+            end
+        end
+    end
+
     function MODULE:ChooseCharacter(id)
         assert(isnumber(id), "id must be a number")
         local d = deferred.new()
@@ -54,7 +99,7 @@ else
                     hook.Run("CharLoaded", character)
                 end)
             else
-                d:reject(message)
+                d:reject(lia.lang.resolve(message))
             end
         end)
 
@@ -93,7 +138,7 @@ else
             if id > 0 then
                 d:resolve(id)
             else
-                d:reject(reason)
+                d:reject(lia.lang.resolve(reason))
             end
         end)
 
@@ -133,7 +178,7 @@ else
     function MODULE:LoadMainCharacter()
         local mainCharID = hook.Run("GetMainCharacterID")
         if not mainCharID then
-            LocalPlayer():notifyErrorLocalized("noMainCharacter")
+            LocalPlayer():notifyError(string.format("No main character set."))
             return
         end
         return self:ChooseCharacter(mainCharID):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)

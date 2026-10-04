@@ -782,7 +782,7 @@ if SERVER then
                 end, function(err)
                     lia.information(string.format("Failed to load inventories for %s", tostring(charId)))
                     lia.information(err)
-                    if IsValid(client) then client:notifyErrorLocalized("fixInventoryError") end
+                    if IsValid(client) then client:notifyError(string.format("A server error occurred while loading your inventories. Check server log for details.")) end
                 end):next(function(inventories)
                     character.vars.inv = inventories
                     lia.char.loaded[charId] = character

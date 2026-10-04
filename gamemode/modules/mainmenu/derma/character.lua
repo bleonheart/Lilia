@@ -1402,7 +1402,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.deleteBtn.DoClick = function()
         local charID = character:getID()
         if hook.Run("CanDeleteChar", charID) == false then
-            LocalPlayer():notifyErrorLocalized("cannotDeleteChar")
+            LocalPlayer():notifyError(string.format("You cannot delete this character!"))
             return
         end
 

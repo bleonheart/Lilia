@@ -33,11 +33,11 @@ properties.Add("TogglePropBlacklist", {
         if table.HasValue(list, model) then
             table.RemoveByValue(list, model)
             lia.data.set("prop_blacklist", list, true, true)
-            ply:notifySuccessLocalized("removedFromBlacklist", model)
+            ply:notifySuccess(string.format("Removed from blacklist: %s", model))
         else
             table.insert(list, model)
             lia.data.set("prop_blacklist", list, true, true)
-            ply:notifySuccessLocalized("addedToBlacklist", model)
+            ply:notifySuccess(string.format("Added to blacklist: %s", model))
         end
     end
 })
@@ -55,7 +55,7 @@ lia.command.add("sayall", {
     onRun = function(client, arguments)
         local phrase = table.concat(arguments, " ")
         if not phrase or phrase == "" then
-            client:notifyErrorLocalized("invalidPhrase")
+            client:notifyError(string.format("You must provide a phrase to send."))
             return
         end
 
@@ -67,7 +67,7 @@ lia.command.add("sayall", {
             end
         end
 
-        client:notifySuccessLocalized("sentToAllChats", chatCount, phrase)
+        client:notifySuccess(string.format("Sent phrase '%s' to %d chat types.", chatCount, phrase))
     end
 })
 
@@ -92,11 +92,11 @@ properties.Add("ToggleCarBlacklist", {
         if table.HasValue(list, model) then
             table.RemoveByValue(list, model)
             lia.data.set("carBlacklist", list, true, true)
-            ply:notifySuccessLocalized("removedFromBlacklist", model)
+            ply:notifySuccess(string.format("Removed from blacklist: %s", model))
         else
             table.insert(list, model)
             lia.data.set("carBlacklist", list, true, true)
-            ply:notifySuccessLocalized("addedToBlacklist", model)
+            ply:notifySuccess(string.format("Added to blacklist: %s", model))
         end
     end
 })
@@ -199,7 +199,7 @@ lia.util.setPositionCallback("Faction Spawn Adder", {
 
                 lia.module.get("spawns"):StoreSpawns(spawns):next(function()
                     lia.log.add(client, "spawnAdd", factionInfo.name)
-                    client:notifySuccessLocalized("spawnAdded")
+                    client:notifySuccess(string.format("Sucessfully Added Point"))
                 end)
             end)
         else
@@ -211,7 +211,7 @@ lia.util.setPositionCallback("Faction Spawn Adder", {
             end
 
             if #names == 0 then
-                client:notifyErrorLocalized("invalidFaction")
+                client:notifyError(string.format("The specified faction is not valid."))
                 return
             end
 
@@ -309,7 +309,7 @@ lia.util.setPositionCallback("Class Spawn Adder", {
 
             lia.data.set("spawns", data)
             lia.log.add(client, "classSpawnAdd", classData.name)
-            client:notifySuccessLocalized("spawnAdded")
+            client:notifySuccess(string.format("Sucessfully Added Point"))
         else
             local names, idByDisplay = {}, {}
             for k, v in pairs(lia.class.list or {}) do
@@ -321,7 +321,7 @@ lia.util.setPositionCallback("Class Spawn Adder", {
             end
 
             if #names == 0 then
-                client:notifyErrorLocalized("invalidClass")
+                client:notifyError(string.format("The specified class is not valid."))
                 return
             end
 
@@ -407,13 +407,13 @@ lia.util.setPositionCallback("Sit Room", {
             local rooms = lia.data.get("sitrooms", {})
             rooms[name] = pos
             lia.data.set("sitrooms", rooms)
-            client:notifySuccessLocalized("sitroomSet")
+            client:notifySuccess(string.format("Administration Room has been set!"))
             lia.log.add(client, "sitRoomSet", string.format("Name: %s | Position: %s", name, tostring(pos)), "Set the administration room location")
         elseif CLIENT then
             client:requestString("Enter Name", "Enter the name of the Administration Room(" .. "):", function(name)
                 if name == false then return end
                 if not name or name == "" then
-                    client:notifyErrorLocalized("invalidName")
+                    client:notifyError(string.format("Invalid name!"))
                     return
                 end
 

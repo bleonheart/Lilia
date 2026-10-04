@@ -79,7 +79,7 @@ net.Receive("liaWeaponOverrideUpdate", function(len, ply)
     lia.data.set("weaponOverrides", lia.item.WeaponOverrides, true, true)
     local itemDef = lia.item.list[className]
     if itemDef then itemDef[key] = value end
-    ply:notifyLocalized("weaponOverrideUpdated", key, className)
+    ply:notify(string.format("Successfully updated %s for %s", key, className))
     net.Start("liaWeaponOverrideSync")
     net.WriteBool(false)
     net.WriteString(className)
@@ -128,7 +128,7 @@ net.Receive("liaWeaponRuntimeOverrideUpdate", function(_, ply)
     lia.item.WeaponRuntimeOverrides[className][dotPath] = value
     lia.data.set("weaponRuntimeOverrides", lia.item.WeaponRuntimeOverrides, true, true)
     refreshWeaponHolders(className)
-    ply:notifyLocalized("weaponOverrideUpdated", dotPath, className)
+    ply:notify(string.format("Successfully updated %s for %s", dotPath, className))
     net.Start("liaWeaponRuntimeOverrideSync")
     net.WriteBool(false)
     net.WriteString(className)
@@ -152,7 +152,7 @@ net.Receive("liaWeaponRuntimeOverrideReset", function(_, ply)
     lia.item.WeaponRuntimeOverrides[className] = nil
     lia.data.set("weaponRuntimeOverrides", lia.item.WeaponRuntimeOverrides, true, true)
     refreshWeaponHolders(className)
-    ply:notifyLocalized("weaponOverrideUpdated", "reset", className)
+    ply:notify(string.format("Successfully updated %s for %s", "reset", className))
     net.Start("liaWeaponRuntimeOverrideSync")
     net.WriteBool(false)
     net.WriteString(className)
@@ -231,7 +231,7 @@ net.Receive("liaKickCharacter", function(_, client)
             local oldFaction = targetChar:getFaction()
             local oldFactionData = lia.faction.indices[oldFaction]
             if oldFactionData and oldFactionData.isDefault then return end
-            target:notifyWarningLocalized("kickedFromFaction")
+            target:notifyWarning(string.format("You were kicked from your faction!"))
             hook.Run("TrackFactionTransfer", targetChar, oldFaction, defaultFaction, client, "kickToBase")
             targetChar.vars.faction = defaultFaction.uniqueID
             targetChar:setFaction(defaultFaction.index)
@@ -275,13 +275,13 @@ net.Receive("liaCheckHack", function(_, client)
     hook.Run("PlayerCheatDetected", client)
     if IsValid(client) then
         lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID())
-        client:notifyErrorLocalized("caughtCheating")
+        client:notifyError(string.format("Cheating detected. Staff have been notified."))
         for _, p in player.Iterator() do
             local isStaffOnDuty = p:isStaffOnDuty()
             local hasReceiveCheaterNotifications = p:hasPrivilege("receiveCheaterNotifications")
             local permission = isStaffOnDuty or hasReceiveCheaterNotifications
             lia.debug("[Permissions]", "Permission Check for net.Receive liaCheckHack cheater recipient", "targetPlayer=", tostring(p:Name()), "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(receiveCheaterNotifications)=", tostring(hasReceiveCheaterNotifications), "finalResult=", tostring(permission))
-            if permission then p:notifyWarningLocalized("cheaterDetectedStaff", client:Name(), client:SteamID()) end
+            if permission then p:notifyWarning(string.format("%s (%s) was flagged for cheating.", client:Name(), client:SteamID())) end
         end
 
         if client:getChar() then
@@ -346,13 +346,13 @@ end
 net.Receive("liaTeleportToEntity", function(_, client)
     lia.debug("[Permissions]", "Permission Check for net.Receive liaTeleportToEntity", "hasPrivilege(teleportToEntity)=", tostring(client:hasPrivilege("teleportToEntity")), "finalResult=", tostring(client:hasPrivilege("teleportToEntity")))
     if not client:hasPrivilege("teleportToEntity") then
-        client:notifyErrorLocalized("noPrivilege")
+        client:notifyError(string.format("No privilege"))
         return
     end
 
     local entity = net.ReadEntity()
     if not IsValid(entity) then
-        client:notifyErrorLocalized("invalidEntity")
+        client:notifyError(string.format("Invalid entity selected."))
         return
     end
 
@@ -370,7 +370,7 @@ net.Receive("liaTeleportToEntity", function(_, client)
         client:SetPos(entityPos + Vector(0, 0, 50))
     end
 
-    client:notifySuccessLocalized("teleportedToEntity")
+    client:notifySuccess(string.format("Teleported to entity"))
     lia.log.add(client, "entityTeleport", client:Name(), getEntityDisplayName(entity), tostring(entity:GetPos()))
 end)
 
@@ -582,7 +582,7 @@ net.Receive("liaMessageData", function(_, client)
         end
     else
         if utf8.len(text) > charlimit then
-            client:notifyErrorLocalized("messageTooLong", charlimit)
+            client:notifyError(string.format("Your message has been shortened due to being longer than %s characters!", charlimit))
         else
             if (client.liaNextChat or 0) < CurTime() and text:find("%S") then
                 hook.Run("PlayerSay", client, text)
@@ -623,19 +623,19 @@ net.Receive("liaStaffDiscordResponse", function(_, client)
     local steamID = client:SteamID()
     local description = string.format("Staff Character - Discord: %s, SteamID: %s", discord, steamID)
     character:setDesc(description)
-    client:notifySuccessLocalized("staffDescUpdated")
+    client:notifySuccess(string.format("Staff character description updated!"))
 end)
 
 net.Receive("liaReturnFromEntity", function(_, client)
     if not client.previousPosition then
-        client:notifyErrorLocalized("noPreviousPosition")
+        client:notifyError(string.format("No previous position"))
         return
     end
 
     local returnPos = client.previousPosition
     client:SetPos(returnPos)
     client.previousPosition = nil
-    client:notifySuccessLocalized("returnedFromEntity")
+    client:notifySuccess(string.format("Returned from entity"))
     lia.log.add(client, "entityReturn", client:Name(), tostring(returnPos))
 end)
 
@@ -679,7 +679,7 @@ net.Receive("liaArgumentsRequest", function(_, client)
                 end
             else
                 if val == nil then
-                    client:notifyErrorLocalized("requiredFieldsMissing")
+                    client:notifyError(string.format("Please fill in all required fields."))
                     client.liaArgReqs[id] = nil
                     return
                 end
@@ -702,7 +702,7 @@ net.Receive("liaArgumentsRequest", function(_, client)
                 end
             else
                 if val == nil then
-                    client:notifyErrorLocalized("requiredFieldsMissing")
+                    client:notifyError(string.format("Please fill in all required fields."))
                     client.liaArgReqs[id] = nil
                     return
                 end
@@ -1445,14 +1445,14 @@ net.Receive("BodygrouperMenu", function(_, client)
         local permission = hasManageBodygroups or hasChangeBodygroups
         lia.debug("[Permissions]", "Permission Check for net.Receive BodygrouperMenu target-other", "hasPrivilege(manageBodygroups)=", tostring(hasManageBodygroups), "hasPrivilege(changeBodygroups)=", tostring(hasChangeBodygroups), "finalResult=", tostring(permission))
         if not permission then
-            client:notifyLocalized("noAccess")
+            client:notify(string.format("No Access"))
             return
         end
     else
         local canAccessBodygrouper = CanAccessBodygrouper(client)
         lia.debug("[Permissions]", "Permission Check for net.Receive BodygrouperMenu self-target", "CanAccessBodygrouper=", tostring(canAccessBodygrouper), "finalResult=", tostring(canAccessBodygrouper))
         if not canAccessBodygrouper then
-            client:notifyLocalized("noAccess")
+            client:notify(string.format("No Access"))
             return
         end
 
@@ -1460,14 +1460,14 @@ net.Receive("BodygrouperMenu", function(_, client)
     end
 
     if target:SkinCount() and skn > target:SkinCount() then
-        client:notifyLocalized("invalidSkin")
+        client:notify(string.format("Invalid skin selection."))
         return
     end
 
     if target:GetNumBodyGroups() and target:GetNumBodyGroups() > 0 then
         for k, v in pairs(groups) do
             if v > target:GetBodygroupCount(k) then
-                client:notifyLocalized("invalidBodygroup")
+                client:notify(string.format("Invalid bodygroup selection. This often means the model isn't loaded in the server."))
                 return
             end
         end
@@ -1483,10 +1483,10 @@ net.Receive("BodygrouperMenu", function(_, client)
 
     character:setBodygroups(groups)
     if target == client then
-        target:notifyLocalized("bodygroupChanged", "your")
+        target:notify(string.format("You changed %s bodygroups.", "your"))
     else
-        client:notifyLocalized("bodygroupChanged", target:Name() .. "'s")
-        target:notifyLocalized("bodygroupChangedBy", client:Name())
+        client:notify(string.format("You changed %s bodygroups.", target:Name() .. "'s"))
+        target:notify(string.format("%s changed your bodygroups.", client:Name()))
     end
 
     net.Start("BodygrouperMenuCloseClientside")
@@ -1541,13 +1541,13 @@ net.Receive("WardrobeChangeModel", function(_, client)
     local character = client:getChar()
     if not character then return end
     if not canAccessWardrobe(client) then
-        client:notifyLocalized("noAccess")
+        client:notify(string.format("No Access"))
         return
     end
 
     local newModel = net.ReadString()
     if not lia.faction.isModelUsable(newModel) then
-        client:notifyLocalized("wardrobeModelInvalid")
+        client:notify(string.format("That model isn't allowed."))
         return
     end
 
@@ -1557,12 +1557,12 @@ net.Receive("WardrobeChangeModel", function(_, client)
             character:setModel(modelPath)
             client:SetModel(modelPath)
             client:SetupHands()
-            client:notifyLocalized("wardrobeModelChanged")
+            client:notify(string.format("Your model has been updated."))
             return
         end
     end
 
-    client:notifyLocalized("wardrobeModelInvalid")
+    client:notify(string.format("That model isn't allowed."))
 end)
 
 local function broadcastGroups()
@@ -1594,7 +1594,7 @@ net.Receive("liaGroupsAdd", function(_, p)
     if n == "" then return end
     lia.admin.groups = lia.admin.groups or {}
     if lia.admin.DefaultGroups and lia.admin.DefaultGroups[n] then
-        p:notifyErrorLocalized("baseUsergroupCannotBeEdited")
+        p:notifyError(string.format("Base usergroups cannot be edited"))
         return
     end
 
@@ -1609,7 +1609,7 @@ net.Receive("liaGroupsAdd", function(_, p)
 
     lia.admin.save()
     broadcastGroups()
-    p:notifySuccessLocalized("groupCreated", n)
+    p:notifySuccess(string.format("Group '%s' created.", n))
 end)
 
 net.Receive("liaGroupsRemove", function(_, p)
@@ -1617,7 +1617,7 @@ net.Receive("liaGroupsRemove", function(_, p)
     local n = net.ReadString()
     if n == "" then return end
     if lia.admin.DefaultGroups and lia.admin.DefaultGroups[n] then
-        p:notifyErrorLocalized("baseUsergroupCannotBeRemoved")
+        p:notifyError(string.format("[Lilia Administration] The base usergroups cannot be removed!"))
         return
     end
 
@@ -1625,7 +1625,7 @@ net.Receive("liaGroupsRemove", function(_, p)
     if lia.admin.groups then lia.admin.groups[n] = nil end
     lia.admin.save()
     broadcastGroups()
-    p:notifySuccessLocalized("groupRemoved", n)
+    p:notifySuccess(string.format("Group '%s' removed.", n))
 end)
 
 net.Receive("liaGroupsRename", function(_, p)
@@ -1636,18 +1636,18 @@ net.Receive("liaGroupsRename", function(_, p)
     if old == new then return end
     if not lia.admin.groups or not lia.admin.groups[old] then return end
     if lia.admin.groups[new] or lia.admin.DefaultGroups and lia.admin.DefaultGroups[new] then
-        p:notifyErrorLocalized("baseUsergroupCannotBeRenamed")
+        p:notifyError(string.format("[Lilia Administration] The base usergroups cannot be renamed!"))
         return
     end
 
     if lia.admin.DefaultGroups and lia.admin.DefaultGroups[old] then
-        p:notifyErrorLocalized("baseUsergroupCannotBeRenamed")
+        p:notifyError(string.format("[Lilia Administration] The base usergroups cannot be renamed!"))
         return
     end
 
     lia.admin.renameGroup(old, new)
     broadcastGroups()
-    p:notifySuccessLocalized("groupRenamed", old, new)
+    p:notifySuccess(string.format("Group '%s' renamed to '%s'.", old, new))
 end)
 
 local function getGroupLevelForPermissionSummary(groupName, visited)
@@ -1705,7 +1705,7 @@ net.Receive("liaGroupsSetPerm", function(_, p)
     local value = net.ReadBool()
     if group == "" or privilege == "" then return end
     if lia.admin.DefaultGroups and lia.admin.DefaultGroups[group] then
-        p:notifyErrorLocalized("baseUsergroupCannotBeEdited")
+        p:notifyError(string.format("Base usergroups cannot be edited"))
         return
     end
 
@@ -1740,5 +1740,5 @@ net.Receive("liaGroupsSetPerm", function(_, p)
     net.WriteString(privilege)
     net.WriteBool(value)
     net.Broadcast()
-    p:notifySuccessLocalized("groupPermissionsUpdated")
+    p:notifySuccess(string.format("Group permissions updated."))
 end)

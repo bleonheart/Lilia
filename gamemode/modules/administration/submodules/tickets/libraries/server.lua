@@ -39,7 +39,7 @@ lia.command.add("ticket", {
     onRun = function(client, arguments)
         local message = table.concat(arguments, " ")
         if not message or message == "" then
-            client:notifyErrorLocalized("mustProvideString")
+            client:notifyError(string.format("Must Provide a String"))
             return
         end
 

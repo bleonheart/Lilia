@@ -36,34 +36,6 @@ local getEntityInfoMaxDistance
 local falloverBlackoutAlpha = 0
 local lastEntity
 local nextUpdate = 0
-local healthPercent = {
-    {
-        threshold = 0.2,
-        text = "Critical Condition",
-        color = Color(192, 57, 43)
-    },
-    {
-        threshold = 0.4,
-        text = "Serious Injury",
-        color = Color(231, 76, 60)
-    },
-    {
-        threshold = 0.6,
-        text = "Moderate Injury",
-        color = Color(255, 152, 0)
-    },
-    {
-        threshold = 0.8,
-        text = "Minor Injury",
-        color = Color(255, 193, 7)
-    },
-    {
-        threshold = 1.0,
-        text = "Healthy",
-        color = Color(46, 204, 113)
-    }
-}
-
 local NoDrawCrosshairWeapon = {
     weapon_crowbar = true,
     weapon_stunstick = true,
@@ -493,32 +465,6 @@ function GM:ShouldDrawEntityInfo(e)
     if e.DrawEntityInfo then return true end
     if e.onShouldDrawEntityInfo and e:onShouldDrawEntityInfo() then return true end
     return true
-end
-
-function GM:GetInjuredText(c)
-    local h = c:Health()
-    local mh = c:GetMaxHealth() or 100
-    local p = h / mh
-    for _, entry in ipairs(healthPercent) do
-        if p <= entry.threshold then return {entry.text, entry.color} end
-    end
-
-    local last = healthPercent[#healthPercent]
-    return {last.text, last.color}
-end
-
-function GM:DrawCharInfo(c, character, info)
-    local injured = hook.Run("GetInjuredText", c)
-    if injured then
-        info[#info + 1] = {
-            section = "Status"
-        }
-
-        info[#info + 1] = {
-            label = "Condition",
-            value = tostring(injured[1])
-        }
-    end
 end
 
 function GM:DrawEntityInfo(e, a, pos)
@@ -1041,52 +987,6 @@ end
 
 function GM:DrawDeathNotice()
     return false
-end
-
-function GM:GetMainMenuPosition(character)
-    if not character then return nil, nil end
-    if lia.config.get("MainMenuUseLastPos", true) then
-        local lastPos = character:getLastPos()
-        if lastPos then
-            local pos = lastPos.pos or lastPos.position or lastPos.Pos or lastPos.Position
-            local ang = lastPos.ang or lastPos.angles or lastPos.Ang or lastPos.Angles
-            if pos and isvector(pos) then
-                local angles = ang and isangle(ang) and ang or Angle(0, 0, 0)
-                return pos, angles
-            end
-        end
-
-        local client = LocalPlayer()
-        if IsValid(client) and client:getChar() then
-            local currentChar = client:getChar()
-            local currentCharID = currentChar.getID and currentChar:getID() or nil
-            local viewingCharID = character.getID and character:getID() or nil
-            if currentCharID == viewingCharID then return client:GetPos(), Angle(0, 0, 0) end
-        end
-    end
-
-    if character:getFaction() then
-        local faction = lia.faction.get(character:getFaction())
-        if faction and faction.mainMenuPosition then
-            local menuPos = faction.mainMenuPosition
-            local currentMap = lia.data.getEquivalencyMap(game.GetMap())
-            if istable(menuPos) and menuPos[currentMap] then
-                local mapPos = menuPos[currentMap]
-                if istable(mapPos) then
-                    return mapPos.position, mapPos.angles
-                elseif isvector(mapPos) then
-                    return mapPos, Angle(0, 0, 0)
-                end
-            end
-
-            if istable(menuPos) then
-                return menuPos.position, menuPos.angles
-            elseif isvector(menuPos) then
-                return menuPos, Angle(0, 0, 0)
-            end
-        end
-    end
-    return nil, nil
 end
 
 function GM:CharLoaded(character)

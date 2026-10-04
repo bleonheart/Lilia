@@ -99,14 +99,14 @@ end
 function lia.util.findPlayer(client, identifier)
     local isValidClient = IsValid(client)
     if not isstring(identifier) or identifier == "" then
-        if isValidClient then client:notifyErrorLocalized("mustProvideString") end
+        if isValidClient then client:notifyError(string.format("Must Provide a String")) end
         return nil
     end
 
     if string.match(identifier, "^STEAM_%d+:%d+:%d+$") then
         local ply = lia.util.getBySteamID(identifier)
         if IsValid(ply) then return ply end
-        if isValidClient then client:notifyErrorLocalized("plyNoExist") end
+        if isValidClient then client:notifyError(string.format("Player does not exist.")) end
         return nil
     end
 
@@ -117,7 +117,7 @@ function lia.util.findPlayer(client, identifier)
             if IsValid(ply) then return ply end
         end
 
-        if isValidClient then client:notifyErrorLocalized("plyNoExist") end
+        if isValidClient then client:notifyError(string.format("Player does not exist.")) end
         return nil
     end
 
@@ -125,7 +125,7 @@ function lia.util.findPlayer(client, identifier)
     if isValidClient and identifier == "@" then
         local trace = client:getTracedEntity()
         if IsValid(trace) and trace:IsPlayer() then return trace end
-        client:notifyErrorLocalized("lookToUseAt")
+        client:notifyError(string.format("You need to be looking at someone to use '@'"))
         return nil
     end
 
@@ -134,7 +134,7 @@ function lia.util.findPlayer(client, identifier)
         if lia.util.stringMatches(ply:Name(), safe) then return ply end
     end
 
-    if isValidClient then client:notifyErrorLocalized("plyNoExist") end
+    if isValidClient then client:notifyError(string.format("Player does not exist.")) end
     return nil
 end
 
@@ -248,7 +248,7 @@ function lia.util.findFaction(client, name)
         if lia.util.stringMatches(v.name, name) or lia.util.stringMatches(v.uniqueID, name) then return v end
     end
 
-    client:notifyErrorLocalized("invalidFaction")
+    client:notifyError(string.format("The specified faction is not valid."))
     return nil
 end
 

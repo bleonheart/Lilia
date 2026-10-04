@@ -42,7 +42,7 @@
         end
 
         if entity.IsBeingEntered then
-            client:notifyWarningLocalized("carOccupiedNotice")
+            client:notifyWarning(string.format("Someone is entering this car!"))
             return true
         end
 
@@ -73,7 +73,7 @@
                 timer.Remove(timerID)
                 entity.IsBeingEntered = false
                 client:setAction()
-                client:notifyWarningLocalized("tooFarAway")
+                client:notifyWarning(string.format("You are too far away!"))
             end
         end)
 
@@ -87,7 +87,7 @@
             end
 
             if client:GetPos():DistToSqr(entity:GetPos()) > 250 * 250 then
-                client:notifyWarningLocalized("tooFarAway")
+                client:notifyWarning(string.format("You are too far away!"))
                 return
             end
 
@@ -172,7 +172,7 @@ lia.config.add("TimeToEnterVehicle", "Time To Enter Vehicle", 4, nil, {
 lia.config.add("DisableSimfphysHUD", "Disable simfphys HUD", false, function()
     if SERVER then
         for _, client in player.Iterator() do
-            if IsValid(client) then client:notifyInfoLocalized("simfphysHudRestartNotice") end
+            if IsValid(client) then client:notifyInfo(string.format("The simfphys HUD setting will only apply after a Lua refresh or server restart.,")) end
         end
     end
 end, {

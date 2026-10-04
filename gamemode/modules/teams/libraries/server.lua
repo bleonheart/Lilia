@@ -53,7 +53,7 @@ end
 function MODULE:PlayerLoadedChar(client, character)
     self:EnsureFactionTracking(character, client, "loaded")
     if character:getData("factionKickWarn") then
-        client:notifyWarningLocalized("kickedFromFaction")
+        client:notifyWarning(string.format("You were kicked from your faction!"))
         hook.Run("OnTransferred", client)
         local faction = lia.faction.indices[client:Team()]
         if faction and faction.OnTransferred then faction:OnTransferred(client) end
@@ -318,7 +318,7 @@ end
 lia.command.add("speed", {
     desc = "Check your current movement speeds.",
     onRun = function(client)
-        client:notifyLocalized("speedCommandStatus", client:GetRunSpeed(), client:GetWalkSpeed())
+        client:notify(string.format("Current speeds - Run: %d, Walk: %d", client:GetRunSpeed(), client:GetWalkSpeed()))
         return ""
     end
 })

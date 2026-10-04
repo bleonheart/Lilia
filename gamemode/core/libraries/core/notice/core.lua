@@ -31,7 +31,7 @@ if CLIENT then
         end
 
         local ntype = net.ReadString() or "default"
-        local msg = tostring(string.format(tostring(key), unpack(args)))
+        local msg = tostring(lia.lang.resolve(key, unpack(args)))
         local override = hook.Run("LiliaNoticeOverride", msg, ntype)
         if override == true then return end
         if istable(override) then
@@ -52,27 +52,27 @@ if CLIENT then
     end
 
     function lia.notices.notifyInfoLocalized(client, key, ...)
-        lia.notices.notify(client, string.format(tostring(key), ...), "info")
+        lia.notices.notify(client, lia.lang.resolve(key, ...), "info")
     end
 
     function lia.notices.notifyWarningLocalized(client, key, ...)
-        lia.notices.notify(client, string.format(tostring(key), ...), "warning")
+        lia.notices.notify(client, lia.lang.resolve(key, ...), "warning")
     end
 
     function lia.notices.notifyErrorLocalized(client, key, ...)
-        lia.notices.notify(client, string.format(tostring(key), ...), "error")
+        lia.notices.notify(client, lia.lang.resolve(key, ...), "error")
     end
 
     function lia.notices.notifySuccessLocalized(client, key, ...)
-        lia.notices.notify(client, string.format(tostring(key), ...), "success")
+        lia.notices.notify(client, lia.lang.resolve(key, ...), "success")
     end
 
     function lia.notices.notifyMoneyLocalized(client, key, ...)
-        lia.notices.notify(client, string.format(tostring(key), ...), "money")
+        lia.notices.notify(client, lia.lang.resolve(key, ...), "money")
     end
 
     function lia.notices.notifyAdminLocalized(client, key, ...)
-        lia.notices.notify(client, string.format(tostring(key), ...), "admin")
+        lia.notices.notify(client, lia.lang.resolve(key, ...), "admin")
     end
 
     function notification.AddLegacy(text, typeId)
@@ -135,7 +135,7 @@ function lia.notices.notifyLocalized(client, key, notifType, ...)
             net.Broadcast()
         end
     else
-        lia.notices.notify(client, string.format(tostring(key), ...), notifType or "default")
+        lia.notices.notify(client, lia.lang.resolve(key, ...), notifType or "default")
     end
 end
 

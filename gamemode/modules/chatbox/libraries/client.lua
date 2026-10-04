@@ -136,7 +136,7 @@ local function openAddFilteredWordPrompt()
         if value == false then return end
         value = string.Trim(tostring(value or ""))
         if value == "" then
-            LocalPlayer():notifyErrorLocalized("chatFilterInvalidWord")
+            LocalPlayer():notifyError(string.format("Enter a valid word first."))
             return
         end
 

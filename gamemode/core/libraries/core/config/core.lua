@@ -345,7 +345,7 @@ if SERVER then
             lia.config.set(key, value)
             lia.log.add(client, "configChange", name or config.name or key, oldValue, value)
             hook.Run("ConfigChanged", key, value, oldValue, client)
-            client:notifySuccessLocalized("cfgSet", client:Name(), name or config.name or key, tostring(value))
+            client:notifySuccess(string.format("%s has set \"%s\" to %s.", client:Name(), name or config.name or key, tostring(value)))
         end
     end)
 else

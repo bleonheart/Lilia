@@ -135,12 +135,12 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
             character:giveMoney(price)
             item:remove():next(function() client.vendorTransaction = nil end):catch(function() client.vendorTransaction = nil end)
             if stockEnabled then vendor:addStock(itemType) end
-            client:notifyMoneyLocalized("vendorYouSoldItem", item:getName(), lia.currency.get(price))
+            client:notifyMoney(string.format("You sold %s for %s.", item:getName(), lia.currency.get(price)))
             hook.Run("OnCharTradeVendor", client, vendor, item, isSellingToVendor, character)
         end
     else
         if not character:getInv():doesFitInventory(itemType) then
-            client:notifyErrorLocalized("vendorNoInventorySpace")
+            client:notifyError(string.format("You don't have enough space for this item!"))
             hook.Run("OnCharTradeVendor", client, vendor, nil, isSellingToVendor, character, itemType, true)
             client.vendorTransaction = nil
             return
@@ -149,7 +149,7 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
         character:takeMoney(price)
         if stockEnabled then vendor:takeStock(itemType) end
         character:getInv():add(itemType):next(function(item)
-            client:notifyMoneyLocalized("vendorYouBoughtItem", item:getName(), lia.currency.get(price))
+            client:notifyMoney(string.format("You bought %s for %s.", item:getName(), lia.currency.get(price)))
             local itemData = lia.item.list[itemType]
             if itemData and itemData.Cooldown and itemData.Cooldown > 0 then
                 local cooldowns = character:getData("vendorCooldowns", {})

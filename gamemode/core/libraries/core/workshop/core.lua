@@ -557,7 +557,7 @@ else
                                 workshopDebug(record.id, "DownloadUGC callback", "path=" .. tostring(path), "type=" .. type(path))
                                 if not isstring(path) or path == "" then
                                     workshopDebug(record.id, "DownloadUGC", "FAILED: empty or invalid path")
-                                    LocalPlayer():notifyErrorLocalized("workshopAddonDownloadFailed", record.title or record.id)
+                                    LocalPlayer():notifyError(string.format("Failed to download workshop addon: %s", record.title or record.id))
                                     return
                                 end
 
@@ -581,13 +581,13 @@ else
 
                                 if not success then
                                     workshopDebug(record.id, "MountGMA", "FAILED")
-                                    LocalPlayer():notifyErrorLocalized("workshopAddonDownloadFailed", record.title or record.id)
+                                    LocalPlayer():notifyError(string.format("Failed to download workshop addon: %s", record.title or record.id))
                                     return
                                 end
 
                                 record.mounted = true
                                 record.searchText = string.format("%s %s mounted", record.title, record.id):lower()
-                                LocalPlayer():notifyLocalized("workshopAddonDownloaded", record.title or record.id)
+                                LocalPlayer():notify(string.format("Workshop addon downloaded: %s", record.title or record.id))
                                 if IsValid(record.card) then record.card:InvalidateLayout(true) end
                                 rebuildDetail(record)
                                 applyFilters()

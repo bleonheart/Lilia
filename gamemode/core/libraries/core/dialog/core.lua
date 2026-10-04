@@ -587,7 +587,7 @@ if SERVER then
     function lia.dialog.openDialog(client, npc, npcID)
         local npcData = lia.dialog.getOriginalNPCData(npcID)
         if not npcData then
-            client:notifyWarningLocalized("npcTypeNotRegistered")
+            client:notifyWarning(string.format("This NPC type is not registered. Please select a valid NPC type."))
             lia.dialog.syncToClients(client)
             timer.Simple(0.1, function()
                 if not IsValid(client) or not IsValid(npc) then return end
@@ -599,7 +599,7 @@ if SERVER then
                     net.WriteTable(npcOptions)
                     net.Send(client)
                 else
-                    client:notifyErrorLocalized("noNPCTypesAvailable")
+                    client:notifyError(string.format("No NPC types available! The server may still be loading modules. Please try again in a moment."))
                 end
             end)
             return
@@ -812,7 +812,7 @@ else
                         skinSlider:SetValue(0)
                     end
 
-                    LocalPlayer():notifySuccessLocalized("npcModelUpdated", value)
+                    LocalPlayer():notifySuccess(string.format("NPC model updated to: %s. Bodygroups and skin have been reset.", value))
                 end
             end
         end
@@ -926,9 +926,9 @@ else
                         end
 
                         animationCombo:ChooseOptionData(selectedAnimation)
-                        LocalPlayer():notifySuccessLocalized("animationListRefreshed", #sequences)
+                        LocalPlayer():notifySuccess(string.format("Animation list refreshed! Found %s animations.", #sequences))
                     else
-                        LocalPlayer():notifyErrorLocalized("noAnimationsFoundForModel")
+                        LocalPlayer():notifyError(string.format("No animations found for this model."))
                     end
                 end
             end
@@ -948,9 +948,9 @@ else
                 if IsValid(npc) then
                     local sequences = npc:GetSequenceList()
                     if sequences and #sequences > 0 then
-                        LocalPlayer():notifySuccessLocalized("animationsFoundReopenMenu", #sequences)
+                        LocalPlayer():notifySuccess(string.format("Found %s animations! Please reopen the customization menu.", #sequences))
                     else
-                        LocalPlayer():notifyErrorLocalized("stillNoAnimationsFound")
+                        LocalPlayer():notifyError(string.format("Still no animations found. The model might not have animations."))
                     end
                 end
             end
@@ -1747,7 +1747,7 @@ function lia.dialog.openConfigurationPicker(npc, npcID)
     local ply = LocalPlayer()
     local configurations = lia.dialog.getAvailableConfigurations(ply, npc, npcID)
     if #configurations == 0 then
-        LocalPlayer():notifyErrorLocalized("noNPCConfigurationsAvailable")
+        LocalPlayer():notifyError(string.format("No NPC configurations are available."))
         return
     end
 
@@ -1824,7 +1824,7 @@ if SERVER then
                     npc:setNetVar("NPCName", npc.NPCName)
                     hook.Run("UpdateEntityPersistence", npc)
                     hook.Run("SaveData")
-                    ply:notifySuccessLocalized("npcDialogTypeUpdated")
+                    ply:notifySuccess(string.format("NPC dialog type updated successfully!"))
                     return
                 end
 
@@ -1835,7 +1835,7 @@ if SERVER then
 
                 hook.Run("UpdateEntityPersistence", npc)
                 hook.Run("SaveData")
-                ply:notifySuccessLocalized("npcDialogTypeUpdated")
+                ply:notifySuccess(string.format("NPC dialog type updated successfully!"))
             end
         end
     })
@@ -1902,7 +1902,7 @@ if SERVER then
             npc:setNetVar("NPCName", npc.NPCName)
             hook.Run("UpdateEntityPersistence", npc)
             hook.Run("SaveData")
-            ply:notifySuccessLocalized("npcCustomizedSuccessfully")
+            ply:notifySuccess(string.format("NPC customized successfully!"))
         end
     })
 

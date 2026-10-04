@@ -229,7 +229,7 @@ lia.keybind.add("adminMode", {
 
                 lia.log.add(client, "adminMode", oldCharID, "Switched back to their IC character")
             else
-                client:notifyErrorLocalized("noPrevChar")
+                client:notifyError(string.format("No previous character to swap to."))
             end
         else
             local currentChar = client:getChar()
@@ -264,11 +264,11 @@ lia.keybind.add("adminMode", {
                             net.WriteInt(charID, 32)
                             net.Send(client)
                             lia.log.add(client, "adminMode", charID, "Switched to their staff character")
-                            client:notifySuccessLocalized("staffCharCreated")
+                            client:notifySuccess(string.format("A staff character has been automatically created for you."))
                         end
                     end)
                 else
-                    client:notifyErrorLocalized("noStaffChar")
+                    client:notifyError(string.format("No staff character found. Create one in the staff faction."))
                 end
             end)
         end
@@ -299,12 +299,12 @@ lia.keybind.add("convertEntity", {
         local targetEntity = trace.Entity
         if not IsValid(targetEntity) or targetEntity == client then return end
         if trace.HitPos:Distance(client:GetPos()) > 200 then
-            client:notifyErrorLocalized("entityTooFar")
+            client:notifyError(string.format("Entity is too far away."))
             return
         end
 
         if targetEntity:IsPlayer() or targetEntity:isItem() or targetEntity:GetClass() == "lia_money" then
-            client:notifyErrorLocalized("cannotConvertEntity")
+            client:notifyError(string.format("Cannot convert this entity."))
             return
         end
 
@@ -320,7 +320,7 @@ lia.keybind.add("convertEntity", {
         end
 
         if not hasItemDefinition then
-            client:notifyErrorLocalized("entityNotConvertible")
+            client:notifyError(string.format("This entity type cannot be converted to an item."))
             return
         end
 
@@ -328,12 +328,12 @@ lia.keybind.add("convertEntity", {
         local character = client:getChar()
         local inventory = character:getInv()
         if not inventory:canAdd(itemUniqueID) then
-            client:notifyErrorLocalized("noSpaceForItem")
+            client:notifyError(string.format("No space available for the item."))
             return
         end
 
         inventory:add(itemUniqueID):next(function(item)
-            client:notifyLocalized("entityConverted", item:getName())
+            client:notify(string.format("Successfully converted entity to item: %s", item:getName()))
             SafeRemoveEntity(targetEntity)
         end)
     end,

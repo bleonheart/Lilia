@@ -1,7 +1,7 @@
-﻿if not pac then return end
-ITEM.name = "pacoutfitName"
-ITEM.desc = "pacoutfitDesc"
-ITEM.category = "outfit"
+if not pac then return end
+ITEM.name = "PAC3 Outfit"
+ITEM.desc = "A PAC3 Outfit Base."
+ITEM.category = "Outfit"
 ITEM.model = "models/Gibs/HGIBS.mdl"
 ITEM.width = 1
 ITEM.height = 1
@@ -51,7 +51,7 @@ ITEM.functions.Equip = {
         local items = char:getInv():getItems()
         for _, v in pairs(items) do
             if v.id ~= item.id and v.pacData and v.outfitCategory == item.outfitCategory and v:getData("equip") then
-                client:notifyErrorLocalized("sameOutfitCategory")
+                client:notifyError(string.format("You are already wearing something in this outfit category."))
                 return false
             end
         end

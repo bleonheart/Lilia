@@ -259,7 +259,7 @@ function lia.admin.isProtectedStaffTarget(cmd, target)
 end
 
 function lia.admin.notifyProtectedStaffTarget(admin)
-    if IsValid(admin) then admin:notifyErrorLocalized("staffFactionCommandBlocked") end
+    if IsValid(admin) then admin:notifyError(string.format("You cannot use targeted admin commands on players in the staff faction.")) end
 end
 
 function getPrivilegeCategory(privilegeName)
@@ -314,7 +314,7 @@ function getPrivilegeCategory(privilegeName)
             if module.Privileges and istable(module.Privileges) then
                 for privID, priv in pairs(module.Privileges) do
                     if privID == privilegeName then
-                        category = ((isstring(priv.Category or module.name or "Unassigned") and priv.Category or module.name or ("Unassigned"):sub(1, 1) == "@" and priv.Category or module.name or ("Unassigned"):sub(2) or priv.Category or module.name or "Unassigned"))
+                        category = lia.lang.resolve(priv.Category or module.name or "Unassigned")
                         break
                     end
                 end
@@ -326,13 +326,13 @@ function getPrivilegeCategory(privilegeName)
 
     if not category and CAMI then
         local camiPriv = CAMI.GetPrivilege(privilegeName)
-        if camiPriv and camiPriv.Category then category = ((isstring(camiPriv.Category) and camiPriv.Category:sub(1, 1) == "@" and camiPriv.Category:sub(2) or camiPriv.Category)) end
+        if camiPriv and camiPriv.Category then category = lia.lang.resolve(camiPriv.Category) end
     end
 
     if not category then
         for _, check in ipairs(categoryChecks) do
             if check.match(privilegeName) then
-                category = ((isstring("@" .. check.category) and "@" .. check.category:sub(1, 1) == "@" and "@" .. check.category:sub(2) or "@" .. check.category))
+                category = lia.lang.resolve(check.category)
                 break
             end
         end
@@ -544,8 +544,8 @@ function lia.admin.applyPunishment(client, infraction, kick, ban, time, kickKey,
     local bantime = time or 0
     kickKey = kickKey or "kickedForInfraction"
     banKey = banKey or "bannedForInfraction"
-    if kick then lia.admin.execCommand("kick", client, nil, string.format(tostring(kickKey), infraction)) end
-    if ban then lia.admin.execCommand("ban", client, bantime, string.format(tostring(banKey), infraction)) end
+    if kick then lia.admin.execCommand("kick", client, nil, lia.lang.resolve(kickKey, infraction)) end
+    if ban then lia.admin.execCommand("ban", client, bantime, lia.lang.resolve(banKey, infraction)) end
 end
 
 function lia.admin.hasAccess(ply, privilege)
@@ -661,10 +661,10 @@ function lia.admin.registerPrivilege(priv)
     local alreadyRegistered = lia.admin.privileges[id] ~= nil
     local min = tostring(priv.MinAccess or lia.admin.privileges[id] or "user"):lower()
     lia.admin.privileges[id] = min
-    lia.admin.privilegeNames[id] = ((isstring(priv.Name or lia.admin.privilegeNames[id] or priv.ID) and priv.Name or lia.admin.privilegeNames[id] or priv.ID:sub(1, 1) == "@" and priv.Name or lia.admin.privilegeNames[id] or priv.ID:sub(2) or priv.Name or lia.admin.privilegeNames[id] or priv.ID))
+    lia.admin.privilegeNames[id] = lia.lang.resolve(priv.Name or lia.admin.privilegeNames[id] or priv.ID)
     local description = string.Trim(tostring(priv.Description or priv.Desc or priv.description or priv.desc or priv.Help or priv.help or priv.Tooltip or priv.tooltip or ""))
     if description ~= "" then
-        lia.admin.privilegeDescriptions[id] = ((isstring(description) and description:sub(1, 1) == "@" and description:sub(2) or description))
+        lia.admin.privilegeDescriptions[id] = lia.lang.resolve(description)
     elseif not alreadyRegistered then
         lia.admin.privilegeDescriptions[id] = nil
     end
@@ -672,7 +672,7 @@ function lia.admin.registerPrivilege(priv)
     lia.admin.privilegeAliases[id] = id
     lia.admin.getExternalPrivilegeName(id)
     clearPrivilegeCategoryCache()
-    if priv.Category then lia.admin.privilegeCategories[id] = ((isstring(priv.Category) and priv.Category:sub(1, 1) == "@" and priv.Category:sub(2) or priv.Category)) end
+    if priv.Category then lia.admin.privilegeCategories[id] = lia.lang.resolve(priv.Category) end
     if alreadyRegistered then
         if SERVER and lia.admin.sync then timer.Create("liaAdminPrivilegeMetadataSync", 0, 1, function() lia.admin.sync() end) end
         return
@@ -1026,7 +1026,7 @@ if SERVER then
                     admin:notifySuccessLocalized(key, ...)
                 end
             elseif SERVER then
-                print("[Lilia] " .. tostring(string.format(tostring(key), ...)))
+                print("[Lilia] " .. tostring(lia.lang.resolve(key, ...)))
             end
         end
 
@@ -1608,7 +1608,7 @@ else
 
     local function getPrivilegeDisplayName(name)
         local displayName = lia.admin.privilegeNames and lia.admin.privilegeNames[name] or name
-        displayName = ((isstring(displayName) and displayName:sub(1, 1) == "@" and displayName:sub(2) or displayName))
+        displayName = lia.lang.resolve(displayName)
         if not displayName or displayName == "" then return tostring(name) end
         return tostring(displayName)
     end
@@ -1647,7 +1647,7 @@ else
         local privilegeID = lia.admin.normalizePrivilege(name)
         local rawDescription = lia.admin.privilegeDescriptions and (lia.admin.privilegeDescriptions[privilegeID] or lia.admin.privilegeDescriptions[name]) or nil
         if rawDescription ~= nil then
-            local description = string.Trim(tostring(((isstring(rawDescription) and rawDescription:sub(1, 1) == "@" and rawDescription:sub(2) or rawDescription)) or ""))
+            local description = string.Trim(tostring(lia.lang.resolve(rawDescription) or ""))
             if description ~= "" and description ~= tostring(privilegeID) then return description end
         end
 
@@ -1655,7 +1655,7 @@ else
             local privilege = module.Privileges and module.Privileges[privilegeID] or nil
             local moduleDescription = privilege and (privilege.Description or privilege.Desc or privilege.description or privilege.desc or privilege.Help or privilege.help or privilege.Tooltip or privilege.tooltip) or nil
             if moduleDescription ~= nil then
-                local description = string.Trim(tostring(((isstring(moduleDescription) and moduleDescription:sub(1, 1) == "@" and moduleDescription:sub(2) or moduleDescription)) or ""))
+                local description = string.Trim(tostring(lia.lang.resolve(moduleDescription) or ""))
                 if description ~= "" and description ~= tostring(privilegeID) then return description end
             end
         end
@@ -1665,7 +1665,7 @@ else
             local camiPrivilege = CAMI.GetPrivilege(externalName) or CAMI.GetPrivilege(privilegeID)
             local camiDescription = camiPrivilege and (camiPrivilege.Description or camiPrivilege.Desc or camiPrivilege.description or camiPrivilege.desc) or nil
             if camiDescription ~= nil then
-                local description = string.Trim(tostring(((isstring(camiDescription) and camiDescription:sub(1, 1) == "@" and camiDescription:sub(2) or camiDescription)) or ""))
+                local description = string.Trim(tostring(lia.lang.resolve(camiDescription) or ""))
                 if description ~= "" and description ~= tostring(privilegeID) then return description end
             end
         end
@@ -1768,7 +1768,7 @@ else
 
         local function togglePrivilege(privilege, row, toggle)
             if not state.editable then
-                LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeEdited")
+                LocalPlayer():notifyError(string.format("Base usergroups cannot be edited"))
                 return
             end
 
@@ -2376,7 +2376,7 @@ else
             local groupName = state.selectedGroup
             if not groupName then return end
             if lia.admin.DefaultGroups[groupName] then
-                LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeRenamed")
+                LocalPlayer():notifyError(string.format("[Lilia Administration] The base usergroups cannot be renamed!"))
                 return
             end
 
@@ -2395,7 +2395,7 @@ else
             local groupName = state.selectedGroup
             if not groupName then return end
             if lia.admin.DefaultGroups[groupName] then
-                LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeRemoved")
+                LocalPlayer():notifyError(string.format("[Lilia Administration] The base usergroups cannot be removed!"))
                 return
             end
 

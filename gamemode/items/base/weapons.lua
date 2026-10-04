@@ -1,6 +1,6 @@
-﻿ITEM.name = "weaponsName"
-ITEM.desc = "weaponsDesc"
-ITEM.category = "weapons"
+ITEM.name = "Weapon"
+ITEM.desc = "A Weapon."
+ITEM.category = "Weapons"
 ITEM.model = "models/weapons/w_pistol.mdl"
 ITEM.class = "weapon_pistol"
 ITEM.width = 2
@@ -12,7 +12,7 @@ function ITEM.postHooks:drop()
     local client = self.player
     if not client or not IsValid(client) then return end
     if client:HasWeapon(self.class) then
-        client:notifyErrorLocalized("invalidWeapon")
+        client:notifyError(string.format("You cannot drop this weapon while it's equipped."))
         client:StripWeapon(self.class)
     end
 end
@@ -21,7 +21,7 @@ ITEM:hook("drop", function(item)
     local client = item.player
     if not client or not IsValid(client) then return false end
     if IsValid(client:GetRagdollEntity()) then
-        client:notifyErrorLocalized("noRagdollAction")
+        client:notifyError(string.format("You cannot do that while ragdolled."))
         return false
     end
 
@@ -44,7 +44,7 @@ ITEM.functions.Unequip = {
         local client = item.player
         if not client or not IsValid(client) then return false end
         if IsValid(client:GetRagdollEntity()) then
-            client:notifyErrorLocalized("noRagdollAction")
+            client:notifyError(string.format("You cannot do that while ragdolled."))
             return false
         end
 
@@ -72,7 +72,7 @@ ITEM.functions.Equip = {
         local client = item.player
         if not client or not IsValid(client) then return false end
         if IsValid(client:GetRagdollEntity()) then
-            client:notifyErrorLocalized("noRagdollAction")
+            client:notifyError(string.format("You cannot do that while ragdolled."))
             return false
         end
 
@@ -80,7 +80,7 @@ ITEM.functions.Equip = {
         if item.weaponCategory then
             for _, v in pairs(items) do
                 if v.id ~= item.id and v.isWeapon and v.weaponCategory == item.weaponCategory and v:getData("equip") then
-                    client:notifyErrorLocalized("weaponSlotFilled")
+                    client:notifyError(string.format("You already have a weapon equipped in that slot."))
                     return false
                 end
             end

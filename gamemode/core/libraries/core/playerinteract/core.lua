@@ -190,24 +190,24 @@ if SERVER then
                 if originalAmount ~= amount and originalAmount > 0 then
                     lia.log.add(client, "moneyDupeAttempt", "Attempted to give " .. tostring(originalAmount) .. " money (floored to " .. amount .. ")")
                     for _, admin in player.Iterator() do
-                        if admin:IsAdmin() then admin:notifyLocalized("moneyDupeAttempt", client:Name(), "givemoney", tostring(originalAmount), tostring(amount)) end
+                        if admin:IsAdmin() then admin:notify(string.format("%s attempted to %s with decimal amount %s (floored to %s) - potential money duping!", client:Name(), "givemoney", tostring(originalAmount), tostring(amount))) end
                     end
                 end
 
                 if not amount or amount <= 0 then
-                    client:notifyErrorLocalized("invalidAmount")
+                    client:notifyError(string.format("Invalid amount."))
                     return
                 end
 
                 if not IsValid(client) or not client:getChar() then return end
                 if client:isFamilySharedAccount() and not lia.config.get("AltsDisabled", false) then
-                    client:notifyErrorLocalized("familySharedMoneyTransferDisabled")
+                    client:notifyError(string.format("You cannot transfer or drop money with a family-shared account"))
                     return
                 end
 
                 if not IsValid(target) or not target:IsPlayer() or not target:getChar() then return end
                 if not client:getChar():hasMoney(amount) then
-                    client:notifyErrorLocalized("notEnoughMoney")
+                    client:notifyError(string.format("You don't have enough money"))
                     return
                 end
 
@@ -215,8 +215,8 @@ if SERVER then
                 client:getChar():takeMoney(amount)
                 local senderName = client:getChar():getDisplayedName(target)
                 local targetName = client:getChar():getDisplayedName(client)
-                client:notifyMoneyLocalized("moneyTransferSent", lia.currency.get(amount), targetName)
-                target:notifyMoneyLocalized("moneyTransferReceived", lia.currency.get(amount), senderName)
+                client:notifyMoney(string.format("You transferred %s to %s", lia.currency.get(amount), targetName))
+                target:notifyMoney(string.format("You received %s from %s", lia.currency.get(amount), senderName))
                 client:doGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_GMOD_GESTURE_ITEM_PLACE, true)
             end, "")
         end
@@ -227,7 +227,7 @@ if SERVER then
         shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= "Whispering" end,
         onRun = function(client)
             client:setLocalVar("VoiceType", VOICE_WHISPERING)
-            client:notifyInfoLocalized("voiceModeSet", "Whispering")
+            client:notifyInfo(string.format("Voice range set to %s.", "Whispering"))
             hook.Run("OnVoiceTypeChanged", client)
         end,
         serverOnly = true
@@ -238,7 +238,7 @@ if SERVER then
         shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= VOICE_TALKING end,
         onRun = function(client)
             client:setLocalVar("VoiceType", VOICE_TALKING)
-            client:notifyInfoLocalized("voiceModeSet", "Talking")
+            client:notifyInfo(string.format("Voice range set to %s.", "Talking"))
             hook.Run("OnVoiceTypeChanged", client)
         end,
         serverOnly = true
@@ -249,7 +249,7 @@ if SERVER then
         shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= VOICE_YELLING end,
         onRun = function(client)
             client:setLocalVar("VoiceType", VOICE_YELLING)
-            client:notifyInfoLocalized("voiceModeSet", "Yelling")
+            client:notifyInfo(string.format("Voice range set to %s.", "Yelling"))
             hook.Run("OnVoiceTypeChanged", client)
         end,
         serverOnly = true

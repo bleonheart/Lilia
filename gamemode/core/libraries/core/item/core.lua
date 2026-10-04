@@ -58,7 +58,7 @@ local DefaultFunctions = {
                 d:resolve()
             end):catch(function(err)
                 if err == "noFit" then
-                    client:notifyErrorLocalized("itemNoFit", item:getWidth(), item:getHeight())
+                    client:notifyError(string.format("This item can't fit in your inventory. (%sx%s)", item:getWidth(), item:getHeight()))
                 else
                     client:notifyErrorLocalized(err)
                 end
@@ -83,7 +83,7 @@ local DefaultFunctions = {
                 local h = newRot and (item.width or 1) or item.height or 1
                 local invW, invH = inv:getSize()
                 if x < 1 or y < 1 or x + w - 1 > invW or y + h - 1 > invH then
-                    if showNoFitNotice and IsValid(item.player) then item.player:notifyErrorLocalized("itemNoFit", w, h) end
+                    if showNoFitNotice and IsValid(item.player) then item.player:notifyError(string.format("This item can't fit in your inventory. (%sx%s)", w, h)) end
                     return false
                 end
 
@@ -96,7 +96,7 @@ local DefaultFunctions = {
                             local x2 = x + w - 1
                             local y2 = y + h - 1
                             if x <= ix2 and ix <= x2 and y <= iy2 and iy <= y2 then
-                                if showNoFitNotice and IsValid(item.player) then item.player:notifyErrorLocalized("itemNoFit", w, h) end
+                                if showNoFitNotice and IsValid(item.player) then item.player:notifyError(string.format("This item can't fit in your inventory. (%sx%s)", w, h)) end
                                 return false
                             end
                         end
@@ -125,7 +125,7 @@ local DefaultFunctions = {
             local targetInv = target:getChar():getInv()
             if not target or not targetInv then return false end
             if not targetInv:doesFitInventory(item) then
-                client:notifyLocalized("noFit")
+                client:notify(string.format("This item can not fit in your inventory."))
                 return false
             end
 
@@ -146,8 +146,8 @@ local DefaultFunctions = {
                         end)
                     end, lia.config.get("ItemGiveSpeed", 6), function() client:setAction() end, 100)
                 else
-                    client:notifyLocalized("itemGiveDeclined", target:Name())
-                    target:notifyLocalized("itemGiveDeclinedSelf", client:Name())
+                    client:notify(string.format("%s declined your item offer.", target:Name()))
+                    target:notify(string.format("You declined %s's item offer.", client:Name()))
                 end
             end)
             return false
@@ -294,20 +294,7 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 end
 
 function lia.item.localizeDefinition(itemDef)
-    if not istable(itemDef) then return end
-    for funcName, funcTable in pairs(itemDef.functions or {}) do
-        if isstring(funcTable.name) then
-            funcTable.name = lia.lang.resolve(funcTable.name)
-        else
-            funcTable.name = lia.lang.resolve(funcName)
-        end
-
-        if isstring(funcTable.tip) then funcTable.tip = lia.lang.resolve(funcTable.tip) end
-    end
-
-    if isstring(itemDef.name) then itemDef.name = lia.lang.resolve(itemDef.name) end
-    if isstring(itemDef.desc) then itemDef.desc = lia.lang.resolve(itemDef.desc) end
-    if isstring(itemDef.category) then itemDef.category = lia.lang.resolve(itemDef.category) end
+    return itemDef
 end
 
 function lia.item.registerItem(id, base, properties)

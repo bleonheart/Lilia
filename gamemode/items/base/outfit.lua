@@ -1,6 +1,6 @@
-﻿ITEM.name = "outfit"
-ITEM.desc = "outfitDesc"
-ITEM.category = "outfit"
+ITEM.name = "Outfit"
+ITEM.desc = "A Outfit Base."
+ITEM.category = "Outfit"
 ITEM.model = "models/props_c17/BriefCase001a.mdl"
 ITEM.width = 1
 ITEM.height = 1
@@ -155,7 +155,7 @@ ITEM.functions.Equip = {
         local items = character:getInv():getItems()
         for _, other in pairs(items) do
             if item ~= other and item.outfitCategory == other.outfitCategory and other:getData("equip") then
-                item.player:notifyErrorLocalized("sameOutfitCategory")
+                item.player:notifyError(string.format("You are already wearing something in this outfit category."))
                 return false
             end
         end

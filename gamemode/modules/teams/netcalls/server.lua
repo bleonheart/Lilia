@@ -42,7 +42,7 @@ net.Receive("liaKickCharacterToBase", function(_, client)
     end
 
     if not defaultFaction then
-        client:notifyErrorLocalized("invalidFaction")
+        client:notifyError(string.format("The specified faction is not valid."))
         return
     end
 
@@ -54,12 +54,12 @@ net.Receive("liaKickCharacterToBase", function(_, client)
             local oldFaction = targetChar:getFaction()
             local oldFactionData = lia.faction.indices[oldFaction]
             if oldFactionData and oldFactionData.isDefault then
-                client:notifyErrorLocalized("alreadyInBaseFaction")
+                client:notifyError(string.format("Character is already in the base faction."))
                 return
             end
 
             if hook.Run("CanCharBeTransfered", targetChar, defaultFaction, oldFaction) == false then return end
-            target:notifyWarningLocalized("kickedFromFaction")
+            target:notifyWarning(string.format("You were kicked from your faction!"))
             hook.Run("TrackFactionTransfer", targetChar, oldFaction, defaultFaction, client, "kickToBase")
             targetChar.vars.faction = defaultFaction.uniqueID
             targetChar:setFaction(defaultFaction.index)
@@ -67,7 +67,7 @@ net.Receive("liaKickCharacterToBase", function(_, client)
             if defaultFaction.OnTransferred then defaultFaction:OnTransferred(target, oldFaction) end
             hook.Run("PlayerLoadout", target)
             targetChar:save()
-            client:notifySuccessLocalized("transferSuccess", target:Name(), defaultFaction.name)
+            client:notifySuccess(string.format("%s has been transferred to %s.", target:Name(), defaultFaction.name))
             lia.log.add(client, "kickToBaseFaction", target:Name(), oldFactionData and oldFactionData.name or tostring(oldFaction), defaultFaction.name)
         end
     end
@@ -75,14 +75,14 @@ net.Receive("liaKickCharacterToBase", function(_, client)
     if not isOnline then
         lia.db.query("SELECT faction FROM lia_characters WHERE id = " .. characterID):next(function(data)
             if not data or not data[1] then
-                client:notifyErrorLocalized("characterNotFound")
+                client:notifyError(string.format("Character not found."))
                 return
             end
 
             local currentFaction = data[1].faction
             local currentFactionData = lia.faction.get(currentFaction)
             if currentFactionData and currentFactionData.isDefault then
-                client:notifyErrorLocalized("alreadyInBaseFaction")
+                client:notifyError(string.format("Character is already in the base faction."))
                 return
             end
 
@@ -91,7 +91,7 @@ net.Receive("liaKickCharacterToBase", function(_, client)
                 faction = defaultFaction.uniqueID
             }, nil, "characters", "id = " .. characterID)
 
-            client:notifySuccessLocalized("transferSuccess", "Character", defaultFaction.name)
+            client:notifySuccess(string.format("%s has been transferred to %s.", "Character", defaultFaction.name))
             lia.log.add(client, "kickToBaseFaction", "Character", currentFactionData and currentFactionData.name or tostring(currentFaction), defaultFaction.name)
         end)
     end

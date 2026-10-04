@@ -257,7 +257,7 @@ local function openRemovalMenu(weapon)
         button:DockMargin(0, 15, 10, 15)
         button.DoClick = function()
             lia.util.removeFeaturePosition(point.pos, typeInfo.id)
-            LocalPlayer():notifySuccessLocalized("removedPoint", point.label or string.format("Point %s", index))
+            LocalPlayer():notifySuccess(string.format("Successfully removed %s", point.label or string.format("Point %s", index)))
             frame:Close()
             refreshPositions(weapon, typeInfo.id)
         end
@@ -275,7 +275,7 @@ SWEP:RegisterMode("admin", {
         if IsValid(target) and target:IsPlayer() and target ~= client then
             lia.admin.execCommand(target:IsFrozen() and "unfreeze" or "freeze", target:IsBot() and target:Name() or target:SteamID())
         else
-            client:notifyErrorLocalized("cantFreezeTarget")
+            client:notifyError(string.format("You cannot freeze this!"))
         end
     end,
     Reload = function(_, client)

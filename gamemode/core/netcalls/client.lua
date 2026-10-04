@@ -636,7 +636,7 @@ net.Receive("liaActBar", function()
 
     local text = net.ReadString()
     local time = net.ReadFloat()
-    local displayText = text:sub(1, 1) == "@" and tostring(text:sub(2)) or text
+    local displayText = lia.lang.resolve(text)
     if IsValid(lia.gui.actionCircle) then lia.gui.actionCircle:Remove() end
     lia.gui = lia.gui or {}
     local pnl = vgui.Create("liaLockCircle")
@@ -904,7 +904,7 @@ net.Receive("liaBinaryQuestionRequest", function()
         if notice.opt1 and IsValid(notice.opt1) then
             notice.opt1:SetAlpha(255)
             notice.opt1:SetSize(notice:GetWide() / 3 - 5, 25)
-            notice.opt1:SetText(string.format(tostring(option1Key), "Yes") .. string.format(" (%s)", "F7"))
+            notice.opt1:SetText(lia.lang.resolve(option1Key, "Yes") .. string.format(" (%s)", "F7"))
             notice.opt1:SetPos(0, notice:GetTall() - notice.opt1:GetTall())
             notice.opt1:CenterHorizontal(0.166)
             notice.opt1:SetAlpha(0)
@@ -929,7 +929,7 @@ net.Receive("liaBinaryQuestionRequest", function()
         if notice.opt2 and IsValid(notice.opt2) then
             notice.opt2:SetAlpha(255)
             notice.opt2:SetSize(notice:GetWide() / 3 - 5, 25)
-            notice.opt2:SetText(string.format(tostring(option2Key), "No") .. string.format(" (%s)", "F8"))
+            notice.opt2:SetText(lia.lang.resolve(option2Key, "No") .. string.format(" (%s)", "F8"))
             notice.opt2:SetPos(0, notice:GetTall() - notice.opt2:GetTall())
             notice.opt2:CenterHorizontal(0.5)
             notice.opt2:SetAlpha(0)

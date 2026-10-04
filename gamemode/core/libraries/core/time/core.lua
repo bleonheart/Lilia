@@ -45,15 +45,13 @@ end
 function lia.time.getDate()
     local ct = os.date("*t")
     local american = lia.config.get("AmericanTimeStamps", false)
-    local weekdayKeys = {"weekdaySunday", "weekdayMonday", "weekdayTuesday", "weekdayWednesday", "weekdayThursday", "weekdayFriday", "weekdaySaturday"}
-    local monthKeys = {"monthJanuary", "monthFebruary", "monthMarch", "monthApril", "monthMay", "monthJune", "monthJuly", "monthAugust", "monthSeptember", "monthOctober", "monthNovember", "monthDecember"}
     if american then
         local suffix = ct.hour < 12 and "am" or "pm"
         local hour12 = ct.hour % 12
         if hour12 == 0 then hour12 = 12 end
-        return string.format("%s, %s %02d, %04d, %02d:%02d:%02d%s", tostring(weekdayKeys[ct.wday]), tostring(monthKeys[ct.month]), ct.day, ct.year, hour12, ct.min, ct.sec, suffix)
+        return string.format("%s, %s %02d, %04d, %02d:%02d:%02d%s", ({"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"})[ct.wday], ({"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"})[ct.month], ct.day, ct.year, hour12, ct.min, ct.sec, suffix)
     end
-    return string.format("%s, %02d %s %04d, %02d:%02d:%02d", tostring(weekdayKeys[ct.wday]), ct.day, tostring(monthKeys[ct.month]), ct.year, ct.hour, ct.min, ct.sec)
+    return string.format("%s, %02d %s %04d, %02d:%02d:%02d", ({"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"})[ct.wday], ct.day, ({"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"})[ct.month], ct.year, ct.hour, ct.min, ct.sec)
 end
 
 function lia.time.formatDHM(seconds)

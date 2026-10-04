@@ -2679,7 +2679,7 @@ function MODULE:OpenAdminStickUI(tgt)
     if #commands > 0 then hasOptions = true end
     if not hasOptions and hasAdminStickGeneratedLists(tgt) then hasOptions = true end
     if not hasOptions then
-        cl:notifyInfoLocalized("noOptionsAvailable")
+        cl:notifyInfo(string.format("No options available"))
         return
     end
 

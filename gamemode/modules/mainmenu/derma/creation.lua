@@ -97,7 +97,7 @@ function PANEL:showError(msg, ...)
     assert(IsValid(self.content), "No step is available")
     local err = self.content:Add("DLabel")
     err:SetFont("LiliaFont.18")
-    err:SetText(string.format(tostring(msg), ...))
+    err:SetText(lia.lang.resolve(msg, ...))
     err:SetTextColor(color_white)
     err:Dock(TOP)
     err:SetTall(32)
@@ -123,13 +123,13 @@ function PANEL:showMessage(msg, ...)
         return
     end
 
-    if IsValid(self.message) then self.message:SetText(string.format(tostring(msg), ...):upper()) end
+    if IsValid(self.message) then self.message:SetText(lia.lang.resolve(msg, ...):upper()) end
     local lbl = self:Add("DLabel")
     lbl:SetFont("LiliaFont.16")
     lbl:SetTextColor(lia.gui.character.color)
     lbl:Dock(FILL)
     lbl:SetContentAlignment(5)
-    lbl:SetText(string.format(tostring(msg), ...):upper())
+    lbl:SetText(lia.lang.resolve(msg, ...):upper())
     self.message = lbl
 end
 

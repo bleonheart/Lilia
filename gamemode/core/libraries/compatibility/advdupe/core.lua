@@ -2,7 +2,7 @@
     entities = entities or {}
     for _, ent in pairs(entities) do
         if ent.ModelScale and ent.ModelScale > 10 then
-            client:notifyErrorLocalized("duplicationSizeLimit")
+            client:notifyError(string.format("A model within this duplication exceeds the size limit!"))
             lia.log.add(client, "dupeCrashAttempt")
             return false
         end
@@ -28,7 +28,7 @@ hook.Add("CanTool", "liaAdvDupe", function(client, _, tool)
     if not toolobj or not toolobj.Entities then return end
     for _, ent in pairs(toolobj.Entities) do
         if ent.NoDuplicate then
-            client:notifyErrorLocalized("cannotDuplicateEntity", tool)
+            client:notifyError(string.format("This entity cannot be duplicated using %s.", tool))
             return false
         end
     end

@@ -5,7 +5,7 @@
     if IsValid(client) then
         lia.localData = lia.localData or {}
         lia.localData["mainCharacter"] = charID
-        client:notifyLocalized("mainCharacterSet")
+        client:notify(string.format("Character set as main character."))
         if IsValid(lia.gui.character) and lia.gui.character.isLoadMode then lia.gui.character:updateSelectedCharacter() end
     end
 end)
@@ -21,7 +21,7 @@ net.Receive("liaStaffDiscordPrompt", function()
             net.WriteString("not provided")
             net.SendToServer()
         else
-            LocalPlayer():notifyErrorLocalized("discordUsernameEmpty")
+            LocalPlayer():notifyError(string.format("Discord username cannot be empty!"))
         end
     end, "", nil)
 end)

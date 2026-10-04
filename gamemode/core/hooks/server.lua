@@ -2,55 +2,6 @@
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
-local LimbHitgroups = {HITGROUP_GEAR, HITGROUP_RIGHTARM, HITGROUP_LEFTARM}
-local sounds = {
-    male = {
-        death = {Sound("vo/npc/male01/pain07.wav"), Sound("vo/npc/male01/pain08.wav"), Sound("vo/npc/male01/pain09.wav"),},
-        hurt = {Sound("vo/npc/male01/pain01.wav"), Sound("vo/npc/male01/pain02.wav"), Sound("vo/npc/male01/pain03.wav"), Sound("vo/npc/male01/pain04.wav"), Sound("vo/npc/male01/pain05.wav"), Sound("vo/npc/male01/pain06.wav"),},
-    },
-    female = {
-        death = {Sound("vo/npc/female01/pain07.wav"), Sound("vo/npc/female01/pain08.wav"), Sound("vo/npc/female01/pain09.wav"),},
-        hurt = {Sound("vo/npc/female01/pain01.wav"), Sound("vo/npc/female01/pain02.wav"), Sound("vo/npc/female01/pain03.wav"), Sound("vo/npc/female01/pain04.wav"), Sound("vo/npc/female01/pain05.wav"), Sound("vo/npc/female01/pain06.wav"),},
-    }
-}
-
-local function getGender(isFemale)
-    return isFemale and "female" or "male"
-end
-
-function GM:GetPlayerDeathSound(client, isFemale)
-    if hook.Run("ShouldPlayDeathSound", client) == false then return end
-    local sndTab = sounds[getGender(isFemale)].death
-    return sndTab[math.random(#sndTab)]
-end
-
-function GM:GetPlayerPainSound(client, paintype, isFemale)
-    if hook.Run("ShouldPlayPainSound", client, paintype) == false then return end
-    if paintype == "hurt" then
-        local sndTab = sounds[getGender(isFemale)].hurt
-        return sndTab[math.random(#sndTab)]
-    end
-end
-
-function GM:GetFallDamage(client, speed)
-    if not lia.config.get("FallDamageEnabled", true) then return 0 end
-    return math.max(0, (speed - 580) * 100 / 444)
-end
-
-function GM:ScalePlayerDamage(client, hitgroup, dmgInfo)
-    local damageScale = lia.config.get("DamageScale")
-    hook.Run("PreScaleDamage", hitgroup, dmgInfo, damageScale)
-    if hitgroup == HITGROUP_HEAD then
-        damageScale = lia.config.get("HeadShotDamage")
-    elseif table.HasValue(LimbHitgroups, hitgroup) then
-        damageScale = lia.config.get("LimbDamage")
-    end
-
-    damageScale = hook.Run("GetDamageScale", hitgroup, dmgInfo, damageScale) or damageScale
-    dmgInfo:ScaleDamage(damageScale)
-    hook.Run("PostScaleDamage", hitgroup, dmgInfo, damageScale)
-end
-
 function GM:CharPreSave(character)
     local client = character:getPlayer()
     local loginTime = character:getLoginTime()
@@ -203,14 +154,14 @@ end
 function GM:OnPickupMoney(client, moneyEntity)
     if moneyEntity and IsValid(moneyEntity) then
         local amount = moneyEntity:getAmount()
-        client:notifyMoneyLocalized("moneyTaken", lia.currency.get(amount))
+        client:notifyMoney(string.format("You picked up %s.", lia.currency.get(amount)))
         lia.log.add(client, "moneyPickedUp", amount)
     end
 end
 
 function GM:CanItemBeTransfered(item, curInv, inventory)
     if item.isBag and curInv ~= inventory and item.getInv and item:getInv() and table.Count(item:getInv():getItems()) > 0 then
-        lia.char.getCharacter(curInv.client, nil, function(character) if character then character:getPlayer():notifyErrorLocalized("forbiddenActionStorage") end end)
+        lia.char.getCharacter(curInv.client, nil, function(character) if character then character:getPlayer():notifyError(string.format("You can't perform this action from storage.")) end end)
         return false
     end
 
@@ -236,7 +187,7 @@ function GM:CanPlayerInteractItem(client, action, item)
                 timer.Create("DropDelay." .. client:SteamID64(), lia.config.get("DropDelay"), 1, function() if IsValid(client) then client.dropDelay = nil end end)
                 return true
             else
-                client:notifyWarningLocalized("switchCooldown")
+                client:notifyWarning(string.format("You are on cooldown!"))
                 return false
             end
         else
@@ -251,7 +202,7 @@ function GM:CanPlayerInteractItem(client, action, item)
                 timer.Create("TakeDelay." .. client:SteamID64(), lia.config.get("TakeDelay"), 1, function() if IsValid(client) then client.takeDelay = nil end end)
                 return true
             else
-                client:notifyWarningLocalized("switchCooldown")
+                client:notifyWarning(string.format("You are on cooldown!"))
                 return false
             end
         else
@@ -266,7 +217,7 @@ function GM:CanPlayerInteractItem(client, action, item)
                 timer.Create("EquipDelay." .. client:SteamID64(), lia.config.get("EquipDelay"), 1, function() if IsValid(client) then client.equipDelay = nil end end)
                 return true
             else
-                client:notifyWarningLocalized("switchCooldown")
+                client:notifyWarning(string.format("You are on cooldown!"))
                 return false
             end
         else
@@ -281,7 +232,7 @@ function GM:CanPlayerInteractItem(client, action, item)
                 timer.Create("UnequipDelay." .. client:SteamID64(), lia.config.get("UnequipDelay"), 1, function() if IsValid(client) then client.unequipDelay = nil end end)
                 return true
             else
-                client:notifyWarningLocalized("switchCooldown")
+                client:notifyWarning(string.format("You are on cooldown!"))
                 return false
             end
         else
@@ -299,11 +250,11 @@ function GM:CanPlayerEquipItem(client, item)
     print("[LILIA DEBUG][CanPlayerEquipItem]", "client=", IsValid(client) and client:Nick() or "nil", "item=", item and item.uniqueID or "nil", "invID=", item and item.invID or "nil", "inventoryType=", inventory and inventory.typeID or "nil", "isStorage=", inventory and tostring(inventory.isStorage) or "nil", "isExternalInventory=", inventory and tostring(inventory.isExternalInventory) or "nil", "isBag=", inventory and tostring(inventory.isBag) or "nil", "bagItemID=", tostring(bagItemID), "derivedBagInventory=", tostring(isBagInventory), "char=", inventory and tostring(inventory:getData("char")) or "nil")
     if client.equipDelay ~= nil then
         print("[LILIA DEBUG][CanPlayerEquipItem]", "blockedReason=", "equipDelay")
-        client:notifyWarningLocalized("switchCooldown")
+        client:notifyWarning(string.format("You are on cooldown!"))
         return false
     elseif inventory and (isBagInventory or inventory.isExternalInventory or inventory.isStorage) then
         print("[LILIA DEBUG][CanPlayerEquipItem]", "blockedReason=", "forbiddenActionStorage")
-        client:notifyErrorLocalized("forbiddenActionStorage")
+        client:notifyError(string.format("You can't perform this action from storage."))
         return false
     end
 
@@ -313,13 +264,13 @@ end
 function GM:CanPlayerTakeItem(client, item)
     local inventory = lia.inventory.instances[item.invID]
     if client.takeDelay ~= nil then
-        client:notifyWarningLocalized("switchCooldown")
+        client:notifyWarning(string.format("You are on cooldown!"))
         return false
     elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyErrorLocalized("forbiddenActionStorage")
+        client:notifyError(string.format("You can't perform this action from storage."))
         return false
     elseif client:isFamilySharedAccount() then
-        client:notifyErrorLocalized("familySharedPickupDisabled")
+        client:notifyError(string.format("You cannot pick up items with a family-shared account"))
         return false
     elseif IsValid(item.entity) then
         local character = client:getChar()
@@ -334,18 +285,18 @@ end
 function GM:CanPlayerDropItem(client, item)
     local inventory = lia.inventory.instances[item.invID]
     if client.dropDelay ~= nil then
-        client:notifyWarningLocalized("switchCooldown")
+        client:notifyWarning(string.format("You are on cooldown!"))
         return false
     elseif item.isBag and item:getInv() then
         local items = item:getInv():getItems()
         for _, otheritem in pairs(items) do
             if not otheritem.ignoreEquipCheck and otheritem:getData("equip", false) then
-                client:notifyErrorLocalized("cantDropBagHasEquipped")
+                client:notifyError(string.format("You can't drop a bag with equipped items inside."))
                 return false
             end
         end
     elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyErrorLocalized("forbiddenActionStorage")
+        client:notifyError(string.format("You can't perform this action from storage."))
         return false
     end
     return true
@@ -371,7 +322,7 @@ function GM:PlayerSay(client, message)
     message = parsedMessage
     if chatType == "ic" and lia.command.parse(client, message) then return "" end
     if utf8.len(message) > lia.config.get("MaxChatLength") then
-        client:notifyErrorLocalized("tooLongMessage")
+        client:notifyError(string.format("Your message is too long and has not been sent."))
         return ""
     end
 
@@ -1249,7 +1200,7 @@ function GM:CreateSalaryTimers()
                                 local finalPay = hook.Run("OnSalaryGiven", client, char, pay, charFaction, class)
                                 if isnumber(finalPay) then pay = finalPay end
                                 char:giveMoney(pay)
-                                client:notifyMoneyLocalized("salary", lia.currency.get(pay), "Salary")
+                                client:notifyMoney(string.format("You have received %s from your %s.", lia.currency.get(pay), "Salary"))
                             end
                         end
                     end

@@ -1,5 +1,5 @@
-﻿ITEM.name = "urlName"
-ITEM.desc = "urlDesc"
+ITEM.name = "Generic Item"
+ITEM.desc = "Generic Description"
 ITEM.model = "models/props_interiors/pot01a.mdl"
 ITEM.width = 1
 ITEM.height = 1
