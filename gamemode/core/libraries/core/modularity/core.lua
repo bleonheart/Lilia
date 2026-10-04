@@ -3,7 +3,7 @@ lia.module.list = lia.module.list or {}
 local function loadPermissions(Privileges)
     if not Privileges or not istable(Privileges) then return end
     for privID, privilegeData in pairs(Privileges) do
-        local privilegeName = (string.gsub(tostring(privilegeData.Name or privID), "^@", "", 1))
+        local privilegeName = lia.lang.resolve(privilegeData.Name or privID)
         local privilegeCategory = privilegeData.Category or MODULE.name
         lia.admin.registerPrivilege({
             Name = privilegeName,
@@ -172,8 +172,6 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
     MODULE.loading = true
     MODULE.path = path
     MODULE.variable = variable
-    MODULE.name = (string.gsub(tostring(MODULE.name), "^@", "", 1))
-    MODULE.desc = (string.gsub(tostring(MODULE.desc), "^@", "", 1))
     if not file.Exists(coreFile, "LUA") then
         lia.bootstrap("Module Skipped", string.format("Skipping module '%s' - missing %s.lua", uniqueID, lowerVar))
         _G[variable] = prev
@@ -181,6 +179,8 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
     end
 
     lia.loader.include(coreFile, "shared")
+    MODULE.name = lia.lang.resolve(MODULE.name)
+    MODULE.desc = lia.lang.resolve(MODULE.desc)
     local enabled, disableReason
     if isfunction(MODULE.enabled) then
         enabled, disableReason = MODULE.enabled()

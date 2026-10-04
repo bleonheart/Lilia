@@ -77,12 +77,19 @@ function lia.lang.getLocalizedString(key, ...)
     return result
 end
 
-function lia.lang.resolveToken(value, ...)
+function lia.lang.resolve(value, ...)
     if not isstring(value) then return value end
-    if value:sub(1, 1) ~= "@" then return value end
-    local key = value:sub(2)
+    local tokenized = value:sub(1, 1) == "@"
+    local key = tokenized and value:sub(2) or value
     if key == "" then return "" end
-    return lia.lang.getLocalizedString(key, ...)
+    local localized = lia.lang.getLocalizedString(key, ...)
+    if localized ~= key then return localized end
+    return tokenized and key or value
+end
+
+function lia.lang.resolveToken(value, ...)
+    if not isstring(value) or value:sub(1, 1) ~= "@" then return value end
+    return lia.lang.resolve(value, ...)
 end
 
 L = lia.lang.getLocalizedString

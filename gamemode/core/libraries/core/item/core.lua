@@ -297,17 +297,17 @@ function lia.item.localizeDefinition(itemDef)
     if not istable(itemDef) then return end
     for funcName, funcTable in pairs(itemDef.functions or {}) do
         if isstring(funcTable.name) then
-            funcTable.name = (string.gsub(tostring(funcTable.name), "^@", "", 1))
+            funcTable.name = lia.lang.resolve(funcTable.name)
         else
-            funcTable.name = (string.gsub(tostring("@" .. funcName), "^@", "", 1))
+            funcTable.name = lia.lang.resolve(funcName)
         end
 
-        if isstring(funcTable.tip) then funcTable.tip = (string.gsub(tostring(funcTable.tip), "^@", "", 1)) end
+        if isstring(funcTable.tip) then funcTable.tip = lia.lang.resolve(funcTable.tip) end
     end
 
-    if isstring(itemDef.name) then itemDef.name = (string.gsub(tostring(itemDef.name), "^@", "", 1)) end
-    if isstring(itemDef.desc) then itemDef.desc = (string.gsub(tostring(itemDef.desc), "^@", "", 1)) end
-    if isstring(itemDef.category) then itemDef.category = (string.gsub(tostring(itemDef.category), "^@", "", 1)) end
+    if isstring(itemDef.name) then itemDef.name = lia.lang.resolve(itemDef.name) end
+    if isstring(itemDef.desc) then itemDef.desc = lia.lang.resolve(itemDef.desc) end
+    if isstring(itemDef.category) then itemDef.category = lia.lang.resolve(itemDef.category) end
 end
 
 function lia.item.registerItem(id, base, properties)

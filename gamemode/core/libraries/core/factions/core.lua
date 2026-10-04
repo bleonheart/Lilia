@@ -22,8 +22,8 @@ function lia.faction.register(uniqueID, data)
 
     faction.index = index
     faction.uniqueID = uniqueID
-    faction.name = (string.gsub(tostring(faction.name), "^@", "", 1)) or "Unknown"
-    faction.desc = (string.gsub(tostring(faction.desc), "^@", "", 1)) or "No Description"
+    faction.name = faction.name and lia.lang.resolve(faction.name) or "Unknown"
+    faction.desc = faction.desc and lia.lang.resolve(faction.desc) or "No Description"
     faction.color = faction.color or Color(150, 150, 150)
     faction.models = faction.models or DefaultModels
     if faction.skinAllowed == nil then faction.skinAllowed = false end
@@ -126,8 +126,8 @@ function lia.faction.loadFromDir(directory)
             lia.error(string.format("Faction '%s' is missing a description. You need to add a FACTION.desc", niceName))
         end
 
-        FACTION.name = (string.gsub(tostring(FACTION.name), "^@", "", 1))
-        FACTION.desc = (string.gsub(tostring(FACTION.desc), "^@", "", 1))
+        FACTION.name = lia.lang.resolve(FACTION.name)
+        FACTION.desc = lia.lang.resolve(FACTION.desc)
         local overrideName = hook.Run("OverrideFactionName", niceName, FACTION.name)
         if overrideName then FACTION.name = overrideName end
         local overrideDesc = hook.Run("OverrideFactionDesc", niceName, FACTION.desc)

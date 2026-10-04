@@ -63,7 +63,7 @@ function lia.dialog.resolveDialogTypeIdentifier(value)
     if not isstring(value) or value == "" or value == "none" then return value end
     if lia.dialog.stored and lia.dialog.stored[value] then return value end
     for uniqueID, data in pairs(lia.dialog.stored or {}) do
-        local displayName = (string.gsub(tostring(data.PrintName or uniqueID), "^@", "", 1))
+        local displayName = lia.lang.resolve(data.PrintName or uniqueID)
         if displayName == value then return uniqueID end
     end
     return value
@@ -108,7 +108,7 @@ end
 function lia.dialog.getCompatibleDialogOptions(npc)
     local options = {}
     for uniqueID, data in pairs(lia.dialog.stored or {}) do
-        if lia.dialog.isConversationDialogData(data) and lia.dialog.isDialogCompatibleWithEntity(npc, data) then options[#options + 1] = {(string.gsub(tostring(data.PrintName or uniqueID), "^@", "", 1)), uniqueID} end
+        if lia.dialog.isConversationDialogData(data) and lia.dialog.isDialogCompatibleWithEntity(npc, data) then options[#options + 1] = {lia.lang.resolve(data.PrintName or uniqueID), uniqueID} end
     end
 
     table.sort(options, function(a, b) return a[1] < b[1] end)
@@ -434,7 +434,7 @@ if SERVER then
             end
             return resolved
         end
-        return (string.gsub(tostring(value), "^@", "", 1))
+        return lia.lang.resolve(value)
     end
 
     local function addResponseMetadata(entry, source)
@@ -457,7 +457,7 @@ if SERVER then
         if not istable(tbl) then return tbl end
         local out = {}
         for label, info in pairs(tbl) do
-            local resolvedLabel = (string.gsub(tostring(label), "^@", "", 1))
+            local resolvedLabel = lia.lang.resolve(label)
             local entry = {}
             if istable(info) then
                 for k, v in pairs(info) do
@@ -483,7 +483,7 @@ if SERVER then
 
     local function resolveDialogData(data)
         if not istable(data) then return data end
-        data.PrintName = (string.gsub(tostring(data.PrintName), "^@", "", 1))
+        data.PrintName = lia.lang.resolve(data.PrintName)
         data.Greeting = resolveDialogValue(data.Greeting)
         if istable(data.Conversation) then data.Conversation = sanitizeConversationTable(data.Conversation) end
         return data
@@ -1063,7 +1063,7 @@ else
                     local configBtn = vgui.Create("liaButton", scroll)
                     configBtn:Dock(TOP)
                     configBtn:SetTall(30)
-                    configBtn:SetText((string.gsub(tostring(config.name or config.id), "^@", "", 1)) or "Configuration")
+                    configBtn:SetText(lia.lang.resolve(config.name or config.id) or "Configuration")
                     configBtn:DockMargin(0, 5, 0, 5)
                     configBtn.DoClick = function()
                         frame:Close()

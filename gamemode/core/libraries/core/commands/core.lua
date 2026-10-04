@@ -14,7 +14,7 @@ function lia.command.buildSyntaxFromArguments(args)
             typ = "string"
         end
 
-        local name = (string.gsub(tostring(arg.name or typ), "^@", "", 1))
+        local name = lia.lang.resolve(arg.name or typ)
         local optional = arg.optional and " optional" or ""
         tokens[#tokens + 1] = string.format("[%s %s%s]", typ, name, optional)
     end
@@ -24,17 +24,17 @@ end
 function lia.command.add(command, data)
     data.arguments = data.arguments or {}
     data.syntax = data.syntax or lia.command.buildSyntaxFromArguments(data.arguments)
-    data.syntax = isstring(data.syntax) and (string.gsub(tostring(data.syntax), "^@", "", 1)) or data.syntax or ""
-    data.desc = isstring(data.desc) and (string.gsub(tostring(data.desc), "^@", "", 1)) or data.desc or ""
+    data.syntax = isstring(data.syntax) and lia.lang.resolve(data.syntax) or data.syntax or ""
+    data.desc = isstring(data.desc) and lia.lang.resolve(data.desc) or data.desc or ""
     if istable(data.AdminStick) then
-        data.AdminStick.Name = isstring(data.AdminStick.Name) and (string.gsub(tostring(data.AdminStick.Name), "^@", "", 1)) or data.AdminStick.Name
-        data.AdminStick.ButtonText = isstring(data.AdminStick.ButtonText) and (string.gsub(tostring(data.AdminStick.ButtonText), "^@", "", 1)) or data.AdminStick.ButtonText
-        data.AdminStick.Category = isstring(data.AdminStick.Category) and (string.gsub(tostring(data.AdminStick.Category), "^@", "", 1)) or data.AdminStick.Category
-        data.AdminStick.SubCategory = isstring(data.AdminStick.SubCategory) and (string.gsub(tostring(data.AdminStick.SubCategory), "^@", "", 1)) or data.AdminStick.SubCategory
+        data.AdminStick.Name = isstring(data.AdminStick.Name) and lia.lang.resolve(data.AdminStick.Name) or data.AdminStick.Name
+        data.AdminStick.ButtonText = isstring(data.AdminStick.ButtonText) and lia.lang.resolve(data.AdminStick.ButtonText) or data.AdminStick.ButtonText
+        data.AdminStick.Category = isstring(data.AdminStick.Category) and lia.lang.resolve(data.AdminStick.Category) or data.AdminStick.Category
+        data.AdminStick.SubCategory = isstring(data.AdminStick.SubCategory) and lia.lang.resolve(data.AdminStick.SubCategory) or data.AdminStick.SubCategory
     end
 
     if isstring(data.privilege) and data.privilege:sub(1, 1) == "@" then
-        data.privilegeName = (string.gsub(tostring(data.privilege), "^@", "", 1))
+        data.privilegeName = lia.lang.resolve(data.privilege)
         data.privilege = data.privilege:sub(2)
     else
         data.privilegeName = data.privilegeName or data.privilege
@@ -66,7 +66,7 @@ function lia.command.add(command, data)
             arg.type = "string"
         end
 
-        arg.description = isstring(arg.description) and (string.gsub(tostring(arg.description), "^@", "", 1)) or arg.description
+        arg.description = isstring(arg.description) and lia.lang.resolve(arg.description) or arg.description
         arg.optional = arg.optional or false
     end
 
@@ -8512,7 +8512,7 @@ lia.command.add("listnearbyentities", {
         client:ChatPrint(string.format("=== Entities within %s units ===", radius))
         for categoryName, entitiesInCategory in pairs(entityCategories) do
             if #entitiesInCategory > 0 then
-                local displayCategoryName = (string.gsub(tostring("@" .. categoryName), "^@", "", 1)):upper()
+                local displayCategoryName = lia.lang.resolve(categoryName):upper()
                 client:ChatPrint(string.format("--- %s (%s) ---", displayCategoryName, #entitiesInCategory))
                 table.sort(entitiesInCategory, function(a, b) return a.distance < b.distance end)
                 for _, entData in ipairs(entitiesInCategory) do

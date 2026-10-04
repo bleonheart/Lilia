@@ -267,8 +267,9 @@ end
 
 local function resolveAdminStickToken(candidates)
     for _, token in ipairs(candidates) do
-        local resolved = (string.gsub(tostring(token), "^@", "", 1))
-        if resolved and resolved ~= "" and resolved ~= token and resolved ~= token:sub(2) then return resolved end
+        local raw = tostring(token)
+        local resolved = lia.lang.resolve(raw)
+        if resolved and resolved ~= "" and resolved ~= raw:gsub("^@", "") then return resolved end
     end
 end
 
@@ -1190,12 +1191,12 @@ local function RegisterDefaultAdminStickListHooks()
         local lists = {}
         hook.Run("GetAdminStickLists", currentTarget, lists)
         for _, listData in ipairs(lists) do
-            local listName = isstring(listData.name) and (string.gsub(tostring(listData.name), "^@", "", 1)) or listData.name
+            local listName = isstring(listData.name) and lia.lang.resolve(listData.name) or listData.name
             local categoryKey = listData.category
             local subcategoryKey = listData.subcategory
-            local subSubcategoryKey = isstring(listData.subSubcategory) and (string.gsub(tostring(listData.subSubcategory), "^@", "", 1)) or listData.subSubcategory
-            local subSubSubcategoryKey = isstring(listData.subSubSubcategory) and (string.gsub(tostring(listData.subSubSubcategory), "^@", "", 1)) or listData.subSubSubcategory
-            local subSubSubSubcategoryKey = isstring(listData.subSubSubSubcategory) and (string.gsub(tostring(listData.subSubSubSubcategory), "^@", "", 1)) or listData.subSubSubSubcategory
+            local subSubcategoryKey = isstring(listData.subSubcategory) and lia.lang.resolve(listData.subSubcategory) or listData.subSubcategory
+            local subSubSubcategoryKey = isstring(listData.subSubSubcategory) and lia.lang.resolve(listData.subSubSubcategory) or listData.subSubSubcategory
+            local subSubSubSubcategoryKey = isstring(listData.subSubSubSubcategory) and lia.lang.resolve(listData.subSubSubSubcategory) or listData.subSubSubSubcategory
             local items = listData.items
             if not (listName and categoryKey and subcategoryKey and items and #items > 0) then continue end
             local category = GetOrCreateCategoryMenu(currentMenu, categoryKey, currentStores)
@@ -1221,7 +1222,7 @@ local function RegisterDefaultAdminStickListHooks()
                 if subSubSubSubcategoryKey then targetMenu = GetOrCreateSubCategoryMenu(targetMenu, scopeKey, subSubSubSubcategoryKey, currentStores) or submenu end
                 if not targetMenu or not IsValid(targetMenu) then return end
                 for _, item in ipairs(sortedItems) do
-                    local itemName = isstring(item.name) and (string.gsub(tostring(item.name), "^@", "", 1)) or item.name
+                    local itemName = isstring(item.name) and lia.lang.resolve(item.name) or item.name
                     local option = targetMenu:AddOption(itemName, function()
                         if item.callback then item.callback(currentTarget, item) end
                         timer.Simple(0.1, function() AdminStickIsOpen = false end)
@@ -1250,9 +1251,7 @@ local function resolveAdminStickLabel(value)
     if isfunction(value) then value = value() end
     if value == nil then return "" end
     if not isstring(value) then return tostring(value) end
-    local resolved = lia.lang and lia.lang.resolveToken and (string.gsub(tostring(value), "^@", "", 1)) or value
-    if resolved and resolved ~= "" and resolved ~= value and resolved ~= value:sub(2) then return resolved end
-    return tostring(value)
+    return lia.lang.resolve(value)
 end
 
 local function drawAdminStickPanel(x, y, w, h, radius, color, outline)

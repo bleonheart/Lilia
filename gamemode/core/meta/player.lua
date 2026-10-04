@@ -606,7 +606,7 @@ local function serializeRequestText(value)
     if istable(value) then
         local token = value[1]
         if isstring(token) and token:sub(1, 1) == "@" then
-            return string.format((string.gsub(tostring(token), "^@", "", 1)), unpack(value, 2))
+            return lia.lang.resolve(token, unpack(value, 2))
         elseif token ~= nil then
             return tostring(token)
         end

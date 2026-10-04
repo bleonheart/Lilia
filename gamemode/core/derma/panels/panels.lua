@@ -158,9 +158,7 @@ end
 
 local function quickLocalized(value)
     if not value or value == "" then return value end
-    local localized = tostring(value)
-    if localized and localized ~= "" then return localized end
-    return value
+    return lia.lang.resolve(value)
 end
 
 local function quickEllipsizeText(text, font, maxWidth)

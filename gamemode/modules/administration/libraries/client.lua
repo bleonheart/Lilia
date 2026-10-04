@@ -5776,7 +5776,7 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
                 end
 
                 local category = lia.admin.privilegeCategories and lia.admin.privilegeCategories[permissionID]
-                if category and category ~= "" then return tostring((string.gsub(tostring(category), "^@", "", 1))) end
+                if category and category ~= "" then return tostring(lia.lang.resolve(category)) end
                 for _, module in pairs(lia.module.list or {}) do
                     if istable(module.Privileges) and istable(module.Privileges[permissionID]) then
                         local privilege = module.Privileges[permissionID]

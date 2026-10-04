@@ -2,9 +2,7 @@
 lia.option.stored = lia.option.stored or {}
 local function localizeMenuLabel(value, ...)
     if not isstring(value) then return value end
-    local resolved = string.format((string.gsub(tostring(value), "^@", "", 1)), ...)
-    if resolved ~= value then return resolved end
-    return string.format(tostring(value), ...)
+    return lia.lang.resolve(value, ...)
 end
 
 lia.option.localizeValue = localizeMenuLabel

@@ -79,7 +79,7 @@ if SERVER then
     function lia.playerinteract.addInteraction(name, data)
         data.type = "interaction"
         data.range = data.range or 100
-        data.category = isstring(data.category) and (string.gsub(tostring(data.category), "^@", "", 1)) or data.category or "Unsorted"
+        data.category = isstring(data.category) and lia.lang.resolve(data.category) or data.category or "Unsorted"
         data.target = data.target or "player"
         data.timeToComplete = data.timeToComplete or nil
         data.actionText = data.actionText or nil
@@ -106,7 +106,7 @@ if SERVER then
     function lia.playerinteract.addAction(name, data)
         data.type = "action"
         data.range = data.range or 100
-        data.category = isstring(data.category) and (string.gsub(tostring(data.category), "^@", "", 1)) or data.category or "Unsorted"
+        data.category = isstring(data.category) and lia.lang.resolve(data.category) or data.category or "Unsorted"
         data.timeToComplete = data.timeToComplete or nil
         data.actionText = data.actionText or nil
         data.targetActionText = data.targetActionText or nil

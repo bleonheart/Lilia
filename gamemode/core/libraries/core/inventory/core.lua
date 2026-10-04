@@ -209,8 +209,8 @@ if SERVER then
         assert(isstring(data.name), "Storage name is required")
         assert(isstring(data.invType), "Inventory type is required")
         assert(istable(data.invData), "Inventory data is required")
-        data.name = (string.gsub(tostring(data.name), "^@", "", 1))
-        if isstring(data.desc) then data.desc = (string.gsub(tostring(data.desc), "^@", "", 1)) end
+        data.name = lia.lang.resolve(data.name)
+        if isstring(data.desc) then data.desc = lia.lang.resolve(data.desc) end
         lia.inventory.storage[model:lower()] = data
         return data
     end
@@ -226,8 +226,8 @@ if SERVER then
         assert(isstring(data.name), "Trunk name is required")
         assert(isstring(data.invType), "Inventory type is required")
         assert(istable(data.invData), "Inventory data is required")
-        data.name = (string.gsub(tostring(data.name), "^@", "", 1))
-        if isstring(data.desc) then data.desc = (string.gsub(tostring(data.desc), "^@", "", 1)) end
+        data.name = lia.lang.resolve(data.name)
+        if isstring(data.desc) then data.desc = lia.lang.resolve(data.desc) end
         if not data.invData.w then data.invData.w = lia.config.get("trunkInvW", 10) end
         if not data.invData.h then data.invData.h = lia.config.get("trunkInvH", 2) end
         data.isTrunk = true

@@ -224,7 +224,7 @@ function lia.derma.optionsMenu(rawOptions, config)
                 surface.SetDrawColor(accent.r, accent.g, accent.b, 60)
                 surface.DrawRect(0, 0, 3, h)
                 local displayText = entry.name or ""
-                local localized = tostring(displayText)
+                local localized = lia.lang.resolve(displayText)
                 if localized and localized ~= "" then displayText = localized end
                 draw.SimpleText(displayText, "LiliaFont.18", 12, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             end
@@ -237,7 +237,7 @@ function lia.derma.optionsMenu(rawOptions, config)
             btn:DockMargin(8, 2, 8, 2)
             local displayText = entry.label or entry.id or ""
             if entry.opt and entry.opt.localized ~= false and L then
-                local localized = tostring(displayText)
+                local localized = lia.lang.resolve(displayText)
                 if localized and localized ~= "" then displayText = localized end
             end
 
@@ -247,7 +247,7 @@ function lia.derma.optionsMenu(rawOptions, config)
             btn:SetContentAlignment(5)
             local description = entry.opt and (entry.opt.description or entry.opt.desc)
             if isstring(description) and description ~= "" then
-                if entry.opt.localizedDescription ~= false and L then description = tostring(description) end
+                if entry.opt.localizedDescription ~= false and L then description = lia.lang.resolve(description) end
                 btn:SetTooltip(description)
             end
 
@@ -507,7 +507,7 @@ function lia.derma.interactionTooltip(rawOptions, config)
                 local accent = entry.color or config.accentColor or theme.theme or theme.accent or Color(164, 106, 54)
                 local displayText = entry.name or ""
                 if L then
-                    local localized = tostring(displayText)
+                    local localized = lia.lang.resolve(displayText)
                     if localized and localized ~= "" then displayText = localized end
                 end
 
@@ -529,13 +529,13 @@ function lia.derma.interactionTooltip(rawOptions, config)
             btn:SetCursor("hand")
             local displayText = entry.label or entry.id or ""
             if entry.opt and entry.opt.localized ~= false and L then
-                local localized = tostring(displayText)
+                local localized = lia.lang.resolve(displayText)
                 if localized and localized ~= "" then displayText = localized end
             end
 
             local description = entry.opt and (entry.opt.description or entry.opt.desc)
             if isstring(description) and description ~= "" then
-                if entry.opt.localizedDescription ~= false and L then description = tostring(description) end
+                if entry.opt.localizedDescription ~= false and L then description = lia.lang.resolve(description) end
                 btn:SetTooltip(description)
             end
 
@@ -1527,7 +1527,7 @@ function lia.derma.drawBoxWithText(text, x, y, options)
     local function resolveText(value)
         if value == nil then return "" end
         if isstring(value) and L then
-            local ok, localized = pcall(L, value)
+            local ok, localized = pcall(lia.lang.resolve, value)
             if ok and localized and localized ~= "" then return tostring(localized) end
         end
         return tostring(value)
@@ -2694,7 +2694,7 @@ function lia.derma.openOptionsMenu(title, options)
     local function resolveText(value)
         if value == nil then return "" end
         if isstring(value) and L then
-            local ok, localized = pcall(L, value)
+            local ok, localized = pcall(lia.lang.resolve, value)
             if ok and localized and localized ~= "" then return tostring(localized) end
         end
         return tostring(value)
@@ -3023,14 +3023,14 @@ local function resolveRequestText(text, fallback)
     if istable(text) then
         local token = text[1]
         if isstring(token) and token:sub(1, 1) == "@" then
-            return string.format((string.gsub(tostring(token), "^@", "", 1)), unpack(text, 2))
+            return lia.lang.resolve(token, unpack(text, 2))
         elseif token ~= nil then
             return token
         end
         return fallback
     end
 
-    if isstring(text) and text:sub(1, 1) == "@" then return tostring(text:sub(2)) end
+    if isstring(text) and text:sub(1, 1) == "@" then return lia.lang.resolve(text) end
     return text
 end
 

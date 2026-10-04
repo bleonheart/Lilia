@@ -3,7 +3,7 @@ lia.flag.list = lia.flag.list or {}
 function lia.flag.add(flag, desc, callback)
     if lia.flag.list[flag] then return end
     lia.flag.list[flag] = {
-        desc = desc and (string.gsub(tostring(desc), "^@", "", 1)) or desc,
+        desc = desc and lia.lang.resolve(desc) or desc,
         callback = callback
     }
 end

@@ -3,9 +3,7 @@ lia.config.stored = lia.config.stored or {}
 lia.config.lastSyncedValues = lia.config.lastSyncedValues or {}
 local function cfgLocalizeLabel(value, ...)
     if not isstring(value) then return value end
-    local resolved = string.format((string.gsub(tostring(value), "^@", "", 1)), ...)
-    if resolved ~= value then return resolved end
-    return string.format(tostring(value), ...)
+    return lia.lang.resolve(value, ...)
 end
 
 lia.config.localizeValue = cfgLocalizeLabel

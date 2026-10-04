@@ -49,8 +49,8 @@ function lia.class.register(uniqueID, data)
 
     class.index = index
     class.uniqueID = uniqueID
-    class.name = (string.gsub(tostring(class.name), "^@", "", 1)) or "Unknown"
-    class.desc = (string.gsub(tostring(class.desc), "^@", "", 1)) or "No Description"
+    class.name = class.name and lia.lang.resolve(class.name) or "Unknown"
+    class.desc = class.desc and lia.lang.resolve(class.desc) or "No Description"
     class.limit = class.limit or 0
     if not class.faction or not team.Valid(class.faction) then
         lia.error(string.format("Class '%s' does not have a valid faction!", uniqueID))
@@ -95,8 +95,8 @@ function lia.class.loadFromDir(directory)
         end
 
         if not CLASS.OnCanBe then CLASS.OnCanBe = function() return true end end
-        CLASS.name = (string.gsub(tostring(CLASS.name), "^@", "", 1))
-        CLASS.desc = (string.gsub(tostring(CLASS.desc), "^@", "", 1))
+        CLASS.name = lia.lang.resolve(CLASS.name)
+        CLASS.desc = lia.lang.resolve(CLASS.desc)
         lia.class.list[index] = CLASS
         CLASS = nil
     end

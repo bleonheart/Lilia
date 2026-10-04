@@ -59,9 +59,7 @@ end
 local function getCategoryLabel(category)
     local label = tostring(category or "")
     if label == "" then return "Logs" end
-    local localized = tostring(label)
-    if isstring(localized) and localized ~= "" and localized ~= label then return localized end
-    return label
+    return lia.lang.resolve(label)
 end
 
 local function getCategoryTitle(category)
