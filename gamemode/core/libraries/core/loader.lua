@@ -337,6 +337,14 @@ function lia.loader.include(path, realm)
     end
 end
 
+function lia.loader.includeLibraryItems(path)
+    if not lia.item or not isfunction(lia.item.loadFromDir) then return end
+    path = path:gsub("\\", "/")
+    local libraryPath = path:match("^(.-)/core%.lua$")
+    local itemsPath = libraryPath and libraryPath .. "/items"
+    if itemsPath and file.IsDir(itemsPath, "LUA") then lia.item.loadFromDir(itemsPath) end
+end
+
 function lia.loader.includeDir(dir, raw, deep, realm)
     local root = raw and dir or (SCHEMA and SCHEMA.folder and SCHEMA.loading and SCHEMA.folder .. "/schema" or "lilia/gamemode") .. "/" .. dir
     local function loadDir(folder)
@@ -661,6 +669,7 @@ end
 
 for _, files in ipairs(FilesToLoad) do
     lia.loader.include(files.path, files.realm)
+    lia.loader.includeLibraryItems(files.path)
 end
 
 function lia.loader.includeEntities(path)
@@ -876,6 +885,7 @@ for _, compatFile in ipairs(ConditionalFiles) do
 
     if shouldLoad then
         lia.loader.include(compatFile.path, compatFile.realm or "shared")
+        lia.loader.includeLibraryItems(compatFile.path)
         loadedCompatibility[#loadedCompatibility + 1] = compatFile.name
     end
 end

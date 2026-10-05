@@ -1,5 +1,4 @@
 local GM = GM or GAMEMODE
-
 local MODULE = MODULE
 PERFOPUS = PERFOPUS or {}
 PERFOPUS.Metrics = PERFOPUS.Metrics or {}

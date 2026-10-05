@@ -1,3 +1,4 @@
+local GM = GM or GAMEMODE
 local healthPercent = {
     {
         threshold = 0.2,

@@ -666,7 +666,6 @@ if SERVER then
     end
 end
 
-lia.item.loadFromDir("lilia/gamemode/items")
 hook.Add("InitializedModules", "liaItems", function()
     for _, registration in ipairs(lia.item.pendingRegistrations) do
         local item = lia.item.register(registration.id, registration.base, false, nil, true)
