@@ -1,4 +1,7 @@
 ﻿local PANEL = {}
+PANEL.creationOrder = 30
+PANEL.creationName = "Appearance"
+
 function PANEL:getCreationModelSource()
     local factionIndex = self:getContext("faction")
     if not factionIndex then return end
@@ -81,8 +84,8 @@ function PANEL:Init()
     end
 
     self.models.OnSizeChanged = function() if IsValid(self) then self:RequestIconResize() end end
-    self._iconColumns = 5
-    self._iconSpace = 8
+    self._iconColumns = 4
+    self._iconSpace = 12
 end
 
 function PANEL:RequestIconResize()
@@ -115,9 +118,9 @@ function PANEL:PerformLayout(w, h)
 
     if layoutW <= 0 then return end
     local iconW = math.floor((layoutW - (columns - 1) * space) / columns)
-    if iconW < 64 then iconW = 64 end
-    if iconW > 80 then iconW = 80 end
-    local iconH = math.floor(iconW * 2)
+    if iconW < 104 then iconW = 104 end
+    if iconW > 150 then iconW = 150 end
+    local iconH = math.floor(iconW * 1.25)
     for _, child in ipairs(self.models:GetChildren()) do
         if IsValid(child) and child.SetSize then child:SetSize(iconW, iconH) end
     end
@@ -382,9 +385,9 @@ function PANEL:onDisplay()
         local layoutW = IsValid(self.models) and self.models:GetWide() or 0
         if layoutW <= 0 then layoutW = ScrW() * 0.5 end
         local iconW = math.floor((layoutW - (columns - 1) * space) / columns)
-        if iconW < 64 then iconW = 64 end
-        if iconW > 80 then iconW = 80 end
-        local iconH = math.floor(iconW * 2)
+        if iconW < 104 then iconW = 104 end
+        if iconW > 150 then iconW = 150 end
+        local iconH = math.floor(iconW * 1.25)
         for idx, data in SortedPairs(modelsToDisplay) do
             local icon = self.models:Add("SpawnIcon")
             icon:SetSize(iconW, iconH)
@@ -441,8 +444,19 @@ function PANEL:paintIcon(icon, w, h)
 end
 
 function PANEL:updateContext()
-    local _, _, _, _, forced = self:getCreationModelSource()
-    if not forced and not self:getContext("model") then self:setContext("model", 1) end
+    local faction, class, _, _, forced = self:getCreationModelSource()
+    if not forced and not self:getContext("model") then self:setContext("model", next(self:filterCharacterModels(faction, class))) end
+end
+
+function PANEL:validate()
+    local faction, class, _, _, forced = self:getCreationModelSource()
+    if not faction then return false, "Choose a faction first." end
+    if forced then return true end
+    local models = self:filterCharacterModels(faction, class)
+    if not self:getContext("model") or models[self:getContext("model")] == nil then return false, "Choose a valid appearance model." end
+    local ok, reason, detail = self:validateCharVar("model")
+    if ok == false then return false, reason or detail or "Choose a valid appearance model." end
+    return true
 end
 
 function PANEL:onModelSelected(icon, noSound)

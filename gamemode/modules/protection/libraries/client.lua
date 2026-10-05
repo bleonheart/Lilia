@@ -263,7 +263,7 @@ function MODULE:PopulateAdminTabs(pages)
         self:requestEntityTabData()
         pages[#pages + 1] = {
             name = "Player Entities",
-            icon = "icon16/bricks.png",
+            icon = lia.webcontent.get("playerentities.png"),
             drawFunc = function(entPanel)
                 self.entityTabPanel = entPanel
                 self:populateEntityTabPanel(entPanel)

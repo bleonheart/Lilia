@@ -113,11 +113,23 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
+        path = "lilia/gamemode/core/libraries/core/attributes/hooks.lua",
+        realm = "client"
+    },
+    {
         path = "lilia/gamemode/core/libraries/core/factions/core.lua",
         realm = "shared"
     },
     {
+        path = "lilia/gamemode/core/libraries/core/factions/hooks.lua",
+        realm = "client"
+    },
+    {
         path = "lilia/gamemode/core/libraries/core/classes/core.lua",
+        realm = "shared"
+    },
+    {
+        path = "lilia/gamemode/core/libraries/core/classes/hooks.lua",
         realm = "shared"
     },
     {

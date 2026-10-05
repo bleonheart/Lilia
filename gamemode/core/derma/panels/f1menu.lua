@@ -644,27 +644,27 @@ function PANEL:Init()
     local utilityButtons = {
         {
             key = "characters",
-            icon = "icon16/user.png",
+            icon = lia.webcontent.get("characters.png"),
             tooltip = "characters"
         },
         {
             key = "Logs",
-            icon = "icon16/book_open.png",
+            icon = lia.webcontent.get("logs.png"),
             tooltip = "Logs"
         },
         {
             key = "Information",
-            icon = "icon16/information.png",
+            icon = lia.webcontent.get("information.png"),
             tooltip = "Information"
         },
         {
             key = "Settings",
-            icon = "icon16/cog.png",
+            icon = lia.webcontent.get("settings.png"),
             tooltip = "Settings"
         },
         {
             key = "Themes",
-            icon = "icon16/color_wheel.png",
+            icon = lia.webcontent.get("themes.png"),
             tooltip = "Themes"
         }
     }
@@ -679,7 +679,7 @@ function PANEL:Init()
         button:SetText("")
         button:SetTooltip(localizeMenuLabel(data.tooltip))
         button._key = key
-        button._icon = Material(data.icon, "smooth")
+        button._icon = data.icon
         button.Paint = function(s, w, h)
             local accent = getThemeColors()
             local active = self.activeTabKey == s._key
@@ -846,7 +846,7 @@ function PANEL:Init()
 
             table.insert(adminPages, 1, {
                 name = "onlineStaff",
-                icon = "icon16/user.png"
+                icon = lia.webcontent.get("onlinestaff.png")
             })
 
             self.adminSidebarPages = adminPages
@@ -1779,7 +1779,7 @@ end)
 hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
     tabs["You"] = {
         name = "You",
-        icon = "icon16/user.png",
+        icon = lia.webcontent.get("you.png"),
         func = function(statusPanel)
             statusPanel.info = vgui.Create("liaCharInfo", statusPanel)
             statusPanel.info:Dock(FILL)
@@ -1791,7 +1791,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
     tabs["Information"] = {
         name = "Information",
-        icon = "icon16/information.png",
+        icon = lia.webcontent.get("information.png"),
         func = function(infoTabPanel)
             infoTabPanel:Clear()
             local frame = infoTabPanel:Add("DPanel")
@@ -1886,7 +1886,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
     tabs["Settings"] = {
         name = "Settings",
-        icon = "icon16/cog.png",
+        icon = lia.webcontent.get("settings.png"),
         func = function(settingsPanel)
             settingsPanel:Clear()
             local frame = settingsPanel:Add("EditablePanel")
@@ -2064,7 +2064,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
                 table.insert(pages, 1, {
                     name = "onlineStaff",
-                    icon = "icon16/user.png",
+                    icon = lia.webcontent.get("onlinestaff.png"),
                     drawFunc = function(panel)
                         panel:Clear()
                         panel.originalStaffData = {}
@@ -2391,7 +2391,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
     if hasThemesPrivilege then
         tabs["Themes"] = {
             name = "Themes",
-            icon = "icon16/color_wheel.png",
+            icon = lia.webcontent.get("themes.png"),
             func = function(themesPanel)
                 themesPanel:Clear()
                 local function getLocalizedThemeName(themeID)

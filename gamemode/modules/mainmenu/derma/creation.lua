@@ -3,15 +3,17 @@ function PANEL:configureSteps()
     self:addStep(vgui.Create("liaCharacterBiography"))
     self:addStep(vgui.Create("liaCharacterModel"))
     hook.Run("ConfigureCharacterCreationSteps", self)
-    local keys = table.GetKeys(self.steps)
-    table.sort(keys)
-    local ordered = {}
-    for i, k in ipairs(keys) do
-        ordered[i] = self.steps[k]
+    self:addStep(vgui.Create("liaCharacterSummary"))
+    for index, step in ipairs(self.steps) do
+        step._creationSequence = index
     end
 
-    self.steps = ordered
-    self:addStep(vgui.Create("liaCharacterSummary"))
+    table.sort(self.steps, function(a, b)
+        local aOrder = tonumber(a.creationOrder) or 35
+        local bOrder = tonumber(b.creationOrder) or 35
+        if aOrder == bOrder then return a._creationSequence < b._creationSequence end
+        return aOrder < bOrder
+    end)
 end
 
 function PANEL:updateModel()
@@ -137,6 +139,7 @@ function PANEL:addStep(step, priority)
     assert(IsValid(step), "Invalid panel for step")
     assert(step.isCharCreateStep, "Panel must inherit liaCharacterCreateStep")
     if isnumber(priority) then
+        if step.creationOrder == nil then step.creationOrder = priority * 10 end
         table.insert(self.steps, priority, step)
     else
         self.steps[#self.steps + 1] = step
@@ -198,10 +201,20 @@ function PANEL:onStepChanged(oldStep, newStep)
     local finish = self.curStep == #self.steps
     local key = finish and "finish" or "next"
     if IsValid(newStep) then
-        local panelName = newStep:GetName()
-        local shouldShowModel = panelName == "liaCharacterModel"
+        local shouldShowModel = true
         if IsValid(self.model) then self.model:SetVisible(shouldShowModel and not (IsValid(lia.gui.character) and lia.gui.character.inWorldPreview)) end
         if IsValid(lia.gui.character) then
+            local camera = {
+                liaCharacterFaction = {90, 30},
+                liaCharacterClass = {84, 34},
+                liaCharacterBiography = {74, 42},
+                liaCharacterModel = {64, 50},
+                liaCharacterAttributesPage = {78, 40},
+                liaCharacterSummary = {86, 34}
+            }
+            local view = camera[newStep:GetName()] or {76, 40}
+            lia.gui.character.creationCameraDistance = view[1]
+            lia.gui.character.creationCameraSide = view[2]
             lia.gui.character.inCharacterCreationModelStep = shouldShowModel or false
             if shouldShowModel then
                 if IsValid(self.content) then
@@ -264,6 +277,7 @@ function PANEL:onStepChanged(oldStep, newStep)
         end
     end
 
+    self:updateProgress()
     if IsValid(self:getPreviousStep()) then
         self.prev:AlphaTo(255, 0.5)
     else
@@ -333,16 +347,58 @@ function PANEL:onStepChanged(oldStep, newStep)
     end
 end
 
+function PANEL:updateProgress()
+    if not IsValid(self.progress) then return end
+    self.progress:Clear()
+    local visible = {}
+    for index, step in ipairs(self.steps or {}) do
+        if IsValid(step) and not step:shouldSkip() then visible[#visible + 1] = {index, step} end
+    end
+
+    local available = self.progress:GetWide()
+    if available <= 0 then available = math.max(ScrW() * 0.49 - 42, 1) end
+    local itemWidth = math.Clamp(math.floor((available - math.max(#visible - 1, 0) * 8) / math.max(#visible, 1)), 60, 112)
+    for visibleIndex, data in ipairs(visible) do
+        local index, step = data[1], data[2]
+        local item = self.progress:Add("DPanel")
+        item:Dock(LEFT)
+        item:DockMargin(0, 0, 8, 0)
+        item:SetWide(itemWidth)
+        item.Paint = function(_, w, h)
+            local active = index == self.curStep
+            local complete = index < self.curStep
+            local accent = lia.color.theme.theme
+            lia.derma.rect(0, h - 3, w, 3):Rad(2):Color(active and accent or complete and ColorAlpha(accent, 125) or Color(255, 255, 255, 24)):Draw()
+        end
+
+        local label = item:Add("DLabel")
+        label:Dock(FILL)
+        label:SetFont("LiliaFont.14")
+        label:SetText(string.format("%02d  %s", visibleIndex, tostring(step.creationName or step:GetName():gsub("^liaCharacter", "")):upper()))
+        label:SetTextColor(index == self.curStep and (lia.color.theme.text or color_white) or Color(155, 165, 175))
+        label:SetContentAlignment(5)
+    end
+end
+
 function PANEL:Init()
     self:Dock(FILL)
     local ok, reason = self:canCreateCharacter()
     if not ok then return self:showMessage(reason) end
     lia.gui.charCreate = self
+    self.progress = self:Add("DPanel")
+    self.progress:Dock(TOP)
+    self.progress:DockMargin(math.floor(ScrW() * 0.51), 24, 42, 0)
+    self.progress:SetTall(44)
+    self.progress:SetPaintBackground(false)
     self.content = self:Add("DPanel")
-    local margin = ScrW() > 1280 and ScrW() * 0.15 or ScrW() > 720 and ScrW() * 0.075 or 0
-    self.content:Dock(FILL)
-    self.content:DockMargin(margin, 64, margin, 0)
-    self.content:SetPaintBackground(false)
+    self.content:Dock(RIGHT)
+    self.content:SetWide(math.Clamp(ScrW() * 0.46, 520, 860))
+    self.content:DockMargin(0, 18, 42, 22)
+    self.content:DockPadding(18, 18, 18, 18)
+    self.content.Paint = function(_, w, h)
+        lia.derma.rect(0, 0, w, h):Rad(10):Color(Color(12, 16, 22, 224)):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(10):Color(ColorAlpha(lia.color.theme.theme, 46)):Outline(1):Draw()
+    end
     self.model = self.content:Add("liaModelPanel")
     if not IsValid(self.model) then return self:showError("Failed to create model panel") end
     self.model:SetWide(0)
@@ -352,8 +408,13 @@ function PANEL:Init()
     self.model:SetVisible(false)
     self.buttons = self:Add("DPanel")
     self.buttons:Dock(BOTTOM)
-    self.buttons:SetTall(48)
-    self.buttons:SetPaintBackground(false)
+    self.buttons:SetTall(64)
+    self.buttons.Paint = function(_, w, h)
+        surface.SetDrawColor(8, 11, 16, 235)
+        surface.DrawRect(0, 0, w, h)
+        surface.SetDrawColor(ColorAlpha(lia.color.theme.theme, 45))
+        surface.DrawRect(0, 0, w, 1)
+    end
     local function sizeButton(btn, text)
         btn:SetText(text)
         local font = btn:GetFont()

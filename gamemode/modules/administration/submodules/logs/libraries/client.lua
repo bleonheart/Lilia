@@ -364,7 +364,7 @@ function MODULE:CreateMenuButtons(tabs)
     if canSeeLogs then
         tabs["Logs"] = {
             name = "Logs",
-            icon = "icon16/book_open.png",
+            icon = lia.webcontent.get("logs.png"),
             func = openLogsPanel
         }
     end

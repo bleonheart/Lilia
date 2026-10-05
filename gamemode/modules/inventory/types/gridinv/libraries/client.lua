@@ -245,7 +245,7 @@ hook.Add("CreateMenuButtons", "liaInventory", function(tabs)
     installMenuBagRedirect()
     tabs["inv"] = {
         name = "inv",
-        icon = "icon16/box.png",
+        icon = lia.webcontent.get("inventory.png"),
         shouldShow = function() return hook.Run("CanPlayerViewInventory") ~= false end,
         func = function(parentPanel)
             installMenuBagRedirect()

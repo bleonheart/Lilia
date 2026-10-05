@@ -2,7 +2,7 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides comprehensive administration tools and staff management features."
-MODULE.NetworkStrings = {"liaAdminSetCharProperty", "liaAllFlags", "liaAllPks", "liaAllPlayers", "liaFeaturePositions", "liaFeaturePositionsRequest", "liaFullCharList", "liaFullCharListPage", "liaManagesitroomsAction", "liaMapEntities", "liaMapEntityAction", "liaModifyCharacterFlags", "liaNetProfilerLogs", "liaNetProfilerSnapshot", "liaOnlineStaffData", "liaRequestAllFlags", "liaRequestFullCharList", "liaRequestFullCharListPage", "liaRequestMapEntities", "liaRequestNetProfilerLogs", "liaRequestNetProfilerSnapshot", "liaRequestPlayers", "liaRequestStaffCases", "liaRequestStaffSummary", "liaRequestToolPermissionTiers", "liaRequestStaffCharacterConfiguration", "liaSetFeaturePosition", "liaSetStaffCharacterFlag", "liaSetStaffCharacterPermission", "liaSetToolPermissionTier", "liaSetToolPermissionTiersBatch", "liaResetStaffCharacterConfiguration", "liaResetToolPermissionTiers", "liaSpawnMenuGiveItem", "liaSpawnMenuSpawnItem", "liaStaffCasesSnapshot", "liaStaffCharacterConfiguration", "liaStaffSummary", "liaToolPermissionTiers",}
+MODULE.NetworkStrings = {"liaAdminSetCharProperty", "liaAllFlags", "liaAllPks", "liaAllPlayers", "liaFeaturePositions", "liaFeaturePositionsRequest", "liaFullCharList", "liaFullCharListPage", "liaManagesitroomsAction", "liaMapEntities", "liaMapEntityAction", "liaModifyCharacterFlags", "liaOnlineStaffData", "liaRequestAllFlags", "liaRequestFullCharList", "liaRequestFullCharListPage", "liaRequestMapEntities", "liaRequestPlayers", "liaRequestStaffCases", "liaRequestStaffSummary", "liaRequestToolPermissionTiers", "liaRequestStaffCharacterConfiguration", "liaSetFeaturePosition", "liaSetStaffCharacterFlag", "liaSetStaffCharacterPermission", "liaSetToolPermissionTier", "liaSetToolPermissionTiersBatch", "liaResetStaffCharacterConfiguration", "liaResetToolPermissionTiers", "liaSpawnMenuGiveItem", "liaSpawnMenuSpawnItem", "liaStaffCasesSnapshot", "liaStaffCharacterConfiguration", "liaStaffSummary", "liaToolPermissionTiers",}
 MODULE.Privileges = {
     ["ManageWeaponOverrides"] = {
         Name = "Manage Weapon Overrides",
@@ -59,12 +59,6 @@ MODULE.Privileges = {
         Name = "View Staff Management",
         MinAccess = "superadmin",
         Category = "Staff: Management",
-    },
-    ["viewNetProfiler"] = {
-        Name = "View Net Logs",
-        Description = "Allows viewing, filtering, sorting, and paging through network message usage from the admin menu.",
-        MinAccess = "superadmin",
-        Category = "Server",
     },
     ["canAccessPlayerList"] = {
         Name = "Can Access Player List",

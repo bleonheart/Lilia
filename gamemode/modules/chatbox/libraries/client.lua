@@ -521,7 +521,7 @@ function MODULE:PopulateAdminTabs(pages)
     if not IsValid(client) or not client:hasPrivilege("manageChatFilter") then return end
     pages[#pages + 1] = {
         name = "Chat Filter",
-        icon = "icon16/comments.png",
+        icon = lia.webcontent.get("chatfilter.png"),
         drawFunc = function(panel)
             buildFilteredWordsAdminPanel(panel)
             net.Start("liaChatboxRequestFilteredWords")

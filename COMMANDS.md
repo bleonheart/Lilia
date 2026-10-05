@@ -132,7 +132,6 @@ lia_give_money_steamid
 | `core/commands/core.lua` | `print_vector`, `print_angle`, `printpos`, `weighpoint_stop`, `lia_scoreboard_reload`, `lia_vgui_cleanup`, `lia_saved_sounds`, `lia_wipe_sounds`, `lia_validate_sounds`, `lia_cleanup_sounds`, `lia_list_sounds`, `lia_saved_images`, `lia_cleanup_images`, `lia_wipewebimages` |
 | `core/derma/panels/panel_tester.lua` | `lia_panel_tester` |
 | `core/libraries/core/camera/core.lua` | `+freelook`, `-freelook` |
-| `core/libraries/core/net/core.lua` | `lia_net_profiler` |
 | `core/meta/player.lua` | `waypoint_stop_<waypointID>` (generated) |
 | `core/netcalls/client.lua` | `workshop_force_redownload` |
 | `modules/performance/module.lua` | `luamemory` |

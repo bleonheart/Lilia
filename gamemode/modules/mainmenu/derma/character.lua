@@ -90,7 +90,7 @@ function PANEL:setInWorldPreviewEnabled(enabled)
             local center = ent:GetPos() + Vector(0, 0, 60)
             local modelAngles = self.mainMenuModelAngles or ent:GetAngles()
             local forward = modelAngles:Forward()
-            local desired = center + forward * 70
+            local desired = center + forward * (self.creationCameraDistance or 70)
             if not self.currentCamPos then
                 self.currentCamPos = desired
             else
@@ -98,7 +98,7 @@ function PANEL:setInWorldPreviewEnabled(enabled)
             end
 
             local target = center
-            if self.inWorldPreview and not self.isLoadMode then target = target - modelAngles:Right() * 40 end
+            if self.inWorldPreview and not self.isLoadMode then target = target - modelAngles:Right() * (self.creationCameraSide or 40) end
             return {
                 origin = self.currentCamPos,
                 angles = (target - self.currentCamPos):Angle(),
@@ -109,6 +109,8 @@ function PANEL:setInWorldPreviewEnabled(enabled)
     else
         self:restoreExternalEntities()
         self.currentCamPos = nil
+        self.creationCameraDistance = nil
+        self.creationCameraSide = nil
         hook.Remove("CalcView", "liaMainMenuCalcView")
         hook.Remove("PrePlayerDraw", "liaMainMenuPrePlayerDraw")
         hook.Remove("PostDrawOpaqueRenderables", "liaMainMenuPostDrawOpaqueRenderables")

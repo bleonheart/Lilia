@@ -141,13 +141,7 @@ local function loadExtras(path)
 
     lia.loader.includeEntities(path .. "/entities")
     if MODULE.uniqueID ~= "schema" then lia.item.loadFromDir(path .. "/items") end
-    if SERVER then
-        if MODULE.NetworkStrings and istable(MODULE.NetworkStrings) then
-            for _, netString in ipairs(MODULE.NetworkStrings) do
-                if isstring(netString) then util.AddNetworkString(netString) end
-            end
-        end
-    else
+    if CLIENT then
         if MODULE.WebImages and istable(MODULE.WebImages) then
             for name, url in pairs(MODULE.WebImages) do
                 if isstring(name) and isstring(url) then lia.webcontent.register(name, url, "image") end
@@ -222,6 +216,12 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
 
         _G[variable] = prev
         return
+    end
+
+    if SERVER and MODULE.NetworkStrings and istable(MODULE.NetworkStrings) then
+        for _, netString in ipairs(MODULE.NetworkStrings) do
+            if isstring(netString) then util.AddNetworkString(netString) end
+        end
     end
 
     loadPermissions(MODULE.Privileges)

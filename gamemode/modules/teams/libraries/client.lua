@@ -328,7 +328,7 @@ function MODULE:CreateMenuButtons(tabs)
     if #joinable >= 1 then
         tabs["classes"] = {
             name = "classes",
-            icon = "icon16/group.png",
+            icon = lia.webcontent.get("classes.png"),
             func = function(panel) panel:Add("liaClasses") end
         }
     end
@@ -839,7 +839,7 @@ function MODULE:PopulateAdminTabs(pages)
     if canListCharacters then
         table.insert(pages, {
             name = "Faction Management",
-            icon = "icon16/group.png",
+            icon = lia.webcontent.get("factionmanagement.png"),
             drawFunc = function(panel)
                 if not panel.factionManagementInitialized then
                     panel.factionManagementInitialized = true

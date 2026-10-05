@@ -450,37 +450,3 @@ hook.Add("PlayerNoClip", "Lilia.PlayerNoClip", function(ply, enabled)
     hook.Run("OnPlayerObserve", ply, enabled)
     return true
 end)
-
-local function resetTracker()
-    lia.net.profiler.sessionTracker.startedAt = os.time()
-    lia.net.profiler.sessionTracker.totalCalls = 0
-    lia.net.profiler.sessionTracker.totalBytes = 0
-    lia.net.profiler.sessionTracker.playerEntryCount = 0
-    lia.net.profiler.sessionTracker.droppedPlayerEntries = 0
-    lia.net.profiler.sessionTracker.uniquePlayers = {}
-    lia.net.profiler.sessionTracker.directionTotals = {
-        ["C->S"] = {
-            calls = 0,
-            bytes = 0
-        },
-        ["S->C"] = {
-            calls = 0,
-            bytes = 0
-        }
-    }
-
-    lia.net.profiler.sessionTracker.messages = {}
-    lia.net.profiler.sessionTracker.players = {}
-end
-
-resetTracker()
-hook.Add("PlayerDisconnected", "liaAdministrationNetProfilerPlayerState", function(client)
-    local steamID64 = IsValid(client) and client:SteamID64() or nil
-    local playerData = steamID64 and lia.net.profiler.sessionTracker.players and lia.net.profiler.sessionTracker.players[steamID64] or nil
-    if playerData then
-        playerData.online = false
-        for _, entry in pairs(playerData.messages or {}) do
-            entry.online = false
-        end
-    end
-end)

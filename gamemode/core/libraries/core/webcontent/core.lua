@@ -103,6 +103,13 @@ local function validateImage(body)
     return nil, "invalid image format"
 end
 
+local function decodeInlineImage(source)
+    if not isstring(source) or source:find("^https?://") then return nil end
+    local encoded = source:match("^data:image/[%w%+%-%.]+;base64,(.+)$") or source
+    if #encoded % 4 ~= 0 or not encoded:match("^[%w%+/%=]+$") then return nil end
+    return util.Base64Decode(encoded)
+end
+
 local function parseArguments(name, url, contentType, callback, flags)
     if isfunction(contentType) then
         flags = callback
@@ -128,6 +135,40 @@ function lia.webcontent.download(name, url, contentType, callback, flags)
     local entry = lia.webcontent.stored[key]
     url = url or entry and entry.url
     flags = flags or entry and entry.flags
+    local inlineImage = contentType == "image" and decodeInlineImage(url)
+    if inlineImage then
+        local extension, validationError = validateImage(inlineImage)
+        if not extension then
+            if callback then callback(nil, false, validationError) end
+            return
+        end
+
+        local withoutExtension = name:gsub("%.[^%.]+$", "")
+        name = withoutExtension .. "." .. extension
+        key = getKey(name, contentType)
+        local inlinePath = getPath(name, contentType)
+        lia.webcontent.stored[key] = {
+            name = name,
+            url = url,
+            type = contentType,
+            flags = flags
+        }
+
+        urlMap[contentType .. ":" .. url] = name
+        cache[key] = nil
+        ensureDir(inlinePath:match("(.+)/[^/]+$") or baseDir)
+        file.Write(inlinePath, inlineImage)
+        local material = buildMaterial(inlinePath, flags)
+        cache[key] = material
+        if callback then callback(material, false) end
+        if not stats.downloadedContent[key] then
+            stats.downloadedContent[key] = true
+            stats.downloaded = stats.downloaded + 1
+            hook.Run("WebImageDownloaded", name, "data/" .. inlinePath)
+        end
+        return
+    end
+
     local valid, err = validateURL(url)
     if not valid then
         if callback then callback(nil, false, err) end

@@ -1,4 +1,7 @@
 ﻿local PANEL = {}
+PANEL.creationOrder = math.huge
+PANEL.creationName = "Review"
+
 function PANEL:Init()
     self.title = self:Add("liaHeaderPanel")
     self.title:Dock(TOP)
@@ -69,8 +72,26 @@ function PANEL:buildDefaultSummary(context)
     local faction = context.faction and lia.faction.indices[context.faction] or nil
     summary[#summary + 1] = {
         title = "Faction",
-        value = faction and tostring(faction.name or "") or "("
+        value = faction and tostring(faction.name or "") or "None"
     }
+
+    local class = context.class and lia.class.list[tonumber(context.class)] or nil
+    if class then
+        summary[#summary + 1] = {
+            title = "Class",
+            value = tostring(class.name or class.uniqueID or class.index)
+        }
+    end
+
+    local creationClass = faction and lia.faction.getCharacterCreationClass(faction, context.class) or nil
+    local modelInfo = faction and lia.faction.getCharacterCreationModelInfo(faction, creationClass, context.model) or nil
+    local modelData = modelInfo and lia.faction.getModelData(context.model, modelInfo) or nil
+    if modelData then
+        summary[#summary + 1] = {
+            title = "Appearance",
+            value = string.format("%s  /  Skin %d", tostring(modelData.model), tonumber(context.skin) or tonumber(modelData.skin) or 0)
+        }
+    end
 
     local attribLines = {}
     local attribs = istable(context.attribs) and context.attribs or {}
@@ -92,14 +113,14 @@ function PANEL:buildDefaultSummary(context)
             local attr = lia.attribs.list[k]
             local attrName = attr and attr.name or tostring(k)
             local v = tonumber(attribs[k]) or 0
-            attribLines[#attribLines + 1] = tostring(attrName) .. "): " .. tostring(v)
+            attribLines[#attribLines + 1] = tostring(attrName) .. ": " .. tostring(v)
         end
     end
 
     if #attribLines > 0 then
         summary[#summary + 1] = {
             title = "Attributes",
-            value = table.concat(attribLines, "\n(")
+            value = table.concat(attribLines, "\n")
         }
     end
 
@@ -113,7 +134,7 @@ function PANEL:buildDefaultSummary(context)
     table.sort(idKeys, function(a, b) return tostring(a) < tostring(b) end)
     for _, k in ipairs(idKeys) do
         local v = identifications[k]
-        if v ~= nil then idLines[#idLines + 1] = tostring(k) .. "): " .. tostring(v) end
+        if v ~= nil then idLines[#idLines + 1] = tostring(k) .. ": " .. tostring(v) end
     end
 
     if #idLines > 0 then
