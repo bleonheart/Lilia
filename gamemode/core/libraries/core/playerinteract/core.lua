@@ -259,14 +259,62 @@ else
         local client = LocalPlayer()
         if not IsValid(client) then return end
         local ent = isfunction(client.getTracedEntity) and client:getTracedEntity(100) or NULL
-        return lia.derma.optionsMenu(options, {
-            mode = isInteraction and "interaction" or "action",
-            title = titleText,
-            closeKey = closeKey,
-            netMsg = netMsg,
-            preFiltered = preFiltered,
-            entity = ent
-        })
+        if isInteraction and not IsValid(ent) then return end
+        if IsValid(lia.derma.menu_radial) then lia.derma.menu_radial:Remove() end
+        local radial = vgui.Create("liaRadialPanel")
+        lia.derma.menu_radial = radial
+        radial:SetCenterText(titleText or (isInteraction and "Interaction Menu" or "Personal Actions"), "Select Option")
+        local oldThink = radial.Think
+        local oldOnRemove = radial.OnRemove
+        function radial:Think()
+            if closeKey and not input.IsKeyDown(closeKey) then self:Remove() return end
+            oldThink(self)
+        end
+
+        function radial:OnRemove()
+            if oldOnRemove then oldOnRemove(self) end
+            hook.Run("InteractionMenuClosed")
+        end
+
+        for id, option in pairs(options or {}) do
+            if istable(option) then
+                local valid = preFiltered or (option.type == (isInteraction and "interaction" or "action"))
+                if isInteraction and not preFiltered then
+                    local target = option.target or "player"
+                    local matches = target == "any" or target == "player" and ent:IsPlayer() or target == "entity" and not ent:IsPlayer()
+                    valid = valid and matches and lia.playerinteract.isWithinRange(client, ent, math.min(option.range or 100, 100))
+                end
+
+                if valid and (preFiltered or not option.shouldShow or option.shouldShow(client, isInteraction and ent or nil)) then
+                    radial:AddOption(option.displayName or option.label or option.name or id, function()
+                        if not option.serverOnly then
+                            local callback = option.callback or option.onRun
+                            if callback then
+                                if isInteraction then
+                                    local target = ent
+                                    if ent:IsPlayer() and ent:IsBot() and client:Team() == FACTION_STAFF then target = client end
+                                    callback(client, target)
+                                else
+                                    callback(client, ent)
+                                end
+                            end
+                        end
+
+                        if option.serverOnly and netMsg then
+                            net.Start(netMsg)
+                            net.WriteString(id)
+                            net.WriteBool(IsValid(ent))
+                            if IsValid(ent) then net.WriteEntity(ent) end
+                            net.SendToServer()
+                        end
+                    end, option.icon, option.description or option.desc)
+                end
+            end
+        end
+
+        if #(radial:GetCurrentOptions()) == 0 then radial:Remove() return end
+        hook.Run("InteractionMenuOpened", radial)
+        return radial
     end
 
     lia.net.readBigTable("liaPlayerInteractSync", function(data)
