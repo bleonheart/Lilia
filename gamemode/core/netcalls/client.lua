@@ -1,4 +1,4 @@
-﻿net.Receive("liaSetWaypoint", function()
+net.Receive("liaSetWaypoint", function()
     local name = net.ReadString()
     local pos = net.ReadVector()
     local logo = net.ReadString()
@@ -1209,13 +1209,13 @@ net.Receive("liaEmitUrlSound", function()
         local maxDistance = soundLevel * 13.33
         local ext = soundPath:match("%.([%w]+)$") or "mp3"
         local name = util.CRC(soundPath) .. "." .. ext
-        local cachedPath = lia.websound.get(name)
+        local cachedPath = lia.webcontent.get(name, "sound")
         if cachedPath then
             ent:playFollowingSound(cachedPath, volume, true, maxDistance, startDelay)
         else
-            lia.websound.register(name, soundPath, function(localPath) if localPath then ent:playFollowingSound(localPath, volume, true, maxDistance, startDelay) end end)
+            lia.webcontent.register(name, soundPath, "sound", function(localPath) if localPath then ent:playFollowingSound(localPath, volume, true, maxDistance, startDelay) end end)
         end
-    elseif soundPath:find("^lilia/websounds/") or soundPath:find("^websounds/") then
+    elseif soundPath:find("^lilia/webcontent/sound/") or soundPath:find("^webcontent/sound/") then
         local maxDistance = soundLevel * 13.33
         ent:playFollowingSound(soundPath, volume, true, maxDistance, startDelay)
     else
@@ -1238,33 +1238,23 @@ net.Receive("liaNetMessage", function()
 end)
 
 net.Receive("liaAssureClientSideAssets", function()
-    lia.webimage.clearCache(true)
-    lia.websound.clearCache(true)
-    local webimages = lia.webimage.stored
-    local websounds = lia.websound.stored
+    lia.webcontent.clearCache(true)
     local downloadQueue = {}
     local activeDownloads = 0
     local maxConcurrent = 5
-    local totalImages = table.Count(webimages)
-    local totalSounds = table.Count(websounds)
+    local totalImages = 0
+    local totalSounds = 0
     local completedImages = 0
     local completedSounds = 0
     local failedImages = 0
     local failedSounds = 0
-    for name, data in pairs(webimages) do
+    for _, data in pairs(lia.webcontent.stored) do
+        if data.type == "image" then totalImages = totalImages + 1 else totalSounds = totalSounds + 1 end
         table.insert(downloadQueue, {
-            type = "image",
-            name = name,
+            type = data.type,
+            name = data.name,
             url = data.url,
             flags = data.flags
-        })
-    end
-
-    for name, url in pairs(websounds) do
-        table.insert(downloadQueue, {
-            type = "sound",
-            name = name,
-            url = url
         })
     end
 
@@ -1275,7 +1265,7 @@ net.Receive("liaAssureClientSideAssets", function()
         local download = table.remove(downloadQueue, 1)
         activeDownloads = activeDownloads + 1
         if download.type == "image" then
-            lia.webimage.download(download.name, download.url, function(material, fromCache, errorMsg)
+            lia.webcontent.download(download.name, download.url, "image", function(material, fromCache, errorMsg)
                 activeDownloads = activeDownloads - 1
                 if material then
                     completedImages = completedImages + 1
@@ -1290,7 +1280,7 @@ net.Receive("liaAssureClientSideAssets", function()
                 processNextDownload()
             end, download.flags)
         elseif download.type == "sound" then
-            lia.websound.download(download.name, download.url, function(path, fromCache, errorMsg)
+            lia.webcontent.download(download.name, download.url, "sound", function(path, fromCache, errorMsg)
                 activeDownloads = activeDownloads - 1
                 if path then
                     completedSounds = completedSounds + 1
@@ -1315,8 +1305,8 @@ net.Receive("liaAssureClientSideAssets", function()
             lia.option.load()
             lia.keybind.load()
             timer.Simple(1.0, function()
-                local imageStats = lia.webimage.getStats()
-                local soundStats = lia.websound.getStats()
+                local imageStats = lia.webcontent.getStats("image")
+                local soundStats = lia.webcontent.getStats("sound")
                 lia.bootstrap("AssetDownload", "===========================================")
                 lia.bootstrap("AssetDownload", "=== CLIENT-SIDE ASSETS DOWNLOAD COMPLETE ===")
                 lia.bootstrap("AssetDownload", "Download Summary")

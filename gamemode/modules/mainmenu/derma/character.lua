@@ -142,7 +142,7 @@ function PANEL:updateCreationModelEntity(context)
     local pos, ang
     if faction.mainMenuPosition then
         local menuPos = faction.mainMenuPosition
-        local currentMap = lia.data.getEquivalencyMap(game.GetMap())
+        local currentMap = game.GetMap()
         if istable(menuPos) and menuPos[currentMap] then
             local mapPos = menuPos[currentMap]
             if istable(mapPos) then

@@ -153,7 +153,7 @@ local function DoSpawnLogic(client, isRespawning)
         local spawnData = lia.data.get("spawns", {})
         local classSpawns = istable(spawnData) and istable(spawnData.classes) and spawnData.classes[classIndex]
         if classSpawns and #classSpawns > 0 then
-            local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
+            local curMap = game.GetMap():lower()
             local valid = {}
             for _, v in ipairs(classSpawns) do
                 local map = v.map and tostring(v.map):lower() or nil
@@ -184,7 +184,7 @@ local function DoSpawnLogic(client, isRespawning)
 
     if factionID then
         local factionInfo = lia.faction.get(factionID)
-        local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
+        local curMap = game.GetMap():lower()
         if factionInfo and factionInfo.spawns and factionInfo.spawns[curMap] then
             local mapSpawns = factionInfo.spawns[curMap]
             if istable(mapSpawns) and #mapSpawns > 0 then
@@ -242,7 +242,7 @@ function MODULE:CharPreSave(character)
         local lastPosData = {
             pos = client:GetPos(),
             ang = Angle(0, 0, 0),
-            map = lia.data.getEquivalencyMap(game.GetMap())
+            map = game.GetMap()
         }
 
         character:setLastPos(lastPosData)
@@ -322,7 +322,7 @@ function MODULE:OnCharDisconnect(client, character)
     local lastPosData = {
         pos = client:GetPos(),
         ang = Angle(0, 0, 0),
-        map = lia.data.getEquivalencyMap(game.GetMap())
+        map = game.GetMap()
     }
 
     character:setLastPos(lastPosData)
@@ -423,7 +423,7 @@ function MODULE:PostPlayerLoadout(client)
 
     local lastPos = character:getLastPos()
     if lastPos and lastPos.map then
-        local currentMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
+        local currentMap = game.GetMap():lower()
         local savedMapLower = tostring(lastPos.map):lower()
         if savedMapLower == currentMap then
             if lastPos.pos and isvector(lastPos.pos) then client:SetPos(lastPos.pos) end

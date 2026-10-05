@@ -1,4 +1,4 @@
-﻿function MODULE:PopulateAdminTabs(pages)
+function MODULE:PopulateAdminTabs(pages)
     return
 end
 
@@ -32,7 +32,7 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
                 local existingText = messageEntry:GetValue() or ""
                 messageEntry:SetText(existingText ~= "" and existingText .. "\n" .. message or message)
                 messageEntry:GotoTextEnd()
-                lia.websound.playButtonSound("ui/hint.wav")
+                lia.webcontent.playButtonSound("ui/hint.wav")
             end
             return
         end
@@ -139,7 +139,7 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
         btn.DoClick = function()
             if btn.Disabled then return end
             clickFunc()
-            lia.websound.playButtonSound()
+            lia.webcontent.playButtonSound()
         end
 
         if disabled then btn:SetTooltip("You cannot perform this action on your own ticket.") end

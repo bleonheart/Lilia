@@ -26,7 +26,7 @@ end
 local function drawPanelBox(x, y, w, h, radius, color, outline, alpha)
     local boxColor = alphaColor(color, alpha)
     local outlineColor = outline and alphaColor(outline, alpha) or nil
-    if lia.derma and lia.derma.rect then
+    if lia.derma.SHAPE_IOS then
         lia.derma.rect(x, y, w, h):Rad(radius):Color(boxColor):Shape(lia.derma.SHAPE_IOS):Draw()
         if outlineColor then lia.derma.rect(x, y, w, h):Rad(radius):Color(outlineColor):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
         return

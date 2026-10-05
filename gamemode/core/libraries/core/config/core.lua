@@ -370,7 +370,7 @@ else
         local categoryIcons = {}
         local function getAccent(alpha)
             local theme = lia.color and lia.color.theme or {}
-            local color = theme.accent or theme.theme or lia.config and lia.config.get and lia.config.get("Color") or uiColors.accent
+            local color = theme.accent or theme.theme or lia.config.get("Color") or uiColors.accent
             if istable(color) and color.r and color.g and color.b then return Color(color.r, color.g, color.b, alpha or color.a or 255) end
             return Color(uiColors.accent.r, uiColors.accent.g, uiColors.accent.b, alpha or uiColors.accent.a or 255)
         end
@@ -383,7 +383,7 @@ else
         end
 
         local function rounded(x, y, w, h, r, color)
-            if lia.derma and lia.derma.rect and lia.derma.SHAPE_IOS then
+            if lia.derma.SHAPE_IOS then
                 lia.derma.rect(x, y, w, h):Rad(r or 0):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
                 return
             end
@@ -392,7 +392,7 @@ else
         end
 
         local function outline(x, y, w, h, color)
-            if lia.derma and lia.derma.rect and lia.derma.SHAPE_IOS then
+            if lia.derma.SHAPE_IOS then
                 lia.derma.rect(x, y, w, h):Rad(6):Color(color):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw()
                 return
             end

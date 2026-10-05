@@ -846,7 +846,7 @@ else
     end
 
     local function DrawWeaponConfigPanel(x, y, w, h, radius, color, outline)
-        if lia.derma and lia.derma.rect then
+        if lia.derma.SHAPE_IOS then
             lia.derma.rect(x, y, w, h):Rad(radius or 6):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
             if outline then lia.derma.rect(x, y, w, h):Rad(radius or 6):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
             return

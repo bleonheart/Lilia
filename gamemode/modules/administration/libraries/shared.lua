@@ -193,7 +193,7 @@ lia.util.setPositionCallback("Faction Spawn Adder", {
                 table.insert(spawns[factionInfo.uniqueID], {
                     pos = pos,
                     ang = angle_zero,
-                    map = lia.data.getEquivalencyMap(game.GetMap()),
+                    map = game.GetMap(),
                     radius = radius
                 })
 
@@ -235,7 +235,7 @@ lia.util.setPositionCallback("Faction Spawn Adder", {
         if SERVER then
             lia.module.get("spawns"):FetchSpawns():next(function(spawns)
                 local list = {}
-                local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
+                local curMap = game.GetMap():lower()
                 for factionID, factionSpawns in pairs(spawns or {}) do
                     local factionInfo = lia.faction.get(factionID)
                     local label = factionInfo and (factionInfo.name and tostring(factionInfo.name) or factionID) or factionID
@@ -265,7 +265,7 @@ lia.util.setPositionCallback("Faction Spawn Adder", {
     end,
     onRemove = function(pos, client, typeId)
         lia.module.get("spawns"):FetchSpawns():next(function(spawns)
-            local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
+            local curMap = game.GetMap():lower()
             for factionID, factionSpawns in pairs(spawns) do
                 for i = #factionSpawns, 1, -1 do
                     local data = factionSpawns[i]
@@ -303,7 +303,7 @@ lia.util.setPositionCallback("Class Spawn Adder", {
             table.insert(data.classes[classIDNum], {
                 pos = pos,
                 ang = angle_zero,
-                map = lia.data.getEquivalencyMap(game.GetMap()),
+                map = game.GetMap(),
                 radius = radius
             })
 
@@ -347,7 +347,7 @@ lia.util.setPositionCallback("Class Spawn Adder", {
             local data = istable(stored) and stored or {}
             local classes = data.classes or {}
             local list = {}
-            local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
+            local curMap = game.GetMap():lower()
             for classID, classSpawns in pairs(classes) do
                 local classData = lia.class.get(tonumber(classID))
                 local label = classData and (classData.name or tostring(classID)) or tostring(classID)
@@ -378,7 +378,7 @@ lia.util.setPositionCallback("Class Spawn Adder", {
         local stored = lia.data.get("spawns", {})
         local data = istable(stored) and stored or {}
         local classes = data.classes or {}
-        local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
+        local curMap = game.GetMap():lower()
         for classID, classSpawns in pairs(classes) do
             for i = #classSpawns, 1, -1 do
                 local spawnData = classSpawns[i]

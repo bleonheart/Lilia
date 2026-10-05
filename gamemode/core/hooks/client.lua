@@ -1,4 +1,4 @@
-﻿local GM = GM or GAMEMODE
+local GM = GM or GAMEMODE
 local RealTime, FrameTime = RealTime, FrameTime
 local mathApproach = math.Approach
 local IsValid = IsValid
@@ -992,72 +992,19 @@ end
 function GM:CharLoaded(character)
     if not character then return end
     timer.Simple(0.5, function()
-        if lia.webimage and lia.webimage.stored then
-            local baseDir = "lilia/webimages/"
-            local missingImages = {}
-            for name, data in pairs(lia.webimage.stored) do
-                if data and data.url then
-                    local cached = lia.webimage.get(name)
-                    if not cached then
-                        local cleanName = name:gsub("%.%w+$", "")
-                        local found = false
-                        for _, ext in ipairs({"png", "jpg", "jpeg"}) do
-                            local testPath = baseDir .. cleanName .. "." .. ext
-                            if file.Exists(testPath, "DATA") then
-                                found = true
-                                break
-                            end
-                        end
-
-                        if not found then
-                            table.insert(missingImages, {
-                                name = name,
-                                url = data.url,
-                                flags = data.flags
-                            })
-                        end
-                    end
-                end
+        if lia.webcontent and lia.webcontent.stored then
+            local missing = {}
+            for _, entry in pairs(lia.webcontent.stored) do
+                if not lia.webcontent.get(entry.name, entry.type, entry.flags) then missing[#missing + 1] = entry end
             end
 
-            if #missingImages > 0 then
-                local function downloadNext(index)
-                    if index > #missingImages then return end
-                    local entry = missingImages[index]
-                    lia.webimage.download(entry.name, entry.url, function(mat, fromCache, errorMsg) timer.Simple(0.1, function() downloadNext(index + 1) end) end, entry.flags)
-                end
-
-                downloadNext(1)
-            end
-        end
-
-        if lia.websound and lia.websound.stored then
-            local baseDir = "lilia/websounds/"
-            local missingSounds = {}
-            for name, url in pairs(lia.websound.stored) do
-                if url and isstring(url) then
-                    local cached = lia.websound.get(name)
-                    if not cached then
-                        local savePath = baseDir .. name
-                        if not file.Exists(savePath, "DATA") then
-                            table.insert(missingSounds, {
-                                name = name,
-                                url = url
-                            })
-                        end
-                    end
-                end
+            local function downloadNext(index)
+                local entry = missing[index]
+                if not entry then return end
+                lia.webcontent.download(entry.name, entry.url, entry.type, function() timer.Simple(0.1, function() downloadNext(index + 1) end) end, entry.flags)
             end
 
-            if #missingSounds > 0 then
-                local function downloadNext(index)
-                    if index > #missingSounds then return end
-                    local entry = missingSounds[index]
-                    lia.websound.download(entry.name, entry.url, function(path, fromCache, errorMsg) timer.Simple(0.1, function() downloadNext(index + 1) end) end)
-                end
-
-                downloadNext(1)
-            end
+            downloadNext(1)
         end
     end)
 end

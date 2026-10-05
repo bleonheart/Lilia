@@ -1,6 +1,5 @@
 ﻿lia.data = lia.data or {}
 lia.data.stored = lia.data.stored or {}
-lia.data.equivalencyMaps = lia.data.equivalencyMaps or {}
 if SERVER then
     function lia.data.encodetable(value)
         if isvector(value) then
@@ -328,8 +327,6 @@ if SERVER then
         if global then
             gm = "global"
             m = "global"
-        else
-            if m ~= "global" then m = lia.data.getEquivalencyMap(m) end
         end
 
         gm = tostring(gm or "global")
@@ -371,7 +368,7 @@ if SERVER then
 
     function lia.data.loadTables()
         local gamemode = (SCHEMA and SCHEMA.folder) or engine.ActiveGamemode()
-        local map = lia.data.getEquivalencyMap(game.GetMap())
+        local map = game.GetMap()
         local function loadScope(gm, m)
             ensureDataDirs(gm, m)
             local gmSafe = sanitizeKeyToFilename(gm)
@@ -425,7 +422,6 @@ if SERVER then
     function lia.data.savePersistence(entities)
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local map = game.GetMap()
-        map = lia.data.getEquivalencyMap(map)
         lia.data.persistCache = entities
         local condition = buildCondition(gamemode, map)
         local dynamic = {}
@@ -485,7 +481,6 @@ if SERVER then
     function lia.data.loadPersistenceData(callback)
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local map = game.GetMap()
-        map = lia.data.getEquivalencyMap(map)
         local condition = buildCondition(gamemode, map)
         ensurePersistenceColumns(baseCols):next(function() return lia.db.select("*", "persistence", condition) end):next(function(res)
             local rows = res.results or {}
@@ -546,11 +541,3 @@ if SERVER then
     end)
 end
 
-function lia.data.addEquivalencyMap(map1, map2)
-    lia.data.equivalencyMaps[map1] = map2
-    lia.data.equivalencyMaps[map2] = map1
-end
-
-function lia.data.getEquivalencyMap(map)
-    return lia.data.equivalencyMaps[map] or map
-end

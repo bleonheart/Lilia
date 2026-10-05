@@ -912,16 +912,6 @@ net.Receive("liaRequestAllPks", function(_, client)
     end)
 end)
 
-net.Receive("liaRequestPksCount", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestPksCount", "hasPrivilege(manageCharacters)=", tostring(client:hasPrivilege("manageCharacters")), "finalResult=", tostring(client:hasPrivilege("manageCharacters")))
-    if not client:hasPrivilege("manageCharacters") then return end
-    lia.db.count("permakills"):next(function(count)
-        net.Start("liaPksCount")
-        net.WriteInt(count or 0, 32)
-        net.Send(client)
-    end)
-end)
-
 net.Receive("liaRequestStaffCases", function(_, client)
     local canSeeTickets = client:hasPrivilege("alwaysSeeTickets") or client:isStaffOnDuty()
     local canSeeWarnings = client:hasPrivilege("viewPlayerWarnings")

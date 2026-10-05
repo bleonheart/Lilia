@@ -1,3 +1,4 @@
+local GM = GM or GAMEMODE
 local REALM_SV = 1
 local sourceCache = {}
 local serverMetrics = {}
@@ -28,20 +29,16 @@ local nativePaths = {
     ["lua/matproxy/"] = true,
     ["lua/skins/"] = true
 }
-local addonPatterns = {
-    "^.*/addons/",
-    "^.*workshop/content/4000/"
-}
+
+local addonPatterns = {"^.*/addons/", "^.*workshop/content/4000/"}
 local iconPlay = Material("icon16/control_play_blue.png", "smooth")
 local iconChart = Material("icon16/chart_bar.png", "smooth")
 local iconTime = Material("icon16/time.png", "smooth")
 local iconFolder = Material("icon16/folder.png", "smooth")
 local iconWarning = Material("icon16/error.png", "smooth")
-
 PERFOPUS.HIDE_NATIVE = GetConVar("cl_perfopus_hide_native") or CreateClientConVar("cl_perfopus_hide_native", "0", true, false)
 PERFOPUS.SHOWING_METRICS = GetConVar("cl_perfopus_showing_metrics") or CreateClientConVar("cl_perfopus_showing_metrics", "0", false, true)
 PERFOPUS.ZOOM = GetConVar("cl_perfopus_zoom") or CreateClientConVar("cl_perfopus_zoom", "2", true, false)
-
 local function getThemeColors()
     local theme = lia.color and lia.color.theme or {}
     local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
@@ -85,12 +82,14 @@ function PERFOPUS.IsAddonSource(source)
             return true
         end
     end
+
     for path in pairs(nativePaths) do
         if normalized:find(path, 1, true) then
             sourceCache[source] = false
             return false
         end
     end
+
     sourceCache[source] = true
     return true
 end
@@ -114,6 +113,7 @@ local function mergeMetrics()
             time = data.time or 0
         }
     end
+
     for source, data in pairs(PERFOPUS.FilterMetrics(serverMetrics)) do
         rows[#rows + 1] = {
             source = source,
@@ -123,6 +123,7 @@ local function mergeMetrics()
             time = data.time or 0
         }
     end
+
     table.sort(rows, function(a, b) return a.time > b.time end)
     return rows
 end
@@ -167,6 +168,7 @@ local function createMetricRow(parent, data, maxTime)
         drawPanel(sourceX, 41, math.max(w - sourceX - 14, 1), 6, 3, Color(255, 255, 255, 8))
         drawPanel(sourceX, 41, math.max((w - sourceX - 14) * share, 1), 6, 3, Color(accent.r, accent.g, accent.b, hovered and 110 or 72))
     end
+
     local tooltip = data.tooltipstr
     if not tooltip or tooltip == "" then tooltip = PERFOPUS.MakeToolTipString(data.funcs, 10) end
     if tooltip and tooltip ~= "" then
@@ -199,6 +201,7 @@ function PERFOPUS.RefreshMetrics(panel)
         end
         return
     end
+
     local maxTime = rows[1].time or 0
     for _, data in ipairs(rows) do
         createMetricRow(list, data, maxTime)
@@ -223,6 +226,7 @@ local function sendServerSetting(setting, value)
     else
         net.WriteFloat(tonumber(value) or 2)
     end
+
     net.SendToServer()
 end
 
@@ -233,25 +237,22 @@ local function startPerfopus(panel)
             net.Start("liaPerfopusStart")
             net.SendToServer()
         end
+
         PERFOPUS.RefreshMetrics(panel)
         return
     end
-    Derma_Query(
-        "Start Perfopus? Profiling adds overhead and cannot be fully stopped without changing map.",
-        "Start Perfopus",
-        "Start",
-        function()
-            PERFOPUS.StartProfiling()
-            PERFOPUS.ClearSourceCache()
-            RunConsoleCommand("cl_perfopus_showing_metrics", "1")
-            if PERFOPUS.CanViewMetrics(LocalPlayer()) then
-                net.Start("liaPerfopusStart")
-                net.SendToServer()
-            end
-            if IsValid(panel) then PERFOPUS.BuildPanel(panel) end
-        end,
-        "Cancel"
-    )
+
+    Derma_Query("Start Perfopus? Profiling adds overhead and cannot be fully stopped without changing map.", "Start Perfopus", "Start", function()
+        PERFOPUS.StartProfiling()
+        PERFOPUS.ClearSourceCache()
+        RunConsoleCommand("cl_perfopus_showing_metrics", "1")
+        if PERFOPUS.CanViewMetrics(LocalPlayer()) then
+            net.Start("liaPerfopusStart")
+            net.SendToServer()
+        end
+
+        if IsValid(panel) then PERFOPUS.BuildPanel(panel) end
+    end, "Cancel")
 end
 
 local function createSectionTitle(parent, title, subtitle)
@@ -278,6 +279,7 @@ local function createToggleRow(parent, title, description, value, onChange)
         draw.SimpleText(title, "LiliaFont.17", 14, 12, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         draw.SimpleText(description, "LiliaFont.14", 14, 37, Color(135, 158, 159), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
+
     local toggle = row:Add("liaCheckbox")
     toggle:Dock(RIGHT)
     toggle:SetWide(58)
@@ -298,15 +300,14 @@ local function createSliderRow(parent, title, description, minValue, maxValue, d
         draw.SimpleText(title, "LiliaFont.17", 14, 10, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         draw.SimpleText(description, "LiliaFont.14", 14, 32, Color(135, 158, 159), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
+
     local valueLabel = row:Add("DLabel")
     valueLabel:SetFont("LiliaFont.15")
     valueLabel:SetTextColor(Color(190, 207, 207))
     valueLabel:SetContentAlignment(6)
     valueLabel:SetSize(74, 20)
     valueLabel:SetPos(0, 8)
-    row.PerformLayout = function(_, w)
-        valueLabel:SetPos(w - 88, 8)
-    end
+    row.PerformLayout = function(_, w) valueLabel:SetPos(w - 88, 8) end
     local slider = row:Add("liaSlider")
     slider:Dock(BOTTOM)
     slider:SetTall(25)
@@ -315,11 +316,13 @@ local function createSliderRow(parent, title, description, minValue, maxValue, d
     local function updateValueLabel(newValue)
         valueLabel:SetText(formatter and formatter(newValue) or tostring(newValue))
     end
+
     slider:SetValue(value, true)
     slider.OnValueChanged = function(_, newValue)
         updateValueLabel(newValue)
         onChange(newValue)
     end
+
     updateValueLabel(value)
     return slider
 end
@@ -373,21 +376,9 @@ function PERFOPUS.BuildPanel(parent)
     summary:SetTall(88)
     summary:DockMargin(0, 0, 0, 12)
     summary.Paint = function() end
-    local totalCard = createSummaryCard(summary, "Sample Cost", iconTime, function()
-        return string.format("%.3f ms", (parent.TotalMetricTime or 0) * 1000)
-    end, function()
-        return string.format("%.2fs window", PERFOPUS.REFRESH_RATE:GetFloat())
-    end)
-    local sourceCard = createSummaryCard(summary, "Sources", iconFolder, function()
-        return tostring(parent.MetricCount or 0)
-    end, function()
-        return PERFOPUS.HIDE_NATIVE:GetBool() and "ADDONS ONLY" or "ALL LUA"
-    end)
-    local realmCard = createSummaryCard(summary, "Realm Split", iconChart, function()
-        return string.format("S %.2f / C %.2f", (parent.ServerMetricTime or 0) * 1000, (parent.ClientMetricTime or 0) * 1000)
-    end, function()
-        return "MILLISECONDS"
-    end)
+    local totalCard = createSummaryCard(summary, "Sample Cost", iconTime, function() return string.format("%.3f ms", (parent.TotalMetricTime or 0) * 1000) end, function() return string.format("%.2fs window", PERFOPUS.REFRESH_RATE:GetFloat()) end)
+    local sourceCard = createSummaryCard(summary, "Sources", iconFolder, function() return tostring(parent.MetricCount or 0) end, function() return PERFOPUS.HIDE_NATIVE:GetBool() and "ADDONS ONLY" or "ALL LUA" end)
+    local realmCard = createSummaryCard(summary, "Realm Split", iconChart, function() return string.format("S %.2f / C %.2f", (parent.ServerMetricTime or 0) * 1000, (parent.ClientMetricTime or 0) * 1000) end, function() return "MILLISECONDS" end)
     summary.PerformLayout = function(_, w, h)
         local gap = 10
         local cardW = math.floor((w - gap * 2) / 3)
@@ -402,7 +393,6 @@ function PERFOPUS.BuildPanel(parent)
     local body = parent:Add("DPanel")
     body:Dock(FILL)
     body.Paint = function() end
-
     local controls = body:Add("DPanel")
     controls:Dock(LEFT)
     controls:SetWide(318)
@@ -422,13 +412,11 @@ function PERFOPUS.BuildPanel(parent)
     startButton:SetIcon(iconPlay, 16)
     startButton:SetText(PERFOPUS.Started and "Profiler Running" or "Start Perfopus")
     startButton.DoClick = function()
-        lia.websound.playButtonSound()
+        lia.webcontent.playButtonSound()
         startPerfopus(parent)
     end
 
-    createToggleRow(controls, "Freeze Samples", "Keep the current measurements visible", PERFOPUS.FREEZE:GetBool(), function(value)
-        sendServerSetting("freeze", value)
-    end)
+    createToggleRow(controls, "Freeze Samples", "Keep the current measurements visible", PERFOPUS.FREEZE:GetBool(), function(value) sendServerSetting("freeze", value) end)
     createToggleRow(controls, "Hide Native Activity", "Only show addon and gamemode Lua", PERFOPUS.HIDE_NATIVE:GetBool(), function(value)
         RunConsoleCommand("cl_perfopus_hide_native", value and "1" or "0")
         PERFOPUS.ClearSourceCache()
@@ -437,17 +425,8 @@ function PERFOPUS.BuildPanel(parent)
 
     createSectionTitle(controls, "Display", "Sampling window and graph scale")
     local refreshTimer = "PERFOPUSRefreshSetting"
-    createSliderRow(controls, "Refresh Rate", "How often samples are replaced", 0.1, 5, 2, PERFOPUS.REFRESH_RATE:GetFloat(), function(value)
-        timer.Create(refreshTimer, 0.15, 1, function() sendServerSetting("refresh", value) end)
-    end, function(value)
-        return string.format("%.2fs", value)
-    end)
-    createSliderRow(controls, "Graph Zoom", "Scales the relative activity display", 0.5, 10, 1, PERFOPUS.ZOOM:GetFloat(), function(value)
-        RunConsoleCommand("cl_perfopus_zoom", tostring(math.Clamp(value, 0.5, 10)))
-    end, function(value)
-        return string.format("%.1fx", value)
-    end)
-
+    createSliderRow(controls, "Refresh Rate", "How often samples are replaced", 0.1, 5, 2, PERFOPUS.REFRESH_RATE:GetFloat(), function(value) timer.Create(refreshTimer, 0.15, 1, function() sendServerSetting("refresh", value) end) end, function(value) return string.format("%.2fs", value) end)
+    createSliderRow(controls, "Graph Zoom", "Scales the relative activity display", 0.5, 10, 1, PERFOPUS.ZOOM:GetFloat(), function(value) RunConsoleCommand("cl_perfopus_zoom", tostring(math.Clamp(value, 0.5, 10))) end, function(value) return string.format("%.1fx", value) end)
     local legend = controls:Add("DPanel")
     legend:Dock(TOP)
     legend:SetTall(72)
@@ -487,7 +466,6 @@ function PERFOPUS.BuildPanel(parent)
     parent.MetricList = metrics:GetCanvas()
     parent.MetricList:DockPadding(0, 0, 4, 0)
     parent.MetricList.Paint = function() end
-
     PERFOPUS.CurrentPanel = parent
     RunConsoleCommand("cl_perfopus_showing_metrics", "1")
     PERFOPUS.RefreshMetrics(parent)
@@ -497,12 +475,8 @@ function MODULE:CreateMenuButtons(tabs)
     tabs["perfopus"] = {
         name = "Performance Metrics",
         icon = "icon16/chart_bar.png",
-        shouldShow = function()
-            return PERFOPUS.CanViewMetrics(LocalPlayer())
-        end,
-        func = function(panel)
-            PERFOPUS.BuildPanel(panel)
-        end
+        shouldShow = function() return PERFOPUS.CanViewMetrics(LocalPlayer()) end,
+        func = function(panel) PERFOPUS.BuildPanel(panel) end
     }
 end
 
@@ -518,6 +492,7 @@ function MODULE:Think()
     for source, data in pairs(serverMetrics) do
         if data.expires and data.expires < now then serverMetrics[source] = nil end
     end
+
     if IsValid(PERFOPUS.CurrentPanel) then PERFOPUS.RefreshMetrics(PERFOPUS.CurrentPanel) end
     table.Empty(PERFOPUS.Metrics)
     nextRefresh = CurTime() + math.Clamp(PERFOPUS.REFRESH_RATE:GetFloat(), 0.1, 5)
@@ -530,9 +505,5 @@ end)
 
 cvars.AddChangeCallback("cl_perfopus_hide_native", function()
     PERFOPUS.ClearSourceCache()
-    if IsValid(PERFOPUS.CurrentPanel) then
-        timer.Simple(0, function()
-            if IsValid(PERFOPUS.CurrentPanel) then PERFOPUS.RefreshMetrics(PERFOPUS.CurrentPanel) end
-        end)
-    end
+    if IsValid(PERFOPUS.CurrentPanel) then timer.Simple(0, function() if IsValid(PERFOPUS.CurrentPanel) then PERFOPUS.RefreshMetrics(PERFOPUS.CurrentPanel) end end) end
 end, "PERFOPUSHideNative")

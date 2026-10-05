@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 local function isGeneratedCloseNode(node)
     if not istable(node) then return false end
     local nodeID = string.Trim(string.lower(tostring(node.dialogID or "")))
@@ -13,14 +13,14 @@ end
 
 local function getThemeColors()
     local theme = lia.color.theme or {}
-    local configured = lia.config and lia.config.get and lia.config.get("Color") or nil
+    local configured = lia.config.get("Color")
     local accent = resolveThemeColor(theme.accent or theme.theme or configured, Color(45, 190, 170))
     local text = resolveThemeColor(theme.text, Color(225, 238, 238))
     return accent, text
 end
 
 local function drawPanel(x, y, w, h, radius, color, outline)
-    if lia.derma and lia.derma.rect and lia.derma.SHAPE_IOS then
+    if lia.derma.SHAPE_IOS then
         lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
         if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
         return
@@ -82,7 +82,7 @@ function PANEL:Init()
     self.backdrop:SetKeyboardInputEnabled(false)
     self.backdrop:SetAlpha(0)
     self.backdrop.Paint = function(panel, w, h)
-        if lia.util and lia.util.drawBlackBlur then lia.util.drawBlackBlur(panel, 1, 4, 255, 155) end
+        lia.util.drawBlackBlur(panel, 1, 4, 255, 155)
         surface.SetDrawColor(0, 8, 10, 72)
         surface.DrawRect(0, 0, w, h)
     end
@@ -564,7 +564,7 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         end
 
         choiceBtn.DoClick = function()
-            if lia.websound and lia.websound.playButtonSound then lia.websound.playButtonSound() end
+            lia.webcontent.playButtonSound()
             if info.nodeID and self.generatedDialog then
                 self:AppendDialogLine(label, true)
                 self.pendingResponse = true

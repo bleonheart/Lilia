@@ -35,8 +35,7 @@ local function getWeaponFromIndex(i, weapons)
 end
 
 local function getOption(name, fallback)
-    if lia and lia.option and lia.option.get then return lia.option.get(name, fallback) end
-    return fallback
+    return lia.option.get(name, fallback)
 end
 
 local function getAccent()

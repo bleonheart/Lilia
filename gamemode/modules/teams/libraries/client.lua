@@ -1,4 +1,4 @@
-﻿function MODULE:LoadCharInformation()
+function MODULE:LoadCharInformation()
     local client = LocalPlayer()
     if not IsValid(client) then return end
     local character = client:getChar()
@@ -47,7 +47,7 @@ local function getRosterThemeColors()
 end
 
 local function drawRosterPanel(x, y, w, h, radius, color, outline)
-    if lia.derma and lia.derma.rect then
+    if lia.derma.SHAPE_IOS then
         lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
         if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
         return
@@ -280,7 +280,7 @@ local function openFactionNoteEditor(member, factionUniqueID, onSaved)
         net.SendToServer()
         if onSaved then onSaved(editor:GetValue() or "") end
         frame:Close()
-        lia.websound.playButtonSound()
+        lia.webcontent.playButtonSound()
     end
 
     local clearButton = footer:Add("DButton")
@@ -291,7 +291,7 @@ local function openFactionNoteEditor(member, factionUniqueID, onSaved)
     clearButton:SetFont("LiliaFont.17")
     clearButton.DoClick = function()
         editor:SetText("")
-        lia.websound.playButtonSound()
+        lia.webcontent.playButtonSound()
     end
 end
 
@@ -692,7 +692,7 @@ local function UpdateFactionRosterUI(panel, data)
             button.DoClick = function(self)
                 if not self:IsEnabled() then return end
                 onClick()
-                lia.websound.playButtonSound()
+                lia.webcontent.playButtonSound()
             end
             return button
         end
@@ -776,7 +776,7 @@ local function UpdateFactionRosterUI(panel, data)
             end
 
             button.DoClick = function()
-                lia.websound.playButtonSound()
+                lia.webcontent.playButtonSound()
                 panel.selectedRosterCharID = currentMember.charID
                 buildMemberDetails(currentMember)
             end

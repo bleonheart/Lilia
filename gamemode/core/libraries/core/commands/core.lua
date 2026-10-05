@@ -1,4 +1,4 @@
-﻿lia.command = lia.command or {}
+lia.command = lia.command or {}
 lia.command.list = lia.command.list or {}
 function lia.command.buildSyntaxFromArguments(args)
     local tokens = {}
@@ -559,7 +559,7 @@ if CLIENT then
     local function getCommandThemeColors()
         local theme = lia.color and lia.color.theme or {}
         local accent = theme.accent or theme.theme
-        if not IsColor(accent) and lia.config and lia.config.get then accent = lia.config.get("Color") end
+        if not IsColor(accent) then accent = lia.config.get("Color") end
         if not IsColor(accent) then accent = Color(45, 190, 170) end
         local textColor = theme.text
         if not IsColor(textColor) then textColor = Color(225, 238, 238) end
@@ -602,7 +602,7 @@ if CLIENT then
 
         button.DoClick = function(self)
             if not self:IsEnabled() then return end
-            lia.websound.playButtonSound()
+            lia.webcontent.playButtonSound()
             callback()
         end
         return button
@@ -899,7 +899,7 @@ if CLIENT then
                             end
 
                             card.DoClick = function()
-                                lia.websound.playButtonSound()
+                                lia.webcontent.playButtonSound()
                                 selectRecord(record)
                             end
 
@@ -1473,7 +1473,7 @@ else
     end)
 
     concommand.Add("lia_saved_sounds", function()
-        local baseDir = "lilia/websounds/"
+        local baseDir = "lilia/webcontent/sound/"
         local files = file.Find(baseDir .. "**", "DATA")
         local soundFiles = {}
         if files then
@@ -1553,7 +1553,7 @@ else
     end)
 
     concommand.Add("lia_wipe_sounds", function()
-        local baseDir = "lilia/websounds/"
+        local baseDir = "lilia/webcontent/sound/"
         local files = file.Find(baseDir .. "**", "DATA")
         local deletedCount = 0
         for _, fn in ipairs(files) do
@@ -1567,7 +1567,7 @@ else
     end)
 
     concommand.Add("lia_validate_sounds", function()
-        local baseDir = "lilia/websounds/"
+        local baseDir = "lilia/webcontent/sound/"
         local files = file.Find(baseDir .. "**", "DATA")
         local validCount = 0
         local invalidCount = 0
@@ -1596,7 +1596,7 @@ else
     end)
 
     concommand.Add("lia_cleanup_sounds", function()
-        local baseDir = "lilia/websounds/"
+        local baseDir = "lilia/webcontent/sound/"
         local files = file.Find(baseDir .. "**", "DATA")
         local removedCount = 0
         for _, fileName in ipairs(files) do
@@ -1625,7 +1625,7 @@ else
     end)
 
     concommand.Add("lia_list_sounds", function()
-        local baseDir = "lilia/websounds/"
+        local baseDir = "lilia/webcontent/sound/"
         local files = file.Find(baseDir .. "**", "DATA")
         if #files == 0 then return end
         LocalPlayer():ChatPrint("Saved sounds:")
@@ -1668,7 +1668,7 @@ else
     end
 
     concommand.Add("lia_saved_images", function()
-        local baseDir = "lilia/webimages/"
+        local baseDir = "lilia/webcontent/image/"
         local files = findImagesRecursive(baseDir)
         local imageFiles = {}
         if files then
@@ -1742,7 +1742,7 @@ else
     end)
 
     concommand.Add("lia_cleanup_images", function()
-        local baseDir = "lilia/webimages/"
+        local baseDir = "lilia/webcontent/image/"
         local files = findImagesRecursive(baseDir)
         local removedCount = 0
         for _, filePath in ipairs(files) do
@@ -1753,7 +1753,7 @@ else
     end)
 
     concommand.Add("lia_wipewebimages", function()
-        local baseDir = "lilia/webimages/"
+        local baseDir = "lilia/webcontent/image/"
         deleteDirectoryRecursive(baseDir)
         cache = {}
         urlMap = {}
@@ -7135,7 +7135,7 @@ lia.command.add("spawnadd", {
                 local newSpawn = {
                     pos = client:GetPos(),
                     ang = client:EyeAngles(),
-                    map = lia.data.getEquivalencyMap(game.GetMap()),
+                    map = game.GetMap(),
                     radius = math.Clamp(tonumber(arguments[2]) or 0, 0, 2048)
                 }
 
@@ -7166,7 +7166,7 @@ lia.command.add("spawnremoveinradius", {
         local radius = tonumber(arguments[1]) or 120
         lia.module.get("spawns"):FetchSpawns():next(function(spawns)
             local removedCount = 0
-            local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
+            local curMap = game.GetMap():lower()
             for faction, list in pairs(spawns) do
                 for i = #list, 1, -1 do
                     local data = list[i]
@@ -7219,7 +7219,7 @@ lia.command.add("spawnremovebyname", {
             lia.module.get("spawns"):FetchSpawns():next(function(spawns)
                 local list = spawns[factionInfo.uniqueID]
                 if list then
-                    local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
+                    local curMap = game.GetMap():lower()
                     local removedCount = 0
                     for i = #list, 1, -1 do
                         local data = list[i]
@@ -8316,29 +8316,6 @@ lia.command.add("npcchangetype", {
                 client:notifyError(string.format("No NPC types available! The server may still be loading modules. Please try again in a moment."))
             end
         end)
-    end
-})
-
-lia.command.add("plyrespawn", {
-    adminOnly = true,
-    arguments = {
-        {
-            name = "target",
-            type = "player"
-        }
-    },
-    desc = "Force another player to respawn.",
-    onRun = function(client, arguments)
-        local target = lia.util.findPlayer(client, arguments[1])
-        if not target or not IsValid(target) then
-            client:notifyError(string.format("Invalid Target!"))
-            return
-        end
-
-        target:Spawn()
-        client:notifySuccess(string.format("Successfully force respawned %s.", target:Name()))
-        target:notify(string.format("You were force respawned by an admin."))
-        lia.log.add(client, "plyrespawn", target:Name())
     end
 })
 

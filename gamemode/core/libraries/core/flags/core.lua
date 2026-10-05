@@ -1,4 +1,4 @@
-﻿lia.flag = lia.flag or {}
+lia.flag = lia.flag or {}
 lia.flag.list = lia.flag.list or {}
 function lia.flag.add(flag, desc, callback)
     if lia.flag.list[flag] then return end
@@ -55,7 +55,7 @@ if CLIENT then
     local function getFlagThemeColors()
         local theme = lia.color and lia.color.theme or {}
         local accent = theme.accent or theme.theme
-        if not IsColor(accent) and lia.config and lia.config.get then accent = lia.config.get("Color") end
+        if not IsColor(accent) then accent = lia.config.get("Color") end
         if not IsColor(accent) then accent = Color(45, 190, 170) end
         local textColor = theme.text
         if not IsColor(textColor) then textColor = Color(225, 238, 238) end
@@ -98,7 +98,7 @@ if CLIENT then
 
         button.DoClick = function(self)
             if not self:IsEnabled() then return end
-            lia.websound.playButtonSound()
+            lia.webcontent.playButtonSound()
             callback()
         end
         return button
@@ -352,7 +352,7 @@ if CLIENT then
                         end
 
                         card.DoClick = function()
-                            lia.websound.playButtonSound()
+                            lia.webcontent.playButtonSound()
                             selectRecord(record)
                         end
 
@@ -373,7 +373,7 @@ if CLIENT then
                 end
 
                 filterButton.DoClick = function()
-                    lia.websound.playButtonSound()
+                    lia.webcontent.playButtonSound()
                     local menu = DermaMenu()
                     menu:AddOption("All Flags", function()
                         filterMode = "all"

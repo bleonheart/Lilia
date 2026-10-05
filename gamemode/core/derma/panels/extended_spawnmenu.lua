@@ -1,4 +1,4 @@
-﻿local function getGameList()
+local function getGameList()
     local games = engine.GetGames()
     table.insert(games, {
         title = "All",
@@ -101,7 +101,7 @@ end, function(path)
     if not isMaterialUsable(path) then showMaterialWarning() end
     RunConsoleCommand("material_override", path)
     spawnmenu.ActivateTool("material")
-    lia.websound.playButtonSound("garrysmod/ui_click.wav")
+    lia.webcontent.playButtonSound("garrysmod/ui_click.wav")
 end, {
     {
         text = "#spawnmenu.menu.copy",

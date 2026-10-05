@@ -1,10 +1,11 @@
+local GM = GM or GAMEMODE
 local nextRefresh = 0
-
 local function setServerSetting(name, value)
     if name == "freeze" then
         RunConsoleCommand("sh_perfopus_freeze", value and "1" or "0")
         return
     end
+
     if name == "refresh" then
         local refresh = math.Clamp(tonumber(value) or 2, 0.1, 5)
         RunConsoleCommand("sh_perfopus_refresh_rate", tostring(refresh))

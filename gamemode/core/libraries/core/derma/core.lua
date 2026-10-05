@@ -1,4 +1,4 @@
-﻿lia.derma = lia.derma or {}
+lia.derma = lia.derma or {}
 local color_disconnect = Color(210, 65, 65)
 local color_bot = Color(70, 150, 220)
 local color_online = Color(120, 180, 70)
@@ -658,7 +658,7 @@ function lia.derma.requestColorPicker(func, colorStandard)
         if keyCode == MOUSE_LEFT then
             isDraggingColor = true
             self:OnCursorMoved(self:CursorPos())
-            lia.websound.playButtonSound()
+            lia.webcontent.playButtonSound()
         end
     end
 
@@ -704,7 +704,7 @@ function lia.derma.requestColorPicker(func, colorStandard)
         if keyCode == MOUSE_LEFT then
             isDraggingHue = true
             self:OnCursorMoved(self:CursorPos())
-            lia.websound.playButtonSound()
+            lia.webcontent.playButtonSound()
         end
     end
 
@@ -1535,7 +1535,7 @@ function lia.derma.drawBoxWithText(text, x, y, options)
 
     local function resolveAccent()
         local theme = lia.color and lia.color.theme or {}
-        return options.accentColor or theme.accent or theme.theme or lia.config and lia.config.get and lia.config.get("Color") or Color(164, 106, 54)
+        return options.accentColor or theme.accent or theme.theme or lia.config.get("Color") or Color(164, 106, 54)
     end
 
     local function drawBlurAt(px, py, pw, ph, blurData)
@@ -1543,11 +1543,7 @@ function lia.derma.drawBoxWithText(text, x, y, options)
         local amount = blurData.amount or 3
         local passes = blurData.passes or 3
         local alpha = blurData.alpha or 0.9
-        if lia.util and lia.util.drawBlurAt then
-            lia.util.drawBlurAt(px, py, pw, ph, amount, passes, alpha)
-        elseif lia.derma.drawBlurAt then
-            lia.derma.drawBlurAt(px, py, pw, ph, amount, passes, alpha)
-        end
+        lia.util.drawBlurAt(px, py, pw, ph, amount, passes, alpha)
     end
 
     local function parseDebugText(raw)
@@ -2760,7 +2756,7 @@ function lia.derma.openOptionsMenu(title, options)
 
     if #entries == 0 then return end
     local theme = lia.color and lia.color.theme or {}
-    local accent = config.accentColor or theme.accent or theme.theme or lia.config and lia.config.get and lia.config.get("Color") or Color(164, 106, 54)
+    local accent = config.accentColor or theme.accent or theme.theme or lia.config.get("Color") or Color(164, 106, 54)
     local backgroundColor = config.backgroundColor or Color(3, 18, 22, 242)
     local borderColor = config.borderColor or Color(accent.r, accent.g, accent.b, 115)
     local textColor = config.textColor or theme.text or Color(235, 240, 242)
@@ -2832,7 +2828,7 @@ function lia.derma.openOptionsMenu(title, options)
     end
 
     closeButton.DoClick = function()
-        if lia.websound and lia.websound.playButtonSound then lia.websound.playButtonSound() end
+        lia.webcontent.playButtonSound()
         frame:AlphaTo(0, config.fadeSpeed or 0.1, 0, function() if IsValid(frame) then frame:Remove() end end)
     end
 
@@ -2900,7 +2896,7 @@ function lia.derma.openOptionsMenu(title, options)
 
             if entry.tooltip and entry.tooltip ~= "" then button:SetTooltip(resolveText(entry.tooltip)) end
             button.DoClick = function()
-                if lia.websound and lia.websound.playButtonSound then lia.websound.playButtonSound() end
+                lia.webcontent.playButtonSound()
                 if entry.closeOnSelect ~= false then frame:AlphaTo(0, config.fadeSpeed or 0.1, 0, function() if IsValid(frame) then frame:Remove() end end) end
                 local ok, err
                 if entry.passContext == true then

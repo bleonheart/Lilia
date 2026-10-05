@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 local math_rad = math.rad
 local math_cos = math.cos
 local math_sin = math.sin
@@ -69,13 +69,13 @@ function PANEL:Init(options)
                     local selectedIndex = math.floor(angle / sectorSize) + 1
                     if selectedIndex <= optionCount then
                         self:SelectOption(selectedIndex)
-                        lia.websound.playButtonSound()
+                        lia.webcontent.playButtonSound()
                     end
                 end
             elseif dist <= self.innerRadius then
                 if #self.menuStack > 0 then
                     self:GoBack()
-                    lia.websound.playButtonSound()
+                    lia.webcontent.playButtonSound()
                 else
                     self:Remove()
                 end

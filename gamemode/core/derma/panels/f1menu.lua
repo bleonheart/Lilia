@@ -1,4 +1,4 @@
-﻿local function localizeMenuLabel(value, ...)
+local function localizeMenuLabel(value, ...)
     if not isstring(value) then return value end
     return lia.lang.resolve(value, ...)
 end
@@ -892,7 +892,7 @@ function PANEL:AddSidebarButton(key, name, icon)
     end
 
     button.DoClick = function()
-        lia.websound.playButtonSound()
+        lia.webcontent.playButtonSound()
         self:setActiveTab(key)
     end
 
@@ -941,7 +941,7 @@ function PANEL:AddAdminSidebarButton(index, page)
     end
 
     button.DoClick = function()
-        lia.websound.playButtonSound()
+        lia.webcontent.playButtonSound()
         self:OpenAdminPage(index)
     end
 
@@ -1086,7 +1086,7 @@ function PANEL:Think()
 
     if input.IsKeyDown(KEY_F1) and CurTime() > self.noAnchor and self.anchorMode then
         self.anchorMode = false
-        lia.websound.playButtonSound("buttons/lightswitch2.wav")
+        lia.webcontent.playButtonSound("buttons/lightswitch2.wav")
     end
 
     if not self.anchorMode and not input.IsKeyDown(KEY_F1) and not IsValid(self.info) then self:remove() end
@@ -1280,7 +1280,7 @@ function PANEL:RebuildClassList()
         end
 
         button.DoClick = function()
-            lia.websound.playButtonSound()
+            lia.webcontent.playButtonSound()
             local classData = button._classData
             self.selectedClassIndex = classData.index
             self:populateClassDetails(classData, lia.class.canBe(LocalPlayer(), classData.index))
@@ -1480,7 +1480,7 @@ function PANEL:createModelPanel(parent, cl)
                 panel.currentModelIndex = panel.currentModelIndex + direction
                 if panel.currentModelIndex < 1 then panel.currentModelIndex = #panel.availableModels end
                 if panel.currentModelIndex > #panel.availableModels then panel.currentModelIndex = 1 end
-                lia.websound.playButtonSound("buttons/button14.wav")
+                lia.webcontent.playButtonSound("buttons/button14.wav")
                 updateModel()
             end
             return button
@@ -1659,7 +1659,7 @@ function PANEL:addJoinButton(parent, cl, canBe)
 
     button:SetDisabled((not canBe and not isCurrent) or isCurrent and not hasModelChoices)
     button.DoClick = function()
-        lia.websound.playButtonSound()
+        lia.webcontent.playButtonSound()
         if isCurrent then
             if hasModelChoices then lia.command.send("beclass", cl.index, self.selectedClassModels and self.selectedClassModels[cl.index] or nil) end
             return
@@ -1851,7 +1851,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
                 tabButton.DoClick = function()
                     if activeTab == index then return end
-                    lia.websound.playButtonSound()
+                    lia.webcontent.playButtonSound()
                     if IsValid(tabPanels[activeTab]) then tabPanels[activeTab]:SetVisible(false) end
                     activeTab = index
                     tabPanels[index]:SetVisible(true)
@@ -1975,7 +1975,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
                 tabButton.DoClick = function()
                     if activeTab == index then return end
-                    lia.websound.playButtonSound()
+                    lia.webcontent.playButtonSound()
                     if IsValid(tabPanels[activeTab]) then tabPanels[activeTab]:SetVisible(false) end
                     activeTab = index
                     if IsValid(tabPanels[index]) then
@@ -2285,7 +2285,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                                 end
 
                                 button.DoClick = function()
-                                    lia.websound.playButtonSound()
+                                    lia.webcontent.playButtonSound()
                                     panel.selectedStaffKey = currentKey
                                     buildStaffDetails(currentStaff)
                                 end
@@ -2685,7 +2685,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
                 applyButton.DoClick = function()
                     if not selectedTheme or selectedTheme == currentTheme then return end
-                    lia.websound.playButtonSound()
+                    lia.webcontent.playButtonSound()
                     net.Start("liaCfgSet")
                     net.WriteString("Theme")
                     net.WriteString("Theme")

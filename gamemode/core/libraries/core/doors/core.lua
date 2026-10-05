@@ -175,7 +175,7 @@ if SERVER then
 
     function lia.doors.cleanupCorruptedData()
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local map = lia.data.getEquivalencyMap(game.GetMap())
+        local map = game.GetMap()
         local condition = "gamemode = " .. lia.db.convertDataType(gamemode) .. " AND map = " .. lia.db.convertDataType(map)
         local query = "SELECT id, factions, classes FROM lia_doors WHERE " .. condition
         lia.db.query(query):next(function(res)

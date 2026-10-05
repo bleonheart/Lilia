@@ -115,8 +115,6 @@ if SERVER then
     hook.Add("PropBreak", "liaPerformancePropBreak", function(_, entity) if IsValid(entity) and IsValid(entity:GetPhysicsObject()) then constraint.RemoveAll(entity) end end)
 else
     local col = Color(115, 148, 248)
-    -- Forcing a full Lua GC can panic the client Lua interface during a gamemode
-    -- refresh. Let GMod's incremental collector manage this instead.
     timer.Remove("lua_gc")
     concommand.Add("luamemory", function()
         local used = math.Round(collectgarbage("count") / 1024)

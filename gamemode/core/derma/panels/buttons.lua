@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 local function getButtonColors()
     local theme = lia.color.theme or {}
     local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
@@ -124,7 +124,7 @@ function PANEL:OnMousePressed(mousecode)
 end
 
 function PANEL:DoClick()
-    lia.websound.playButtonSound()
+    lia.webcontent.playButtonSound()
     self.BaseClass.DoClick(self)
 end
 
@@ -230,7 +230,7 @@ local function RegisterButton(name, defaultFont, useBase)
     end
 
     function BUTTON_PANEL:DoClick()
-        lia.websound.playButtonSound()
+        lia.webcontent.playButtonSound()
         self.BaseClass.DoClick(self)
     end
 

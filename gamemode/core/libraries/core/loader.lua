@@ -17,6 +17,10 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
+        path = "lilia/gamemode/core/libraries/core/sit/core.lua",
+        realm = "shared"
+    },
+    {
         path = "lilia/gamemode/core/libraries/core/dialog/core.lua",
         realm = "shared"
     },
@@ -42,10 +46,6 @@ local FilesToLoad = {
     },
     {
         path = "lilia/gamemode/core/libraries/core/notice/core.lua",
-        realm = "shared"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/core/performance/core.lua",
         realm = "shared"
     },
     {
@@ -105,11 +105,7 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/webimage/core.lua",
-        realm = "client"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/core/websound/core.lua",
+        path = "lilia/gamemode/core/libraries/core/webcontent/core.lua",
         realm = "client"
     },
     {
@@ -248,6 +244,12 @@ local ConditionalFiles = {
         global = "sam",
         name = "SAM | Admin Mod",
         realm = "shared"
+    },
+    {
+        path = "lilia/gamemode/core/libraries/compatibility/sadmin/core.lua",
+        condition = function() return SERVER and concommand.GetTable().sa ~= nil end,
+        name = "SAdmin",
+        realm = "server"
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/simfphys/core.lua",

@@ -1,4 +1,4 @@
-﻿lia.workshop = lia.workshop or {}
+lia.workshop = lia.workshop or {}
 lia.workshop.ids = lia.workshop.ids or {}
 lia.workshop.known = lia.workshop.known or {}
 if SERVER then
@@ -234,7 +234,7 @@ else
     local function getWorkshopThemeColors()
         local theme = lia.color and lia.color.theme or {}
         local accent = theme.accent or theme.theme
-        if not IsColor(accent) and lia.config and lia.config.get then accent = lia.config.get("Color") end
+        if not IsColor(accent) then accent = lia.config.get("Color") end
         if not IsColor(accent) then accent = Color(45, 190, 170) end
         local text = theme.text
         if not IsColor(text) then text = Color(225, 238, 238) end
@@ -345,7 +345,7 @@ else
 
         button.DoClick = function(self)
             if not self:IsEnabled() then return end
-            lia.websound.playButtonSound()
+            lia.webcontent.playButtonSound()
             callback()
         end
         return button
@@ -689,7 +689,7 @@ else
                     end
 
                     record.card.DoClick = function()
-                        lia.websound.playButtonSound()
+                        lia.webcontent.playButtonSound()
                         selectRecord(record)
                     end
 

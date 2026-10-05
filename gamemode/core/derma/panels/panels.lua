@@ -332,7 +332,7 @@ function QuickPanel:OpenAnimated()
 end
 
 function QuickPanel:Paint(w, h)
-    if lia.util and lia.util.drawBlur then lia.util.drawBlur(self, 5) end
+    lia.util.drawBlur(self, 5)
     drawQuickOutlinedBox(0, 0, w, h, 9, quickPalette.background, quickAlpha(quickPalette.accent, 115))
     draw.RoundedBox(8, 1, 1, w - 2, 74, quickPalette.header)
     drawQuickLine(18, 74, w - 36, quickPalette.lineSoft)

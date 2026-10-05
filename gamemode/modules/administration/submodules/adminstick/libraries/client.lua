@@ -1242,7 +1242,7 @@ end
 
 local function getAdminStickTheme()
     local theme = lia.color and lia.color.theme or {}
-    local accent = theme.accent or theme.header or theme.theme or lia.config and lia.config.get("Color") or Color(45, 190, 170)
+    local accent = theme.accent or theme.header or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
     local text = theme.text or Color(225, 238, 238)
     return accent, text
 end
@@ -1255,7 +1255,7 @@ local function resolveAdminStickLabel(value)
 end
 
 local function drawAdminStickPanel(x, y, w, h, radius, color, outline)
-    if lia.derma and lia.derma.rect then
+    if lia.derma.SHAPE_IOS then
         lia.derma.rect(x, y, w, h):Rad(radius):Color(color):Shape(lia.derma.SHAPE_IOS):Draw()
         if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
     else
@@ -1638,7 +1638,7 @@ function ADMIN_STICK_PANEL:Init()
 end
 
 function ADMIN_STICK_PANEL:Paint(w, h)
-    if lia.util and lia.util.drawBlackBlur then lia.util.drawBlackBlur(self, 1, 5, 255, 225) end
+    lia.util.drawBlackBlur(self, 1, 5, 255, 225)
     drawAdminStickPanel(0, 0, w, h, 10, Color(3, 13, 17, 244), Color(0, 0, 0, 210))
 end
 

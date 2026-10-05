@@ -1,4 +1,4 @@
-﻿local entityMeta = FindMetaTable("Entity")
+local entityMeta = FindMetaTable("Entity")
 local baseEmitSound = entityMeta.EmitSound
 local validClasses = {
     ["lvs_base"] = true,
@@ -8,7 +8,7 @@ local validClasses = {
 }
 
 function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)
-    if isstring(soundName) and (soundName:find("^https?://") or soundName:find("^lilia/websounds/") or soundName:find("^websounds/")) then
+    if isstring(soundName) and (soundName:find("^https?://") or soundName:find("^lilia/webcontent/sound/") or soundName:find("^webcontent/sound/")) then
         if SERVER then
             net.Start("liaEmitUrlSound")
             net.WriteEntity(self)
@@ -28,10 +28,10 @@ function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, chann
     if SERVER and isstring(soundName) then
         local name = soundName:gsub("\\", "/"):gsub("^%s+", ""):gsub("%s+$", "")
         if string.StartWith(name, "sound/") then name = name:sub(7) end
-        if lia.websound and lia.websound.stored and lia.websound.stored[name] then
+        if lia.webcontent and lia.webcontent.stored and lia.webcontent.stored["sound:" .. name] then
             net.Start("liaEmitUrlSound")
             net.WriteEntity(self)
-            net.WriteString("lilia/websounds/" .. name)
+            net.WriteString("lilia/webcontent/sound/" .. name)
             net.WriteFloat(volume or 100)
             net.WriteFloat(soundLevel or 100)
             net.WriteBool(false)
@@ -40,7 +40,7 @@ function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, chann
         end
     end
 
-    if CLIENT and isstring(soundName) and lia.websound.get(soundName) then
+    if CLIENT and isstring(soundName) and lia.webcontent.get(soundName, "sound") then
         local maxDistance = soundLevel and soundLevel * 13.33 or 1000
         self:playFollowingSound(soundName, volume or 100, true, maxDistance)
         return true
@@ -338,12 +338,12 @@ else
             return
         end
 
-        if soundPath:find("^lilia/websounds/") or soundPath:find("^websounds/") or soundPath:find("^lilia/websounds/") or soundPath:find("^data/websounds/") then
+        if soundPath:find("^lilia/webcontent/sound/") or soundPath:find("^webcontent/sound/") or soundPath:find("^lilia/webcontent/sound/") or soundPath:find("^data/webcontent/sound/") then
             playLocalFile(soundPath)
             return
         end
 
-        if lia.websound.get(soundPath) then
+        if lia.webcontent.get(soundPath, "sound") then
             playLocalFile(soundPath)
             return
         end

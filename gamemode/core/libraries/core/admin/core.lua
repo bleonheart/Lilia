@@ -1573,7 +1573,7 @@ else
 
     local function getPermissionsTheme()
         local theme = lia.color and lia.color.theme or {}
-        local configuredAccent = lia.config and lia.config.get and lia.config.get("Color") or nil
+        local configuredAccent = lia.config.get("Color")
         local accent = theme.accent or theme.theme or configuredAccent or Color(45, 190, 170)
         local textColor = theme.text or Color(225, 238, 238)
         local mutedText = Color(155, 178, 179)

@@ -1,4 +1,4 @@
-﻿lia.module = lia.module or {}
+lia.module = lia.module or {}
 lia.module.list = lia.module.list or {}
 local function loadPermissions(Privileges)
     if not Privileges or not istable(Privileges) then return end
@@ -74,6 +74,29 @@ local function loadExtras(path)
         loadDir(dir)
     end
 
+    local function includeDermaDir(dir)
+        local files, folders = file.Find(dir .. "/*", "LUA")
+        table.sort(files, function(a, b) return a:lower() < b:lower() end)
+        for _, fileName in ipairs(files) do
+            local lowerName = fileName:lower()
+            local realm = "client"
+            if string.StartWith(lowerName, "sv_") or lowerName == "server.lua" then
+                realm = "server"
+            elseif string.StartWith(lowerName, "sh_") or lowerName == "shared.lua" then
+                realm = "shared"
+            elseif string.StartWith(lowerName, "cl_") or lowerName == "client.lua" then
+                realm = "client"
+            end
+
+            lia.loader.include(dir .. "/" .. fileName, realm)
+        end
+
+        table.sort(folders, function(a, b) return a:lower() < b:lower() end)
+        for _, folderName in ipairs(folders) do
+            includeDermaDir(dir .. "/" .. folderName)
+        end
+    end
+
     local DefinitionPriority = {
         ["sh_faction.lua"] = 1,
         ["sh_factions.lua"] = 2,
@@ -108,6 +131,8 @@ local function loadExtras(path)
                 includeSortedDir(subPath, DefinitionPriority)
             elseif folder == "libraries" then
                 includeSortedDir(subPath, LibraryPriority)
+            elseif folder == "derma" then
+                includeDermaDir(subPath)
             else
                 lia.loader.includeDir(subPath, true, true)
             end
@@ -125,13 +150,13 @@ local function loadExtras(path)
     else
         if MODULE.WebImages and istable(MODULE.WebImages) then
             for name, url in pairs(MODULE.WebImages) do
-                if isstring(name) and isstring(url) then lia.webimage.register(name, url) end
+                if isstring(name) and isstring(url) then lia.webcontent.register(name, url, "image") end
             end
         end
 
         if MODULE.WebSounds and istable(MODULE.WebSounds) then
             for name, url in pairs(MODULE.WebSounds) do
-                if isstring(name) and isstring(url) then lia.websound.register(name, url) end
+                if isstring(name) and isstring(url) then lia.webcontent.register(name, url, "sound") end
             end
         end
     end

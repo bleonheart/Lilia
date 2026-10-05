@@ -67,7 +67,7 @@ else
             local faction = lia.faction.get(character:getFaction())
             if faction and faction.mainMenuPosition then
                 local menuPos = faction.mainMenuPosition
-                local currentMap = lia.data.getEquivalencyMap(game.GetMap())
+                local currentMap = game.GetMap()
                 if istable(menuPos) and menuPos[currentMap] then
                     local mapPos = menuPos[currentMap]
                     if istable(mapPos) then

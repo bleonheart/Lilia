@@ -1,15 +1,22 @@
+local GM = GM or GAMEMODE
+
+local MODULE = MODULE
 PERFOPUS = PERFOPUS or {}
 PERFOPUS.Metrics = PERFOPUS.Metrics or {}
 PERFOPUS.TimedHooks = PERFOPUS.TimedHooks or {}
-PERFOPUS.TimedEntityMethods = PERFOPUS.TimedEntityMethods or setmetatable({}, {__mode = "k"})
+PERFOPUS.TimedEntityMethods = PERFOPUS.TimedEntityMethods or setmetatable({}, {
+    __mode = "k"
+})
+
 PERFOPUS.Originals = PERFOPUS.Originals or {}
 PERFOPUS.Started = PERFOPUS.Started or false
-
 PERFOPUS.REFRESH_RATE = GetConVar("sh_perfopus_refresh_rate") or CreateConVar("sh_perfopus_refresh_rate", "2", bit.bor(FCVAR_ARCHIVE, FCVAR_REPLICATED))
 PERFOPUS.FREEZE = GetConVar("sh_perfopus_freeze") or CreateConVar("sh_perfopus_freeze", "0", bit.bor(FCVAR_ARCHIVE, FCVAR_REPLICATED))
-
 local function pack(...)
-    return {n = select("#", ...), ...}
+    return {
+        n = select("#", ...),
+        ...
+    }
 end
 
 local function normalizeSource(source)
@@ -42,14 +49,21 @@ function PERFOPUS.TakeMeasurement(elapsed, name, source)
         sourceMetrics = {}
         PERFOPUS.Metrics[source] = sourceMetrics
     end
+
     sourceMetrics[name] = (sourceMetrics[name] or 0) + elapsed
 end
 
 function PERFOPUS.MakeToolTipString(funcs, limit)
     local metrics = {}
     for name, elapsed in pairs(funcs or {}) do
-        if elapsed > 0 then metrics[#metrics + 1] = {name = name, time = elapsed} end
+        if elapsed > 0 then
+            metrics[#metrics + 1] = {
+                name = name,
+                time = elapsed
+            }
+        end
     end
+
     table.sort(metrics, function(a, b) return a.time > b.time end)
     local lines = {}
     local maxLines = math.max(1, tonumber(limit) or #metrics)
@@ -70,6 +84,7 @@ function PERFOPUS.GetReadableMetrics()
             copiedFuncs[name] = elapsed
             total = total + elapsed
         end
+
         readable[source] = {
             funcs = copiedFuncs,
             realm = realm,
@@ -98,10 +113,12 @@ function PERFOPUS.TimeThisHook(hookType, hookID, listener)
         listener(SysTime() - started, "HOOK: " .. tostring(hookType) .. " - " .. tostring(hookID), source)
         return unpack(results, 1, results.n)
     end
+
     PERFOPUS.TimedHooks[hookType][hookID] = {
         original = original,
         wrapper = wrapper
     }
+
     local add = PERFOPUS.Originals.hookAdd or hook.Add
     add(hookType, hookID, wrapper)
 end
@@ -115,6 +132,7 @@ function PERFOPUS.ListenForNewHooks()
         if PERFOPUS.Started and isfunction(func) then PERFOPUS.TimeThisHook(hookType, hookID, PERFOPUS.TakeMeasurement) end
         return result
     end
+
     PERFOPUS.HookListenerInstalled = true
 end
 
@@ -131,6 +149,7 @@ function PERFOPUS.TimeThisEntMethod(ent, methodName, listener)
         entityMethods = {}
         PERFOPUS.TimedEntityMethods[ent] = entityMethods
     end
+
     local previous = entityMethods[methodName]
     if previous and method == previous.wrapper then return end
     local original = method
@@ -140,10 +159,12 @@ function PERFOPUS.TimeThisEntMethod(ent, methodName, listener)
         listener(SysTime() - started, "METHOD: " .. tostring(methodName), source)
         return unpack(results, 1, results.n)
     end
+
     entityMethods[methodName] = {
         original = original,
         wrapper = wrapper
     }
+
     local entTable = ent:GetTable()
     if entTable then entTable[methodName] = wrapper end
 end
@@ -165,13 +186,10 @@ function PERFOPUS.ListenForNewEntityMethods()
     local original = PERFOPUS.Originals.entityNewIndex
     entityMeta.__newindex = function(ent, key, value)
         local result = original(ent, key, value)
-        if PERFOPUS.Started and isfunction(value) then
-            timer.Simple(0, function()
-                if IsValid(ent) then PERFOPUS.TimeThisEntMethod(ent, key, PERFOPUS.TakeMeasurement) end
-            end)
-        end
+        if PERFOPUS.Started and isfunction(value) then timer.Simple(0, function() if IsValid(ent) then PERFOPUS.TimeThisEntMethod(ent, key, PERFOPUS.TakeMeasurement) end end) end
         return result
     end
+
     PERFOPUS.EntityListenerInstalled = true
 end
 
@@ -191,6 +209,7 @@ function PERFOPUS.ListenForTimersToTime(listener)
         end
         return original(identifier, delay, repetitions, wrapped)
     end
+
     PERFOPUS.TimerListenerInstalled = true
 end
 
@@ -202,10 +221,12 @@ function PERFOPUS.StartProfiling()
             PERFOPUS.TimeThisHook(hookName, hookID, PERFOPUS.TakeMeasurement)
         end
     end
+
     PERFOPUS.ListenForNewHooks()
     for _, ent in ipairs(ents.GetAll()) do
         PERFOPUS.TimeThisEntity(ent, PERFOPUS.TakeMeasurement)
     end
+
     PERFOPUS.ListenForNewEntityMethods()
     PERFOPUS.ListenForTimersToTime(PERFOPUS.TakeMeasurement)
     PERFOPUS.Started = true
@@ -214,7 +235,45 @@ end
 
 hook.Add("OnEntityCreated", "PERFOPUSProfileEntities", function(ent)
     if not PERFOPUS.Started then return end
-    timer.Simple(0, function()
-        if IsValid(ent) then PERFOPUS.TimeThisEntity(ent, PERFOPUS.TakeMeasurement) end
-    end)
+    timer.Simple(0, function() if IsValid(ent) then PERFOPUS.TimeThisEntity(ent, PERFOPUS.TakeMeasurement) end end)
 end)
+
+function GM:MouthMoveAnimation(ply)
+    if lia.config.get("MouthMoveAnimation", true) then
+        local flexes = {ply:GetFlexIDByName("jaw_drop"), ply:GetFlexIDByName("left_part"), ply:GetFlexIDByName("right_part"), ply:GetFlexIDByName("left_mouth_drop"), ply:GetFlexIDByName("right_mouth_drop")}
+        local weight = ply:IsSpeaking() and math.Clamp(ply:VoiceVolume() * 2, 0, 2) or 0
+        for k, v in ipairs(flexes) do
+            ply:SetFlexWeight(v, weight)
+        end
+    end
+    return nil
+end
+
+function GM:GrabEarAnimation(ply, plyTable)
+    if lia.config.get("GrabEarAnimation", true) then
+        if not plyTable then plyTable = ply:GetTable() end
+        plyTable.ChatGestureWeight = plyTable.ChatGestureWeight or 0
+        if ply:IsPlayingTaunt() then return end
+        if ply:IsTyping() then
+            plyTable.ChatGestureWeight = math.Approach(plyTable.ChatGestureWeight, 1, FrameTime() * 5.0)
+        else
+            plyTable.ChatGestureWeight = math.Approach(plyTable.ChatGestureWeight, 0, FrameTime() * 5.0)
+        end
+
+        if plyTable.ChatGestureWeight > 0 then
+            ply:AnimRestartGesture(GESTURE_SLOT_VCD, ACT_GMOD_IN_CHAT, true)
+            ply:AnimSetGestureWeight(GESTURE_SLOT_VCD, plyTable.ChatGestureWeight)
+        end
+    end
+    return nil
+end
+
+function GM:PreGamemodeLoaded()
+    widgets.PlayerTick = function() end
+    hook.Remove("PlayerTick", "TickWidgets")
+    hook.Remove("PostDrawEffects", "RenderWidgets")
+end
+
+function GM:FindUseEntity(client, ent)
+    return ent
+end

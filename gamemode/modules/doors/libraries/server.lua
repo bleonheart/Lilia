@@ -28,7 +28,7 @@ end
 
 function MODULE:LoadData()
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local mapName = lia.data.getEquivalencyMap(game.GetMap())
+    local mapName = game.GetMap()
     local condition = buildCondition(gamemode, mapName)
     local _, extraFields = lia.doors.getDoorDefaultValues()
     local query = "SELECT * FROM lia_doors WHERE " .. condition
@@ -246,7 +246,7 @@ end
 
 function MODULE:SaveData()
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local map = lia.data.getEquivalencyMap(game.GetMap())
+    local map = game.GetMap()
     local rows = {}
     local doorCount = 0
     local _, extraFields = lia.doors.getDoorDefaultValues()

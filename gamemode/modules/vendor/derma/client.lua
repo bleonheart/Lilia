@@ -1,4 +1,4 @@
-﻿local RarityColors = lia.item.rarities
+local RarityColors = lia.item.rarities
 local VendorClick = {"buttons/button15.wav", 30, 250}
 local function getVendorThemeColors()
     local theme = lia.color.theme or {}
@@ -123,7 +123,7 @@ function PANEL:Init()
     self.leaveButton:SetSize(buttonW, buttonH)
     self.leaveButton:SetPos(self.rightX + self.panelW - buttonW, buttonY)
     self.leaveButton.DoClick = function()
-        lia.websound.playButtonSound()
+        lia.webcontent.playButtonSound()
         self:Remove()
     end
 
@@ -132,7 +132,7 @@ function PANEL:Init()
         self.editButton:SetSize(buttonW, buttonH)
         self.editButton:SetPos(self.leaveButton.x - buttonW - 12, buttonY)
         self.editButton.DoClick = function()
-            lia.websound.playButtonSound()
+            lia.webcontent.playButtonSound()
             vgui.Create("liaVendorEditor"):SetZPos(99)
         end
     end

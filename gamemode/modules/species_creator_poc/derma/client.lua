@@ -131,7 +131,7 @@ local function getThemeNegativeColor(alpha)
 end
 
 local function drawPanel(x, y, w, h, radius, background, outline)
-    if lia.derma and lia.derma.rect then
+    if lia.derma.SHAPE_IOS then
         lia.derma.rect(x, y, w, h):Rad(radius):Color(background):Shape(lia.derma.SHAPE_IOS):Draw()
         if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
         return
@@ -717,8 +717,8 @@ function PANEL:Init()
     self.speciesButtons = {}
     self.originButtons = {}
     self.themeButtons = {}
-    self.availableThemes = istable(lia.color and lia.color.getAllThemes and lia.color.getAllThemes()) and lia.color.getAllThemes() or {"teal"}
-    self.selectedThemeID = string.lower(tostring(lia.color and lia.color.getCurrentThemeName and lia.color.getCurrentThemeName() or "teal"))
+    self.availableThemes = istable(lia.color.getAllThemes()) and lia.color.getAllThemes() or {"teal"}
+    self.selectedThemeID = string.lower(tostring(lia.color.getCurrentThemeName() or "teal"))
     if not istable(lia.color and lia.color.themes) or not lia.color.themes[self.selectedThemeID] then self.selectedThemeID = self.availableThemes[1] or "teal" end
     self.paper = self.inputWindow:Add("DPanel")
     self.paper:SetMouseInputEnabled(true)
@@ -4768,7 +4768,7 @@ end
 
 function PANEL:Paint(w, h)
     local appearanceActive = self.inCreation and self.currentCreationTab == 2
-    if not appearanceActive and lia.util and lia.util.drawBlackBlur then lia.util.drawBlackBlur(self, 1, 4, 255, 120) end
+    if not appearanceActive then lia.util.drawBlackBlur(self, 1, 4, 255, 120) end
     surface.SetDrawColor(getThemeBackgroundColor(fallbackBackground, 58))
     surface.DrawRect(0, 0, w, h)
     local accent = getThemeAccent()

@@ -388,7 +388,7 @@ function MENU:openMultiActionMenu(actionKey, action, item)
         return
     end
 
-    local menu = lia.derma and lia.derma.dermaMenu and lia.derma.dermaMenu() or DermaMenu()
+    local menu = lia.derma.dermaMenu()
     for optionKey, option in pairs(options) do
         if isfunction(option) then
             local subOption = {
@@ -419,7 +419,7 @@ function MENU:openItemActionMenu(item)
     if not item then return end
     local actions = self:getAvailableItemActions(item)
     if #actions == 0 then return end
-    local menu = lia.derma and lia.derma.dermaMenu and lia.derma.dermaMenu() or DermaMenu()
+    local menu = lia.derma.dermaMenu()
     for _, actionInfo in ipairs(actions) do
         local actionKey = actionInfo.key
         local action = actionInfo.action

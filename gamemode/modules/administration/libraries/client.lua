@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 local flagsData
 local charListRequestID = 0
 local CHAR_LIST_PAGE_SIZE = 100
@@ -643,7 +643,7 @@ function MODULE:OpenStaffCases(panel)
                 if this.Disabled then return end
                 self.caseState.mode = info.id
                 self:RefreshData()
-                lia.websound.playButtonSound()
+                lia.webcontent.playButtonSound()
             end
 
             self.caseButtons[info.id] = button
@@ -660,7 +660,7 @@ function MODULE:OpenStaffCases(panel)
         refreshButton:SetText("Refresh")
         refreshButton.DoClick = function()
             self:RequestData()
-            lia.websound.playButtonSound()
+            lia.webcontent.playButtonSound()
         end
 
         local statusButton = searchRow:Add("DButton")
@@ -707,7 +707,7 @@ function MODULE:OpenStaffCases(panel)
             this.optionIndex = this.optionIndex % #this.options + 1
             self.caseState.status = this.options[this.optionIndex].value
             self:RefreshData()
-            lia.websound.playButtonSound()
+            lia.webcontent.playButtonSound()
         end
 
         self.statusButton = statusButton
@@ -2814,7 +2814,7 @@ function MODULE:OpenNetLogs(panel)
 
         button.DoClick = function()
             if state.view == data.key then return end
-            lia.websound.playButtonSound()
+            lia.webcontent.playButtonSound()
             state.view = data.key
             state.page = 1
             state.direction = "all"
@@ -3523,7 +3523,7 @@ function MODULE:OpenNetLogs(panel)
             end
 
             row.DoClick = function()
-                lia.websound.playButtonSound()
+                lia.webcontent.playButtonSound()
                 panel.selectedNetLogID = currentEntry.id
                 panel.selectedNetLog = currentEntry
                 detailsPanel:InvalidateLayout(true)
@@ -4059,7 +4059,7 @@ function MODULE:PopulateAdminTabs(pages)
 
                         row.DoClick = function()
                             if enabledFunc and not enabledFunc() then return end
-                            lia.websound.playButtonSound()
+                            lia.webcontent.playButtonSound()
                             onClick()
                         end
                         return row
@@ -4160,7 +4160,7 @@ function MODULE:PopulateAdminTabs(pages)
                             end
 
                             editFlags.DoClick = function()
-                                lia.websound.playButtonSound()
+                                lia.webcontent.playButtonSound()
                                 LocalPlayer():requestString("Modify Character Flags", "Set the flags for this player.", function(value)
                                     if value == false then return end
                                     local flags = sanitizeCharacterFlags(value)
@@ -4196,7 +4196,7 @@ function MODULE:PopulateAdminTabs(pages)
                             end
 
                             button.DoClick = function()
-                                lia.websound.playButtonSound()
+                                lia.webcontent.playButtonSound()
                                 callback()
                             end
 
@@ -4285,7 +4285,7 @@ function MODULE:PopulateAdminTabs(pages)
                                 end
 
                                 button.DoClick = function()
-                                    lia.websound.playButtonSound()
+                                    lia.webcontent.playButtonSound()
                                     selectCharacter(row)
                                 end
 
@@ -4377,7 +4377,7 @@ function MODULE:PopulateAdminTabs(pages)
                                 end
 
                                 button.DoClick = function()
-                                    lia.websound.playButtonSound()
+                                    lia.webcontent.playButtonSound()
                                     selectAccount(account)
                                 end
 
@@ -4388,7 +4388,7 @@ function MODULE:PopulateAdminTabs(pages)
                     end
 
                     characterFilterButton.DoClick = function()
-                        lia.websound.playButtonSound()
+                        lia.webcontent.playButtonSound()
                         local menu = lia.derma.dermaMenu()
                         menu:AddOption("All Characters", function()
                             currentCharacterFilter = "all"
@@ -4540,7 +4540,7 @@ spawnmenu.AddContentType("inventoryitem", function(container, data)
         net.Start("liaSpawnMenuSpawnItem")
         net.WriteString(data.id)
         net.SendToServer()
-        lia.websound.playButtonSound("outlands-rp/ui/ui_return.wav")
+        lia.webcontent.playButtonSound("outlands-rp/ui/ui_return.wav")
     end
 
     icon.OpenMenu = function()
@@ -4549,7 +4549,7 @@ spawnmenu.AddContentType("inventoryitem", function(container, data)
         net.WriteString(LocalPlayer():SteamID())
         net.SendToServer()
         LocalPlayer():notifySuccess("Item given to yourself successfully.")
-        lia.websound.playButtonSound("outlands-rp/ui/ui_return.wav")
+        lia.webcontent.playButtonSound("outlands-rp/ui/ui_return.wav")
     end
 
     container:Add(icon)
