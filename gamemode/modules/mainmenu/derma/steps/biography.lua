@@ -1,116 +1,375 @@
-local PANEL = {}
-PANEL.creationOrder = 20
-PANEL.creationName = "Identity"
-PANEL.creationWorldPreview = true
-
-local function addHeading(parent, title, subtitle)
-    local heading = parent:Add("DPanel")
-    heading:Dock(TOP)
-    heading:SetTall(78)
-    heading:SetPaintBackground(false)
-    heading.title = heading:Add("DLabel")
-    heading.title:Dock(TOP)
-    heading.title:SetTall(38)
-    heading.title:SetFont("LiliaFont.30")
-    heading.title:SetText(title)
-    heading.title:SetTextColor(lia.color.theme.text or color_white)
-    heading.subtitle = heading:Add("DLabel")
-    heading.subtitle:Dock(TOP)
-    heading.subtitle:SetTall(34)
-    heading.subtitle:SetFont("LiliaFont.16")
-    heading.subtitle:SetText(subtitle)
-    heading.subtitle:SetTextColor(Color(190, 198, 208))
-    heading.subtitle:SetWrap(true)
-end
-
-local function addEntry(parent, title, multiline)
-    local wrap = parent:Add("DPanel")
-    wrap:Dock(TOP)
-    wrap:DockMargin(0, 0, 0, 14)
-    wrap:DockPadding(14, 10, 14, 12)
-    wrap:SetTall(multiline and 136 or 88)
-    wrap.Paint = function(_, w, h)
-        lia.derma.rect(0, 0, w, h):Rad(8):Color(Color(20, 25, 32, 238)):Shape(lia.derma.SHAPE_IOS):Draw()
-        surface.SetDrawColor(ColorAlpha(lia.color.theme.theme, 70))
-        surface.DrawOutlinedRect(0, 0, w, h)
+﻿local PANEL = {}
+function PANEL:Init()
+    self:Dock(FILL)
+    local function makeLabel(key)
+        local header = self:Add("liaHeaderPanel")
+        header:Dock(TOP)
+        header:DockMargin(0, 0, 0, 6)
+        header:SetTall(32)
+        local accentColor = lia.color.theme.theme
+        header:SetLineColor(accentColor)
+        header:SetLineWidth(2)
+        local lbl = header:Add("DLabel")
+        lbl:SetFont("LiliaFont.18")
+        lbl:SetText(tostring(key):upper())
+        lbl:SizeToContents()
+        lbl:Dock(FILL)
+        lbl:DockMargin(8, 0, 8, 0)
+        local textColor = lia.color.theme.text or Color(220, 220, 220)
+        lbl:SetTextColor(textColor)
+        lbl:SetContentAlignment(5)
+        return header
     end
 
-    local label = wrap:Add("DLabel")
-    label:Dock(TOP)
-    label:SetTall(22)
-    label:SetFont("LiliaFont.15")
-    label:SetText(title:upper())
-    label:SetTextColor(Color(185, 195, 205))
-    local entry = wrap:Add("liaEntry")
-    entry:Dock(FILL)
-    entry:DockMargin(0, 5, 0, 0)
+    self.factionLabel = makeLabel("faction")
+    self.factionCombo = self:makeFactionComboBox()
+    self.factionCombo:DockMargin(0, 6, 0, 16)
+    self.nameLabel = makeLabel("name")
+    self.nameEntry = self:makeTextEntry("name")
+    self.nameEntry:DockMargin(0, 6, 0, 16)
+    if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false then
+        self.descLabel = makeLabel("desc")
+        self.descEntry = self:makeTextEntry("desc")
+        self.descEntry:DockMargin(0, 6, 0, 16)
+    end
+
+    self:addAttributes()
+end
+
+function PANEL:makeTextEntry(key)
+    local entry = self:Add("liaEntry")
+    entry:Dock(TOP)
+    entry:DockMargin(0, 8, 0, 12)
+    entry:SetTall(40)
     entry:SetFont("LiliaFont.18")
-    if multiline and entry.SetMultiline then entry:SetMultiline(true) end
+    entry.OnEnter = function() self:setContext(key, string.Trim(entry:GetValue())) end
+    entry.OnLoseFocus = function() self:setContext(key, string.Trim(entry:GetValue())) end
+    local saved = self:getContext(key)
+    if saved then entry:SetValue(saved) end
     return entry
 end
 
-function PANEL:Init()
-    self:Dock(FILL)
-    addHeading(self, "IDENTITY", "Define the character's visible identity. Schema character-variable validation still runs when the character is submitted.")
-    self.entries = {}
-    if hook.Run("ShouldShowCharVarInCreation", "name") ~= false then self.entries.name = addEntry(self, "Name", false) end
-    if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false then self.entries.desc = addEntry(self, "Description", true) end
-    for key, entry in pairs(self.entries) do
-        local function sync(pnl, value) self:setContext(key, string.Trim(tostring(value ~= nil and value or pnl:GetValue() or ""))) end
-        entry.OnChange = function(pnl) sync(pnl) end
-        entry.OnValueChange = function(pnl, value) sync(pnl, value) end
-        entry.OnLoseFocus = function(pnl) sync(pnl) end
-        entry.OnEnter = function(pnl) sync(pnl) end
+function PANEL:makeFactionComboBox()
+    local combo = self:Add("liaComboBox")
+    combo:Dock(TOP)
+    combo:PostInit()
+    combo:DockMargin(0, 8, 0, 12)
+    combo.Paint = function(_, w, h)
+        surface.SetDrawColor(0, 0, 0, 100)
+        surface.DrawRect(0, 0, w, h)
+    end
+
+    combo.OnSelect = function(_, _, data)
+        local factionID = nil
+        if data and isstring(data) then
+            for id, fac in pairs(lia.faction.teams) do
+                if fac.name == data then
+                    factionID = id
+                    break
+                end
+            end
+        end
+
+        if factionID then
+            local fac = lia.faction.teams[factionID]
+            if fac then
+                self:onFactionSelected(fac)
+                return
+            end
+        end
+    end
+
+    local firstFactionID = nil
+    for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
+        if lia.faction.hasWhitelist(fac.index) then
+            if fac.uniqueID == "staff" then continue end
+            local desc = fac.desc or "No Description"
+            combo:AddChoice(fac.name, id, desc ~= "" and desc or nil)
+            if not firstFactionID then firstFactionID = id end
+        end
+    end
+
+    combo:FinishAddingOptions()
+    if firstFactionID then
+        combo:ChooseOptionData(firstFactionID)
+        local fac = lia.faction.teams[firstFactionID]
+        if fac then self:onFactionSelected(fac) end
+    end
+
+    combo.userSetHeight = true
+    local panelTable = vgui.GetControlTable("Panel")
+    if panelTable and panelTable.SetTall then
+        panelTable.SetTall(combo, 40)
+    else
+        combo:SetTall(40)
+    end
+
+    local oldAutoSize = combo.AutoSize
+    combo.AutoSize = function(pnl)
+        if pnl.userSetHeight then return end
+        oldAutoSize(pnl)
+    end
+    return combo
+end
+
+function PANEL:addAttributes()
+    if IsValid(self.attribsPanel) then return end
+    if not self._attemptedAttribLoad and lia.attribs and isfunction(lia.attribs.loadFromDir) then
+        self._attemptedAttribLoad = true
+        local base = (SCHEMA and SCHEMA.folder) and SCHEMA.folder or engine.ActiveGamemode():gsub("\\", "/")
+        lia.attribs.loadFromDir(base .. "/schema/attributes")
+    end
+
+    local function makeLabel(key)
+        local header = self:Add("liaHeaderPanel")
+        header:Dock(TOP)
+        header:DockMargin(0, 0, 0, 6)
+        header:SetTall(32)
+        local accentColor = lia.color.theme.theme
+        header:SetLineColor(accentColor)
+        header:SetLineWidth(2)
+        local lbl = header:Add("DLabel")
+        lbl:SetFont("LiliaFont.18")
+        lbl:SetText(tostring(key):upper())
+        lbl:SizeToContents()
+        lbl:Dock(FILL)
+        lbl:DockMargin(8, 0, 8, 0)
+        local textColor = lia.color.theme.text or Color(220, 220, 220)
+        lbl:SetTextColor(textColor)
+        lbl:SetContentAlignment(5)
+        return header
+    end
+
+    local hasAttributes = false
+    if lia.attribs and lia.attribs.list then
+        for _, attrib in pairs(lia.attribs.list) do
+            if not attrib.noStartBonus then
+                hasAttributes = true
+                break
+            end
+        end
+    end
+
+    if not hasAttributes then
+        if not self._attribRetry then
+            self._attribRetry = true
+            timer.Simple(0.25, function()
+                if IsValid(self) then
+                    self._attribRetry = nil
+                    self:addAttributes()
+                    if IsValid(self.attribsPanel) then
+                        self.attribsPanel:onDisplay()
+                        self:updateAttributesLabel()
+                    end
+                end
+            end)
+        end
+        return
+    end
+
+    local attrLabel = makeLabel("attributes")
+    self.attrLabel = attrLabel
+    local bgPanel = attrLabel:GetChildren()[1]
+    if IsValid(bgPanel) then
+        local lblContainer = bgPanel:GetChildren()[1]
+        if IsValid(lblContainer) then
+            local lbl = lblContainer:GetChildren()[1]
+            if IsValid(lbl) and lbl.SetText then
+                self.attrLabelText = lbl
+                self:updateAttributesLabel()
+            end
+        end
+    end
+
+    self.attribsPanel = self:Add("liaCharacterAttribs")
+    self.attribsPanel:Dock(TOP)
+    self.attribsPanel:DockMargin(0, 6, 0, 16)
+    local rows = 0
+    for _, attrib in pairs(lia.attribs.list or {}) do
+        if not attrib.noStartBonus then rows = rows + 1 end
+    end
+
+    self.attribsPanel:SetTall(math.max(120, 80 + rows * 40))
+    self.attribsPanel:SetVisible(true)
+    self.attribsPanel.parentBio = self
+    if isfunction(self.attribsPanel.onDisplay) then self.attribsPanel:onDisplay() end
+    if IsValid(self.attribsPanel.title) then self.attribsPanel.title:SetVisible(false) end
+    if IsValid(self.attribsPanel.leftLabel) then self.attribsPanel.leftLabel:SetVisible(false) end
+    self:styleAttribsPanel()
+end
+
+function PANEL:styleAttribsPanel()
+    if not IsValid(self.attribsPanel) then return end
+    local canvas = self.attribsPanel.GetCanvas and self.attribsPanel:GetCanvas()
+    if IsValid(canvas) then canvas:DockPadding(0, 0, 0, 0) end
+    if self.attribsPanel.SetPaintBackground then self.attribsPanel:SetPaintBackground(false) end
+    self.attribsPanel.Paint = function() end
+    if not istable(self.attribsPanel.attribs) then return end
+    for _, row in pairs(self.attribsPanel.attribs) do
+        if not IsValid(row) then continue end
+        row:SetTall(40)
+        row.Paint = function(s, w, h)
+            local hover = s:IsHovered() and 1 or 0
+            s._hoverFrac = Lerp(FrameTime() * 10, s._hoverFrac or 0, hover)
+            lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(4, 12):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(25, 28, 35, 230)):Shape(lia.derma.SHAPE_IOS):Draw()
+            if s._hoverFrac > 0 then
+                local hov = lia.color.theme.button_hovered or Color(255, 255, 255)
+                lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(hov.r, hov.g, hov.b, math.floor(s._hoverFrac * 60))):Shape(lia.derma.SHAPE_IOS):Draw()
+            end
+        end
+
+        if IsValid(row.name) then
+            row.name:SetFont("LiliaFont.18")
+            row.name:SetTextColor(lia.color.theme.text)
+        end
+
+        if IsValid(row.quantity) then
+            row.quantity:SetFont("LiliaFont.18")
+            row.quantity:SetTextColor(lia.color.theme.text)
+        end
+
+        if IsValid(row.add) then
+            if row.add.SetRadius then row.add:SetRadius(16) end
+            if row.add.SetGradient then row.add:SetGradient(false) end
+            if row.add.PaintButton then row.add:PaintButton(lia.color.theme.focus_panel, lia.color.theme.hover or lia.color.theme.button_hovered) end
+        end
+
+        if IsValid(row.sub) then
+            if row.sub.SetRadius then row.sub:SetRadius(16) end
+            if row.sub.SetGradient then row.sub:SetGradient(false) end
+            if row.sub.PaintButton then row.sub:PaintButton(lia.color.theme.focus_panel, lia.color.theme.hover or lia.color.theme.button_hovered) end
+        end
+
+        if IsValid(row.buttons) then row.buttons:SetPaintBackground(false) end
     end
 end
 
-function PANEL:applyFactionDefaults()
-    local context = self:getContext()
-    local faction = context.faction
-    if not faction or self.defaultFaction == faction then return end
-    self.defaultFaction = faction
-    local defaultName, forceName = hook.Run("GetDefaultCharName", LocalPlayer(), faction, context)
-    local defaultDesc, forceDesc = hook.Run("GetDefaultCharDesc", LocalPlayer(), faction, context)
-    if IsValid(self.entries.name) and isstring(defaultName) and (forceName == true or string.Trim(self.entries.name:GetValue()) == "") then
-        self.entries.name:SetValue(defaultName)
-        self:setContext("name", defaultName)
+function PANEL:shouldSkip()
+    return false
+end
+
+function PANEL:updateAttributesLabel()
+    if IsValid(self.attrLabelText) then
+        local total = hook.Run("GetMaxStartingAttributePoints", LocalPlayer(), lia.config.get("StartingAttributePoints", 30))
+        local attribs = self:getContext("attribs", {})
+        local sum = 0
+        for _, quantity in pairs(attribs) do
+            sum = sum + quantity
+        end
+
+        local left = math.max((total or 0) - sum, 0)
+        self.attrLabelText:SetText(("Attributes"):upper() .. " - " .. left .. " " .. ("Points Left"):lower())
+        self.attrLabelText:SizeToContents()
     end
 
-    if IsValid(self.entries.desc) and isstring(defaultDesc) and (forceDesc == true or string.Trim(self.entries.desc:GetValue()) == "") then
-        self.entries.desc:SetValue(defaultDesc)
-        self:setContext("desc", defaultDesc)
+    if IsValid(self.attrLabel) then self.attrLabel:InvalidateLayout(true) end
+end
+
+function PANEL:validate()
+    for _, info in ipairs({{self.nameEntry, "name"}, {self.descEntry, "desc"}}) do
+        if IsValid(info[1]) then
+            local val = string.Trim(info[1]:GetValue() or "")
+            if val == "" then return false, string.format("The field '%s' is required and cannot be empty.", info[2]) end
+        end
+    end
+
+    if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false and IsValid(self.descEntry) then
+        local desc = string.Trim(self.descEntry:GetValue() or "")
+        local descWithoutSpaces = string.gsub(desc, "%s", "")
+        local minLength = lia.config.get("MinDescLen", 16)
+        if #descWithoutSpaces < minLength then return false, string.format("Description must be at least %s characters long.", minLength) end
+    end
+
+    local factionID = self.factionCombo:GetSelectedData()
+    if not factionID then return false, string.format("The field '%s' is required and cannot be empty.", "faction") end
+    return true
+end
+
+function PANEL:onFactionSelected(fac)
+    self:setContext("faction", fac.index)
+    self:setContext("model", 1)
+    self:updateModelPanel()
+    self:updateNameAndDescForFaction(fac.index)
+    lia.gui.character:clickSound()
+end
+
+function PANEL:updateNameAndDescForFaction(factionIndex)
+    local client = LocalPlayer()
+    local context = self:getContext()
+    local defaultName, nameOverride = hook.Run("GetDefaultCharName", client, factionIndex, context)
+    local defaultDesc, descOverride = hook.Run("GetDefaultCharDesc", client, factionIndex, context)
+    if isstring(defaultName) and IsValid(self.nameEntry) and nameOverride ~= false then
+        local currentName = string.Trim(self.nameEntry:GetValue() or "")
+        if currentName == "" or nameOverride then
+            timer.Simple(0.01, function()
+                if IsValid(self) and IsValid(self.nameEntry) then
+                    self.nameEntry:SetValue(defaultName)
+                    self:setContext("name", defaultName)
+                end
+            end)
+        end
+    end
+
+    if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false and isstring(defaultDesc) and IsValid(self.descEntry) and descOverride ~= false then
+        local currentDesc = string.Trim(self.descEntry:GetValue() or "")
+        if currentDesc == "" or descOverride then
+            timer.Simple(0.01, function()
+                if IsValid(self) and IsValid(self.descEntry) then
+                    self.descEntry:SetValue(defaultDesc)
+                    self:setContext("desc", defaultDesc)
+                end
+            end)
+        end
+    end
+end
+
+function PANEL:updateContext()
+    if IsValid(self.nameEntry) then self:setContext("name", string.Trim(self.nameEntry:GetValue() or "")) end
+    if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false then
+        if IsValid(self.descEntry) then self:setContext("desc", string.Trim(self.descEntry:GetValue() or "")) end
+    else
+        local varData = lia.char.vars["desc"]
+        if varData and varData.default then self:setContext("desc", varData.default) end
+    end
+
+    if IsValid(self.factionCombo) then
+        local factionUniqueID = self.factionCombo:GetSelectedData()
+        if factionUniqueID then
+            local faction = lia.faction.teams[factionUniqueID]
+            if faction then self:setContext("faction", faction.index) end
+        end
     end
 end
 
 function PANEL:onDisplay()
-    for key, entry in pairs(self.entries) do
-        if IsValid(entry) then entry:SetValue(tostring(self:getContext(key, ""))) end
+    local n = IsValid(self.nameEntry) and self.nameEntry:GetValue() or ""
+    local d = IsValid(self.descEntry) and self.descEntry:GetValue() or ""
+    local f = self:getContext("faction")
+    self:Clear()
+    self:Init()
+    if IsValid(self.nameEntry) then self.nameEntry:SetValue(n) end
+    if IsValid(self.descEntry) then self.descEntry:SetValue(d) end
+    if f then
+        self.factionCombo:ChooseOptionData(f)
+        self:setContext("faction", f)
+        self:updateModelPanel()
+        self:updateNameAndDescForFaction(f)
     end
 
-    self:applyFactionDefaults()
-end
-
-function PANEL:updateContext()
-    for key, entry in pairs(self.entries) do
-        if IsValid(entry) then self:setContext(key, string.Trim(entry:GetValue() or "")) end
+    if IsValid(self.attribsPanel) then
+        self.attribsPanel:onDisplay()
+        self:styleAttribsPanel()
+        timer.Simple(0.01, function() if IsValid(self) then self:updateAttributesLabel() end end)
+    else
+        timer.Simple(0.1, function()
+            if IsValid(self) and IsValid(self.attribsPanel) then
+                self.attribsPanel:onDisplay()
+                self:styleAttribsPanel()
+                self:updateAttributesLabel()
+            end
+        end)
     end
-
-    if hook.Run("ShouldShowCharVarInCreation", "desc") == false then
-        local variable = lia.char.vars.desc
-        if variable and variable.default ~= nil then self:setContext("desc", variable.default) end
-    end
-end
-
-function PANEL:validate()
-    self:updateContext()
-    for key, entry in pairs(self.entries) do
-        if IsValid(entry) then
-            local ok, reason, detail = self:validateCharVar(key)
-            if ok == false then return false, reason or detail or ("Invalid " .. key .. ".") end
-        end
-    end
-
-    return true
 end
 
 vgui.Register("liaCharacterBiography", PANEL, "liaCharacterCreateStep")

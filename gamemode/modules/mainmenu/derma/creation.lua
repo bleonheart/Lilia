@@ -3,31 +3,15 @@ function PANEL:configureSteps()
     self:addStep(vgui.Create("liaCharacterBiography"))
     self:addStep(vgui.Create("liaCharacterModel"))
     hook.Run("ConfigureCharacterCreationSteps", self)
-    self:addStep(vgui.Create("liaCharacterSummary"))
+    local keys = table.GetKeys(self.steps)
+    table.sort(keys)
     local ordered = {}
-    local prioritized = {}
-    for _, step in ipairs(self.steps) do
-        if step._creationPriority then
-            prioritized[#prioritized + 1] = step
-        else
-            ordered[#ordered + 1] = step
-        end
-    end
-
-    table.sort(ordered, function(a, b)
-        local aOrder = tonumber(a.creationOrder) or 35
-        local bOrder = tonumber(b.creationOrder) or 35
-        if aOrder == bOrder then return (a._creationSequence or 0) < (b._creationSequence or 0) end
-        return aOrder < bOrder
-    end)
-
-    table.sort(prioritized, function(a, b) return (a._creationSequence or 0) < (b._creationSequence or 0) end)
-    for _, step in ipairs(prioritized) do
-        local priority = math.Clamp(math.floor(step._creationPriority), 1, #ordered + 1)
-        table.insert(ordered, priority, step)
+    for i, k in ipairs(keys) do
+        ordered[i] = self.steps[k]
     end
 
     self.steps = ordered
+    self:addStep(vgui.Create("liaCharacterSummary"))
 end
 
 function PANEL:updateModel()
@@ -52,7 +36,7 @@ function PANEL:updateModel()
     if not IsValid(entity) then return end
     entity:SetupBones()
     entity:SetSkin(lia.faction.normalizeSkinValue(self.context.skin, skin))
-    local finalGroups = istable(self.context.bodygroups) and self.context.bodygroups or istable(self.context.groups) and self.context.groups or istable(groups) and groups
+    local finalGroups = istable(self.context.groups) and self.context.groups or istable(groups) and groups
     if finalGroups then lia.util.applyBodygroups(entity, finalGroups) end
     hook.Run("ModifyCharacterModel", entity, self.context)
 end
@@ -60,7 +44,7 @@ end
 function PANEL:canCreateCharacter()
     local valid = {}
     for _, team in pairs(lia.faction.teams) do
-        if team.uniqueID ~= "staff" and lia.faction.hasWhitelist(team.index) then valid[#valid + 1] = team.index end
+        if lia.faction.hasWhitelist(team.index) then valid[#valid + 1] = team.index end
     end
 
     if #valid == 0 then return false, "You are unable to join any factions" end
@@ -139,11 +123,7 @@ function PANEL:showMessage(msg, ...)
         return
     end
 
-    if IsValid(self.message) then
-        self.message:SetText(lia.lang.resolve(msg, ...):upper())
-        return
-    end
-
+    if IsValid(self.message) then self.message:SetText(lia.lang.resolve(msg, ...):upper()) end
     local lbl = self:Add("DLabel")
     lbl:SetFont("LiliaFont.16")
     lbl:SetTextColor(lia.gui.character.color)
@@ -156,10 +136,12 @@ end
 function PANEL:addStep(step, priority)
     assert(IsValid(step), "Invalid panel for step")
     assert(step.isCharCreateStep, "Panel must inherit liaCharacterCreateStep")
-    self._creationSequence = (self._creationSequence or 0) + 1
-    step._creationSequence = self._creationSequence
-    step._creationPriority = isnumber(priority) and priority or nil
-    self.steps[#self.steps + 1] = step
+    if isnumber(priority) then
+        table.insert(self.steps, priority, step)
+    else
+        self.steps[#self.steps + 1] = step
+    end
+
     step:SetParent(self.content)
 end
 
@@ -216,27 +198,16 @@ function PANEL:onStepChanged(oldStep, newStep)
     local finish = self.curStep == #self.steps
     local key = finish and "finish" or "next"
     if IsValid(newStep) then
-        local camera = {
-            liaCharacterFaction = {90, 30},
-            liaCharacterClass = {84, 34},
-            liaCharacterBiography = {74, 42},
-            liaCharacterModel = {64, 50},
-            liaCharacterAttributesPage = {78, 40},
-            liaCharacterSummary = {86, 34}
-        }
-        local view = istable(newStep.creationCamera) and newStep.creationCamera or camera[newStep:GetName()]
-        local shouldShowModel = newStep.creationWorldPreview == true or view ~= nil
-        view = view or {76, 40}
+        local panelName = newStep:GetName()
+        local shouldShowModel = panelName == "liaCharacterModel"
         if IsValid(self.model) then self.model:SetVisible(shouldShowModel and not (IsValid(lia.gui.character) and lia.gui.character.inWorldPreview)) end
         if IsValid(lia.gui.character) then
-            lia.gui.character.creationCameraDistance = view[1]
-            lia.gui.character.creationCameraSide = view[2]
-            lia.gui.character.inCharacterCreationModelStep = shouldShowModel
+            lia.gui.character.inCharacterCreationModelStep = shouldShowModel or false
             if shouldShowModel then
                 if IsValid(self.content) then
                     self.content:Dock(RIGHT)
-                    self.content:SetWide(math.Clamp(ScrW() * 0.46, 520, 860))
-                    self.content:DockMargin(0, 68, 42, 88)
+                    self.content:SetWide(ScrW() * 0.5)
+                    self.content:DockMargin(0, 64, 64, 96)
                 end
 
                 lia.gui.character.noBlur = true
@@ -293,7 +264,6 @@ function PANEL:onStepChanged(oldStep, newStep)
         end
     end
 
-    self:updateProgress()
     if IsValid(self:getPreviousStep()) then
         self.prev:AlphaTo(255, 0.5)
     else
@@ -363,58 +333,16 @@ function PANEL:onStepChanged(oldStep, newStep)
     end
 end
 
-function PANEL:updateProgress()
-    if not IsValid(self.progress) then return end
-    self.progress:Clear()
-    local visible = {}
-    for index, step in ipairs(self.steps or {}) do
-        if IsValid(step) and not step:shouldSkip() then visible[#visible + 1] = {index, step} end
-    end
-
-    local available = self.progress:GetWide()
-    if available <= 0 then available = math.max(ScrW() * 0.49 - 42, 1) end
-    local itemWidth = math.Clamp(math.floor((available - math.max(#visible - 1, 0) * 8) / math.max(#visible, 1)), 60, 112)
-    for visibleIndex, data in ipairs(visible) do
-        local index, step = data[1], data[2]
-        local item = self.progress:Add("DPanel")
-        item:Dock(LEFT)
-        item:DockMargin(0, 0, 8, 0)
-        item:SetWide(itemWidth)
-        item.Paint = function(_, w, h)
-            local active = index == self.curStep
-            local complete = index < self.curStep
-            local accent = lia.color.theme.theme
-            lia.derma.rect(0, h - 3, w, 3):Rad(2):Color(active and accent or complete and ColorAlpha(accent, 125) or Color(255, 255, 255, 24)):Draw()
-        end
-
-        local label = item:Add("DLabel")
-        label:Dock(FILL)
-        label:SetFont("LiliaFont.14")
-        label:SetText(string.format("%02d  %s", visibleIndex, tostring(step.creationName or step:GetName():gsub("^liaCharacter", "")):upper()))
-        label:SetTextColor(index == self.curStep and (lia.color.theme.text or color_white) or Color(155, 165, 175))
-        label:SetContentAlignment(5)
-    end
-end
-
 function PANEL:Init()
     self:Dock(FILL)
     local ok, reason = self:canCreateCharacter()
     if not ok then return self:showMessage(reason) end
     lia.gui.charCreate = self
-    self.progress = self:Add("DPanel")
-    self.progress:Dock(TOP)
-    self.progress:DockMargin(math.floor(ScrW() * 0.51), 24, 42, 0)
-    self.progress:SetTall(44)
-    self.progress:SetPaintBackground(false)
     self.content = self:Add("DPanel")
-    self.content:Dock(RIGHT)
-    self.content:SetWide(math.Clamp(ScrW() * 0.46, 520, 860))
-    self.content:DockMargin(0, 18, 42, 22)
-    self.content:DockPadding(18, 18, 18, 18)
-    self.content.Paint = function(_, w, h)
-        lia.derma.rect(0, 0, w, h):Rad(10):Color(Color(12, 16, 22, 224)):Shape(lia.derma.SHAPE_IOS):Draw()
-        lia.derma.rect(0, 0, w, h):Rad(10):Color(ColorAlpha(lia.color.theme.theme, 46)):Outline(1):Draw()
-    end
+    local margin = ScrW() > 1280 and ScrW() * 0.15 or ScrW() > 720 and ScrW() * 0.075 or 0
+    self.content:Dock(FILL)
+    self.content:DockMargin(margin, 64, margin, 0)
+    self.content:SetPaintBackground(false)
     self.model = self.content:Add("liaModelPanel")
     if not IsValid(self.model) then return self:showError("Failed to create model panel") end
     self.model:SetWide(0)
@@ -424,13 +352,8 @@ function PANEL:Init()
     self.model:SetVisible(false)
     self.buttons = self:Add("DPanel")
     self.buttons:Dock(BOTTOM)
-    self.buttons:SetTall(64)
-    self.buttons.Paint = function(_, w, h)
-        surface.SetDrawColor(8, 11, 16, 235)
-        surface.DrawRect(0, 0, w, h)
-        surface.SetDrawColor(ColorAlpha(lia.color.theme.theme, 45))
-        surface.DrawRect(0, 0, w, 1)
-    end
+    self.buttons:SetTall(48)
+    self.buttons:SetPaintBackground(false)
     local function sizeButton(btn, text)
         btn:SetText(text)
         local font = btn:GetFont()

@@ -1,8 +1,4 @@
 ﻿local PANEL = {}
-PANEL.creationOrder = 30
-PANEL.creationName = "Appearance"
-PANEL.creationWorldPreview = true
-
 function PANEL:getCreationModelSource()
     local factionIndex = self:getContext("faction")
     if not factionIndex then return end
@@ -85,8 +81,8 @@ function PANEL:Init()
     end
 
     self.models.OnSizeChanged = function() if IsValid(self) then self:RequestIconResize() end end
-    self._iconColumns = 4
-    self._iconSpace = 12
+    self._iconColumns = 5
+    self._iconSpace = 8
 end
 
 function PANEL:RequestIconResize()
@@ -119,9 +115,9 @@ function PANEL:PerformLayout(w, h)
 
     if layoutW <= 0 then return end
     local iconW = math.floor((layoutW - (columns - 1) * space) / columns)
-    if iconW < 104 then iconW = 104 end
-    if iconW > 150 then iconW = 150 end
-    local iconH = math.floor(iconW * 1.25)
+    if iconW < 64 then iconW = 64 end
+    if iconW > 80 then iconW = 80 end
+    local iconH = math.floor(iconW * 2)
     for _, child in ipairs(self.models:GetChildren()) do
         if IsValid(child) and child.SetSize then child:SetSize(iconW, iconH) end
     end
@@ -228,22 +224,9 @@ function PANEL:addSkinControl(entity, defaultSkin)
     slider:DockMargin(0, 0, 0, 12)
     slider:SetText("")
     slider:SetRange(0, math.max(0, entity:SkinCount() - 1), 0)
-    local context = self:getContext()
-    local faction, _, _, info = self:getCreationModelSource()
-    local selected = tonumber(self:getContext("skin", defaultSkin)) or defaultSkin
-    if faction and info and not lia.faction.isSkinAllowedForFaction(faction, selected, info, context.model) then selected = lia.faction.getDefaultAllowedSkinForFaction(faction, defaultSkin, info, context.model) end
-    slider:SetValue(selected)
-    self:setContext("skin", selected)
-    slider.OnValueChanged = function(control, value)
+    slider:SetValue(self:getContext("skin", defaultSkin) or defaultSkin)
+    slider.OnValueChanged = function(_, value)
         value = math.Round(value)
-        local currentContext = self:getContext()
-        local currentFaction, _, _, currentInfo = self:getCreationModelSource()
-        if currentFaction and currentInfo and not lia.faction.isSkinAllowedForFaction(currentFaction, value, currentInfo, currentContext.model) then
-            local current = tonumber(self:getContext("skin", defaultSkin)) or defaultSkin
-            if math.Round(control:GetValue()) ~= current then control:SetValue(current) end
-            return
-        end
-
         self:setContext("skin", value)
         self:updateModelPanel()
     end
@@ -274,19 +257,8 @@ function PANEL:addBodygroupControls(entity, defaultGroups)
         local startVal = istable(ctxGroups) and (ctxGroups[i] or ctxGroups[tostring(i)]) or nil
         if startVal == nil and istable(defaultGroups) then startVal = defaultGroups[i] or defaultGroups[tostring(i)] end
         slider:SetValue(tonumber(startVal) or entity:GetBodygroup(i) or 0)
-        slider.OnValueChanged = function(control, val)
+        slider.OnValueChanged = function(_, val)
             val = math.Round(val)
-            local currentContext = self:getContext()
-            local currentFaction, _, _, currentInfo = self:getCreationModelSource()
-            local groupName = entity:GetBodygroupName(i)
-            if currentFaction and currentInfo and not lia.faction.isBodygroupValueAllowed(currentFaction, entity:GetModel(), i, val, groupName, currentInfo, currentContext.model) then
-                local groups = self:getContext("bodygroups")
-                local defaultValue = istable(defaultGroups) and (defaultGroups[i] or defaultGroups[tostring(i)]) or nil
-                local current = istable(groups) and tonumber(groups[i] or groups[tostring(i)]) or tonumber(defaultValue) or entity:GetBodygroup(i) or 0
-                if math.Round(control:GetValue()) ~= current then control:SetValue(current) end
-                return
-            end
-
             local groups = self:getContext("bodygroups")
             if not istable(groups) then groups = {} end
             groups[i] = val
@@ -410,9 +382,9 @@ function PANEL:onDisplay()
         local layoutW = IsValid(self.models) and self.models:GetWide() or 0
         if layoutW <= 0 then layoutW = ScrW() * 0.5 end
         local iconW = math.floor((layoutW - (columns - 1) * space) / columns)
-        if iconW < 104 then iconW = 104 end
-        if iconW > 150 then iconW = 150 end
-        local iconH = math.floor(iconW * 1.25)
+        if iconW < 64 then iconW = 64 end
+        if iconW > 80 then iconW = 80 end
+        local iconH = math.floor(iconW * 2)
         for idx, data in SortedPairs(modelsToDisplay) do
             local icon = self.models:Add("SpawnIcon")
             icon:SetSize(iconW, iconH)
@@ -469,19 +441,8 @@ function PANEL:paintIcon(icon, w, h)
 end
 
 function PANEL:updateContext()
-    local faction, class, _, _, forced = self:getCreationModelSource()
-    if not forced and not self:getContext("model") then self:setContext("model", next(self:filterCharacterModels(faction, class))) end
-end
-
-function PANEL:validate()
-    local faction, class, _, _, forced = self:getCreationModelSource()
-    if not faction then return false, "Choose a faction first." end
-    if forced then return true end
-    local models = self:filterCharacterModels(faction, class)
-    if not self:getContext("model") or models[self:getContext("model")] == nil then return false, "Choose a valid appearance model." end
-    local ok, reason, detail = self:validateCharVar("model")
-    if ok == false then return false, reason or detail or "Choose a valid appearance model." end
-    return true
+    local _, _, _, _, forced = self:getCreationModelSource()
+    if not forced and not self:getContext("model") then self:setContext("model", 1) end
 end
 
 function PANEL:onModelSelected(icon, noSound)

@@ -90,7 +90,7 @@ function PANEL:setInWorldPreviewEnabled(enabled)
             local center = ent:GetPos() + Vector(0, 0, 60)
             local modelAngles = self.mainMenuModelAngles or ent:GetAngles()
             local forward = modelAngles:Forward()
-            local desired = center + forward * (self.creationCameraDistance or 70)
+            local desired = center + forward * 70
             if not self.currentCamPos then
                 self.currentCamPos = desired
             else
@@ -98,7 +98,7 @@ function PANEL:setInWorldPreviewEnabled(enabled)
             end
 
             local target = center
-            if self.inWorldPreview and not self.isLoadMode then target = target - modelAngles:Right() * (self.creationCameraSide or 40) end
+            if self.inWorldPreview and not self.isLoadMode then target = target - modelAngles:Right() * 40 end
             return {
                 origin = self.currentCamPos,
                 angles = (target - self.currentCamPos):Angle(),
@@ -109,8 +109,6 @@ function PANEL:setInWorldPreviewEnabled(enabled)
     else
         self:restoreExternalEntities()
         self.currentCamPos = nil
-        self.creationCameraDistance = nil
-        self.creationCameraSide = nil
         hook.Remove("CalcView", "liaMainMenuCalcView")
         hook.Remove("PrePlayerDraw", "liaMainMenuPrePlayerDraw")
         hook.Remove("PostDrawOpaqueRenderables", "liaMainMenuPostDrawOpaqueRenderables")
@@ -138,7 +136,7 @@ function PANEL:updateCreationModelEntity(context)
     self.modelEntity = ClientsideModel(mdl or "models/error.mdl", RENDERGROUP_OPAQUE)
     if not IsValid(self.modelEntity) then return end
     self.modelEntity:SetSkin(lia.faction.normalizeSkinValue(context.skin, skin))
-    local finalGroups = istable(context.bodygroups) and context.bodygroups or istable(context.groups) and context.groups or istable(groups) and groups
+    local finalGroups = istable(context.groups) and context.groups or istable(groups) and groups
     if finalGroups then lia.util.applyBodygroups(self.modelEntity, finalGroups) end
     hook.Run("SetupPlayerModel", self.modelEntity)
     local pos, ang
