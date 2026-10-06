@@ -758,3 +758,7 @@ end
 hook.Add("ScoreboardHide", "liaScoreboardHide", liaScoreboardHide)
 hook.Add("ScoreboardShow", "liaScoreboardShow", liaScoreboardShow)
 hook.Add("InteractionMenuOpened", "liaScoreboardInteractionMenuOpened", liaScoreboardHide)
+concommand.Add("lia_scoreboard_reload", function()
+    if IsValid(lia.gui.score) then lia.gui.score:Remove() end
+    vgui.Create("liaScoreboard")
+end)

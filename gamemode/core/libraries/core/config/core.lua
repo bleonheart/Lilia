@@ -1,4 +1,4 @@
-﻿lia.config = lia.config or {}
+lia.config = lia.config or {}
 lia.config.stored = lia.config.stored or {}
 lia.config.lastSyncedValues = lia.config.lastSyncedValues or {}
 local function cfgLocalizeLabel(value, ...)
@@ -343,7 +343,6 @@ if SERVER then
         if type(config.default) == type(value) and hook.Run("CanPlayerModifyConfig", client, key) ~= false then
             local oldValue = config.value
             lia.config.set(key, value)
-            lia.log.add(client, "configChange", name or config.name or key, oldValue, value)
             hook.Run("ConfigChanged", key, value, oldValue, client)
             client:notifySuccess(string.format("%s has set \"%s\" to %s.", client:Name(), name or config.name or key, tostring(value)))
         end
@@ -1360,39 +1359,12 @@ lia.config.add("DefaultStamina", "Default Stamina Value", 100, nil, {
     max = 1000
 })
 
-lia.config.add("MaxAttributePoints", "Max Attribute Points", 30, nil, {
-    desc = "Maximum number of points that can be allocated across an attribute.",
-    category = "Core",
-    isGlobal = true,
-    type = "Number",
-    min = 1,
-    max = 100
-})
-
 lia.config.add("JumpStaminaCost", "Jump Stamina Cost", 10, nil, {
     desc = "Stamina cost deducted when the player jumps.",
     category = "Core",
     type = "Number",
     min = 1,
     max = 1000
-})
-
-lia.config.add("MaxStartingAttributes", "Max Starting Attributes", 30, nil, {
-    desc = "Maximum value of each attribute at character creation.",
-    category = "Core",
-    isGlobal = true,
-    type = "Number",
-    min = 1,
-    max = 100
-})
-
-lia.config.add("StartingAttributePoints", "Starting Attribute Points", 30, nil, {
-    desc = "Total number of points available for starting attribute allocation.",
-    category = "Core",
-    isGlobal = true,
-    type = "Number",
-    min = 1,
-    max = 100
 })
 
 lia.config.add("PunchStamina", "Punch Stamina", 10, nil, {
@@ -1944,12 +1916,4 @@ lia.config.add("descriptionWidth", "Description Width", 0.5, nil, {
     type = "Number",
     min = 0.1,
     max = 1.0
-})
-
-lia.config.add("maxAttributes", "Max Attributes", 100, nil, {
-    desc = "The maximum total number of attribute points a character can have.",
-    category = "Core",
-    type = "Int",
-    min = 1,
-    max = 1000
 })

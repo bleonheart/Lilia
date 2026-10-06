@@ -1,12 +1,3 @@
-﻿function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, itemType, isFailed)
-    local vendorName = lia.vendor.getVendorProperty(vendor, "name")
-    if not isSellingToVendor then
-        lia.log.add(client, "vendorBuy", item and (item:getName() or item.name) or "", vendorName or "Unknown", isFailed)
-    else
-        lia.log.add(client, "vendorSell", item and (item:getName() or item.name) or "", vendorName or "Unknown")
-    end
-end
-
 function MODULE:CanPersistEntity(entity)
     if entity:GetClass() == "lia_vendor" then return true end
 end

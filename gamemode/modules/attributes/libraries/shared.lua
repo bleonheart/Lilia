@@ -35,6 +35,24 @@
     end
 end
 
+function MODULE:GetAttributeMax(client, attribute)
+    local attribTable = lia.attribs.list[attribute]
+    if not attribTable then return lia.config.get("MaxAttributePoints") end
+    if istable(attribTable) and isnumber(attribTable.maxValue) then return attribTable.maxValue end
+    return lia.config.get("MaxAttributePoints")
+end
+
+function MODULE:GetAttributeStartingMax(client, attribute)
+    local attribTable = lia.attribs.list[attribute]
+    if not attribTable then return lia.config.get("MaxStartingAttributes") end
+    if istable(attribTable) and isnumber(attribTable.startingMax) then return attribTable.startingMax end
+    return lia.config.get("MaxStartingAttributes")
+end
+
+function MODULE:GetMaxStartingAttributePoints(client, default)
+    return default or lia.config.get("StartingAttributePoints", 30)
+end
+
 function MODULE:PlayerBindPress(client, bind, pressed)
     if not pressed then return end
     local char = client:getChar()

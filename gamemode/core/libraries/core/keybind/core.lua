@@ -1,4 +1,4 @@
-﻿lia.keybind = lia.keybind or {}
+lia.keybind = lia.keybind or {}
 lia.keybind.stored = lia.keybind.stored or {}
 local KeybindKeys = {
     ["first"] = KEY_FIRST,
@@ -227,7 +227,6 @@ lia.keybind.add("adminMode", {
                     timer.Simple(5, function() if IsValid(client) then hook.Remove("PostPlayerLoadedChar", hookName) end end)
                 end
 
-                lia.log.add(client, "adminMode", oldCharID, "Switched back to their IC character")
             else
                 client:notifyError(string.format("No previous character to swap to."))
             end
@@ -242,7 +241,6 @@ lia.keybind.add("adminMode", {
                         net.Start("liaAdminModeSwapCharacter")
                         net.WriteInt(id, 32)
                         net.Send(client)
-                        lia.log.add(client, "adminMode", id, "Switched to their staff character")
                         return
                     end
                 end
@@ -263,7 +261,6 @@ lia.keybind.add("adminMode", {
                             net.Start("liaAdminModeSwapCharacter")
                             net.WriteInt(charID, 32)
                             net.Send(client)
-                            lia.log.add(client, "adminMode", charID, "Switched to their staff character")
                             client:notifySuccess(string.format("A staff character has been automatically created for you."))
                         end
                     end)

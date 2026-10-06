@@ -1,4 +1,4 @@
-﻿function MODULE:PostLoadData()
+function MODULE:PostLoadData()
     if lia.config.get("DoorsAlwaysDisabled", false) then
         local count = 0
         for _, door in ents.Iterator() do
@@ -472,7 +472,6 @@ local function ToggleLock(client, door, state)
     end
 
     hook.Run("DoorLockToggled", client, door, state)
-    lia.log.add(client, "toggleLock", door, state and "Locked" or "unlocked")
 end
 
 local function resetKeyCooldown(client)
@@ -507,7 +506,6 @@ function MODULE:KeyLock(client, door, time)
             resetKeyCooldown(client)
         end)
 
-        lia.log.add(client, "lockDoor", door)
     end
 end
 
@@ -530,6 +528,5 @@ function MODULE:KeyUnlock(client, door, time)
             resetKeyCooldown(client)
         end)
 
-        lia.log.add(client, "unlockDoor", door)
     end
 end

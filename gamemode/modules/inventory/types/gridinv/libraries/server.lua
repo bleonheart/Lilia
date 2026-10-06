@@ -1,4 +1,4 @@
-﻿local function CanAccessIfPlayerHasAccessToBag(inventory, action, context)
+local function CanAccessIfPlayerHasAccessToBag(inventory, action, context)
     local bagItemID = inventory:getData("item")
     if not bagItemID then return end
     local bagItem = lia.item.instances[bagItemID]
@@ -41,7 +41,6 @@ end
 function MODULE:ItemCombine(client, item, target)
     if target.onCombine and target:call("onCombine", client, nil, item) then return end
     if item.onCombineTo and item and item:call("onCombineTo", client, nil, target) then return end
-    lia.log.add(client, "itemCombine", item:getName(), target:getName())
 end
 
 function MODULE:ItemDraggedOutOfInventory(client, item)
@@ -133,7 +132,7 @@ function MODULE:HandleItemTransferRequest(client, itemID, x, y, invID, rotated)
     local function fail(err)
         client.invTransferTransaction = nil
         if err then lia.error(err) end
-        if IsValid(client) then lia.log.add(client, "itemTransferFailed", item:getName(), oldInventory:getID(), newInventory and newInventory:getID() or 0) end
+        if IsValid(client) then ) end
         if IsValid(client) then client:notifyInfo(string.format("Your item has been placed on the ground.")) end
         item:spawn(dropPos)
     end

@@ -1,4 +1,4 @@
-﻿function MODULE:CanPlayerModifyConfig(client)
+function MODULE:CanPlayerModifyConfig(client)
     local hasPrivilege = client:hasPrivilege("accessEditConfigurationMenu")
     lia.debug("[Permissions]", "Permission Check for function MODULE:CanPlayerModifyConfig", "hasPrivilege(accessEditConfigurationMenu)=", tostring(hasPrivilege), "finalResult=", tostring(hasPrivilege))
     return hasPrivilege
@@ -198,7 +198,6 @@ lia.util.setPositionCallback("Faction Spawn Adder", {
                 })
 
                 lia.module.get("spawns"):StoreSpawns(spawns):next(function()
-                    lia.log.add(client, "spawnAdd", factionInfo.name)
                     client:notifySuccess(string.format("Sucessfully Added Point"))
                 end)
             end)
@@ -275,7 +274,6 @@ lia.util.setPositionCallback("Faction Spawn Adder", {
                         if not map or map == curMap then
                             table.remove(factionSpawns, i)
                             lia.module.get("spawns"):StoreSpawns(spawns)
-                            lia.log.add(client, "spawnRemove", factionID)
                             return
                         end
                     end
@@ -308,7 +306,6 @@ lia.util.setPositionCallback("Class Spawn Adder", {
             })
 
             lia.data.set("spawns", data)
-            lia.log.add(client, "classSpawnAdd", classData.name)
             client:notifySuccess(string.format("Sucessfully Added Point"))
         else
             local names, idByDisplay = {}, {}
@@ -388,7 +385,6 @@ lia.util.setPositionCallback("Class Spawn Adder", {
                     if not map or map == curMap then
                         table.remove(classSpawns, i)
                         lia.data.set("spawns", data)
-                        lia.log.add(client, "classSpawnRemove", classID)
                         return
                     end
                 end
@@ -408,7 +404,6 @@ lia.util.setPositionCallback("Sit Room", {
             rooms[name] = pos
             lia.data.set("sitrooms", rooms)
             client:notifySuccess(string.format("Administration Room has been set!"))
-            lia.log.add(client, "sitRoomSet", string.format("Name: %s | Position: %s", name, tostring(pos)), "Set the administration room location")
         elseif CLIENT then
             client:requestString("Enter Name", "Enter the name of the Administration Room(" .. "):", function(name)
                 if name == false then return end
@@ -451,7 +446,6 @@ lia.util.setPositionCallback("Sit Room", {
             if isvector(roomPos) and roomPos:DistToSqr(pos) < 1 then
                 rooms[name] = nil
                 lia.data.set("sitrooms", rooms)
-                lia.log.add(client, "sitRoomRemove", name)
                 return
             end
         end

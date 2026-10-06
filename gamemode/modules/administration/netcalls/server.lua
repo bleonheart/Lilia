@@ -45,7 +45,6 @@ net.Receive("liaSetStaffCharacterPermission", function(_, client)
     if permission == "" or not (lia.admin.privilegeNames[permission] or lia.admin.privileges[permission]) then return end
     lia.staffCharacterPermissions[permission] = enabled and true or nil
     lia.data.set("staffCharacterPermissions", lia.staffCharacterPermissions, true, true)
-    lia.log.add(client, "permissionChanged", "staff character " .. permission .. " -> " .. tostring(enabled))
     sendStaffCharacterConfiguration(client)
 end)
 
@@ -55,7 +54,6 @@ net.Receive("liaSetStaffCharacterFlag", function(_, client)
     if #flag ~= 1 or not lia.flag.list[flag] then return end
     lia.staffCharacterFlags[flag] = enabled and true or nil
     lia.data.set("staffCharacterFlags", lia.staffCharacterFlags, true, true)
-    lia.log.add(client, "permissionChanged", "staff character flag " .. flag .. " -> " .. tostring(enabled))
     sendStaffCharacterConfiguration(client)
 end)
 
@@ -64,7 +62,6 @@ net.Receive("liaResetStaffCharacterConfiguration", function(_, client)
     lia.staffCharacterPermissions, lia.staffCharacterFlags = {}, {}
     lia.data.set("staffCharacterPermissions", {}, true, true)
     lia.data.set("staffCharacterFlags", {}, true, true)
-    lia.log.add(client, "permissionChanged", "staff character permissions and flags reset")
     sendStaffCharacterConfiguration(client)
 end)
 
@@ -109,7 +106,6 @@ net.Receive("liaSetToolPermissionTier", function(_, client)
     local tiers = lia.data.get("toolPermissionTiers", {})
     tiers[toolName] = tier
     lia.data.set("toolPermissionTiers", tiers, true, true)
-    lia.log.add(client, "permissionChanged", "tool_" .. toolName .. " -> " .. tier)
     sendToolPermissionTiers(client)
 end)
 
@@ -134,7 +130,6 @@ net.Receive("liaSetToolPermissionTiersBatch", function(_, client)
 
     if changed > 0 then
         lia.data.set("toolPermissionTiers", tiers, true, true)
-        lia.log.add(client, "permissionChanged", changed .. " tool permission tiers updated")
     end
 
     sendToolPermissionTiers(client)
@@ -143,77 +138,9 @@ end)
 net.Receive("liaResetToolPermissionTiers", function(_, client)
     if not IsValid(client) or not client:hasPrivilege("manageUsergroups") then return end
     lia.data.set("toolPermissionTiers", {}, true, true)
-    lia.log.add(client, "permissionChanged", "all tool permission tiers reset")
     sendToolPermissionTiers(client)
 end)
 
-net.Receive("liaAdminSetCharProperty", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaAdminSetCharProperty", "hasPrivilege(listCharacters)=", tostring(client:hasPrivilege("listCharacters")), "finalResult=", tostring(client:hasPrivilege("listCharacters")))
-    if not client:hasPrivilege("listCharacters") then return end
-    local charID = net.ReadInt(32)
-    local property = net.ReadString()
-    local value = net.ReadType()
-    local charIDsafe = tonumber(charID)
-    if not charIDsafe then
-        client:notifyError(string.format("Invalid character ID."))
-        return
-    end
-
-    lia.db.query("SELECT name, money, model FROM lia_characters WHERE id = " .. charIDsafe, function(data)
-        if not data or #data == 0 then
-            client:notifyError(string.format("Character not found."))
-            return
-        end
-
-        local charData = data[1]
-        if property == "money" then
-            local moneyValue = tonumber(value) or 0
-            if lia.char.setCharDatabase(charID, "money", moneyValue) then
-                local target = lia.char.getCharacter(charID)
-                if IsValid(target) then
-                    client:notifySuccess(string.format("You set %s's money to %s.", target:Name(), lia.currency.get(moneyValue)))
-                else
-                    client:notifySuccess(string.format("Character %s's money set to %s.", charID, lia.currency.get(moneyValue)))
-                end
-
-                lia.log.add(client, "adminSetCharMoney", charID, moneyValue)
-            else
-                client:notifyError(string.format("Failed to update character property."))
-            end
-        elseif property == "name" then
-            local nameValue = tostring(value)
-            if lia.char.setCharDatabase(charID, "name", nameValue) then
-                local target = lia.char.getCharacter(charID)
-                if IsValid(target) then
-                    client:notifySuccess(string.format("%s changed %s's name to %s.", client:Name(), charData.name, nameValue))
-                else
-                    client:notifySuccess(string.format("Character %s's name set to %s.", charID, nameValue))
-                end
-
-                lia.log.add(client, "adminSetCharName", charID, nameValue)
-            else
-                client:notifyError(string.format("Failed to update character property."))
-            end
-        elseif property == "model" then
-            local modelValue = tostring(value)
-            if lia.char.setCharDatabase(charID, "model", modelValue) then
-                local target = lia.char.getCharacter(charID)
-                if IsValid(target) then
-                    client:notifySuccess(string.format("%s changed %s's model to %s.", client:Name(), target:Name(), modelValue))
-                else
-                    client:notifySuccess(string.format("Character %s's model set to %s.", charID, modelValue))
-                end
-
-                lia.log.add(client, "adminSetCharModel", charID, modelValue)
-            else
-                client:notifyError(string.format("Failed to update character property."))
-            end
-        else
-            client:notifyError(string.format("Invalid argument."))
-            return
-        end
-    end)
-end)
 
 local function fixupProp(client, ent, mins, maxs)
     local pos = ent:GetPos()
@@ -274,7 +201,6 @@ net.Receive("liaSpawnMenuSpawnItem", function(_, client)
         local name = lia.item.list[id] and lia.item.list[id].name or id
         undo.SetCustomUndoText(string.format("Undone %s", name))
         undo.Finish(string.format("Item (%s)", name))
-        lia.log.add(client, "spawnItem", name, "SpawnMenuSpawnItem")
         client:notifySuccess(string.format("Item '%s' spawned in the world.", name))
     end, angle_zero, {})
 end)
@@ -289,7 +215,6 @@ net.Receive("liaSpawnMenuGiveItem", function(_, client)
     if not targetChar then return end
     local target = targetChar:getPlayer()
     targetChar:getInv():add(id)
-    lia.log.add(client, "chargiveItem", id, target, "SpawnMenuGiveItem")
 end)
 
 net.Receive("liaManagesitroomsAction", function(_, client)
@@ -304,7 +229,6 @@ net.Receive("liaManagesitroomsAction", function(_, client)
             client.previousSitroomPos = client:GetPos()
             client:SetPos(targetPos)
             client:notifySuccess(string.format("You have been teleported to Administration Room: %s.", name))
-            lia.log.add(client, "sendToSitRoom", client:Name(), name)
             local message = string.format("%s (Steam64ID: %s) teleported to sit room \"%s\".", client:Name(), client:SteamID64(), name)
             StaffAddTextShadowed(Color(123, 104, 238), "SIT", Color(255, 255, 255), message)
         end
@@ -315,14 +239,12 @@ net.Receive("liaManagesitroomsAction", function(_, client)
             rooms[name] = nil
             lia.data.set("sitrooms", rooms)
             client:notifySuccess(string.format("Administration Room renamed successfully."))
-            lia.log.add(client, "sitRoomRenamed", string.format("Old: %s | New: %s", name, newName), "Renamed administration room")
         end
     elseif action == 3 then
         if rooms[name] then
             rooms[name] = client:GetPos()
             lia.data.set("sitrooms", rooms)
             client:notifySuccess(string.format("Administration Room repositioned successfully."))
-            lia.log.add(client, "sitRoomRepositioned", string.format("Name: %s | New Position: %s", name, tostring(client:GetPos())), "Repositioned administration room")
         end
     end
 end)
@@ -428,15 +350,6 @@ net.Receive("liaRemoveFeaturePosition", function(_, client)
     end
 end)
 
-net.Receive("liaRequestAllPks", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestAllPks", "hasPrivilege(manageCharacters)=", tostring(client:hasPrivilege("manageCharacters")), "finalResult=", tostring(client:hasPrivilege("manageCharacters")))
-    if not client:hasPrivilege("manageCharacters") then return end
-    lia.db.query("SELECT * FROM lia_permakills", function(data)
-        net.Start("liaAllPks")
-        net.WriteTable(data or {})
-        net.Send(client)
-    end)
-end)
 
 net.Receive("liaRequestStaffCases", function(_, client)
     local canSeeTickets = client:hasPrivilege("alwaysSeeTickets") or client:isStaffOnDuty()
@@ -612,11 +525,6 @@ LIMIT %d OFFSET %d]], safeLimit, safeOffset)
     end)
 end
 
-net.Receive("liaRequestFullCharList", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestFullCharList", "isValidPlayer=", tostring(IsValid(client)), "hasPrivilege(listCharacters)=", tostring(IsValid(client) and client:hasPrivilege("listCharacters") or false), "finalResult=", tostring(IsValid(client) and client:hasPrivilege("listCharacters") or false))
-    if not IsValid(client) or not client:hasPrivilege("listCharacters") then return end
-    buildFullCharListPage(client, 0, 0, 100)
-end)
 
 net.Receive("liaRequestFullCharListPage", function(_, client)
     lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestFullCharListPage", "isValidPlayer=", tostring(IsValid(client)), "hasPrivilege(listCharacters)=", tostring(IsValid(client) and client:hasPrivilege("listCharacters") or false), "finalResult=", tostring(IsValid(client) and client:hasPrivilege("listCharacters") or false))
@@ -627,46 +535,6 @@ net.Receive("liaRequestFullCharListPage", function(_, client)
     buildFullCharListPage(client, requestID, offset, limit)
 end)
 
-net.Receive("liaRequestAllFlags", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestAllFlags", "hasPrivilege(manageFlags)=", tostring(client:hasPrivilege("manageFlags")), "finalResult=", tostring(client:hasPrivilege("manageFlags")))
-    if not client:hasPrivilege("manageFlags") then return end
-    lia.db.fieldExists("lia_characters", "charflags"):next(function(exists)
-        if not exists then lia.db.query("ALTER TABLE lia_characters ADD COLUMN charflags VARCHAR(255) DEFAULT ''") end
-        lia.db.query([[SELECT c.id, c.name, c.steamID, COALESCE(c.charflags, '') AS flags
-FROM lia_characters AS c]], function(charData)
-            lia.db.query([[SELECT d.charID, d.value AS flags
-FROM lia_chardata AS d
-WHERE d.key = 'flags']], function(chardata)
-                local chardataFlags = {}
-                for _, row in ipairs(chardata or {}) do
-                    if row.value and row.value ~= "" then
-                        local ok, decoded = pcall(pon.decode, row.value)
-                        if ok and decoded then chardataFlags[row.charID] = decoded[1] or "" end
-                    end
-                end
-
-                local processedData = {}
-                for _, row in ipairs(charData or {}) do
-                    local char = lia.char.loaded[row.id]
-                    local flags = row.flags or ""
-                    if flags == "" and chardataFlags[row.id] then flags = chardataFlags[row.id] end
-                    if char then
-                        local memoryFlags = char:getFlags() or ""
-                        if memoryFlags ~= "" then flags = memoryFlags end
-                    end
-
-                    processedData[#processedData + 1] = {
-                        name = row.name or "",
-                        steamID = row.steamID or "",
-                        flags = flags,
-                    }
-                end
-
-                lia.net.writeBigTable(client, "liaAllFlags", processedData)
-            end)
-        end)
-    end)
-end)
 
 net.Receive("liaModifyFlags", function(_, client)
     lia.debug("[Permissions]", "Permission Check for net.Receive liaModifyFlags", "hasPrivilege(manageFlags)=", tostring(client:hasPrivilege("manageFlags")), "finalResult=", tostring(client:hasPrivilege("manageFlags")))
@@ -724,131 +592,8 @@ net.Receive("liaModifyCharacterFlags", function(_, client)
     end)
 end)
 
-local function buildSummary()
-    local d = deferred.new()
-    local summary = {}
-    local function ensureEntry(id, name)
-        summary[id] = summary[id] or {
-            player = name or "",
-            steamID = id,
-            usergroup = "",
-            warnings = 0,
-            tickets = 0,
-            kicks = 0,
-            kills = 0,
-            respawns = 0,
-            blinds = 0,
-            mutes = 0,
-            jails = 0,
-            strips = 0
-        }
 
-        if name and name ~= "" then summary[id].player = name end
-        return summary[id]
-    end
 
-    lia.db.query([[SELECT warner AS name, warnerSteamID AS steamID, COUNT(*) AS count FROM lia_warnings GROUP BY warnerSteamID]], function(warnRows)
-        for _, row in ipairs(warnRows or {}) do
-            local steamID = row.steamID or row.warnerSteamID
-            if steamID and steamID ~= "" then
-                local entry = ensureEntry(steamID, row.name)
-                entry.warnings = tonumber(row.count) or 0
-            end
-        end
-
-        lia.db.query([[SELECT admin AS name, adminSteamID AS steamID, COUNT(*) AS count FROM lia_ticketclaims GROUP BY adminSteamID]], function(ticketRows)
-            for _, row in ipairs(ticketRows or {}) do
-                local steamID = row.steamID or row.adminSteamID
-                if steamID and steamID ~= "" then
-                    local entry = ensureEntry(steamID, row.name)
-                    entry.tickets = tonumber(row.count) or 0
-                end
-            end
-
-            lia.db.query([[SELECT staffName AS name, staffSteamID AS steamID, action, COUNT(*) AS count FROM lia_staffactions GROUP BY staffSteamID, action]], function(actionRows)
-                for _, row in ipairs(actionRows or {}) do
-                    local steamID = row.steamID or row.staffSteamID
-                    if steamID and steamID ~= "" then
-                        local entry = ensureEntry(steamID, row.name)
-                        local count = tonumber(row.count) or 0
-                        if row.action == "plykick" then
-                            entry.kicks = count
-                        elseif row.action == "plykill" then
-                            entry.kills = count
-                        elseif row.action == "plyrespawn" then
-                            entry.respawns = count
-                        elseif row.action == "plyblind" then
-                            entry.blinds = count
-                        elseif row.action == "plymute" then
-                            entry.mutes = count
-                        elseif row.action == "plyjail" then
-                            entry.jails = count
-                        elseif row.action == "plystrip" then
-                            entry.strips = count
-                        end
-                    end
-                end
-
-                lia.db.query([[SELECT steamName AS name, steamID, userGroup FROM lia_players]], function(playerRows)
-                    for _, row in ipairs(playerRows or {}) do
-                        local steamID = row.steamID
-                        if steamID and steamID ~= "" then
-                            local entry = ensureEntry(steamID, row.name)
-                            entry.usergroup = row.userGroup or ""
-                        end
-                    end
-
-                    local list = {}
-                    for _, info in pairs(summary) do
-                        info.warnings = info.warnings or 0
-                        info.tickets = info.tickets or 0
-                        info.kicks = info.kicks or 0
-                        info.kills = info.kills or 0
-                        info.respawns = info.respawns or 0
-                        info.blinds = info.blinds or 0
-                        info.mutes = info.mutes or 0
-                        info.jails = info.jails or 0
-                        info.strips = info.strips or 0
-                        info.usergroup = info.usergroup or ""
-                        list[#list + 1] = info
-                    end
-
-                    d:resolve(list)
-                end)
-            end)
-        end)
-    end)
-    return d
-end
-
-net.Receive("liaRequestStaffSummary", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestStaffSummary", "hasPrivilege(viewStaffManagement)=", tostring(client:hasPrivilege("viewStaffManagement")), "finalResult=", tostring(client:hasPrivilege("viewStaffManagement")))
-    if not client:hasPrivilege("viewStaffManagement") then return end
-    buildSummary():next(function(data) lia.net.writeBigTable(client, "liaStaffSummary", data) end)
-end)
-
-net.Receive("liaRequestPlayers", function(_, client)
-    if not client:hasPrivilege("canAccessPlayerList") then return end
-    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local query = [[
-SELECT steamName, steamID, userGroup, firstJoin, lastOnline, totalOnlineTime,
-    (SELECT COUNT(*) FROM lia_characters WHERE steamID = lia_players.steamID AND schema = %s) AS characterCount,
-    (SELECT COUNT(*) FROM lia_warnings WHERE warnedSteamID = lia_players.steamID) AS warnings,
-    (SELECT COUNT(*) FROM lia_ticketclaims WHERE requesterSteamID = lia_players.steamID) AS ticketsRequested,
-    (SELECT COUNT(*) FROM lia_ticketclaims WHERE adminSteamID = lia_players.steamID) AS ticketsClaimed
-FROM lia_players
-]]
-    query = string.format(query, lia.db.convertDataType(gamemode))
-    lia.db.query(query, function(data)
-        data = data or {}
-        for _, row in ipairs(data) do
-            local ply = player.GetBySteamID(tostring(row.steamID))
-            if IsValid(ply) then row.totalOnlineTime = ply:getPlayTime() end
-        end
-
-        lia.net.writeBigTable(client, "liaAllPlayers", data)
-    end)
-end)
 
 local protectedPlayerEntityClasses = {
     viewmodel = true,

@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 net.Receive("liaRequestFactionMembers", function(_, client)
     local factionUniqueID = net.ReadString()
     if not factionUniqueID or factionUniqueID == "" then return end
@@ -68,7 +68,6 @@ net.Receive("liaKickCharacterToBase", function(_, client)
             hook.Run("PlayerLoadout", target)
             targetChar:save()
             client:notifySuccess(string.format("%s has been transferred to %s.", target:Name(), defaultFaction.name))
-            lia.log.add(client, "kickToBaseFaction", target:Name(), oldFactionData and oldFactionData.name or tostring(oldFaction), defaultFaction.name)
         end
     end
 
@@ -92,7 +91,6 @@ net.Receive("liaKickCharacterToBase", function(_, client)
             }, nil, "characters", "id = " .. characterID)
 
             client:notifySuccess(string.format("%s has been transferred to %s.", "Character", defaultFaction.name))
-            lia.log.add(client, "kickToBaseFaction", "Character", currentFactionData and currentFactionData.name or tostring(currentFaction), defaultFaction.name)
         end)
     end
 end)

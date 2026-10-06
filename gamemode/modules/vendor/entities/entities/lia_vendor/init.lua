@@ -1,4 +1,4 @@
-﻿function ENT:SpawnFunction(client, trace)
+function ENT:SpawnFunction(client, trace)
     local angles = (trace.HitPos - client:GetPos()):Angle()
     angles.r = 0
     angles.p = 0
@@ -16,7 +16,6 @@ function ENT:Use(activator)
         return
     end
 
-    lia.log.add(activator, "vendorAccess", lia.vendor.getVendorProperty(self, "name"))
     self.receivers = self.receivers or {}
     self.receivers[#self.receivers + 1] = activator
     activator.liaVendor = self
@@ -98,7 +97,6 @@ function ENT:removeReceiver(client, requestedByPlayer)
     if not lia.shuttingDown then
         net.Start("liaVendorExit")
         net.Send(client)
-        lia.log.add(client, "vendorExit", lia.vendor.getVendorProperty(self, "name"))
     end
 end
 

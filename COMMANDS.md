@@ -14,7 +14,7 @@ follows below.
 
 | Area | Commands |
 | --- | --- |
-| Character basics | `playtime`, `charid`, `charlist`, `chardesc`, `charsetdesc`, `charsetname`, `charsetmodel`, `chargetmodel`, `getmodel`, `charsetscale`, `charsetjump`, `chargetup`, `fallover`, `forcefallover`, `forcegetup`, `returntodeathpos` |
+| Character basics | `playtime`, `charid`, `chardesc`, `charsetdesc`, `charsetname`, `charsetmodel`, `chargetmodel`, `getmodel`, `charsetscale`, `charsetjump`, `chargetup`, `fallover`, `forcefallover`, `forcegetup`, `returntodeathpos` |
 | Character administration | `charkill`, `charkick`, `charban`, `charunban`, `charbanoffline`, `charunbanoffline`, `charwipe`, `charwipeoffline`, `clearinv`, `chargiveitem`, `charsetmoney`, `charaddmoney`, `charsetattrib`, `charaddattrib`, `charsetspeed`, `charsetskin`, `charsetbodygroup`, `chareditbodygroups` |
 | Player moderation | `plyban`, `plyunban`, `plykick`, `plykill`, `plyslay`, `plyrespawn`, `forcerespawn`, `plyfreeze`, `plyunfreeze`, `plygag`, `plyungag`, `plymute`, `plyunmute`, `plyblind`, `plyunblind`, `plyblindfade`, `blindfadeall`, `warn`, `viewwarns`, `viewwarnsissued` |
 | Player movement/state | `plybring`, `plygoto`, `plyreturn`, `plytransfer`, `plyjail`, `plyunjail`, `plycloak`, `plyuncloak`, `plygod`, `plyungod`, `plyignite`, `plyextinguish`, `plystrip`, `plyspectate`, `stopspectate` |
@@ -33,7 +33,7 @@ follows below.
 
 ```text
 playtime, charid, plygetplaytime, plycheckid, checkid, managesitrooms, addsitroom,
-sendtositroom, returnsitroom, charkill, charlist, plyban, plykick, plykill,
+sendtositroom, returnsitroom, charkill, plyban, plykick, plykill,
 plyunban, plyfreeze, plyunfreeze, plyslay, plyrespawn, plyblind, plyunblind,
 plyblindfade, blindfadeall, plygag, plyungag, plymute, plyunmute, plybring,
 plygoto, plyreturn, plyjail, plyunjail, plycloak, plyuncloak, plygod, plyungod,

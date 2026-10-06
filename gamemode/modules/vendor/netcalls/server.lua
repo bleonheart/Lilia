@@ -1,4 +1,4 @@
-﻿net.Receive("liaVendorExit", function(_, client)
+net.Receive("liaVendorExit", function(_, client)
     local vendor = client.liaVendor
     if IsValid(vendor) then vendor:removeReceiver(client, true) end
 end)
@@ -8,7 +8,6 @@ net.Receive("liaVendorEdit", function(_, client)
     if not client:canEditVendor() then return end
     local vendor = client.liaVendor
     if not IsValid(vendor) or not lia.vendor.editor[key] then return end
-    lia.log.add(client, "vendorEdit", vendor, key)
     hook.Run("OnVendorEdited", client, vendor, key)
     lia.vendor.editor[key](vendor, client)
     hook.Run("UpdateEntityPersistence", vendor)
@@ -38,7 +37,6 @@ net.Receive("liaVendorLoadPreset", function(_, client)
     presetName = presetName:Trim():lower()
     vendor:loadPreset(presetName)
     client:notifyInfo(string.format("Vendor preset '%s' has been loaded successfully", presetName))
-    lia.log.add(client, "vendorPresetLoad", presetName)
 end)
 
 net.Receive("liaVendorDeletePreset", function(_, client)
@@ -63,7 +61,6 @@ net.Receive("liaVendorDeletePreset", function(_, client)
     lia.vendor.presets[presetName] = nil
     lia.data.set("vendor_presets", lia.vendor.presets)
     client:notifySuccess(string.format("Vendor preset '%s' has been deleted.", presetName))
-    lia.log.add(client, "vendorPresetDelete", presetName)
     net.Start("liaVendorSyncPresets")
     net.WriteTable(lia.vendor.presets)
     net.Broadcast()
@@ -92,7 +89,6 @@ net.Receive("liaVendorSavePreset", function(_, client)
     lia.vendor.presets[presetName] = validItems
     lia.data.set("vendor_presets", lia.vendor.presets)
     client:notifyInfo(string.format("Vendor preset '%s' has been saved successfully", presetName))
-    lia.log.add(client, "vendorPresetSave", presetName)
     net.Start("liaVendorSyncPresets")
     net.WriteTable(lia.vendor.presets)
     net.Broadcast()

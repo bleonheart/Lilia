@@ -1,4 +1,4 @@
-﻿lia.admin = lia.admin or {}
+lia.admin = lia.admin or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.privileges = lia.admin.privileges or {}
 lia.admin.privilegeCategories = lia.admin.privilegeCategories or {}
@@ -604,7 +604,6 @@ function lia.admin.hasAccess(ply, privilege)
     if not lia.admin.privileges[privilege] then
         if SERVER then
             local playerInfo = IsValid(ply) and ply:Nick() .. " (" .. ply:SteamID() .. ")" or "Unknown"
-            lia.log.add(ply, "missingPrivilege", privilege, playerInfo, grp)
         end
         return groupLevel >= adminLevel
     end
@@ -1051,16 +1050,13 @@ if SERVER then
 
         local function logAdminAction(logType, ...)
             if IsValid(admin) then
-                lia.log.add(admin, logType, ...)
             else
-                lia.log.add(nil, "command", string.format("Console executed %s on %s", tostring(cmd), IsValid(target) and target:Name() or tostring(victim)))
             end
         end
 
         local privilegeID = lia.admin.getCommandPrivilegeID(cmd)
         if not isConsoleAdmin and not lia.admin.hasAccess(admin, privilegeID) then
             notifyAdmin("error", "noPerm")
-            lia.log.add(admin, "unauthorizedCommand", cmd)
             return false
         end
 

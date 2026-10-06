@@ -1,4 +1,4 @@
-﻿ITEM.name = "Bag"
+ITEM.name = "Bag"
 ITEM.desc = "A bag to hold more items."
 ITEM.model = "models/props_c17/suitcase001a.mdl"
 ITEM.category = "Storage"
@@ -83,7 +83,6 @@ ITEM.functions.Open = {
         local inventory = item:getInv()
         if not inventory then
             if SERVER then
-                lia.log.add(client, "itemInteractionFailed", "open", item:getName())
                 client:notifyError(string.format("This bag has no inventory."))
             end
             return false
@@ -106,7 +105,6 @@ ITEM.functions.Open = {
         if SERVER and not canRun then
             local reason = IsValid(item.entity) and "bagOnGround" or "bagNoInventory"
             client:notifyErrorLocalized(reason)
-            lia.log.add(client, "itemInteractionFailed", "open", item:getName())
         end
         return canRun
     end

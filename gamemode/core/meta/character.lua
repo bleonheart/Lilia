@@ -1,4 +1,4 @@
-﻿local characterMeta = lia.meta.character or {}
+local characterMeta = lia.meta.character or {}
 characterMeta.__index = characterMeta
 characterMeta.id = characterMeta.id or 0
 characterMeta.vars = characterMeta.vars or {}
@@ -504,7 +504,6 @@ if SERVER then
     function characterMeta:takeMoney(amount)
         amount = math.abs(amount)
         self:giveMoney(-amount)
-        lia.log.add(self:getPlayer(), "money", -amount)
         return true
     end
 

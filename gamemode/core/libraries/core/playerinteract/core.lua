@@ -1,4 +1,4 @@
-﻿local VOICE_WHISPERING = "whispering"
+local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
 lia.playerinteract = lia.playerinteract or {}
@@ -188,7 +188,6 @@ if SERVER then
                 local originalAmount = tonumber(amount) or 0
                 amount = math.floor(originalAmount)
                 if originalAmount ~= amount and originalAmount > 0 then
-                    lia.log.add(client, "moneyDupeAttempt", "Attempted to give " .. tostring(originalAmount) .. " money (floored to " .. amount .. ")")
                     for _, admin in player.Iterator() do
                         if admin:IsAdmin() then admin:notify(string.format("%s attempted to %s with decimal amount %s (floored to %s) - potential money duping!", client:Name(), "givemoney", tostring(originalAmount), tostring(amount))) end
                     end
@@ -267,7 +266,11 @@ else
         local oldThink = radial.Think
         local oldOnRemove = radial.OnRemove
         function radial:Think()
-            if closeKey and not input.IsKeyDown(closeKey) then self:Remove() return end
+            if closeKey and not input.IsKeyDown(closeKey) then
+                self:Remove()
+                return
+            end
+
             oldThink(self)
         end
 
@@ -312,7 +315,11 @@ else
             end
         end
 
-        if #(radial:GetCurrentOptions()) == 0 then radial:Remove() return end
+        if #radial:GetCurrentOptions() == 0 then
+            radial:Remove()
+            return
+        end
+
         hook.Run("InteractionMenuOpened", radial)
         return radial
     end

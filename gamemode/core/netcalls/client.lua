@@ -5,16 +5,6 @@ net.Receive("liaSetWaypoint", function()
     LocalPlayer():setWaypoint(name, pos, logo ~= "" and logo or nil)
 end)
 
-net.Receive("liaSetWaypointWithLogo", function()
-    local name = net.ReadString()
-    local pos = net.ReadVector()
-    local logo = net.ReadString()
-    local hasOnReach = net.ReadBool()
-    local onReach = nil
-    if hasOnReach then onReach = net.ReadString() end
-    LocalPlayer():setWaypoint(name, pos, logo, onReach)
-end)
-
 net.Receive("liaWeaponOverrideSync", function()
     local isBulkSync = net.ReadBool()
     if isBulkSync then
@@ -362,13 +352,6 @@ net.Receive("liaServerChatAddTextShadowed", function()
     if not IsColor(args[1]) or not isstring(args[2]) or not IsColor(args[3]) then chat.AddText(unpack(args)) end
 end)
 
-net.Receive("liaProvideServerPassword", function()
-    local pw = net.ReadString()
-    if not isstring(pw) or pw == "" then return end
-    SetClipboardText(pw)
-    chat.AddText(Color(0, 200, 0), "Server password copied to clipboard.")
-end)
-
 net.Receive("liaBlindTarget", function()
     local enabled = net.ReadBool()
     if enabled then
@@ -541,18 +524,6 @@ net.Receive("liaCharVar", function()
             hook.Run("OnCharNetVarChanged", character, key, oldVar, value)
         end
     end)
-end)
-
-net.Receive("liaItemData", function()
-    local uniqueID = net.ReadString()
-    local id = net.ReadUInt(32)
-    local data = net.ReadTable()
-    local invID = net.ReadType()
-    local item = lia.item.new(uniqueID, id)
-    item.data = {}
-    if data then item.data = data end
-    item.invID = invID or 0
-    hook.Run("ItemInitialized", item)
 end)
 
 net.Receive("liaInvData", function()
@@ -1223,20 +1194,6 @@ net.Receive("liaEmitUrlSound", function()
     end
 end)
 
-net.Receive("liaNetMessage", function()
-    local name = net.ReadString()
-    local args = net.ReadTable()
-    if lia.net.isCacheHit(name, args) then return end
-    if lia.net.registry[name] then
-        local success, err = pcall(lia.net.registry[name], LocalPlayer(), unpack(args))
-        if not success then lia.error(string.format("Error in net message callback ('%s'): %s", name, tostring(err))) end
-    else
-        lia.error(string.format("Received unregistered net message: %s", name))
-    end
-
-    lia.net.addToCache(name, args)
-end)
-
 net.Receive("liaAssureClientSideAssets", function()
     lia.webcontent.clearCache(true)
     local downloadQueue = {}
@@ -1400,15 +1357,6 @@ net.Receive("liaDoorPerm", function()
                 return
             end
         end
-    end
-end)
-
-net.Receive("liaDoorData", function()
-    local door = net.ReadEntity()
-    local syncData = net.ReadTable()
-    if IsValid(door) and istable(syncData) then
-        lia.doors.stored[door] = syncData
-        hook.Run("DoorDataReceived", door, syncData)
     end
 end)
 

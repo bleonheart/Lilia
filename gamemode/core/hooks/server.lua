@@ -1,4 +1,4 @@
-﻿local GM = GM or GAMEMODE
+local GM = GM or GAMEMODE
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
@@ -155,7 +155,6 @@ function GM:OnPickupMoney(client, moneyEntity)
     if moneyEntity and IsValid(moneyEntity) then
         local amount = moneyEntity:getAmount()
         client:notifyMoney(string.format("You picked up %s.", lia.currency.get(amount)))
-        lia.log.add(client, "moneyPickedUp", amount)
     end
 end
 
@@ -310,7 +309,6 @@ local logTypeMap = {
 function GM:CheckPassword(steamID64, ipAddress, serverPassword, clientPassword, playerName)
     local steamID = util.SteamIDFrom64(steamID64)
     if serverPassword ~= "" and serverPassword ~= clientPassword then
-        lia.log.add(nil, "failedPassword", steamID, playerName, serverPassword, clientPassword)
         lia.information("Passwords Do Not Match For" .. " " .. tostring(playerName) .. " (" .. tostring(steamID) .. ").")
         return false, "Passwords Do Not Match"
     end
@@ -330,9 +328,7 @@ function GM:PlayerSay(client, message)
     lia.chat.send(client, chatType, message, anonymous)
     if lia.chat.classes[chatType] then
         if logType == "chat" then
-            lia.log.add(client, logType, chatType and chatType:upper() or "??", message)
         else
-            lia.log.add(client, logType, message)
         end
     end
 

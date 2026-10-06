@@ -1,9 +1,8 @@
-﻿local function CheckDuplicationScale(client, entities)
+local function CheckDuplicationScale(client, entities)
     entities = entities or {}
     for _, ent in pairs(entities) do
         if ent.ModelScale and ent.ModelScale > 10 then
             client:notifyError(string.format("A model within this duplication exceeds the size limit!"))
-            lia.log.add(client, "dupeCrashAttempt")
             return false
         end
 
@@ -36,4 +35,3 @@ hook.Add("CanTool", "liaAdvDupe", function(client, _, tool)
     if not CheckDuplicationScale(client, toolobj.Entities) then return false end
 end)
 
-lia.log.addType("dupeCrashAttempt", function(client) return string.format("Player '%s' [%s] attempted to duplicate oversized entities.", IsValid(client) and client:Name() or "Unknown", IsValid(client) and client:SteamID() or "N/A") end, "Security")

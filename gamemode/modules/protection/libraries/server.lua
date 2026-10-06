@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 local function getEntityOwner(entity)
     if not IsValid(entity) then return nil end
     if entity.GetOwner then
@@ -67,13 +67,11 @@ function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
             local damageCooldown = lia.config.get("OnDamageCharacterSwitchCooldownTimer", 15)
             local switchCooldown = lia.config.get("CharacterSwitchCooldownTimer", 5)
             if damageCooldown > 0 and client.LastDamaged and client.LastDamaged > CurTime() - damageCooldown then
-                lia.log.add(client, "permissionDenied", "switch character (recent damage)")
                 return false, "You took damage too recently to switch characters!"
             end
 
             local loginTime = character:getLoginTime()
             if switchCooldown > 0 and loginTime + switchCooldown > os.time() then
-                lia.log.add(client, "permissionDenied", "switch character (cooldown)")
                 return false, "You are on cooldown!"
             end
         end
@@ -210,7 +208,6 @@ function MODULE:PlayerAuthed(client, steamid)
     if KnownCheaters[steamID64] or KnownCheaters[ownerSteamID64] then
         lia.adminstrator.applyPunishment(client, "using third-party cheats", false, true, 0)
         lia.adminstrator.notifyAdmin(string.format("%s (%s) was banned for cheating or using an alt of a cheater.", steamName, steamID))
-        lia.log.add(nil, "cheaterBanned", steamName, steamID)
         return
     end
 
@@ -218,7 +215,6 @@ function MODULE:PlayerAuthed(client, steamid)
         if not IsValid(client) or not banRecord then return end
         lia.adminstrator.applyPunishment(client, "using a family-shared account that is blacklisted", false, true, 0)
         lia.adminstrator.notifyAdmin(string.format("%s (%s) was banned for using a family-shared account that is blacklisted.", steamName, steamID))
-        lia.log.add(nil, "altBanned", steamName, steamID)
     end)
 
     local whitelistedSteamIDs = collectSteamIDs("GetWhitelistedSteamIDs")
@@ -230,7 +226,6 @@ function MODULE:PlayerAuthed(client, steamid)
             lia.adminstrator.applyPunishment(client, reason, false, true, 0)
             if isAlt then
                 lia.adminstrator.notifyAdmin(string.format("%s (%s) was banned for using a family-shared account that is blacklisted.", steamName, steamID))
-                lia.log.add(nil, "altBanned", steamName, steamID)
             end
             return true
         end
@@ -276,7 +271,6 @@ function MODULE:PlayerLeaveVehicle(client, entity)
         end)
     end
 
-    lia.log.add(client, "vehicleExit", entity:GetClass(), entity:GetModel())
 end
 
 function MODULE:OnEntityCreated(entity)
@@ -329,19 +323,16 @@ end
 
 function MODULE:PlayerEnteredVehicle(client, entity)
     if entity:GetClass() == "prop_vehicle_prisoner_pod" then entity:RemoveEFlags(EFL_NO_THINK_FUNCTION) end
-    lia.log.add(client, "vehicleEnter", entity:GetClass(), entity:GetModel())
 end
 
 function MODULE:OnPhysgunPickup(client, entity)
     if not lia.config.get("PropProtection", true) then return end
     if (entity:isProp() or entity:isItem()) and entity:GetCollisionGroup() == COLLISION_GROUP_NONE then entity:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR) end
-    lia.log.add(client, "physgunPickup", entity:GetClass(), entity:GetModel())
 end
 
 function MODULE:PhysgunDrop(client, entity)
     if not lia.config.get("PropProtection", true) then return end
     if entity:isProp() and entity:isItem() then timer.Simple(5, function() if IsValid(entity) and entity:GetCollisionGroup() == COLLISION_GROUP_PASSABLE_DOOR then entity:SetCollisionGroup(COLLISION_GROUP_NONE) end end) end
-    lia.log.add(client, "physgunDrop", entity:GetClass(), entity:GetModel())
 end
 
 function MODULE:OnPhysgunFreeze(_, physObj, entity, client)
@@ -368,7 +359,6 @@ function MODULE:OnPhysgunFreeze(_, physObj, entity, client)
         entity:SetCollisionGroup(COLLISION_GROUP_NONE)
     end
 
-    lia.log.add(client, "physgunFreeze", entity:GetClass(), entity:GetModel())
     return true
 end
 
@@ -381,10 +371,8 @@ function MODULE:PlayerInitialSpawn(client)
     net.Send(client)
     timer.Create(timerName, 10, 1, function()
         if IsValid(client) and client.VerifyCheatsPending then
-            lia.log.add(client, "hackAttempt", "VerifyCheatsTimeout")
             hook.Run("PlayerCheatDetected", client)
             if IsValid(client) then
-                lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID())
                 client:notifyError(string.format("Cheating detected. Staff have been notified."))
                 for _, p in player.Iterator() do
                     local isStaffOnDuty = p:isStaffOnDuty()

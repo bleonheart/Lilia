@@ -1,4 +1,4 @@
-﻿local playerMeta = FindMetaTable("Player")
+local playerMeta = FindMetaTable("Player")
 do
     playerMeta.steamName = playerMeta.steamName or playerMeta.Name
     playerMeta.SteamName = playerMeta.steamName
@@ -906,7 +906,6 @@ if SERVER then
         local currentMoney = character:getMoney()
         local totalMoney = currentMoney + amount
         character:setMoney(totalMoney)
-        lia.log.add(self, "money", amount)
         return true
     end
 

@@ -1,4 +1,4 @@
-﻿local function canRecog(ply)
+local function canRecog(ply)
     return lia.config.get("RecognitionEnabled", true) and ply:getChar() and ply:Alive()
 end
 
@@ -43,7 +43,6 @@ local function CharRecognize(ply, lvl, nm)
     if count == 0 then return end
     ply:notifySuccess(string.format("Gave Recognition to %s people.", count))
     for _, v in ipairs(tgt) do
-        lia.log.add(ply, "charRecognize", v:getChar():getID(), nm)
     end
 
     net.Start("liaRgnDone")
@@ -89,7 +88,6 @@ lia.playerinteract.addInteraction("giveRecognitionToPerson", {
         promptName(ply, function(nm)
             if tgt:getChar():recognize(ply:getChar(), nm) then
                 ply:notifySuccess(string.format("Gave Recognition to %s people.", 1))
-                lia.log.add(ply, "charRecognize", tgt:getChar():getID(), nm)
                 net.Start("liaRgnDone")
                 net.Send(ply)
                 hook.Run("OnCharRecognized", ply)
