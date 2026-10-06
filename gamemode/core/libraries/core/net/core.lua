@@ -262,7 +262,6 @@ if SERVER then
     }
 
     local originals = trace.originals
-    local enabled = CreateConVar("lia_nettrace_enabled", "1", FCVAR_ARCHIVE, "Enables automatic Lilia outgoing net traffic diagnostics.")
 
     local function formatBytes(bytes)
         bytes = tonumber(bytes) or 0
@@ -532,7 +531,6 @@ if SERVER then
     end
 
     function trace.start(label, target, duration)
-        if not enabled:GetBool() then return end
         duration = math.Clamp(tonumber(duration) or 10, 1, 120)
         trace.nextSessionID = trace.nextSessionID + 1
         local id = trace.nextSessionID
@@ -658,7 +656,7 @@ if SERVER then
     end
 
     local function startJoinTrace(client)
-        if not enabled:GetBool() or not IsValid(client) or trace.joinSessions[client] then return end
+        if not IsValid(client) or trace.joinSessions[client] then return end
         local id = trace.start("join:" .. client:Nick(), client, 20)
         if not id then return end
         trace.joinSessions[client] = id
@@ -670,11 +668,11 @@ if SERVER then
     hook.Add("PlayerAuthed", "liaNetTracePlayerAuthed", startJoinTrace)
     hook.Add("PlayerInitialSpawn", "liaNetTracePlayerInitialSpawn", startJoinTrace)
     hook.Add("PlayerLoadedChar", "liaNetTraceCharacterLoad", function(client)
-        if enabled:GetBool() and IsValid(client) then trace.start("character:" .. client:Nick(), client, 10) end
+        if IsValid(client) then trace.start("character:" .. client:Nick(), client, 10) end
     end)
 
     hook.Add("OnReloaded", "liaNetTraceReload", function()
-        if enabled:GetBool() then trace.start("reload", nil, 8) end
+        trace.start("reload", nil, 8)
     end)
 
     concommand.Add("lia_nettrace_start", function(client, _, args)
