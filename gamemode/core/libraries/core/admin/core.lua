@@ -10,6 +10,8 @@ lia.admin.externalPrivilegeIDsByName = lia.admin.externalPrivilegeIDsByName or {
 lia.admin.missingGroups = lia.admin.missingGroups or {}
 lia.admin._lastSyncPrivilegeCount = lia.admin._lastSyncPrivilegeCount or 0
 lia.admin._lastSyncGroupCount = lia.admin._lastSyncGroupCount or 0
+lia.admin._loaded = lia.admin._loaded or false
+lia.admin._privilegeSavePending = lia.admin._privilegeSavePending or false
 lia.admin.DefaultGroups = {
     user = 1,
     admin = 2,
@@ -615,7 +617,7 @@ function lia.admin.hasAccess(ply, privilege)
     return shouldGrant(grp, min)
 end
 
-function lia.admin.save(noNetwork, reason)
+function lia.admin.save(noNetwork)
     sanitizeBaseGroups(lia.admin.groups, "lia.admin.save")
     rebuildPrivileges()
     local rows = {}
@@ -630,12 +632,6 @@ function lia.admin.save(noNetwork, reason)
             types = util.TableToJSON(info.types or {})
         }
     end
-
-    lia.admin._saveTraceCount = (lia.admin._saveTraceCount or 0) + 1
-    local caller = debug.getinfo(2, "Sl")
-    local source = caller and tostring(caller.short_src or caller.source or "unknown") or "unknown"
-    local line = caller and tonumber(caller.currentline) or 0
-    print(string.format("[Lilia Admin Trace] save #%d | reason=%s | rows=%d | loading=%s | noNetwork=%s | caller=%s:%d", lia.admin._saveTraceCount, tostring(reason or "unspecified"), #rows, tostring(lia.admin._loading == true), tostring(noNetwork == true), source, line))
 
     lia.db.query("DELETE FROM lia_admin")
     lia.db.bulkInsert("admin", rows)
@@ -654,6 +650,17 @@ function lia.admin.save(noNetwork, reason)
 
     if not hasReady then return end
     lia.admin.sync()
+end
+
+local function queuePrivilegeSave()
+    if not SERVER then return end
+    lia.admin._privilegeSavePending = true
+    if not lia.admin._loaded or timer.Exists("liaAdminPrivilegeSave") then return end
+    timer.Create("liaAdminPrivilegeSave", 0, 1, function()
+        if not lia.admin._loaded or not lia.admin._privilegeSavePending then return end
+        lia.admin._privilegeSavePending = false
+        lia.admin.save()
+    end)
 end
 
 function lia.admin.registerPrivilege(priv)
@@ -703,7 +710,7 @@ function lia.admin.registerPrivilege(priv)
         Description = lia.admin.privilegeDescriptions[id]
     })
 
-    if SERVER then lia.admin.save(false, "registerPrivilege:" .. id) end
+    queuePrivilegeSave()
 end
 
 function lia.admin.unregisterPrivilege(id)
@@ -736,7 +743,7 @@ function lia.admin.unregisterPrivilege(id)
         ID = id
     })
 
-    if SERVER then lia.admin.save(false, "unregisterPrivilege:" .. id) end
+    queuePrivilegeSave()
 end
 
 function lia.admin.applyInheritance(groupName)
@@ -823,8 +830,14 @@ function lia.admin.load()
 
         local sanitized = sanitizeBaseGroups(lia.admin.groups, "lia.admin.load")
         rebuildPrivileges()
-        if created or sanitized then lia.admin.save(true, created and sanitized and "load:created+sanitized" or created and "load:created" or "load:sanitized") end
+        local shouldSave = created or sanitized or lia.admin._privilegeSavePending
         lia.admin._loading = false
+        lia.admin._loaded = true
+        if shouldSave then
+            lia.admin._privilegeSavePending = false
+            lia.admin.save(true)
+        end
+
         continueLoad(groups)
     end)
 end
