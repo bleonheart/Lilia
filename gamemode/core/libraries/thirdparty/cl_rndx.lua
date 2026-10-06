@@ -1,5 +1,4 @@
 local RNDX = {}
-
 local bit_band = bit.band
 local surface_SetDrawColor = surface.SetDrawColor
 local surface_SetMaterial = surface.SetMaterial
@@ -529,5 +528,4 @@ function RNDX.setDefaultShape(shape)
 end
 
 lia.rndx = RNDX
-
 return RNDX

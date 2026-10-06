@@ -71,7 +71,7 @@ function MODULE:CanPlayerInteractItem(_, action, itemObject)
 end
 
 function MODULE:EntityRemoved(entity)
-    if self:IsSuitableForTrunk(entity) == false then return end
+    if not self:IsSuitableForTrunk(entity) then return end
     local storageInv = lia.inventory.instances[entity:getNetVar("inv")]
     if storageInv then storageInv:delete() end
     entity.liaStorageInitPromise = nil
@@ -79,7 +79,7 @@ function MODULE:EntityRemoved(entity)
 end
 
 function MODULE:OnEntityCreated(entity)
-    if self:IsSuitableForTrunk(entity) == false then return end
+    if not self:IsSuitableForTrunk(entity) then return end
     hook.Run("InitializeStorage", entity)
 end
 

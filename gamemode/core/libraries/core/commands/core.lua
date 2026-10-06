@@ -5280,7 +5280,7 @@ lia.command.add("trunk", {
             return
         end
 
-        if hook.Run("IsSuitableForTrunk", entity) == false then
+        if not hook.Run("IsSuitableForTrunk", entity) == false then
             client:notifyError(string.format("You're not looking at any vehicle!"))
             return
         end

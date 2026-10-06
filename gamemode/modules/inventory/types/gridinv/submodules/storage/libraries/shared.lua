@@ -1,11 +1,20 @@
 ﻿function MODULE:IsSuitableForTrunk(ent)
-    if IsValid(ent) and ((ent.isSimfphysCar and ent:isSimfphysCar()) or (ent:IsVehicle() and ent:getNetVar("hasStorage", false))) then return true end
+    if not IsValid(ent) then return false end
+    if ent.isSimfphysCar and ent:isSimfphysCar() then return true end
+    if ent:IsVehicle() and ent:getNetVar("hasStorage", false) then return true end
+    return false
 end
 
 function MODULE:InitializeStorage(entity)
     if not IsValid(entity) then
         local d = deferred.new()
         d:reject("Invalid entity selected.")
+        return d
+    end
+
+    if not self:IsSuitableForTrunk(entity) then
+        local d = deferred.new()
+        d:reject("Entity is not suitable for trunk storage.")
         return d
     end
 
@@ -53,11 +62,11 @@ function MODULE:InitializeStorage(entity)
                 return inv
             end)
             return d
-        else
-            local d = deferred.new()
-            d:reject("Storage Init Server Only")
-            return d
         end
+
+        local d = deferred.new()
+        d:reject("Storage Init Server Only")
+        return d
     end
 
     entity.liaStorageInitPromise = tryInitialize()
