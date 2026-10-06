@@ -138,7 +138,7 @@ function PANEL:updateCreationModelEntity(context)
     self.modelEntity = ClientsideModel(mdl or "models/error.mdl", RENDERGROUP_OPAQUE)
     if not IsValid(self.modelEntity) then return end
     self.modelEntity:SetSkin(lia.faction.normalizeSkinValue(context.skin, skin))
-    local finalGroups = istable(context.groups) and context.groups or istable(groups) and groups
+    local finalGroups = istable(context.bodygroups) and context.bodygroups or istable(context.groups) and context.groups or istable(groups) and groups
     if finalGroups then lia.util.applyBodygroups(self.modelEntity, finalGroups) end
     hook.Run("SetupPlayerModel", self.modelEntity)
     local pos, ang

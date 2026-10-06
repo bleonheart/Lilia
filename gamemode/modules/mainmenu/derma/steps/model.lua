@@ -1,6 +1,7 @@
 ﻿local PANEL = {}
 PANEL.creationOrder = 30
 PANEL.creationName = "Appearance"
+PANEL.creationWorldPreview = true
 
 function PANEL:getCreationModelSource()
     local factionIndex = self:getContext("faction")
@@ -227,9 +228,22 @@ function PANEL:addSkinControl(entity, defaultSkin)
     slider:DockMargin(0, 0, 0, 12)
     slider:SetText("")
     slider:SetRange(0, math.max(0, entity:SkinCount() - 1), 0)
-    slider:SetValue(self:getContext("skin", defaultSkin) or defaultSkin)
-    slider.OnValueChanged = function(_, value)
+    local context = self:getContext()
+    local faction, _, _, info = self:getCreationModelSource()
+    local selected = tonumber(self:getContext("skin", defaultSkin)) or defaultSkin
+    if faction and info and not lia.faction.isSkinAllowedForFaction(faction, selected, info, context.model) then selected = lia.faction.getDefaultAllowedSkinForFaction(faction, defaultSkin, info, context.model) end
+    slider:SetValue(selected)
+    self:setContext("skin", selected)
+    slider.OnValueChanged = function(control, value)
         value = math.Round(value)
+        local currentContext = self:getContext()
+        local currentFaction, _, _, currentInfo = self:getCreationModelSource()
+        if currentFaction and currentInfo and not lia.faction.isSkinAllowedForFaction(currentFaction, value, currentInfo, currentContext.model) then
+            local current = tonumber(self:getContext("skin", defaultSkin)) or defaultSkin
+            if math.Round(control:GetValue()) ~= current then control:SetValue(current) end
+            return
+        end
+
         self:setContext("skin", value)
         self:updateModelPanel()
     end
@@ -260,8 +274,19 @@ function PANEL:addBodygroupControls(entity, defaultGroups)
         local startVal = istable(ctxGroups) and (ctxGroups[i] or ctxGroups[tostring(i)]) or nil
         if startVal == nil and istable(defaultGroups) then startVal = defaultGroups[i] or defaultGroups[tostring(i)] end
         slider:SetValue(tonumber(startVal) or entity:GetBodygroup(i) or 0)
-        slider.OnValueChanged = function(_, val)
+        slider.OnValueChanged = function(control, val)
             val = math.Round(val)
+            local currentContext = self:getContext()
+            local currentFaction, _, _, currentInfo = self:getCreationModelSource()
+            local groupName = entity:GetBodygroupName(i)
+            if currentFaction and currentInfo and not lia.faction.isBodygroupValueAllowed(currentFaction, entity:GetModel(), i, val, groupName, currentInfo, currentContext.model) then
+                local groups = self:getContext("bodygroups")
+                local defaultValue = istable(defaultGroups) and (defaultGroups[i] or defaultGroups[tostring(i)]) or nil
+                local current = istable(groups) and tonumber(groups[i] or groups[tostring(i)]) or tonumber(defaultValue) or entity:GetBodygroup(i) or 0
+                if math.Round(control:GetValue()) ~= current then control:SetValue(current) end
+                return
+            end
+
             local groups = self:getContext("bodygroups")
             if not istable(groups) then groups = {} end
             groups[i] = val

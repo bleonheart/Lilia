@@ -40,6 +40,7 @@ end
 local PANEL = {}
 PANEL.creationOrder = 10
 PANEL.creationName = "Faction"
+PANEL.creationWorldPreview = true
 
 function PANEL:Init()
     self:Dock(FILL)

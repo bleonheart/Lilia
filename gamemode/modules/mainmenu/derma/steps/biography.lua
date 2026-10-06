@@ -1,6 +1,7 @@
 local PANEL = {}
 PANEL.creationOrder = 20
 PANEL.creationName = "Identity"
+PANEL.creationWorldPreview = true
 
 local function addHeading(parent, title, subtitle)
     local heading = parent:Add("DPanel")

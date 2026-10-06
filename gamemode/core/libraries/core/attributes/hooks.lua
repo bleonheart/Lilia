@@ -7,7 +7,13 @@ local function hasStartingAttributes()
     return false
 end
 
-local function styleRow(row)
+local function getStartingMax(key, attribute)
+    local maximum = hook.Run("GetAttributeStartingMax", LocalPlayer(), key)
+    if maximum == nil and attribute then maximum = attribute.startingMax end
+    return tonumber(maximum)
+end
+
+local function styleRow(row, key, attribute)
     row:SetTall(54)
     row:DockMargin(0, 0, 0, 8)
     row.Paint = function(panel, w, h)
@@ -26,11 +32,16 @@ local function styleRow(row)
         row.quantity:SetFont("LiliaFont.22")
         row.quantity:SetTextColor(lia.color.theme.text or color_white)
     end
+
+    local maximum = getStartingMax(key, attribute)
+    local description = tostring(attribute and attribute.desc or "No Description")
+    row:SetTooltip(description .. (maximum and " Max: " .. maximum or ""))
 end
 
 local PANEL = {}
 PANEL.creationOrder = 40
 PANEL.creationName = "Attributes"
+PANEL.creationWorldPreview = true
 
 function PANEL:Init()
     self.title:SetFont("LiliaFont.30")
@@ -39,15 +50,38 @@ function PANEL:Init()
     self.leftLabel:SetFont("LiliaFont.20")
     self.leftLabel:SetTextColor(lia.color.theme.theme)
     self.leftLabel:SetTall(38)
-    for _, row in pairs(self.attribs or {}) do
-        if IsValid(row) then styleRow(row) end
+    for key, row in pairs(self.attribs or {}) do
+        if IsValid(row) then styleRow(row, key, lia.attribs.list[key]) end
     end
 end
 
 function PANEL:addAttribute(key, attribute)
     local row = self.BaseClass.addAttribute(self, key, attribute)
-    if IsValid(row) then styleRow(row) end
+    if IsValid(row) then styleRow(row, key, attribute) end
     return row
+end
+
+function PANEL:onPointChange(key, delta)
+    local attribute = lia.attribs.list and lia.attribs.list[key]
+    if not attribute then return 0 end
+    local client = LocalPlayer()
+    self.total = hook.Run("GetMaxStartingAttributePoints", client, lia.config.get("StartingAttributePoints", 30)) or 0
+    local attribs = self:getContext("attribs", {})
+    local spent = 0
+    for _, quantity in pairs(attribs) do
+        spent = spent + (tonumber(quantity) or 0)
+    end
+
+    local quantity = tonumber(attribs[key]) or 0
+    local nextQuantity = quantity + delta
+    local nextSpent = spent + delta
+    local maximum = getStartingMax(key, attribute)
+    if nextQuantity < 0 or nextSpent < 0 or nextSpent > self.total or maximum and nextQuantity > maximum then return quantity end
+    attribs[key] = nextQuantity
+    self:setContext("attribs", attribs)
+    self.left = math.max(self.total - nextSpent, 0)
+    self:updatePointsLeft()
+    return nextQuantity
 end
 
 function PANEL:shouldSkip()

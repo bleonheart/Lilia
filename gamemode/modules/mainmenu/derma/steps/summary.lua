@@ -1,6 +1,7 @@
 ﻿local PANEL = {}
 PANEL.creationOrder = math.huge
 PANEL.creationName = "Review"
+PANEL.creationWorldPreview = true
 
 function PANEL:Init()
     self.title = self:Add("liaHeaderPanel")
@@ -87,9 +88,29 @@ function PANEL:buildDefaultSummary(context)
     local modelInfo = faction and lia.faction.getCharacterCreationModelInfo(faction, creationClass, context.model) or nil
     local modelData = modelInfo and lia.faction.getModelData(context.model, modelInfo) or nil
     if modelData then
+        local appearance = {string.format("%s  /  Skin %d", tostring(modelData.model), tonumber(context.skin) or tonumber(modelData.skin) or 0)}
+        local bodygroups = istable(context.bodygroups) and context.bodygroups or istable(context.groups) and context.groups or nil
+        if bodygroups then
+            local keys = {}
+            for key in pairs(bodygroups) do
+                local index = tonumber(key)
+                if index then keys[#keys + 1] = index end
+            end
+
+            table.sort(keys)
+            local values = {}
+            for _, index in ipairs(keys) do
+                local value = bodygroups[index]
+                if value == nil then value = bodygroups[tostring(index)] end
+                values[#values + 1] = tostring(index) .. "=" .. tostring(value)
+            end
+
+            if #values > 0 then appearance[#appearance + 1] = "Bodygroups: " .. table.concat(values, ", ") end
+        end
+
         summary[#summary + 1] = {
             title = "Appearance",
-            value = string.format("%s  /  Skin %d", tostring(modelData.model), tonumber(context.skin) or tonumber(modelData.skin) or 0)
+            value = table.concat(appearance, "\n")
         }
     end
 

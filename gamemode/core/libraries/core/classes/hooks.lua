@@ -95,6 +95,7 @@ end
 local PANEL = {}
 PANEL.creationOrder = 15
 PANEL.creationName = "Class"
+PANEL.creationWorldPreview = true
 
 function PANEL:Init()
     self:Dock(FILL)

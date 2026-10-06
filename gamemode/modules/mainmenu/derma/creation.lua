@@ -4,16 +4,30 @@ function PANEL:configureSteps()
     self:addStep(vgui.Create("liaCharacterModel"))
     hook.Run("ConfigureCharacterCreationSteps", self)
     self:addStep(vgui.Create("liaCharacterSummary"))
-    for index, step in ipairs(self.steps) do
-        step._creationSequence = index
+    local ordered = {}
+    local prioritized = {}
+    for _, step in ipairs(self.steps) do
+        if step._creationPriority then
+            prioritized[#prioritized + 1] = step
+        else
+            ordered[#ordered + 1] = step
+        end
     end
 
-    table.sort(self.steps, function(a, b)
+    table.sort(ordered, function(a, b)
         local aOrder = tonumber(a.creationOrder) or 35
         local bOrder = tonumber(b.creationOrder) or 35
-        if aOrder == bOrder then return a._creationSequence < b._creationSequence end
+        if aOrder == bOrder then return (a._creationSequence or 0) < (b._creationSequence or 0) end
         return aOrder < bOrder
     end)
+
+    table.sort(prioritized, function(a, b) return (a._creationSequence or 0) < (b._creationSequence or 0) end)
+    for _, step in ipairs(prioritized) do
+        local priority = math.Clamp(math.floor(step._creationPriority), 1, #ordered + 1)
+        table.insert(ordered, priority, step)
+    end
+
+    self.steps = ordered
 end
 
 function PANEL:updateModel()
@@ -38,7 +52,7 @@ function PANEL:updateModel()
     if not IsValid(entity) then return end
     entity:SetupBones()
     entity:SetSkin(lia.faction.normalizeSkinValue(self.context.skin, skin))
-    local finalGroups = istable(self.context.groups) and self.context.groups or istable(groups) and groups
+    local finalGroups = istable(self.context.bodygroups) and self.context.bodygroups or istable(self.context.groups) and self.context.groups or istable(groups) and groups
     if finalGroups then lia.util.applyBodygroups(entity, finalGroups) end
     hook.Run("ModifyCharacterModel", entity, self.context)
 end
@@ -46,7 +60,7 @@ end
 function PANEL:canCreateCharacter()
     local valid = {}
     for _, team in pairs(lia.faction.teams) do
-        if lia.faction.hasWhitelist(team.index) then valid[#valid + 1] = team.index end
+        if team.uniqueID ~= "staff" and lia.faction.hasWhitelist(team.index) then valid[#valid + 1] = team.index end
     end
 
     if #valid == 0 then return false, "You are unable to join any factions" end
@@ -125,7 +139,11 @@ function PANEL:showMessage(msg, ...)
         return
     end
 
-    if IsValid(self.message) then self.message:SetText(lia.lang.resolve(msg, ...):upper()) end
+    if IsValid(self.message) then
+        self.message:SetText(lia.lang.resolve(msg, ...):upper())
+        return
+    end
+
     local lbl = self:Add("DLabel")
     lbl:SetFont("LiliaFont.16")
     lbl:SetTextColor(lia.gui.character.color)
@@ -138,13 +156,10 @@ end
 function PANEL:addStep(step, priority)
     assert(IsValid(step), "Invalid panel for step")
     assert(step.isCharCreateStep, "Panel must inherit liaCharacterCreateStep")
-    if isnumber(priority) then
-        if step.creationOrder == nil then step.creationOrder = priority * 10 end
-        table.insert(self.steps, priority, step)
-    else
-        self.steps[#self.steps + 1] = step
-    end
-
+    self._creationSequence = (self._creationSequence or 0) + 1
+    step._creationSequence = self._creationSequence
+    step._creationPriority = isnumber(priority) and priority or nil
+    self.steps[#self.steps + 1] = step
     step:SetParent(self.content)
 end
 
@@ -201,26 +216,27 @@ function PANEL:onStepChanged(oldStep, newStep)
     local finish = self.curStep == #self.steps
     local key = finish and "finish" or "next"
     if IsValid(newStep) then
-        local shouldShowModel = true
+        local camera = {
+            liaCharacterFaction = {90, 30},
+            liaCharacterClass = {84, 34},
+            liaCharacterBiography = {74, 42},
+            liaCharacterModel = {64, 50},
+            liaCharacterAttributesPage = {78, 40},
+            liaCharacterSummary = {86, 34}
+        }
+        local view = istable(newStep.creationCamera) and newStep.creationCamera or camera[newStep:GetName()]
+        local shouldShowModel = newStep.creationWorldPreview == true or view ~= nil
+        view = view or {76, 40}
         if IsValid(self.model) then self.model:SetVisible(shouldShowModel and not (IsValid(lia.gui.character) and lia.gui.character.inWorldPreview)) end
         if IsValid(lia.gui.character) then
-            local camera = {
-                liaCharacterFaction = {90, 30},
-                liaCharacterClass = {84, 34},
-                liaCharacterBiography = {74, 42},
-                liaCharacterModel = {64, 50},
-                liaCharacterAttributesPage = {78, 40},
-                liaCharacterSummary = {86, 34}
-            }
-            local view = camera[newStep:GetName()] or {76, 40}
             lia.gui.character.creationCameraDistance = view[1]
             lia.gui.character.creationCameraSide = view[2]
-            lia.gui.character.inCharacterCreationModelStep = shouldShowModel or false
+            lia.gui.character.inCharacterCreationModelStep = shouldShowModel
             if shouldShowModel then
                 if IsValid(self.content) then
                     self.content:Dock(RIGHT)
-                    self.content:SetWide(ScrW() * 0.5)
-                    self.content:DockMargin(0, 64, 64, 96)
+                    self.content:SetWide(math.Clamp(ScrW() * 0.46, 520, 860))
+                    self.content:DockMargin(0, 68, 42, 88)
                 end
 
                 lia.gui.character.noBlur = true
