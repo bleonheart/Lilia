@@ -1,34 +1,40 @@
 # Lilia Net Message Audit
 
-This audit compares literal `net.Start` and `net.Receive` calls in the `lilia` gamemode. Dynamic senders and the `lilia_rp` schema were also checked to avoid reporting known false positives.
+Last rescanned: 2026-10-06.
+
+This audit compares literal `net.Start` and `net.Receive` calls in the active `lilia` gamemode and `lilia_rp` schema tree. Dynamic senders, big-table wrappers, module registrations, netstream calls, and schema gitmodules were checked to avoid known false positives. Hidden parked directories such as `modules/.modules` and `modules/.wip` are excluded from the active totals and reported separately.
 
 ## Summary
 
-- 199 unique literal `net.Start` names
-- 227 unique literal `net.Receive` names
+- 232 unique literal `net.Start` names across active Lilia and Lilia RP code
+- 259 unique literal `net.Receive` names across active Lilia and Lilia RP code
 - No wholly start-only messages
-- 25 receiver-only names
-- 3 receiver-only names have valid dynamic or external senders
+- 27 receiver-only names
+- 2 receiver-only names have valid dynamic or external senders
 - 1 receiver-only message appears intentional as a security honeypot
-- 24 probable orphan messages
-- 1 additional incomplete bidirectional flow: `liaViewClaims`
-- 2 framework big-table issues
-- 1 writer-only big-table message in a parked `lilia_rp/.modules` module
+- 23 confirmed-dead messages still have receivers; a 24th (`liaJobNpcCloseDialog`) now has only a stale registration
+- 1 additional probable receiver-only orphan message
+- 5 likely stale active registrations with no active `net` sender or receiver
+- 1 confirmed-dead receiver, `liaRequestAllPks`, is no longer registered and is therefore only partially cleaned up
+- All 18 active big-table message names are now paired
+- Parked code adds 12 start-only and 34 receiver-only static candidates
 
-## Probable core orphans
+## Confirmed dead core messages
+
+These messages have been confirmed as dead and can be removed from their receiver implementations and network-string registrations. `liaJobNpcCloseDialog` has already had its active receiver removed, but its core registration remains; parked `.wip` modules still contain senders.
 
 | Message | Receiver | Notes |
 |---|---|---|
 | `liaSetWaypointWithLogo` | `gamemode/core/netcalls/client.lua:8` | Obsolete. The current waypoint implementation sends `liaSetWaypoint` from `gamemode/core/meta/player.lua:438`. |
-| `liaProvideServerPassword` | `gamemode/core/netcalls/client.lua:365` | No sender found. |
-| `liaItemData` | `gamemode/core/netcalls/client.lua:546` | No sender found. |
+| `liaProvideServerPassword` | `gamemode/core/netcalls/client.lua:365` | Confirmed dead; no sender exists. |
+| `liaItemData` | `gamemode/core/netcalls/client.lua:546` | Confirmed dead; no sender exists. |
 | `liaDoorData` | `gamemode/core/netcalls/client.lua:1406` | Appears superseded by `liaDoorDataUpdate` and the `liaDoorDataBulk` big-table path. |
-| `liaJobNpcCloseDialog` | `gamemode/core/netcalls/client.lua:1578` | No sender found. |
-| `liaKickCharacter` | `gamemode/core/netcalls/server.lua:196` | No sender found; separate `liaKickCharacterToBase` flow is active. |
-| `liaNPCWeaponChange` | `gamemode/core/netcalls/server.lua:642` | No sender found. |
+| `liaJobNpcCloseDialog` | Registration only: `gamemode/init.lua:2` | Confirmed dead in the active tree. Its receiver has been removed; senders remain only in parked `.wip` modules. |
+| `liaKickCharacter` | `gamemode/core/netcalls/server.lua:196` | Confirmed dead; separate `liaKickCharacterToBase` flow is active. |
+| `liaNPCWeaponChange` | `gamemode/core/netcalls/server.lua:642` | Confirmed dead; no sender exists. |
 | `liaPopupQuestionRequestCancel` | `gamemode/core/netcalls/server.lua:846` | Client sends the normal response but never sends this cancellation message. |
 | `liaButtonRequestCancel` | `gamemode/core/netcalls/server.lua:861` | Client sends the normal response but never sends this cancellation message. |
-| `liaNetMessage` | `gamemode/core/netcalls/server.lua:1108`, `gamemode/core/netcalls/client.lua:1226` | Receivers exist in both realms, but there is no sender and nothing populates `lia.net.registry`. |
+| `liaNetMessage` | `gamemode/core/netcalls/server.lua:1108`, `gamemode/core/netcalls/client.lua:1226` | Confirmed dead. Receivers exist in both realms, but there is no sender and nothing populates `lia.net.registry`. |
 
 ### `liaSetWaypointWithLogo`
 
@@ -44,7 +50,9 @@ net.Send(self)
 
 The current sender is at `gamemode/core/meta/player.lua:438`.
 
-## Administration orphans
+## Confirmed dead administration messages
+
+These administration receivers have also been confirmed as dead and can be removed together with their network-string registrations.
 
 | Message | Receiver |
 |---|---|
@@ -54,73 +62,52 @@ The current sender is at `gamemode/core/meta/player.lua:438`.
 | `liaRequestAllFlags` | `gamemode/modules/administration/netcalls/server.lua:630` |
 | `liaRequestStaffSummary` | `gamemode/modules/administration/netcalls/server.lua:824` |
 | `liaRequestPlayers` | `gamemode/modules/administration/netcalls/server.lua:830` |
-| `liaRequestActiveTickets` | `gamemode/modules/administration/submodules/tickets/netcalls/server.lua:89` |
+| `liaRequestActiveTickets` | `gamemode/modules/administration/submodules/tickets/netcalls/server.lua:81` |
 | `liaRequestAllWarnings` | `gamemode/modules/administration/submodules/warnings/netcalls/server.lua:43` |
 | `liaRequestPlayerWarnings` | `gamemode/modules/administration/submodules/warnings/netcalls/server.lua:53` |
 
 Several of these appear to be older administration endpoints superseded by newer paginated or consolidated requests, including `liaRequestFullCharListPage` and `liaRequestStaffCases`.
 
-## Inventory and vendor orphans
+## Confirmed dead inventory and vendor messages
+
+These inventory and vendor receivers have been confirmed as dead and can be removed together with their network-string registrations.
 
 | Message | Receiver | Notes |
 |---|---|---|
-| `liaStorageTransfer` | `gamemode/modules/inventory/types/gridinv/submodules/storage/netcalls/server.lua:34` | No sender found. |
-| `liaTrunkInitStorage` | `gamemode/modules/inventory/types/gridinv/submodules/storage/netcalls/shared.lua:1` | No sender found. |
-| `liaVendorFaction` | `gamemode/modules/vendor/netcalls/client.lua:57` | No sender found. |
-| `liaVendorBuyPrice` | `gamemode/modules/vendor/netcalls/client.lua:62` | No sender found. |
-| `liaVendorSellPrice` | `gamemode/modules/vendor/netcalls/client.lua:73` | No sender found. |
+| `liaStorageTransfer` | `gamemode/modules/inventory/types/gridinv/submodules/storage/netcalls/server.lua:34` | Confirmed dead; no sender exists. |
+| `liaTrunkInitStorage` | `gamemode/modules/inventory/types/gridinv/submodules/storage/netcalls/shared.lua:1` | Confirmed dead; no sender exists. |
+| `liaVendorFaction` | `gamemode/modules/vendor/netcalls/client.lua:57` | Confirmed dead; no sender exists. |
+| `liaVendorBuyPrice` | `gamemode/modules/vendor/netcalls/client.lua:62` | Confirmed dead; no sender exists. |
+| `liaVendorSellPrice` | `gamemode/modules/vendor/netcalls/client.lua:73` | Confirmed dead; no sender exists. |
 
-## Incomplete bidirectional flow
+## Lilia RP orphan
 
-### `liaViewClaims`
+| Message | Receiver | Notes |
+|---|---|---|
+| `RemoveWarTableMarker` | `lilia_rp/gitmodules/wartable/netcalls/server.lua:54` | Registered by the wartable module, but its UI only sends `PlaceWarTableMarker`; no removal sender exists. |
 
-`liaViewClaims` is not wholly receiver-only because the server sends a response using the same message name. However, its request half is incomplete:
+## Stale or redundant registrations
 
-- Server request receiver: `gamemode/modules/administration/submodules/tickets/netcalls/server.lua:2`
-- Server response sender: `gamemode/modules/administration/submodules/tickets/netcalls/server.lua:5`
-- Client response receiver: `gamemode/modules/administration/submodules/tickets/netcalls/client.lua:98`
-- Client request sender: missing
+Five names are registered in active code but have no active `net.Start`, `net.Receive`, big-table writer, or big-table reader. One further registration is used only as a netstream logical name and is redundant for Garry's Mod's `net` string pool.
 
-The server receiver cannot be reached by any sender inside `lilia` or `lilia_rp`.
+| Message | Registration | Current state |
+|---|---|---|
+| `liaJobNpcCloseDialog` | `gamemode/init.lua:2` | Confirmed dead. Active receiver removed; only parked `.wip` senders remain. |
+| `liaFullCharList` | `gamemode/modules/administration/module.lua:5` | Old big-table reader removed; active code uses `liaFullCharListPage`. |
+| `liaViewClaims` | `gamemode/modules/administration/submodules/tickets/module.lua:5` | Former incomplete request/response implementation has been removed; registration remains. |
+| `liaPropertyRequestData` | `lilia_rp/modules/realtor/module.lua:8` | No sender, receiver, or dynamic use found. |
+| `liaPropertyDoorSelection` | `lilia_rp/modules/realtor/module.lua:8` | No sender, receiver, or dynamic use found. |
+| `liaSyncGesture` | `gamemode/init.lua:2` | Live as a `netstream.Start`/`netstream.Hook` name, but not as a direct `net` message; the explicit `util.AddNetworkString` registration appears redundant. |
+
+## Partially cleaned message
+
+`liaRequestAllPks` still has its confirmed-dead receiver at `gamemode/modules/administration/netcalls/server.lua:431`, but its entry has already been removed from `MODULE.NetworkStrings`. The remaining receiver should be removed rather than re-registering the dead message.
 
 ## Big-table message audit
 
 Lilia's large-payload transport does not use literal message names directly in `net.Start` and `net.Receive`. The underlying implementation calls `net.Start(s.netStr)` and `net.Receive(netStr, ...)`, so `lia.net.writeBigTable` and `lia.net.readBigTable` call sites must be compared separately.
 
-The framework contains 17 unique big-table writer names and 18 unique big-table reader names. Sixteen names match correctly in both directions. The following do not.
-
-### Broken: `liaFactionMemberDetails`
-
-- Writer: `gamemode/modules/teams/libraries/server.lua:668`
-- Intended reader: `gamemode/modules/teams/libraries/client.lua:896`
-- Registered name: `liaFactionMemberDetails`
-- Actual reader name: `liaFactionMemberDetails(`
-
-The client reader has a stray opening parenthesis:
-
-```lua
-lia.net.readBigTable("liaFactionMemberDetails(", function(data)
-```
-
-The server writes to `liaFactionMemberDetails`, so the payload has no matching reader. The malformed reader name is also not present in `MODULE.NetworkStrings`.
-
-### Orphan reader: `liaFullCharList`
-
-- Reader: `gamemode/modules/administration/libraries/client.lua:3748`
-- Writer: missing
-
-The active implementation writes and reads `liaFullCharListPage`. The older `liaFullCharList` reader and its registration appear obsolete.
-
-### Parked schema module: `liaAllMedalsData`
-
-The `lilia_rp/modules/.modules/medals` module writes `liaAllMedalsData` from these locations:
-
-- `lilia_rp/modules/.modules/medals/libraries/server.lua:235`
-- `lilia_rp/modules/.modules/medals/libraries/server.lua:245`
-- `lilia_rp/modules/.modules/medals/libraries/server.lua:297`
-- `lilia_rp/modules/.modules/medals/libraries/server.lua:301`
-
-No `lia.net.readBigTable("liaAllMedalsData", ...)` receiver exists in either repository. Because this module is under `.modules`, it appears parked or disabled, but it is still internally incomplete if re-enabled.
+The active trees now contain 18 unique big-table writer names and 18 unique big-table reader names. Every name is paired. The previous `liaFactionMemberDetails(` typo has been corrected, and the obsolete `liaFullCharList` reader has been removed. Only the stale `liaFullCharList` registration remains.
 
 ### Correctly paired big-table messages
 
@@ -142,13 +129,18 @@ No `lia.net.readBigTable("liaAllMedalsData", ...)` receiver exists in either rep
 - `liaUpdateAdminPrivileges`
 - `liaPropertyData` in `lilia_rp`
 
+## Removed messages
+
+- `liaAllMedalsData`: removed from the parked medals module's registration and all four big-table write sites.
+
 ## Receiver-only messages that are not orphans
 
 | Message | Explanation |
 |---|---|
 | `liaRunInteraction` | Sent dynamically through `net.Start(netMsg)` in `gamemode/core/libraries/core/playerinteract/core.lua:304`. The message name is supplied by `gamemode/core/netcalls/client.lua:726`. |
-| `liaSeqSet` | Sent by the `lilia_rp` animations module in `gitmodules/animations/meta/sh_player.lua`. |
 | `wire_expression2_upload` | A Wiremod-owned message handled by Lilia compatibility code. Its sender exists outside this repository. |
+
+`liaSeqSet` looks receiver-only when scanning the Lilia repository alone, but is a normal literal pair once the active `lilia_rp/gitmodules/animations` code is included, so it is not part of the combined receiver-only count above.
 
 ## Intentional receiver-only message
 
@@ -171,4 +163,4 @@ Because of these dynamic paths, a simple textual comparison of literal `net.Star
 
 ## Scope
 
-This is a static repository audit. A receiver classified as an orphan may still be used by an external addon that sends the message by its known string name. The findings above mean that no corresponding sender exists inside the checked `lilia` and `lilia_rp` repositories.
+This is a static repository audit. A receiver classified as an orphan may still be used by an external addon that sends the message by its known string name. The active scan covers `lilia/gamemode` and the non-hidden Lua trees under `lilia_rp`, including `gitmodules`. Hidden parked directories were not counted as active code. For example, `.wip` card-dealer and police-suite code contains senders for `liaJobNpcCloseDialog`; the active tree does not.

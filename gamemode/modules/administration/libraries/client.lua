@@ -3745,19 +3745,6 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     populate("")
 end)
 
-lia.net.readBigTable("liaFullCharList", function(data)
-    if not IsValid(panelRef) or not data or not isfunction(panelRef.buildSheets) then return end
-    panelRef.charListBuilt = true
-    panelRef.charListLoadedCount = 0
-    for _, characters in pairs(data.players or {}) do
-        panelRef.charListLoadedCount = panelRef.charListLoadedCount + #characters
-    end
-
-    panelRef.charListTotalCount = panelRef.charListLoadedCount
-    panelRef:buildSheets(data)
-    if isfunction(panelRef.updateCharacterListProgress) then panelRef:updateCharacterListProgress(panelRef.charListLoadedCount, panelRef.charListTotalCount, true) end
-end)
-
 lia.net.readBigTable("liaFullCharListPage", function(data)
     if not IsValid(panelRef) or not data or not isfunction(panelRef.buildSheets) then return end
     if panelRef.charListRequestID ~= data.requestID then return end

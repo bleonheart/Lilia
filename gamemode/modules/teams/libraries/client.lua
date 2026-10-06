@@ -893,7 +893,7 @@ lia.net.readBigTable("liaFactionMembers", function(data)
     if IsValid(rosterPanel) and rosterPanel.factionRosterPanel then UpdateFactionRosterUI(rosterPanel, data) end
 end)
 
-lia.net.readBigTable("liaFactionMemberDetails(", function(data)
+lia.net.readBigTable("liaFactionMemberDetails", function(data)
     if not data or not data.faction or not data.charID then return end
     local charID = tonumber(data.charID)
     if not charID then return end

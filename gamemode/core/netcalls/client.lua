@@ -1575,7 +1575,6 @@ net.Receive("liaGroupPermChanged", function()
     end
 end)
 
-net.Receive("liaJobNpcCloseDialog", function() if IsValid(lia.dialog.vgui) then lia.dialog.vgui:Remove() end end)
 net.Receive("BodygrouperMenu", function()
     local client = LocalPlayer()
     if IsValid(lia.gui.bodygroupMenu) then lia.gui.bodygroupMenu:Remove() end

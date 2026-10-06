@@ -95,19 +95,6 @@ net.Receive("liaActiveTickets", function()
     populate("")
 end)
 
-net.Receive("liaViewClaims", function()
-    local tbl = net.ReadTable()
-    local steamid = net.ReadString()
-    if steamid and steamid ~= "" and steamid ~= " " then
-        local v = tbl[steamid]
-        lia.information(string.format("%s - %s claims - last claim %s ago", v.name, v.claims, string.NiceTime(os.time() - v.lastclaim)))
-    else
-        for _, v in pairs(tbl) do
-            lia.information(string.format("%s - %s claims", v.name, v.claims))
-        end
-    end
-end)
-
 net.Receive("liaTicketSystem", function()
     local pl = net.ReadEntity()
     local msg = net.ReadString()

@@ -1,13 +1,5 @@
 ﻿local MODULE = MODULE
-net.Receive("liaViewClaims", function(_, client)
-    local sid = net.ReadString()
-    MODULE:GetAllCaseClaims():next(function(caseclaims)
-        net.Start("liaViewClaims")
-        net.WriteTable(caseclaims)
-        net.WriteString(sid)
-        net.Send(client)
-    end)
-end)
+
 
 net.Receive("liaTicketSystemClaim", function(_, client)
     local requester = net.ReadEntity()
