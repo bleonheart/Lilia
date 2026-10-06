@@ -615,7 +615,7 @@ function lia.admin.hasAccess(ply, privilege)
     return shouldGrant(grp, min)
 end
 
-function lia.admin.save(noNetwork)
+function lia.admin.save(noNetwork, reason)
     sanitizeBaseGroups(lia.admin.groups, "lia.admin.save")
     rebuildPrivileges()
     local rows = {}
@@ -630,6 +630,12 @@ function lia.admin.save(noNetwork)
             types = util.TableToJSON(info.types or {})
         }
     end
+
+    lia.admin._saveTraceCount = (lia.admin._saveTraceCount or 0) + 1
+    local caller = debug.getinfo(2, "Sl")
+    local source = caller and tostring(caller.short_src or caller.source or "unknown") or "unknown"
+    local line = caller and tonumber(caller.currentline) or 0
+    print(string.format("[Lilia Admin Trace] save #%d | reason=%s | rows=%d | loading=%s | noNetwork=%s | caller=%s:%d", lia.admin._saveTraceCount, tostring(reason or "unspecified"), #rows, tostring(lia.admin._loading == true), tostring(noNetwork == true), source, line))
 
     lia.db.query("DELETE FROM lia_admin")
     lia.db.bulkInsert("admin", rows)
@@ -697,7 +703,7 @@ function lia.admin.registerPrivilege(priv)
         Description = lia.admin.privilegeDescriptions[id]
     })
 
-    if SERVER then lia.admin.save() end
+    if SERVER then lia.admin.save(false, "registerPrivilege:" .. id) end
 end
 
 function lia.admin.unregisterPrivilege(id)
@@ -730,7 +736,7 @@ function lia.admin.unregisterPrivilege(id)
         ID = id
     })
 
-    if SERVER then lia.admin.save() end
+    if SERVER then lia.admin.save(false, "unregisterPrivilege:" .. id) end
 end
 
 function lia.admin.applyInheritance(groupName)
@@ -817,7 +823,7 @@ function lia.admin.load()
 
         local sanitized = sanitizeBaseGroups(lia.admin.groups, "lia.admin.load")
         rebuildPrivileges()
-        if created or sanitized then lia.admin.save(true) end
+        if created or sanitized then lia.admin.save(true, created and sanitized and "load:created+sanitized" or created and "load:created" or "load:sanitized") end
         lia.admin._loading = false
         continueLoad(groups)
     end)
