@@ -1026,3 +1026,22 @@ concommand.Add("lia_wipetable", function(client, _, args)
         lia.db.query("DELETE FROM " .. fullTableName, function() MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), string.format("Table %s has been wiped successfully!", fullTableName) .. "\n") end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Failed to wipe table: %s", tostring(err)) .. "\n") end)
     end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Backup failed, aborting wipe: %s", tostring(err)) .. "\n") end)
 end)
+
+concommand.Add("lia_wipedb", function(client)
+    if IsValid(client) then
+        client:notifyError(string.format("This command can only be run from the server console."))
+        return
+    end
+
+    lia.db.wipeTables(function()
+        lia.information("Database Wiped")
+        lia.db.loadTables()
+        hook.Add("PostLoadData", "lia_wipedb_changemap", function()
+            hook.Remove("PostLoadData", "lia_wipedb_changemap")
+            timer.Simple(2.5, function()
+                lia.information("Database wipe complete. Changing map...")
+                RunConsoleCommand("changelevel", game.GetMap())
+            end)
+        end)
+    end)
+end)
