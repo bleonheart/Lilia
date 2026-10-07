@@ -3224,54 +3224,6 @@ lia.command.add("checkmoney", {
     end
 })
 
-lia.command.add("listbodygroups", {
-    adminOnly = true,
-    desc = "List the available bodygroups for a target player.",
-    arguments = {
-        {
-            name = "name",
-            type = "player"
-        },
-    },
-    onRun = function(client, arguments)
-        local target = lia.util.findPlayer(client, arguments[1])
-        if not target or not IsValid(target) then
-            client:notifyError(string.format("Target not found"))
-            return
-        end
-
-        local bodygroups = {}
-        for i = 0, target:GetNumBodyGroups() - 1 do
-            if target:GetBodygroupCount(i) > 1 then
-                table.insert(bodygroups, {
-                    group = i,
-                    name = target:GetBodygroupName(i),
-                    range = "0-" .. target:GetBodygroupCount(i) - 1
-                })
-            end
-        end
-
-        if #bodygroups > 0 then
-            lia.util.sendTableUI(client, string.format("Bodygroups for %s", target:Nick()), {
-                {
-                    name = "groupID",
-                    field = "group"
-                },
-                {
-                    name = "name",
-                    field = "name"
-                },
-                {
-                    name = "range",
-                    field = "range"
-                }
-            }, bodygroups)
-        else
-            client:notifyInfo(string.format("No bodygroups available for this model."))
-        end
-    end
-})
-
 lia.command.add("charsetspeed", {
     adminOnly = true,
     desc = "Set a player's run speed.",
@@ -3329,34 +3281,6 @@ lia.command.add("charsetmodel", {
         target:getChar():setModel(arguments[2] or oldModel)
         target:SetupHands()
         client:notifySuccess(string.format("%s changed %s's model to %s.", client:Name(), target:Name(), arguments[2] or oldModel))
-    end
-})
-
-lia.command.add("chareditbodygroups", {
-    adminOnly = true,
-    privilege = "changeBodygroups",
-    desc = "Open the bodygroup editor for a player's character.",
-    arguments = {
-        {
-            name = "name",
-            type = "player"
-        }
-    },
-    onRun = function(client, arguments)
-        local target = lia.util.findPlayer(client, arguments[1] or "")
-        if not target or not IsValid(target) then
-            client:notifyError(string.format("Target not found"))
-            return
-        end
-
-        if not target:getChar() then
-            client:notifyError(string.format("Player has no character loaded"))
-            return
-        end
-
-        net.Start("BodygrouperMenu")
-        net.WriteEntity(target)
-        net.Send(client)
     end
 })
 
@@ -3548,85 +3472,6 @@ lia.command.add("charsetjump", {
 
         target:SetJumpPower(power)
         client:notifySuccess(string.format("You changed %s's jump power to %s.", target:Name(), power))
-    end
-})
-
-lia.command.add("charsetbodygroup", {
-    adminOnly = true,
-    desc = "Set a specific bodygroup on a player's model.",
-    arguments = {
-        {
-            name = "name",
-            type = "player"
-        },
-        {
-            name = "bodygroupName",
-            type = "string"
-        },
-        {
-            name = "value",
-            type = "string"
-        },
-    },
-    onRun = function(client, arguments)
-        local name = arguments[1]
-        local bodyGroup = arguments[2]
-        local value = tonumber(arguments[3])
-        local target = lia.util.findPlayer(client, name)
-        if not target or not IsValid(target) then
-            client:notifyError(string.format("Target not found"))
-            return
-        end
-
-        local index = lia.util.resolveBodygroupIndex(target, bodyGroup)
-        if index ~= nil then
-            if value and value < 1 then value = nil end
-            local groups = lia.util.normalizeBodygroups(target:getChar().vars.bodygroups)
-            groups[index] = value
-            target:getChar():setBodygroups(groups)
-            target:SetBodygroup(index, value or 0)
-            client:notifySuccess(string.format("%s changed %s's bodygroup \"%s\" to %s.", client:Name(), target:Name(), bodyGroup, value or 0))
-        else
-            client:notifyError(string.format("Invalid argument."))
-        end
-    end
-})
-
-lia.command.add("charsetskin", {
-    adminOnly = true,
-    desc = "Set a player's skin.",
-    arguments = {
-        {
-            name = "name",
-            type = "player"
-        },
-        {
-            name = "skin",
-            type = "string"
-        },
-    },
-    AdminStick = {
-        Name = "Set Character Skin",
-        ButtonText = "Set Character Skin",
-        Category = "Character Editing",
-    },
-    onRun = function(client, arguments)
-        local name = arguments[1]
-        local skin = tonumber(arguments[2])
-        local target = lia.util.findPlayer(client, name)
-        if not target or not IsValid(target) then
-            client:notifyError(string.format("Target not found"))
-            return
-        end
-
-        if not skin then
-            client:notifyError(string.format("Invalid argument."))
-            return
-        end
-
-        target:getChar():setSkin(skin)
-        target:SetSkin(skin)
-        client:notifySuccess(string.format("%s changed %s's skin to %s.", client:Name(), target:Name(), skin))
     end
 })
 
@@ -7550,33 +7395,6 @@ concommand.Add("lia_setextrachars", function(client, _, args)
         MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Added " .. amount .. " extra character slot" .. (amount == 1 and "" or "s") .. " to player " .. steamid .. ". New total: " .. newExtra .. " (was " .. currentExtra .. ").\n")
     end)
 end)
-
-lia.command.add("viewBodygroups", {
-    adminOnly = true,
-    arguments = {
-        {
-            name = "target",
-            type = "player"
-        }
-    },
-    desc = "View and edit a player's bodygroups.",
-    AdminStick = {
-        Name = "View and edit a player's bodygroups.",
-        ButtonText = "View Bodygroups",
-        Category = "Character Info",
-    },
-    onRun = function(client, arguments)
-        local target = lia.util.findPlayer(client, arguments[1] or "")
-        if not target or not IsValid(target) then
-            client:notify(string.format("Target not found"))
-            return
-        end
-
-        net.Start("BodygrouperMenu")
-        net.WriteEntity(target)
-        net.Send(client)
-    end
-})
 
 concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
     if IsValid(client) then return end

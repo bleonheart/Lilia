@@ -1,4 +1,4 @@
-﻿local testerFrame
+local testerFrame
 local activePanels = {}
 local entries = {}
 local selectedEntry
@@ -101,7 +101,7 @@ setups.liaCharacterAttribsRow = function(panel, host)
     panel:updateQuantity()
 end
 
-setups.BodygrouperMenu = function(panel)
+setups.AppearanceMenu = function(panel)
     local client = LocalPlayer()
     if not IsValid(client) then error("LocalPlayer is not valid") end
     panel:SetTarget(client)
@@ -759,7 +759,7 @@ registerEntry("DNotify", "Garry's Mod VGUI", "GMOD", "embedded", "Default animat
 registerEntry("DPanelSelect", "Garry's Mod VGUI", "GMOD", "embedded", "Default selectable panel collection.", 620, 360)
 registerEntry("liaCharacterAttribs", "attribs.lua", "Character", "embedded", "Character creation attribute allocation step.", 720, 500, "Requires liaCharacterCreateStep and registered attributes.")
 registerEntry("liaCharacterAttribsRow", "attribs.lua", "Character", "embedded", "Single character attribute allocation row.", 620, 48)
-registerEntry("BodygrouperMenu", "bodygrouper.lua", "Menus", "window", "Live bodygroup and skin editor using the local player model.", 440, 720, "Submitting can send a bodygroup update to the server.")
+registerEntry("AppearanceMenu", "modules/appearance/derma/appearance.lua", "Menus", "window", "Combined model, skin, and bodygroup editor using the local player model.", 560, 820, "Submitting can send an appearance update to the server.")
 registerEntry("liaButton", "buttons.lua", "Controls", "embedded", "Primary themed Lilia button.", 280, 48)
 registerEntry("liaChatBox", "chatbox.lua", "Menus", "window", "Live custom chatbox preview with sample messages.", 760, 520, "Opening this temporarily replaces lia.gui.chat.")
 registerEntry("liaCheckbox", "checkbox.lua", "Controls", "embedded", "Themed toggle switch.", 180, 42)

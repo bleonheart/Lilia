@@ -477,9 +477,6 @@ function GM:PostPlayerLoadout(client)
     if not character then return end
     client:Give("lia_hands")
     client:SetupHands()
-    local savedGroups = character:getBodygroups()
-    lia.util.applyBodygroups(client, savedGroups)
-    client:SetSkin(character:getSkin())
     client:setLocalVar("VoiceType", VOICE_TALKING)
 end
 

@@ -132,7 +132,6 @@ function MODULE:HandleItemTransferRequest(client, itemID, x, y, invID, rotated)
     local function fail(err)
         client.invTransferTransaction = nil
         if err then lia.error(err) end
-        if IsValid(client) then ) end
         if IsValid(client) then client:notifyInfo(string.format("Your item has been placed on the ground.")) end
         item:spawn(dropPos)
     end

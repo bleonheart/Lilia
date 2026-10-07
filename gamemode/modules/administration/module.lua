@@ -29,17 +29,6 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
         Category = "developmentHUD",
     },
-    ["manageBodygroups"] = {
-        Name = "Manage Bodygroups",
-        MinAccess = "admin",
-        Category = "bodygroups",
-    },
-    ["changeBodygroups"] = {
-        Name = "Change Bodygroups",
-        Description = "Allows access to changing another player's bodygroups.",
-        MinAccess = "admin",
-        Category = "bodygroups",
-    },
     ["manageVehicleBlacklist"] = {
         Name = "Manage Vehicle Blacklist",
         MinAccess = "superadmin",

@@ -1,11 +1,14 @@
-﻿ENT.Type = "anim"
-ENT.PrintName = "Bodygroup Closet"
-ENT.Category = "Lilia"
+ENT.Type = "anim"
+ENT.PrintName = "Appearance Wardrobe"
+ENT.Author = "@liliaplayer"
 ENT.Spawnable = true
 ENT.AdminOnly = true
-ENT.IsPersistent = true
+ENT.Category = "Lilia"
+ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 ENT.NoPhysgun = true
 ENT.NoRemover = true
+ENT.IsPersistent = true
+
 function ENT:HasUser(user)
     self.users = self.users or {}
     return self.users[user] == true
