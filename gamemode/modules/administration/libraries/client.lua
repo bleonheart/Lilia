@@ -3514,18 +3514,9 @@ function MODULE:HUDPaint()
             label = item and item:getName() or "Unknown"
             baseColor = lia.option.get("espItemsColor")
         elseif lia.option.get("espEntities", false) and ent:GetClass():StartWith("lia_") then
-            if lia.dialog.isDialogNPCEntity(ent) then
-                local uniqueID = ent:getNetVar("uniqueID", "")
-                if uniqueID ~= "" then
-                    kind = "npcs"
-                    label = ent:getNetVar("NPCName", "Unconfigured NPC")
-                    baseColor = lia.option.get("espEntitiesColor")
-                end
-            else
-                kind = "Entities"
-                label = ent.PrintName or ent:GetClass()
-                baseColor = lia.option.get("espEntitiesColor")
-            end
+            kind = "Entities"
+            label = ent.PrintName or ent:GetClass()
+            baseColor = lia.option.get("espEntitiesColor")
         elseif ent:isDoor() then
             local doorData = lia.doors.getData(ent)
             local isConfigured = doorData and ((doorData.factions and #doorData.factions > 0) or (doorData.classes and #doorData.classes > 0) or (doorData.name and doorData.name ~= "") or (doorData.title and doorData.title ~= "") or (doorData.price or 0) > 0 or doorData.locked or doorData.disabled or doorData.hidden or doorData.noSell)

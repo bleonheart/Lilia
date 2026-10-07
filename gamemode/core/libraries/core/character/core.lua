@@ -845,8 +845,7 @@ if SERVER then
 
         hook.Run("OnCharDelete", client, id)
         if IsValid(client) and client:getChar() and client:getChar():getID() == id then
-            net.Start("liaRemoveFOne")
-            net.Send(client)
+            client:SendLua("if IsValid(lia.gui.menu) then lia.gui.menu:remove() end")
             net.Start("liaCharKick")
             net.WriteUInt(id, 32)
             net.WriteBool(true)

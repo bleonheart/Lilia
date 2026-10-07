@@ -42,35 +42,6 @@ properties.Add("TogglePropBlacklist", {
     end
 })
 
-lia.command.add("sayall", {
-    desc = "Sends a phrase to all registered chat types",
-    privilege = "Admin Chat",
-    adminOnly = true,
-    arguments = {
-        {
-            name = "phrase",
-            type = "string"
-        }
-    },
-    onRun = function(client, arguments)
-        local phrase = table.concat(arguments, " ")
-        if not phrase or phrase == "" then
-            client:notifyError(string.format("You must provide a phrase to send."))
-            return
-        end
-
-        local chatCount = 0
-        for chatType, chatData in pairs(lia.chat.classes) do
-            if chatData.onCanSay and chatType ~= "adminchat" then
-                lia.chat.send(client, chatType, phrase, false)
-                chatCount = chatCount + 1
-            end
-        end
-
-        client:notifySuccess(string.format("Sent phrase '%s' to %d chat types.", chatCount, phrase))
-    end
-})
-
 properties.Add("ToggleCarBlacklist", {
     MenuLabel = "Toggle Car Blacklist",
     Order = 901,
@@ -197,9 +168,7 @@ lia.util.setPositionCallback("Faction Spawn Adder", {
                     radius = radius
                 })
 
-                lia.module.get("spawns"):StoreSpawns(spawns):next(function()
-                    client:notifySuccess(string.format("Sucessfully Added Point"))
-                end)
+                lia.module.get("spawns"):StoreSpawns(spawns):next(function() client:notifySuccess(string.format("Sucessfully Added Point")) end)
             end)
         else
             local names, idByDisplay = {}, {}

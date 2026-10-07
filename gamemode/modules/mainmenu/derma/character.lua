@@ -1251,13 +1251,13 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         end
     end
 
-    local info = {"Name(" .. "): " .. (character:getName() or ""), "Description(" .. "):", character:getDesc() or "", "Faction(" .. "): " .. (team.GetName(character:getFaction()) or "")}
+    local info = {"Name: " .. (character:getName() or ""), "Description:", character:getDesc() or "", "Faction: " .. (team.GetName(character:getFaction()) or "")}
     if character:getClass() then
         local cls = lia.class.list[character:getClass()]
-        if cls and cls.name then table.insert(info, "Class(" .. "): " .. cls.name) end
+        if cls and cls.name then table.insert(info, "Class: " .. cls.name) end
     end
 
-    table.insert(info, "Money(" .. "): " .. lia.currency.get(character:getMoney()))
+    table.insert(info, "Money: " .. lia.currency.get(character:getMoney()))
     hook.Run("LoadMainMenuInformation", info, character)
     self.infoFrame = self:Add("liaFrame")
     self.infoFrame:SetSize(ScrW() * 0.25, ScrH() * 0.45)

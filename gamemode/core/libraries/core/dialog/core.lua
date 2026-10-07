@@ -1,4 +1,4 @@
-﻿lia.dialog = lia.dialog or {}
+lia.dialog = lia.dialog or {}
 lia.dialog.stored = lia.dialog.stored or {}
 lia.dialog.configurations = lia.dialog.configurations or {}
 lia.dialog.clientHashes = lia.dialog.clientHashes or {}
@@ -1957,14 +1957,4 @@ else
         onOpen = function(npc) lia.dialog.openNodeEditor(npc) end
     })
 
-    properties.Add("liaConfigureNPC", {
-        MenuLabel = "Configure NPC",
-        Order = 100,
-        MenuIcon = "icon16/wrench.png",
-        Filter = function(_, ent, ply)
-            if not IsValid(ent) or not lia.dialog.isDialogNPCEntity(ent) then return false end
-            return lia.admin.canUseDebugProperties(ply) and canAccessNPCConfigurations(ply)
-        end,
-        Action = function(_, ent) lia.dialog.openConfigurationPicker(ent) end
-    })
 end

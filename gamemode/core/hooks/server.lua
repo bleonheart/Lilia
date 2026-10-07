@@ -85,8 +85,7 @@ function GM:PlayerDeath(client, inflictor, attacker)
     end
 
     if IsValid(attacker) and attacker:IsPlayer() and attacker ~= client and hook.Run("PlayerShouldPermaKill", client, inflictor, attacker) then character:ban() end
-    net.Start("liaRemoveFOne")
-    net.Send(client)
+    client:SendLua("if IsValid(lia.gui.menu) then lia.gui.menu:remove() end")
     if hook.Run("ShouldSpawnClientRagdoll", client) ~= false then client:CreateRagdoll() end
 end
 
@@ -632,7 +631,6 @@ function GM:PlayerInitialSpawn(client)
         end
 
         timer.Simple(1, function() lia.playerinteract.sync(client) end)
-        timer.Simple(2, function() lia.dialog.syncToClients(client) end)
         timer.Simple(3, function() if IsValid(client) then lia.doors.syncAllDoorsToClient(client) end end)
         timer.Simple(4, function()
             net.Start("liaWeaponOverrideSync")
@@ -933,18 +931,14 @@ function GM:LoadData()
                 createdEnt:Activate()
                 restorePersistentEntityTransform(createdEnt, decodedPos, decodedAng)
                 local loadData = table.Copy(ent)
-                if lia.dialog.isDialogNPCEntity(cls) and ent.data and istable(ent.data) then
-                    if ent.data.uniqueID then loadData.uniqueID = ent.data.uniqueID end
-                    if ent.data.npcName then loadData.npcName = ent.data.npcName end
-                    loadData.data = {
-                        customData = ent.data.customData
-                    }
-                elseif ent.data and istable(ent.data) and next(ent.data) then
+                if ent.data and istable(ent.data) and next(ent.data) then
                     for k, v in pairs(ent.data) do
                         loadData[k] = v
                     end
                 end
 
+                local transformedLoadData = hook.Run("TransformPersistentEntityLoadData", createdEnt, ent, loadData)
+                if istable(transformedLoadData) then loadData = transformedLoadData end
                 hook.Run("OnEntityLoaded", createdEnt, loadData)
                 timer.Simple(0, function() restorePersistentEntityTransform(createdEnt, decodedPos, decodedAng) end)
             until true
@@ -1239,65 +1233,11 @@ game.ConsoleCommand = function(cmd)
 end
 
 function GM:GetEntitySaveData(ent)
-    if lia.dialog.isDialogNPCEntity(ent) then
-        local saveData = {
-            uniqueID = ent.uniqueID or "",
-            npcName = ent.NPCName or ""
-        }
-
-        if ent.customData then saveData.customData = ent.customData end
-        return saveData
-    end
+    return hook.Run("GetPersistentEntitySaveData", ent)
 end
 
 function GM:OnEntityLoaded(ent, data)
-    if lia.dialog.isDialogNPCEntity(ent) and data and data.uniqueID and data.uniqueID ~= "" then
-        ent.uniqueID = data.uniqueID
-        ent.NPCName = data.npcName or "NPC"
-        local npcData = lia.dialog.getNPCData(data.uniqueID)
-        local hasCustomModel = data.data and data.data.customData and data.data.customData.model and data.data.customData.model ~= ""
-        if npcData then
-            if not hasCustomModel then ent:SetModel("models/Barney.mdl") end
-            if npcData.BodyGroups and istable(npcData.BodyGroups) then lia.util.applyBodygroups(ent, npcData.BodyGroups) end
-            if npcData.Skin then ent:SetSkin(npcData.Skin) end
-        end
-
-        if data.data and data.data.customData and istable(data.data.customData) then
-            ent.customData = data.data.customData
-            if data.data.customData.name and data.data.customData.name ~= "" then ent.NPCName = data.data.customData.name end
-            if data.data.customData.model and data.data.customData.model ~= "" then ent:SetModel(data.data.customData.model) end
-            if data.data.customData.skin then ent:SetSkin(tonumber(data.data.customData.skin) or 0) end
-            if data.data.customData.bodygroups and istable(data.data.customData.bodygroups) then lia.util.applyBodygroups(ent, data.data.customData.bodygroups) end
-        end
-
-        if data.data and data.data.customData and data.data.customData.animation and data.data.customData.animation ~= "auto" then
-            local sequenceIndex = ent:LookupSequence(data.data.customData.animation)
-            if sequenceIndex >= 0 then
-                ent.customAnimation = data.data.customData.animation
-                ent:ResetSequence(sequenceIndex)
-            else
-                ent.customAnimation = nil
-                data.data.customData.animation = "auto"
-            end
-        else
-            ent.customAnimation = nil
-        end
-
-        ent:setNetVar("uniqueID", data.uniqueID)
-        ent:setNetVar("NPCName", ent.NPCName)
-        if not ent.NPCName or ent.NPCName == "" then ent.NPCName = ent:getNetVar("NPCName", "NPC") end
-        ent:SetMoveType(MOVETYPE_VPHYSICS)
-        ent:SetSolid(SOLID_OBB)
-        ent:PhysicsInit(SOLID_OBB)
-        ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
-        local physObj = ent:GetPhysicsObject()
-        if IsValid(physObj) then
-            physObj:EnableMotion(false)
-            physObj:Sleep()
-        end
-
-        ent:setAnim()
-    end
+    hook.Run("OnPersistentEntityLoaded", ent, data)
 end
 
 gameevent.Listen("server_addban")

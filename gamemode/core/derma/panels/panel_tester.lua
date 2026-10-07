@@ -766,7 +766,7 @@ registerEntry("liaCheckbox", "checkbox.lua", "Controls", "embedded", "Themed tog
 registerEntry("liaLockCircle", "circle.lua", "Overlays", "overlay", "Timed circular action indicator.", 0, 0)
 registerEntry("liaComboBox", "combobox.lua", "Controls", "embedded", "Custom combobox with choices, tooltips, and separators.", 360, 42)
 registerEntry("liaDermaMenu", "derma_menu.lua", "Menus", "overlay", "Custom context menu with a submenu.", 0, 0)
-registerEntry("liaDialogMenu", "dialog.lua", "Menus", "window", "Local NPC-style dialog preview with conversation history.", 720, 540, "Opening this temporarily replaces lia.dialog.vgui.")
+registerEntry("liaDialogMenu", "modules/npcs/derma/dialog.lua", "Menus", "window", "Local NPC-style dialog preview with conversation history.", 720, 540, "Opening this temporarily replaces the active NPC dialog panel.")
 registerEntry("liaDListView", "dlistview.lua", "Menus", "window", "Searchable and sortable list window.", 960, 720)
 registerEntry("liaDoorMenu", "door.lua", "Menus", "window", "Door access table preview using sample rows.", 700, 600, "The tester does not attach this preview to a real door.")
 registerEntry("liaProgressBar", "dprogressbar.lua", "Controls", "embedded", "Progress bar with text and configurable fraction.", 560, 54)

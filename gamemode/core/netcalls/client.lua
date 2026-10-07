@@ -1057,83 +1057,6 @@ net.Receive("liaCharacterData", function()
     end
 end)
 
-lia.net.readBigTable("liaDialogSync", function(data) if istable(data) then lia.dialog.stored = data end end)
-net.Receive("liaOpenNpcDialog", function()
-    local npc = net.ReadEntity()
-    local canCustomize = net.ReadBool()
-    local npcData = net.ReadTable()
-    local npcName = "Dialog"
-    if IsValid(npc) then
-        npcName = npc:getNetVar("NPCName", npc.NPCName or "Dialog")
-    elseif npcData and npcData.PrintName then
-        npcName = npcData.PrintName
-    end
-
-    lia.dialog.vgui = vgui.Create("liaDialogMenu")
-    lia.dialog.vgui:SetDialogTitle(npcName)
-    if npcData then
-        local enhancedConversation = table.Copy(npcData.Conversation or {})
-        local additionalOptions = hook.Run("GetNPCDialogOptions", LocalPlayer(), npc, canCustomize) or {}
-        for optionName, optionData in pairs(additionalOptions) do
-            enhancedConversation[optionName] = optionData
-        end
-
-        local enhancedData = table.Copy(npcData)
-        enhancedData.Conversation = enhancedConversation
-        lia.dialog.vgui:LoadNPCDialog(enhancedData, npc)
-    end
-end)
-
-net.Receive("liaNpcDialogDeliverResponse", function()
-    local npc = net.ReadEntity()
-    local responses = net.ReadTable()
-    if not IsValid(lia.dialog.vgui) or not responses then return end
-    if lia.dialog.vgui.DisplayServerResponse then lia.dialog.vgui:DisplayServerResponse(responses, npc) end
-end)
-
-net.Receive("liaNpcDialogNodeResult", function()
-    local result = net.ReadTable()
-    if not IsValid(lia.dialog.vgui) or not result then return end
-    if lia.dialog.vgui.HandleGeneratedDialogResult then lia.dialog.vgui:HandleGeneratedDialogResult(result) end
-end)
-
-net.Receive("liaRequestNPCSelection", function()
-    local npcEntity = net.ReadEntity()
-    local npcOptions = net.ReadTable()
-    if not IsValid(npcEntity) or not npcOptions then return end
-    local frame = vgui.Create("liaFrame")
-    frame:SetSize(800, 600)
-    frame:Center()
-    frame:MakePopup()
-    frame:SetTitle("Select NPC Type")
-    local scroll = vgui.Create("liaScrollPanel", frame)
-    scroll:Dock(FILL)
-    scroll:DockMargin(20, 20, 20, 20)
-    for _, option in ipairs(npcOptions) do
-        local displayName = option[1]
-        local uniqueID = option[2]
-        local button = vgui.Create("liaButton", scroll)
-        button:Dock(TOP)
-        button:SetTall(50)
-        button:DockMargin(0, 0, 0, 10)
-        button:SetText(displayName)
-        button.DoClick = function()
-            net.Start("liaRequestNPCSelection")
-            net.WriteEntity(npcEntity)
-            net.WriteString(uniqueID)
-            net.SendToServer()
-            frame:Close()
-        end
-    end
-
-    local closeBtn = vgui.Create("liaButton", frame)
-    closeBtn:Dock(BOTTOM)
-    closeBtn:SetTall(60)
-    closeBtn:DockMargin(20, 10, 20, 20)
-    closeBtn:SetText("Cancel")
-    closeBtn.DoClick = function() frame:Close() end
-end)
-
 net.Receive("liaPacSync", function()
     for _, client in player.Iterator() do
         for id in pairs(client:getParts()) do
@@ -1206,7 +1129,12 @@ net.Receive("liaAssureClientSideAssets", function()
     local failedImages = 0
     local failedSounds = 0
     for _, data in pairs(lia.webcontent.stored) do
-        if data.type == "image" then totalImages = totalImages + 1 else totalSounds = totalSounds + 1 end
+        if data.type == "image" then
+            totalImages = totalImages + 1
+        else
+            totalSounds = totalSounds + 1
+        end
+
         table.insert(downloadQueue, {
             type = data.type,
             name = data.name,
@@ -1360,148 +1288,8 @@ net.Receive("liaDoorPerm", function()
     end
 end)
 
-net.Receive("liaRemoveFOne", function() if IsValid(lia.gui.menu) then lia.gui.menu:remove() end end)
-local function uiCreate()
-    if panel and panel:IsValid() then return end
-    local pad, bh = 10, 40
-    local w, h = 400 + pad * 2, 80
-    panel = vgui.Create("liaFrame")
-    panel:SetSize(w, h)
-    panel:SetPos((ScrW() - w) / 2, ScrH() * 0.1)
-    panel:SetZPos(999999)
-    panel:MoveToFront()
-    panel:SetTitle("")
-    panel:SetCenterTitle("Downloading Workshop Addons")
-    panel:ShowAnimation()
-    panel.bar = vgui.Create("liaProgressBar", panel)
-    panel.bar:SetPos(pad, h * 0.65 - bh / 2)
-    panel.bar:SetSize(w - pad * 2, bh)
-    panel.bar:SetFraction(0)
-end
-
-local queue = {}
-local MOUNT_DELAY = 3
-local function gmaPath(id)
-    return "lilia/workshop/" .. id .. ".gma"
-end
-
-local function mounted(id)
-    for _, addon in pairs(engine.GetAddons() or {}) do
-        if tostring(addon.wsid or addon.workshopid) == tostring(id) and addon.mounted then return true end
-    end
-    return false
-end
-
-local function mountLocal(id)
-    local rel = gmaPath(id)
-    if file.Exists(rel, "DATA") then
-        game.MountGMA("data/" .. rel)
-        return true
-    end
-    return false
-end
-
-local function uiUpdate()
-    if not (panel and panel:IsValid()) then return end
-    panel.bar:SetFraction(totalDownloads > 0 and (totalDownloads - remainingDownloads) / totalDownloads or 0)
-    panel.bar:SetText((totalDownloads - remainingDownloads) .. "/" .. totalDownloads)
-end
-
-local function start()
-    for id in pairs(queue) do
-        if mounted(id) or mountLocal(id) then queue[id] = nil end
-    end
-
-    local seq, idx = {}, 1
-    for id in pairs(queue) do
-        seq[#seq + 1] = id
-    end
-
-    totalDownloads = #seq
-    remainingDownloads = totalDownloads
-    if totalDownloads == 0 then
-        lia.bootstrap("Workshop Downloader", "All workshop addons already installed. Skipping download.")
-        return
-    end
-
-    uiCreate()
-    uiUpdate()
-    local function nextItem()
-        if idx > #seq then
-            if panel and panel:IsValid() then
-                panel:Remove()
-                panel = nil
-            end
-            return
-        end
-
-        local id = seq[idx]
-        lia.bootstrap("Workshop Downloader", string.format("Downloading workshop %s", id))
-        steamworks.DownloadUGC(id, function(path)
-            remainingDownloads = remainingDownloads - 1
-            lia.bootstrap("Workshop Downloader", string.format("Completed workshop %s", id))
-            if path then
-                local rel = gmaPath(id)
-                local data = file.Read(path, "GAME")
-                if data then
-                    file.Write(rel, data)
-                    path = "data/" .. rel
-                end
-
-                game.MountGMA(path)
-            end
-
-            uiUpdate()
-            idx = idx + 1
-            timer.Simple(MOUNT_DELAY, nextItem)
-        end)
-    end
-
-    nextItem()
-end
-
-local function buildQueue(all)
-    table.Empty(queue)
-    for id in pairs(lia.workshop.serverIds or {}) do
-        if id == FORCE_ID or all then queue[id] = true end
-    end
-end
-
-local function refresh(tbl)
-    if tbl then lia.workshop.serverIds = tbl end
-    local ids = {}
-    for id in pairs(lia.workshop.serverIds or {}) do
-        if id ~= FORCE_ID then ids[#ids + 1] = id end
-    end
-
-    if #ids == 0 then return end
-    local idx = 1
-    local function mountNext()
-        if idx > #ids then return end
-        local id = ids[idx]
-        mountLocal(id)
-        idx = idx + 1
-        if idx <= #ids then timer.Simple(MOUNT_DELAY, mountNext) end
-    end
-
-    mountNext()
-end
-
-net.Receive("liaWorkshopDownloaderStart", function()
-    refresh(net.ReadTable())
-    buildQueue(true)
-    start()
-end)
-
-concommand.Add("workshop_force_redownload", function()
-    table.Empty(queue)
-    buildQueue(true)
-    start()
-end)
-
 net.Receive("liaNotificationData", lia.notices.receiveNotify)
 net.Receive("liaNotifyLocal", lia.notices.receiveNotifyL)
-net.Receive("liaWorkshopDownloaderInfo", function() refresh(net.ReadTable()) end)
 net.Receive("liaGroupPermChanged", function()
     local group = net.ReadString()
     local privilege = net.ReadString()

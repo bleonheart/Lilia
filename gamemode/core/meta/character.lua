@@ -453,11 +453,7 @@ if SERVER then
         local curChar, steamID = client:getChar(), client:SteamID()
         local isCurChar = curChar and curChar:getID() == self:getID() or false
         if self.steamID == steamID then
-            if isCurChar then
-                net.Start("liaRemoveFOne")
-                net.Send(client)
-            end
-
+            if isCurChar then client:SendLua("if IsValid(lia.gui.menu) then lia.gui.menu:remove() end") end
             net.Start("liaCharKick")
             net.WriteUInt(self:getID(), 32)
             net.WriteBool(isCurChar)
