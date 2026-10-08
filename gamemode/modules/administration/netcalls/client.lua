@@ -93,68 +93,6 @@ net.Receive("liaAdminModeSwapCharacter", function()
     d:catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
 end)
 
-net.Receive("liaManagesitrooms", function()
-    local rooms = net.ReadTable() or {}
-    local frame = vgui.Create("liaFrame")
-    frame:SetTitle("Manage Administration Rooms")
-    frame:SetSize(640, 420)
-    frame:Center()
-    frame:MakePopup()
-    local scroll = vgui.Create("DScrollPanel", frame)
-    scroll:Dock(FILL)
-    scroll:DockMargin(10, 30, 10, 10)
-    for name in pairs(rooms) do
-        local entry = vgui.Create("DPanel", scroll)
-        entry:SetTall(40)
-        entry:Dock(TOP)
-        entry:DockMargin(0, 0, 0, 5)
-        local lbl = vgui.Create("DLabel", entry)
-        lbl:Dock(LEFT)
-        lbl:DockMargin(5, 0, 0, 0)
-        lbl:SetText(name)
-        lbl:SetTall(40)
-        lbl:SetContentAlignment(4)
-        local function makeButton(key, action)
-            local btn = vgui.Create("liaButton", entry)
-            btn:Dock(RIGHT)
-            btn:SetWide(80)
-            btn:SetText(tostring(key))
-            btn.DoClick = function()
-                net.Start("liaManagesitroomsAction")
-                net.WriteUInt(action, 2)
-                net.WriteString(name)
-                if action == 2 then
-                    local prompt = vgui.Create("liaFrame")
-                    prompt:SetTitle("Rename Administration Room")
-                    prompt:SetSize(300, 100)
-                    prompt:Center()
-                    prompt:MakePopup()
-                    local txt = vgui.Create("liaEntry", prompt)
-                    txt:Dock(FILL)
-                    local ok = vgui.Create("liaButton", prompt)
-                    ok:Dock(BOTTOM)
-                    ok:SetText(string.upper("ok"))
-                    ok.DoClick = function()
-                        net.WriteString(txt:GetValue())
-                        net.SendToServer()
-                        prompt:Close()
-                        frame:Close()
-                    end
-                    return
-                end
-
-                net.SendToServer()
-                frame:Close()
-            end
-        end
-
-        makeButton("teleport", 1)
-        makeButton("reposition", 3)
-        makeButton("rename", 2)
-    end
-end)
-
-
 lia.net.readBigTable("liaMapEntities", function(entities)
     local adminModule = lia.module.get("administration")
     if not adminModule then return end

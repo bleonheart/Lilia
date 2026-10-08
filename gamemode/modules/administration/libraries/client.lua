@@ -3473,8 +3473,12 @@ function MODULE:HUDPaint()
                             label = string.format("Spawn For Faction '%s'", label)
                         elseif typeInfo.id == "class_spawn_adder" then
                             label = string.format("Spawn For Class '%s'", label)
-                        elseif typeInfo.id == "sit_room" then
-                            label = string.format("Sit Room %s", label)
+                        end
+
+                        local positionCallback = lia.util.positionCallbacks and lia.util.positionCallbacks[typeInfo.id]
+                        if positionCallback and isfunction(positionCallback.formatLabel) then
+                            local formattedLabel = positionCallback.formatLabel(label, entry, typeInfo)
+                            if isstring(formattedLabel) and formattedLabel ~= "" then label = formattedLabel end
                         end
 
                         lia.util.drawESPStyledText(label, screenPos.x, screenPos.y, col, hudFontLarge, 1)

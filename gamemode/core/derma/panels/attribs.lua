@@ -6,7 +6,8 @@ function PANEL:Init()
     self.leftLabel:SetFont("LiliaFont.32")
     self.leftLabel:SetTextColor(color_white)
     self.title:SetTextColor(color_white)
-    self.total = hook.Run("GetMaxStartingAttributePoints", client, lia.config.get("StartingAttributePoints", 30))
+    local limits = hook.Run("GetAttributeLimits", client) or {}
+    self.total = limits.startingPoints or lia.config.get("StartingAttributePoints", 30)
     self.attribs = {}
     for k, v in SortedPairsByMemberValue(lia.attribs.list, "name") do
         if v.noStartBonus then continue end
@@ -20,7 +21,8 @@ end
 
 function PANEL:onDisplay()
     local client = LocalPlayer()
-    self.total = hook.Run("GetMaxStartingAttributePoints", client, lia.config.get("StartingAttributePoints", 30))
+    local limits = hook.Run("GetAttributeLimits", client) or {}
+    self.total = limits.startingPoints or lia.config.get("StartingAttributePoints", 30)
     if not self.attribs then self.attribs = {} end
     for k, v in SortedPairsByMemberValue(lia.attribs.list, "name") do
         if v.noStartBonus then continue end
@@ -51,7 +53,10 @@ end
 function PANEL:onPointChange(key, delta)
     if not key then return 0 end
     local client = LocalPlayer()
-    if not self.total or self.total == 0 then self.total = hook.Run("GetMaxStartingAttributePoints", client, lia.config.get("StartingAttributePoints", 30)) end
+    if not self.total or self.total == 0 then
+        local limits = hook.Run("GetAttributeLimits", client) or {}
+        self.total = limits.startingPoints or lia.config.get("StartingAttributePoints", 30)
+    end
     local attribs = self:getContext("attribs", {})
     local sum = 0
     for _, quantity in pairs(attribs) do

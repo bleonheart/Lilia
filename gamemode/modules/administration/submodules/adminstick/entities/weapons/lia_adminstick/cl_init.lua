@@ -180,7 +180,14 @@ local function buildDebugHUDRows(client)
 end
 
 local function getPositionTypes()
-    return lia.util.featurePositionTypes or {}
+    local types = lia.util.featurePositionTypes or {}
+    local client = LocalPlayer()
+    local available = {}
+    for _, typeInfo in ipairs(types) do
+        local callback = lia.util.positionCallbacks and lia.util.positionCallbacks[typeInfo.id]
+        if not callback or not isfunction(callback.canAccess) or callback.canAccess(client) then available[#available + 1] = typeInfo end
+    end
+    return available
 end
 
 local function getPositionType()

@@ -1361,116 +1361,6 @@ lia.command.add("checkid", {
     end
 })
 
-lia.command.add("managesitrooms", {
-    superAdminOnly = true,
-    desc = "Manage administration rooms on the current map: view existing administration rooms, teleport to them, rename them, or reposition them.",
-    onRun = function(client)
-        lia.debug("[Permissions]", "Permission Check for command manageSitRooms", "hasPrivilege(manageSitRooms)=", tostring(client:hasPrivilege("manageSitRooms")), "finalResult=", tostring(client:hasPrivilege("manageSitRooms")))
-        if not client:hasPrivilege("manageSitRooms") then return end
-        local rooms = lia.data.get("sitrooms", {})
-        net.Start("liaManagesitrooms")
-        net.WriteTable(rooms)
-        net.Send(client)
-    end
-})
-
-lia.command.add("addsitroom", {
-    superAdminOnly = true,
-    desc = "Set Administration Room",
-    onRun = function(client)
-        client:requestString("Enter Name", "Enter the name of the Administration Room(" .. "):", function(name)
-            if name == "" then
-                client:notifyError(string.format("Invalid name!"))
-                return
-            end
-
-            local rooms = lia.data.get("sitrooms", {})
-            rooms[name] = client:GetPos()
-            lia.data.set("sitrooms", rooms)
-            client:notifySuccess(string.format("Administration Room has been set!"))
-        end)
-    end
-})
-
-lia.command.add("sendtositroom", {
-    adminOnly = true,
-    desc = "Send a player to an Administration Room",
-    arguments = {
-        {
-            name = "name",
-            type = "player"
-        },
-    },
-    AdminStick = {
-        Name = "Send To Administration Room",
-        ButtonText = "Send To Sit Room",
-        Category = "Teleportation",
-    },
-    onRun = function(client, arguments)
-        local target = lia.util.findPlayer(client, arguments[1])
-        if not target or not IsValid(target) then
-            client:notifyError(string.format("Target not found"))
-            return
-        end
-
-        local rooms = lia.data.get("sitrooms", {})
-        local names = {}
-        for n in pairs(rooms) do
-            names[#names + 1] = n
-        end
-
-        if #names == 0 then
-            client:notifyError(string.format("No Administration Room has been set!"))
-            return
-        end
-
-        client:requestDropdown("Choose an Administration Room", "Select an Administration Room to send the player to(" .. "):", names, function(selection)
-            local pos = rooms[selection]
-            if not pos then
-                client:notifyError(string.format("No Administration Room has been set!"))
-                return
-            end
-
-            target:SetPos(pos)
-            client:notifySuccess(string.format("You have been teleported to Administration Room: %s.", target:Nick()))
-            target:notifyInfo(string.format("You have arrived at an Administration Room."))
-        end)
-    end
-})
-
-lia.command.add("returnsitroom", {
-    adminOnly = true,
-    desc = "Returns you or the specified player to their previous position before teleporting to an administration room.",
-    arguments = {
-        {
-            name = "name",
-            type = "player"
-        },
-    },
-    AdminStick = {
-        Name = "Return From Administration Room",
-        ButtonText = "Return From Sit Room",
-        Category = "Teleportation",
-    },
-    onRun = function(client, arguments)
-        local target = lia.util.findPlayer(client, arguments[1]) or client
-        if not IsValid(target) then
-            client:notifyError(string.format("Target not found"))
-            return
-        end
-
-        local prev = target.previousSitroomPos
-        if not prev then
-            client:notifyError(string.format("No previous sitroom position"))
-            return
-        end
-
-        target:SetPos(prev)
-        client:notifySuccess(string.format("Successfully returned to sitroom"))
-        if target ~= client then target:notifyInfo(string.format("Returned to your previous position.")) end
-    end
-})
-
 lia.command.add("charkill", {
     superAdminOnly = true,
     alias = "permakill",
@@ -4362,7 +4252,8 @@ lia.command.add("checkattributes", {
         local attributesData = {}
         for attrKey, attrData in SortedPairsByMemberValue(lia.attribs.list, "name") do
             local currentValue = target:getChar():getAttrib(attrKey, 0) or 0
-            local maxValue = hook.Run("GetAttributeMax", target, attrKey) or 100
+            local limits = hook.Run("GetAttributeLimits", target, attrKey) or {}
+            local maxValue = limits.max or 100
             local progress = math.Round(currentValue / maxValue * 100, 1)
             table.insert(attributesData, {
                 charID = attrData.name,

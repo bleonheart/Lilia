@@ -295,6 +295,8 @@ function lia.util.setPositionCallback(name, data)
         onRemove = data.onRemove,
         onSelect = data.onSelect,
         HUDPaint = data.HUDPaint,
+        formatLabel = data.formatLabel,
+        canAccess = data.canAccess,
         serverOnly = serverOnly
     }
 

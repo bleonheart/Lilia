@@ -14,20 +14,11 @@ function GM:GetModelGender(model)
     return isFemale and "female" or "male"
 end
 
-function GM:GetAttributeMax(client, attribute)
-    local attribTable = lia.attribs.list[attribute]
-    if not attribTable then return lia.config.get("MaxAttributePoints") end
-    if istable(attribTable) and isnumber(attribTable.maxValue) then return attribTable.maxValue end
-    return lia.config.get("MaxAttributePoints")
-end
-
-function GM:GetAttributeStartingMax(client, attribute)
-    local attribTable = lia.attribs.list[attribute]
-    if not attribTable then return lia.config.get("MaxStartingAttributes") end
-    if istable(attribTable) and isnumber(attribTable.startingMax) then return attribTable.startingMax end
-    return lia.config.get("MaxStartingAttributes")
-end
-
-function GM:GetMaxStartingAttributePoints(client, default)
-    return default or lia.config.get("StartingAttributePoints", 30)
+function GM:GetAttributeLimits(client, attribute)
+    local attribTable = attribute and lia.attribs.list[attribute]
+    return {
+        max = istable(attribTable) and isnumber(attribTable.maxValue) and attribTable.maxValue or lia.config.get("MaxAttributePoints"),
+        startingMax = istable(attribTable) and isnumber(attribTable.startingMax) and attribTable.startingMax or lia.config.get("MaxStartingAttributes"),
+        startingPoints = lia.config.get("StartingAttributePoints", 30)
+    }
 end

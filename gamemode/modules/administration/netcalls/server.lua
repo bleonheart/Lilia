@@ -217,38 +217,6 @@ net.Receive("liaSpawnMenuGiveItem", function(_, client)
     targetChar:getInv():add(id)
 end)
 
-net.Receive("liaManagesitroomsAction", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaManagesitroomsAction", "hasPrivilege(manageSitRooms)=", tostring(client:hasPrivilege("manageSitRooms")), "finalResult=", tostring(client:hasPrivilege("manageSitRooms")))
-    if not client:hasPrivilege("manageSitRooms") then return end
-    local action = net.ReadUInt(2)
-    local name = net.ReadString()
-    local rooms = lia.data.get("sitrooms", {})
-    if action == 1 then
-        local targetPos = rooms[name]
-        if targetPos then
-            client.previousSitroomPos = client:GetPos()
-            client:SetPos(targetPos)
-            client:notifySuccess(string.format("You have been teleported to Administration Room: %s.", name))
-            local message = string.format("%s (Steam64ID: %s) teleported to sit room \"%s\".", client:Name(), client:SteamID64(), name)
-            StaffAddTextShadowed(Color(123, 104, 238), "SIT", Color(255, 255, 255), message)
-        end
-    elseif action == 2 then
-        local newName = net.ReadString()
-        if newName ~= "" and not rooms[newName] and rooms[name] then
-            rooms[newName] = rooms[name]
-            rooms[name] = nil
-            lia.data.set("sitrooms", rooms)
-            client:notifySuccess(string.format("Administration Room renamed successfully."))
-        end
-    elseif action == 3 then
-        if rooms[name] then
-            rooms[name] = client:GetPos()
-            lia.data.set("sitrooms", rooms)
-            client:notifySuccess(string.format("Administration Room repositioned successfully."))
-        end
-    end
-end)
-
 local function writeFeaturePositionRadii(positions)
     net.WriteUInt(#positions, 16)
     for i = 1, #positions do

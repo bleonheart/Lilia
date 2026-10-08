@@ -231,7 +231,8 @@ if SERVER then
         if not attribute then return end
         local attrib = self:getAttribs()
         local currentLevel = attrib[key] or 0
-        local maxLevel = hook.Run("GetAttributeMax", client, key) or math.huge
+        local limits = hook.Run("GetAttributeLimits", client, key) or {}
+        local maxLevel = limits.max or math.huge
         attrib[key] = math.min(currentLevel + value, maxLevel)
         if IsValid(client) then
             net.Start("liaAttributeData")
