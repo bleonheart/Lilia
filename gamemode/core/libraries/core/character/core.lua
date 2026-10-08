@@ -694,16 +694,16 @@ if SERVER then
 
         local restoreStarted = SysTime()
         local steamID = client:SteamID()
-        local fields = {"id"}
+        local fields = {lia.db.escapeIdentifier("id")}
         for _, var in pairs(lia.char.vars) do
-            if var.field then fields[#fields + 1] = var.field end
+            if var.field then fields[#fields + 1] = lia.db.escapeIdentifier(var.field) end
         end
 
         fields = table.concat(fields, ", ")
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local condition = "schema = '" .. lia.db.escape(gamemode) .. "' AND steamID = " .. lia.db.convertDataType(steamID)
-        if id then condition = condition .. " AND id = " .. id end
-        local query = "SELECT " .. fields .. " FROM lia_characters WHERE " .. condition
+        local condition = lia.db.escapeIdentifier("schema") .. " = " .. lia.db.convertDataType(gamemode) .. " AND " .. lia.db.escapeIdentifier("steamID") .. " = " .. lia.db.convertDataType(steamID)
+        if id then condition = condition .. " AND " .. lia.db.escapeIdentifier("id") .. " = " .. lia.db.convertDataType(tonumber(id)) end
+        local query = "SELECT " .. fields .. " FROM " .. lia.db.escapeIdentifier("lia_characters") .. " WHERE " .. condition
         if lia.DevMode then charDevLog("Restoring characters for", steamID, id and ("char " .. tostring(id)) or "(all chars)") end
         lia.db.query(query, function(data)
             local characters = {}

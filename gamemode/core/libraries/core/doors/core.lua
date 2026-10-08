@@ -124,14 +124,9 @@ if SERVER then
     end
 
     function lia.doors.verifyDatabaseSchema()
-        lia.db.query("PRAGMA table_info(lia_doors)"):next(function(res)
-            if not res or not res.results then
-                lia.error("Failed to get table info")
-                return
-            end
-
+        lia.db.getTableColumnInfo("lia_doors"):next(function(results)
             local columns = {}
-            for _, row in ipairs(res.results) do
+            for _, row in ipairs(results) do
                 columns[row.name] = row.type
             end
 
@@ -157,8 +152,14 @@ if SERVER then
             for colName, expectedType in pairs(expectedColumns) do
                 if not columns[colName] then
                     lia.error("Missing expected column:" .. " " .. colName)
-                elseif columns[colName]:lower() ~= expectedType:lower() then
-                    lia.warning("Column" .. " " .. colName .. " " .. " has type " .. " " .. columns[colName] .. ", " .. "Expected" .. " " .. expectedType)
+                else
+                    local actual = columns[colName]:lower()
+                    local expected = expectedType:lower()
+                    local numericType = actual:match("^%w*int") ~= nil or actual:match("^decimal") ~= nil
+                    local stringType = actual:match("^%w*text") ~= nil or actual:match("^varchar") ~= nil or actual:match("^char") ~= nil
+                    if actual ~= expected and not (expected == "integer" and numericType) and not (expected == "text" and stringType) then
+                        lia.warning("Column " .. colName .. " has type " .. columns[colName] .. ", expected " .. expectedType)
+                    end
                 end
             end
 
@@ -166,8 +167,7 @@ if SERVER then
                 if not columns[colName] then
                     local columnType = info and info.type or "text"
                     local defaultValue = info and info.default
-                    local defaultSQL = defaultValue ~= nil and " DEFAULT " .. lia.db.convertDataType(defaultValue) or ""
-                    lia.db.query("ALTER TABLE lia_doors ADD COLUMN " .. colName .. " " .. columnType .. defaultSQL):catch(function(err) lia.error("Failed to verify database schema:" .. " " .. tostring(err)) end)
+                    lia.db.createColumn("doors", colName, columnType, defaultValue):catch(function(err) lia.error("Failed to verify database schema: " .. tostring(err)) end)
                 end
             end
         end):catch(function(err) lia.error("Failed to verify database schema:" .. " " .. tostring(err)) end)

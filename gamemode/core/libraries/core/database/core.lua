@@ -529,9 +529,23 @@ function mysqlooModule.connect(callback, reconnect, errorCallback)
     end
 end
 
+local function normalizeMySQLLegacyQuery(query)
+    if not isstring(query) then return query end
+    local tableName = query:match("^%s*[Pp][Rr][Aa][Gg][Mm][Aa]%s+[Tt][Aa][Bb][Ll][Ee]_[Ii][Nn][Ff][Oo]%s*%(%s*`?([%w_]+)`?%s*%)%s*;?%s*$")
+    if tableName and tableName:match("^[%a_][%w_]*$") then
+        return "SELECT ordinal_position - 1 AS cid, column_name AS name, column_type AS type, column_default AS dflt_value, CASE WHEN column_key = 'PRI' THEN 1 ELSE 0 END AS pk FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = '" .. tableName .. "' ORDER BY ordinal_position"
+    end
+
+    if query:match("^%s*[Cc][Rr][Ee][Aa][Tt][Ee]%s+[Tt][Aa][Bb][Ll][Ee]") then
+        return query:gsub("[Ii][Nn][Tt][Ee][Gg][Ee][Rr]%s+[Pp][Rr][Ii][Mm][Aa][Rr][Yy]%s+[Kk][Ee][Yy]%s+[Aa][Uu][Tt][Oo][Ii][Nn][Cc][Rr][Ee][Mm][Ee][Nn][Tt]", "INT NOT NULL AUTO_INCREMENT PRIMARY KEY")
+    end
+    return query
+end
+
 function mysqlooModule.query(query, callback, errorCallback)
     local d
     callback, errorCallback, d = normalizeQueryCallbacks(callback, errorCallback)
+    query = normalizeMySQLLegacyQuery(query)
     mysqlPushBack({
         kind = "query",
         query = query,
@@ -1011,6 +1025,20 @@ function lia.db.updateTable(value, callback, dbTable, condition)
     return d
 end
 
+local function buildSelectFields(fields)
+    local selected = istable(fields) and fields or string.Explode(",", tostring(fields))
+    local compiled = {}
+    for _, field in ipairs(selected) do
+        local value = string.Trim(tostring(field))
+        if value:match("^[%a_][%w_]*$") or value:match("^[%a_][%w_]*%.[%a_][%w_]*$") then
+            compiled[#compiled + 1] = lia.db.escapeIdentifier(value)
+        else
+            compiled[#compiled + 1] = value
+        end
+    end
+    return table.concat(compiled, ", ")
+end
+
 function lia.db.select(fields, dbTable, condition, limit, options)
     local d = deferred.new()
     if fields == nil then
@@ -1018,7 +1046,7 @@ function lia.db.select(fields, dbTable, condition, limit, options)
         fields = "*"
     end
 
-    local from = istable(fields) and table.concat(fields, ", ") or tostring(fields)
+    local from = buildSelectFields(fields)
     local query = "SELECT " .. from .. " FROM " .. lia.db.escapeIdentifier(prefixTable(dbTable, "characters"))
     query = query .. buildWhereClause(condition)
     local order
@@ -1046,7 +1074,7 @@ function lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy,
         fields = "*"
     end
 
-    local from = istable(fields) and table.concat(fields, ", ") or tostring(fields)
+    local from = buildSelectFields(fields)
     local query = "SELECT " .. from .. " FROM " .. lia.db.escapeIdentifier(prefixTable(dbTable, "characters"))
     query = query .. buildWhereClause(conditions)
     local resolvedLimit, resolvedOrder, offset = resolveSelectOptions(limit, orderBy, options)
@@ -1084,7 +1112,7 @@ function lia.db.selectOne(fields, dbTable, condition, options)
         fields = "*"
     end
 
-    local from = istable(fields) and table.concat(fields, ", ") or tostring(fields)
+    local from = buildSelectFields(fields)
     local query = "SELECT " .. from .. " FROM " .. lia.db.escapeIdentifier(prefixTable(dbTable, "characters")) .. buildWhereClause(condition)
     local order = istable(options) and options.order or nil
     local offset = istable(options) and options.offset or nil
@@ -1342,6 +1370,9 @@ local function normalizeColumnType(columnType, length)
     end
 
     if typeMap[value] then return typeMap[value] end
+    if value:match("^integer%s+primary%s+key%s+autoincrement$") then
+        return lia.db.module == "mysqloo" and "INT NOT NULL AUTO_INCREMENT PRIMARY KEY" or "INTEGER PRIMARY KEY AUTOINCREMENT"
+    end
     if value:match("^varchar%(%d+%)$") or value:match("^char%(%d+%)$") or value:match("^decimal%(%d+,%s*%d+%)$") or value == "bigint" or value == "double" or value == "blob" or value == "timestamp" or value == "date" or value == "json" then return string.upper(value) end
     local textLength = value:match("^text%(%d+%)$")
     if textLength then return "TEXT" end
@@ -1354,10 +1385,12 @@ function lia.db.createTable(dbName, primaryKey, schema)
     local inlinePrimaryKey
     for _, column in ipairs(schema) do
         local normalizedType = normalizeColumnType(column.type, column.length)
+        local hasInlinePrimaryKey = normalizedType:find("PRIMARY KEY", 1, true) ~= nil
+        if hasInlinePrimaryKey then inlinePrimaryKey = column.name end
         local colDef = lia.db.escapeIdentifier(column.name) .. " " .. normalizedType
-        if column.not_null then colDef = colDef .. " NOT NULL" end
-        if column.default ~= nil then colDef = colDef .. " DEFAULT " .. lia.db.convertDataType(column.default) end
-        if column.auto_increment then
+        if column.not_null and not hasInlinePrimaryKey then colDef = colDef .. " NOT NULL" end
+        if column.default ~= nil and not hasInlinePrimaryKey then colDef = colDef .. " DEFAULT " .. lia.db.convertDataType(column.default) end
+        if column.auto_increment and not hasInlinePrimaryKey then
             if lia.db.module == "mysqloo" then
                 colDef = colDef .. " AUTO_INCREMENT"
             elseif string.upper(normalizedType) == "INTEGER" then
@@ -1369,6 +1402,7 @@ function lia.db.createTable(dbName, primaryKey, schema)
         columns[#columns + 1] = colDef
     end
 
+    if primaryKey and inlinePrimaryKey and primaryKey ~= inlinePrimaryKey then error("Conflicting database primary key definitions", 2) end
     if primaryKey and primaryKey ~= inlinePrimaryKey then columns[#columns + 1] = "PRIMARY KEY (" .. lia.db.escapeIdentifier(primaryKey) .. ")" end
     local query = "CREATE TABLE IF NOT EXISTS " .. lia.db.escapeIdentifier(prefixTable(dbName, "characters")) .. " (" .. table.concat(columns, ", ") .. ")"
     if lia.db.module == "mysqloo" then query = query .. " ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci" end
@@ -1431,11 +1465,17 @@ end
 
 local function getTableColumns(tableName, callback, errorCallback)
     if lia.db.module == "mysqloo" then
-        local query = "SELECT column_name AS name FROM information_schema.columns WHERE table_schema = " .. schemaDatabaseValue() .. " AND table_name = " .. lia.db.convertDataType(tableName) .. " ORDER BY ordinal_position"
+        local query = "SELECT column_name AS name, column_type AS type FROM information_schema.columns WHERE table_schema = " .. schemaDatabaseValue() .. " AND table_name = " .. lia.db.convertDataType(tableName) .. " ORDER BY ordinal_position"
         lia.db.query(query, callback, errorCallback)
     else
         lia.db.query("PRAGMA table_info(" .. lia.db.escapeIdentifier(tableName) .. ")", callback, errorCallback)
     end
+end
+
+function lia.db.getTableColumnInfo(tableName)
+    local d = deferred.new()
+    getTableColumns(tableName, function(results) d:resolve(results or {}) end, function(err) d:reject(err) end)
+    return d
 end
 
 function lia.db.getCharacterTable(callback)

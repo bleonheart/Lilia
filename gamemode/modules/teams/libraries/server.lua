@@ -498,9 +498,9 @@ function MODULE:BuildFactionMembersPayload(client, factionUniqueID, callback)
 
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local query = string.format([[
-        SELECT c.id, c.name, c.lastJoinTime, c.steamID, c.class, c.playtime
+        SELECT c.id, c.name, c.lastJoinTime, c.steamID, c.`class`, c.playtime
         FROM lia_characters AS c
-        WHERE c.faction = %s AND c.schema = %s
+        WHERE c.faction = %s AND c.`schema` = %s
         ORDER BY c.lastJoinTime DESC
     ]], lia.db.convertDataType(faction.uniqueID), lia.db.convertDataType(gamemode))
     lia.db.query(query, function(data)
@@ -575,9 +575,9 @@ function MODULE:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID
 
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local query = string.format([[
-        SELECT c.id, c.name, c.lastJoinTime, c.steamID, c.class, c.playtime
+        SELECT c.id, c.name, c.lastJoinTime, c.steamID, c.`class`, c.playtime
         FROM lia_characters AS c
-        WHERE c.id = %s AND c.faction = %s AND c.schema = %s
+        WHERE c.id = %s AND c.faction = %s AND c.`schema` = %s
         LIMIT 1
     ]], charID, lia.db.convertDataType(faction.uniqueID), lia.db.convertDataType(gamemode))
     lia.db.query(query, function(data)
