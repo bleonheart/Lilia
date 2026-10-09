@@ -413,8 +413,8 @@ local function buildFullCharListPage(client, requestID, offset, limit)
         local safeLimit = math.Clamp(limit, 25, 250)
         local query = string.format([[SELECT c.id, c.name, c.`desc`, c.faction, c.steamID, c.lastJoinTime, c.banned, c.playtime, c.money, COALESCE(c.charflags, '') AS flags, d.value AS charBanInfo, f.value AS chardataFlags
 FROM lia_characters AS c
-LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo'
-LEFT JOIN lia_chardata AS f ON f.charID = c.id AND f.key = 'flags'
+LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.`key` = 'charBanInfo'
+LEFT JOIN lia_chardata AS f ON f.charID = c.id AND f.`key` = 'flags'
 ORDER BY c.steamID ASC, c.id ASC
 LIMIT %d OFFSET %d]], safeLimit, safeOffset)
         lia.db.query(query, function(data)

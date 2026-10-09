@@ -5,6 +5,7 @@ lia.db.prepared = lia.db.prepared or {}
 lia.db.modules = lia.db.modules or {}
 lia.db.connected = lia.db.connected or false
 lia.db.tablesLoaded = lia.db.tablesLoaded or false
+lia.db.tablesLoading = lia.db.tablesLoading or false
 local conditionMarker = {}
 local groupMarker = {}
 local orderMarker = {}
@@ -135,14 +136,14 @@ mysqlooModule.workQueue = mysqlooModule.workQueue or {}
 mysqlooModule.workFirst = mysqlooModule.workFirst or 1
 mysqlooModule.workLast = mysqlooModule.workLast or 0
 mysqlooModule.connectCallbacks = mysqlooModule.connectCallbacks or {}
-mysqlooModule.connecting = false
-mysqlooModule.ready = false
-mysqlooModule.active = false
-mysqlooModule.reconnectRequested = false
+mysqlooModule.connecting = mysqlooModule.connecting or false
+mysqlooModule.ready = mysqlooModule.ready or false
+mysqlooModule.active = mysqlooModule.active or false
+mysqlooModule.reconnectRequested = mysqlooModule.reconnectRequested or false
 local function mysqlEscapeFallback(value)
     value = tostring(value)
     value = value:gsub("\\", "\\\\")
-    value = value:gsub("\0", "\\0")
+    value = value:gsub("%z", "\\0")
     value = value:gsub("\n", "\\n")
     value = value:gsub("\r", "\\r")
     value = value:gsub("\026", "\\Z")
@@ -189,6 +190,20 @@ local function mysqlStatusConnected()
     if not object or not library or not mysqlooModule.ready then return false end
     local ok, status = pcall(object.status, object)
     return ok and status == library.DATABASE_CONNECTED
+end
+
+local function mysqlConnectionStatus()
+    local object = mysqlooModule.object
+    if not object then return "no object" end
+    local ok, status = pcall(object.status, object)
+    if not ok then return "status unavailable: " .. tostring(status) end
+    local library = mysqlooModule.library
+    if library then
+        for name, value in pairs(library) do
+            if isstring(name) and name:find("^DATABASE_") and value == status then return name end
+        end
+    end
+    return tostring(status)
 end
 
 local function mysqlLoadLibrary()
@@ -386,6 +401,27 @@ mysqlPump = function()
     end
 end
 
+local function mysqlConnectionTimeout(database)
+    timer.Simple(60, function()
+        if mysqlooModule.object ~= database or not mysqlooModule.connecting then return end
+        local phase = tostring(mysqlooModule.connectionPhase or "connecting")
+        local status = mysqlConnectionStatus()
+        local err = "MySQL connection timed out after 60 seconds (phase=" .. phase .. ", status=" .. status .. ")"
+        mysqlooModule.object = nil
+        mysqlooModule.connecting = false
+        mysqlooModule.ready = false
+        mysqlooModule.connectionPhase = "failed"
+        mysqlooModule.lastConnectionError = err
+        lia.db.connected = false
+        lia.db.object = nil
+        if lia.db.connectedModule == "mysqloo" then lia.db.connectedModule = nil end
+        if isfunction(database.disconnect) then pcall(database.disconnect, database, false) end
+        mysqlFlushConnectCallbacks(false, err)
+        mysqlFailPending(err)
+        databaseLogError(err)
+    end)
+end
+
 local function mysqlConfigureCharset(database, done)
     local function runCharset(charset, fallback)
         local ok, queryObject = pcall(database.query, database, "SET NAMES " .. charset)
@@ -451,6 +487,8 @@ function mysqlooModule.connect(callback, reconnect, errorCallback)
     local loaded, loadError = mysqlLoadLibrary()
     if not loaded then
         mysqlooModule.ready = false
+        mysqlooModule.connectionPhase = "failed"
+        mysqlooModule.lastConnectionError = tostring(loadError)
         lia.db.connected = false
         if lia.db.connectedModule == "mysqloo" then lia.db.connectedModule = nil end
         lia.db.object = nil
@@ -462,7 +500,11 @@ function mysqlooModule.connect(callback, reconnect, errorCallback)
 
     mysqlooModule.connecting = true
     mysqlooModule.ready = false
+    mysqlooModule.connectionPhase = "connecting"
+    mysqlooModule.connectionStartedAt = SysTime()
+    mysqlooModule.lastConnectionError = nil
     lia.db.connected = false
+    databaseLogError(string.format("Starting MySQL connection to %s:%s (database=%s)", tostring(lia.db.hostname or "127.0.0.1"), tostring(lia.db.port or 3306), tostring(lia.db.database or "")))
     local previous = mysqlooModule.object
     if reconnect and previous and isfunction(previous.disconnect) then pcall(previous.disconnect, previous, false) end
     local library = mysqlooModule.library
@@ -470,7 +512,10 @@ function mysqlooModule.connect(callback, reconnect, errorCallback)
     if not ok or not database then
         local err = ok and "mysqloo.connect returned no database object" or database
         mysqlooModule.connecting = false
+        mysqlooModule.connectionPhase = "failed"
+        mysqlooModule.lastConnectionError = tostring(err)
         lia.db.object = nil
+        mysqlooModule.object = nil
         mysqlFlushConnectCallbacks(false, err)
         mysqlFailPending(err)
         databaseLogError("MySQL connection failed: " .. tostring(err))
@@ -483,10 +528,14 @@ function mysqlooModule.connect(callback, reconnect, errorCallback)
     if isfunction(database.setMultiStatements) then pcall(database.setMultiStatements, database, true) end
     database.onConnected = function(db)
         if mysqlooModule.object ~= db then return end
+        databaseLogError("MySQL socket connected; configuring connection character set")
+        mysqlooModule.connectionPhase = "charset"
         mysqlConfigureCharset(db, function()
             if mysqlooModule.object ~= db then return end
             mysqlooModule.connecting = false
             mysqlooModule.ready = true
+            mysqlooModule.connectionPhase = "ready"
+            mysqlooModule.lastConnectionError = nil
             lia.db.connected = true
             lia.db.connectedModule = "mysqloo"
             lia.db.object = db
@@ -496,6 +545,7 @@ function mysqlooModule.connect(callback, reconnect, errorCallback)
                 if infoOk then mysqlooModule.serverInfo = info end
             end
 
+            databaseLogError("MySQL connection ready (" .. mysqlConnectionStatus() .. ")")
             mysqlFlushConnectCallbacks(true)
             mysqlPump()
         end)
@@ -505,6 +555,8 @@ function mysqlooModule.connect(callback, reconnect, errorCallback)
         if mysqlooModule.object ~= db then return end
         mysqlooModule.connecting = false
         mysqlooModule.ready = false
+        mysqlooModule.connectionPhase = "failed"
+        mysqlooModule.lastConnectionError = tostring(err)
         lia.db.connected = false
         mysqlFlushConnectCallbacks(false, err)
         mysqlFailPending(err)
@@ -514,15 +566,22 @@ function mysqlooModule.connect(callback, reconnect, errorCallback)
     database.onDisconnected = function(db)
         if mysqlooModule.object ~= db then return end
         mysqlooModule.ready = false
+        mysqlooModule.connectionPhase = "disconnected"
         lia.db.connected = false
+        databaseLogError("MySQL connection lost; attempting reconnect")
         if not mysqlooModule.connecting then mysqlooModule.connect(nil, true) end
     end
 
+    mysqlConnectionTimeout(database)
     local connected, connectError = pcall(database.connect, database)
     if not connected then
+        mysqlooModule.object = nil
         mysqlooModule.connecting = false
         mysqlooModule.ready = false
+        mysqlooModule.connectionPhase = "failed"
+        mysqlooModule.lastConnectionError = tostring(connectError)
         lia.db.connected = false
+        lia.db.object = nil
         mysqlFlushConnectCallbacks(false, connectError)
         mysqlFailPending(connectError)
         databaseLogError("MySQL connection failed: " .. tostring(connectError))
@@ -532,13 +591,8 @@ end
 local function normalizeMySQLLegacyQuery(query)
     if not isstring(query) then return query end
     local tableName = query:match("^%s*[Pp][Rr][Aa][Gg][Mm][Aa]%s+[Tt][Aa][Bb][Ll][Ee]_[Ii][Nn][Ff][Oo]%s*%(%s*`?([%w_]+)`?%s*%)%s*;?%s*$")
-    if tableName and tableName:match("^[%a_][%w_]*$") then
-        return "SELECT ordinal_position - 1 AS cid, column_name AS name, column_type AS type, column_default AS dflt_value, CASE WHEN column_key = 'PRI' THEN 1 ELSE 0 END AS pk FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = '" .. tableName .. "' ORDER BY ordinal_position"
-    end
-
-    if query:match("^%s*[Cc][Rr][Ee][Aa][Tt][Ee]%s+[Tt][Aa][Bb][Ll][Ee]") then
-        return query:gsub("[Ii][Nn][Tt][Ee][Gg][Ee][Rr]%s+[Pp][Rr][Ii][Mm][Aa][Rr][Yy]%s+[Kk][Ee][Yy]%s+[Aa][Uu][Tt][Oo][Ii][Nn][Cc][Rr][Ee][Mm][Ee][Nn][Tt]", "INT NOT NULL AUTO_INCREMENT PRIMARY KEY")
-    end
+    if tableName and tableName:match("^[%a_][%w_]*$") then return "SELECT ordinal_position - 1 AS cid, column_name AS name, column_type AS type, column_default AS dflt_value, CASE WHEN column_key = 'PRI' THEN 1 ELSE 0 END AS pk FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = '" .. tableName .. "' ORDER BY ordinal_position" end
+    if query:match("^%s*[Cc][Rr][Ee][Aa][Tt][Ee]%s+[Tt][Aa][Bb][Ll][Ee]") then return query:gsub("[Ii][Nn][Tt][Ee][Gg][Ee][Rr]%s+[Pp][Rr][Ii][Mm][Aa][Rr][Yy]%s+[Kk][Ee][Yy]%s+[Aa][Uu][Tt][Oo][Ii][Nn][Cc][Rr][Ee][Mm][Ee][Nn][Tt]", "INT NOT NULL AUTO_INCREMENT PRIMARY KEY") end
     return query
 end
 
@@ -653,6 +707,45 @@ function lia.db.connect(callback, reconnect)
         flushInitialQueue(module)
         if isfunction(callback) then safeCallback("Database connection", callback) end
     end, reconnect, function(err) failInitialQueue(err) end)
+end
+
+if SERVER then
+    concommand.Add("lia_db_status", function(client)
+        if IsValid(client) then return end
+        local module = tostring(lia.db.module or "unset")
+        print(string.format("[Lilia DB] backend=%s connected=%s tablesLoaded=%s tablesLoading=%s connectedModule=%s", module, tostring(lia.db.connected), tostring(lia.db.tablesLoaded), tostring(lia.db.tablesLoading), tostring(lia.db.connectedModule or "none")))
+        if module ~= "mysqloo" then return end
+        local queued = math.max(0, mysqlooModule.workLast - mysqlooModule.workFirst + 1)
+        local elapsed = mysqlooModule.connecting and mysqlooModule.connectionStartedAt and math.max(0, SysTime() - mysqlooModule.connectionStartedAt) or 0
+        print(string.format("[Lilia DB] phase=%s connecting=%s ready=%s status=%s elapsed=%.1fs", tostring(mysqlooModule.connectionPhase or "idle"), tostring(mysqlooModule.connecting), tostring(mysqlooModule.ready), mysqlConnectionStatus(), elapsed))
+        print(string.format("[Lilia DB] initialQueued=%d mysqlQueued=%d active=%s callbacks=%d", #lia.db.queryQueue, queued, tostring(mysqlooModule.active), #mysqlooModule.connectCallbacks))
+        if mysqlooModule.lastConnectionError then print("[Lilia DB] lastError=" .. tostring(mysqlooModule.lastConnectionError)) end
+    end)
+
+    concommand.Add("lia_db_retry", function(client)
+        if IsValid(client) then return end
+        if lia.db.module ~= "mysqloo" then
+            print("[Lilia DB] Retry is only available for mysqloo.")
+            return
+        end
+
+        if mysqlooModule.connecting then
+            print("[Lilia DB] A connection is already in progress. Run lia_db_status to inspect it.")
+            return
+        end
+
+        if mysqlStatusConnected() then
+            print("[Lilia DB] MySQL is already connected.")
+            return
+        end
+
+        print("[Lilia DB] Retrying MySQL connection...")
+        lia.db.connect(function()
+            if lia.db.tablesLoaded then return end
+            lia.db.loadTables()
+            hook.Run("DatabaseConnected")
+        end, true)
+    end)
 end
 
 local function prefixTable(dbTable, defaultName)
@@ -1259,8 +1352,31 @@ function lia.db.delete(dbTable, condition)
     return d
 end
 
+local function compileTransactionQuery(operation)
+    if isstring(operation) then return operation end
+    if not istable(operation) then error("Database transactions require query strings or operation tables", 3) end
+    local dbTable = operation.table or operation.dbTable
+    if not isstring(dbTable) or dbTable == "" then error("Database transaction operation requires a table", 3) end
+    if operation.type == "update" then
+        return "UPDATE " .. lia.db.escapeIdentifier(prefixTable(dbTable, "characters")) .. " SET " .. genUpdateList(operation.values or operation.value or {}) .. buildWhereClause(operation.condition)
+    elseif operation.type == "delete" then
+        return "DELETE FROM " .. lia.db.escapeIdentifier(prefixTable(dbTable, "characters")) .. buildWhereClause(operation.condition)
+    elseif operation.type == "insert" then
+        return "INSERT INTO " .. genInsertValues(operation.values or operation.value or {}, dbTable)
+    end
+    error("Unsupported database transaction operation: " .. tostring(operation.type), 3)
+end
+
 function lia.db.transaction(queries)
     if not istable(queries) then return deferred.reject("Database transaction requires a table of queries") end
+    local compiled = {}
+    local ok, err = pcall(function()
+        for index, operation in ipairs(queries) do
+            compiled[index] = compileTransactionQuery(operation)
+        end
+    end)
+    if not ok then return deferred.reject(err) end
+    queries = compiled
     if lia.db.module == "mysqloo" then return lia.db.modules.mysqloo.transaction(queries) end
     local d = deferred.new()
     lia.db.query("BEGIN TRANSACTION", function()
@@ -1344,6 +1460,54 @@ function lia.db.getTables()
     return d
 end
 
+function lia.db.createIndex(dbTable, indexName, columns)
+    local d = deferred.new()
+    if not isstring(dbTable) or dbTable == "" then
+        d:reject("Database index requires a table name")
+        return d
+    end
+
+    if not isstring(indexName) or indexName == "" then
+        d:reject("Database index requires an index name")
+        return d
+    end
+
+    if not istable(columns) or #columns == 0 then
+        d:reject("Database index requires at least one column")
+        return d
+    end
+
+    local tableName = prefixTable(dbTable, "characters")
+    local escapedColumns = {}
+    local ok, err = pcall(function()
+        for _, column in ipairs(columns) do
+            escapedColumns[#escapedColumns + 1] = escapeStructuredIdentifier(column)
+        end
+    end)
+    if not ok then
+        d:reject(err)
+        return d
+    end
+
+    local function create()
+        local query = "CREATE INDEX " .. lia.db.escapeIdentifier(indexName) .. " ON " .. lia.db.escapeIdentifier(tableName) .. "(" .. table.concat(escapedColumns, ", ") .. ")"
+        lia.db.query(query, function() d:resolve(true) end, function(createErr) d:reject(createErr) end)
+    end
+
+    if lia.db.module == "mysqloo" then
+        local query = "SELECT 1 AS found FROM information_schema.statistics WHERE table_schema = " .. schemaDatabaseValue() .. " AND table_name = " .. lia.db.convertDataType(tableName) .. " AND index_name = " .. lia.db.convertDataType(indexName) .. " LIMIT 1"
+        lia.db.query(query, function(results)
+            if istable(results) and #results > 0 then d:resolve(false) else create() end
+        end, function(queryErr) d:reject(queryErr) end)
+    else
+        local query = "SELECT 1 AS found FROM sqlite_master WHERE type = 'index' AND tbl_name = " .. lia.db.convertDataType(tableName) .. " AND name = " .. lia.db.convertDataType(indexName) .. " LIMIT 1"
+        lia.db.query(query, function(results)
+            if istable(results) and #results > 0 then d:resolve(false) else create() end
+        end, function(queryErr) d:reject(queryErr) end)
+    end
+    return d
+end
+
 local function normalizeColumnType(columnType, length)
     local value = string.lower(tostring(columnType or "")):gsub("^%s+", ""):gsub("%s+$", "")
     local typeMap
@@ -1370,9 +1534,7 @@ local function normalizeColumnType(columnType, length)
     end
 
     if typeMap[value] then return typeMap[value] end
-    if value:match("^integer%s+primary%s+key%s+autoincrement$") then
-        return lia.db.module == "mysqloo" and "INT NOT NULL AUTO_INCREMENT PRIMARY KEY" or "INTEGER PRIMARY KEY AUTOINCREMENT"
-    end
+    if value:match("^integer%s+primary%s+key%s+autoincrement$") then return lia.db.module == "mysqloo" and "INT NOT NULL AUTO_INCREMENT PRIMARY KEY" or "INTEGER PRIMARY KEY AUTOINCREMENT" end
     if value:match("^varchar%(%d+%)$") or value:match("^char%(%d+%)$") or value:match("^decimal%(%d+,%s*%d+%)$") or value == "bigint" or value == "double" or value == "blob" or value == "timestamp" or value == "date" or value == "json" then return string.upper(value) end
     local textLength = value:match("^text%(%d+%)$")
     if textLength then return "TEXT" end
@@ -1410,20 +1572,49 @@ function lia.db.createTable(dbName, primaryKey, schema)
     return d
 end
 
+lia.db.pendingColumns = lia.db.pendingColumns or {}
 function lia.db.createColumn(tableName, columnName, columnType, defaultValue)
-    local d = deferred.new()
     local fullTableName = prefixTable(tableName, "characters")
+    local pendingKey = fullTableName .. ":" .. columnName
+    if lia.db.pendingColumns[pendingKey] then return lia.db.pendingColumns[pendingKey] end
+    local d = deferred.new()
+    lia.db.pendingColumns[pendingKey] = d
+    local function complete(success, result)
+        lia.db.pendingColumns[pendingKey] = nil
+        if success then
+            d:resolve(result)
+        else
+            d:reject(result)
+        end
+    end
+
     lia.db.fieldExists(fullTableName, columnName):next(function(exists)
         if exists then
-            d:resolve(false)
+            complete(true, false)
             return
         end
 
-        local colDef = lia.db.escapeIdentifier(columnName) .. " " .. normalizeColumnType(columnType)
-        if defaultValue ~= nil then colDef = colDef .. " DEFAULT " .. lia.db.convertDataType(defaultValue) end
+        local ok, colDef = pcall(function()
+            local definition = lia.db.escapeIdentifier(columnName) .. " " .. normalizeColumnType(columnType)
+            if defaultValue ~= nil then definition = definition .. " DEFAULT " .. lia.db.convertDataType(defaultValue) end
+            return definition
+        end)
+
+        if not ok then
+            complete(false, colDef)
+            return
+        end
+
         local query = "ALTER TABLE " .. lia.db.escapeIdentifier(fullTableName) .. " ADD COLUMN " .. colDef
-        lia.db.query(query, function() d:resolve(true) end, function(err) d:reject(err) end)
-    end, function(err) d:reject(err) end)
+        lia.db.query(query, function() complete(true, true) end, function(err)
+            if lia.db.module == "mysqloo" and tostring(err):find("Duplicate column name", 1, true) then
+                lia.db.fieldExists(fullTableName, columnName):next(function(present) complete(present, present and false or err) end, function(checkErr) complete(false, checkErr) end)
+                return
+            end
+
+            complete(false, err)
+        end)
+    end, function(err) complete(false, err) end)
     return d
 end
 
@@ -1601,19 +1792,36 @@ function lia.db.wipeTables(callback)
 end
 
 function lia.db.loadTables()
+    if lia.db.tablesLoading then return end
+    lia.db.tablesLoading = true
+    lia.db.tablesLoaded = false
     runQuerySeries(schemaQueries(), function()
-        lia.db.addDatabaseFields()
-        lia.db.ensureIndexes():next(nil, function(err) databaseLogError("Failed to ensure database indexes: " .. tostring(err)) end)
-        lia.db.tablesLoaded = true
-        hook.Run("OnDatabaseLoaded")
-        timer.Simple(0, function() lia.config.load() end)
-        timer.Simple(0.1, function()
-            lia.config.send()
-            lia.playerinteract.sync()
-            lia.item.loadWeaponOverrides()
-            lia.item.loadWeaponRuntimeOverrides()
+        lia.db.addDatabaseFields():next(function()
+            local function ready()
+                lia.db.tablesLoading = false
+                lia.db.tablesLoaded = true
+                hook.Run("OnDatabaseLoaded")
+                timer.Simple(0, function() lia.config.load() end)
+                timer.Simple(0.1, function()
+                    lia.config.send()
+                    lia.playerinteract.sync()
+                    lia.item.loadWeaponOverrides()
+                    lia.item.loadWeaponRuntimeOverrides()
+                end)
+            end
+
+            lia.db.ensureIndexes():next(ready, function(err)
+                databaseLogError("Failed to ensure database indexes: " .. tostring(err))
+                ready()
+            end)
+        end, function(err)
+            lia.db.tablesLoading = false
+            databaseLogError("Failed to initialize database columns: " .. tostring(err))
         end)
-    end, function(err, query) databaseLogError("Failed to load database tables: " .. tostring(err) .. " | Query: " .. tostring(query)) end)
+    end, function(err, query)
+        lia.db.tablesLoading = false
+        databaseLogError("Failed to load database tables: " .. tostring(err) .. " | Query: " .. tostring(query))
+    end)
 
     hook.Run("OnLoadTables")
 end
@@ -1635,31 +1843,50 @@ function lia.db.waitForTablesToLoad()
 end
 
 function lia.db.addDatabaseFields()
-    local typeMap = {
-        string = function(data) return lia.db.escapeIdentifier(data.field) .. " VARCHAR(" .. tostring(tonumber(data.length) or 255) .. ")" end,
-        integer = function(data) return lia.db.escapeIdentifier(data.field) .. (lia.db.module == "mysqloo" and " INT" or " INTEGER") end,
-        float = function(data) return lia.db.escapeIdentifier(data.field) .. (lia.db.module == "mysqloo" and " FLOAT" or " REAL") end,
-        boolean = function(data) return lia.db.escapeIdentifier(data.field) .. (lia.db.module == "mysqloo" and " TINYINT(1)" or " INTEGER") end,
-        datetime = function(data) return lia.db.escapeIdentifier(data.field) .. " DATETIME" end,
-        text = function(data) return lia.db.escapeIdentifier(data.field) .. " TEXT" end
+    local d = deferred.new()
+    local columns = {}
+    local supportedTypes = {
+        string = true,
+        integer = true,
+        int = true,
+        float = true,
+        boolean = true,
+        datetime = true,
+        text = true
     }
 
-    local function ignore()
-    end
-
-    if not istable(lia.char.vars) then return end
-    for _, data in pairs(lia.char.vars) do
-        if data.field and typeMap[data.fieldType] then
-            lia.db.fieldExists("lia_characters", data.field):next(function(exists)
-                if exists then return end
-                local colDef = typeMap[data.fieldType](data)
-                if data.default ~= nil then colDef = colDef .. " DEFAULT " .. lia.db.convertDataType(data.default) end
-                lia.db.query("ALTER TABLE " .. lia.db.escapeIdentifier("lia_characters") .. " ADD COLUMN " .. colDef):catch(ignore)
-            end)
+    for _, data in pairs(lia.char.vars or {}) do
+        if data.field and supportedTypes[data.fieldType] then
+            columns[#columns + 1] = {
+                tableName = "characters",
+                name = data.field,
+                columnType = data.fieldType == "string" and "VARCHAR(" .. tostring(tonumber(data.length) or 255) .. ")" or data.fieldType,
+                default = data.default
+            }
         end
     end
 
-    lia.db.fieldExists("lia_warnings", "severity"):next(function(exists) if not exists then lia.db.query("ALTER TABLE " .. lia.db.escapeIdentifier("lia_warnings") .. " ADD COLUMN " .. lia.db.escapeIdentifier("severity") .. " VARCHAR(255) DEFAULT 'Medium'") end end)
+    columns[#columns + 1] = {
+        tableName = "warnings",
+        name = "severity",
+        columnType = "string",
+        default = "Medium"
+    }
+
+    local index = 1
+    local function nextColumn()
+        local column = columns[index]
+        if not column then
+            d:resolve(true)
+            return
+        end
+
+        index = index + 1
+        lia.db.createColumn(column.tableName, column.name, column.columnType, column.default):next(nextColumn, function(err) d:reject("Failed to add " .. column.tableName .. "." .. column.name .. ": " .. tostring(err)) end)
+    end
+
+    nextColumn()
+    return d
 end
 
 local function mysqlIndexExists(tableName, indexName, callback, errorCallback)

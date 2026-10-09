@@ -1,4 +1,4 @@
-﻿lia.char = lia.char or {}
+lia.char = lia.char or {}
 lia.char.vars = lia.char.vars or {}
 lia.char.loaded = lia.char.loaded or {}
 lia.char.varHooks = lia.char.varHooks or {}
@@ -138,24 +138,20 @@ function lia.char.registerVar(key, data)
 
     lia.meta.character.vars[key] = data.default
     if SERVER and data.field and data.fieldType and lia.db and lia.db.tablesLoaded then
-        local typeMap = {
-            string = function(d) return ("%s VARCHAR(%d)"):format(d.field, d.length or 255) end,
-            integer = function(d) return ("%s INT"):format(d.field) end,
-            int = function(d) return ("%s INT"):format(d.field) end,
-            float = function(d) return ("%s FLOAT"):format(d.field) end,
-            boolean = function(d) return ("%s TINYINT(1)"):format(d.field) end,
-            datetime = function(d) return ("%s DATETIME"):format(d.field) end,
-            text = function(d) return ("%s TEXT"):format(d.field) end,
+        local supportedTypes = {
+            string = true,
+            integer = true,
+            int = true,
+            float = true,
+            boolean = true,
+            datetime = true,
+            text = true
         }
 
-        local builder = typeMap[data.fieldType]
-        if builder then
-            lia.db.fieldExists("lia_characters", data.field):next(function(exists)
-                if not exists then
-                    local colDef = builder(data)
-                    if data.default ~= nil then colDef = colDef .. " DEFAULT '" .. tostring(data.default) .. "'" end
-                    lia.db.query("ALTER TABLE lia_characters ADD COLUMN " .. colDef)
-                end
+        if supportedTypes[data.fieldType] then
+            local columnType = data.fieldType == "string" and "VARCHAR(" .. tostring(tonumber(data.length) or 255) .. ")" or data.fieldType
+            lia.db.createColumn("characters", data.field, columnType, data.default):next(nil, function(err)
+                lia.error("Failed to register character column " .. tostring(data.field) .. ": " .. tostring(err))
             end)
         end
     end
@@ -579,7 +575,7 @@ lia.char.registerVar("banned", {
 function lia.char.getCharData(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
-    local results = sql.Query("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
+    local results = sql.Query("SELECT `key`, `value` FROM lia_chardata WHERE charID = " .. charIDsafe)
     local data = {}
     if istable(results) then
         for _, row in ipairs(results) do
@@ -596,13 +592,13 @@ function lia.char.getCharDataRaw(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
     if key then
-        local row = sql.Query("SELECT value FROM lia_chardata WHERE charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(key) .. "'")
+        local row = sql.Query("SELECT `value` FROM lia_chardata WHERE charID = " .. charIDsafe .. " AND `key` = '" .. lia.db.escape(key) .. "'")
         if not row or not row[1] then return false end
         local decoded = pon.decode(row[1].value)
         return decoded[1]
     end
 
-    local results = sql.Query("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
+    local results = sql.Query("SELECT `key`, `value` FROM lia_chardata WHERE charID = " .. charIDsafe)
     local data = {}
     if istable(results) then
         for _, r in ipairs(results) do
@@ -937,7 +933,7 @@ if SERVER then
                 return true
             else
                 if val == nil then
-                    lia.db.delete("chardata", "charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(field) .. "'")
+                    lia.db.delete("chardata", {charID = charIDsafe, key = field})
                 else
                     local encoded = pon.encode({value})
                     lia.db.upsert({
@@ -952,7 +948,7 @@ if SERVER then
             end
         else
             if val == nil then
-                lia.db.delete("chardata", "charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(field) .. "'")
+                lia.db.delete("chardata", {charID = charIDsafe, key = field})
             else
                 local encoded = pon.encode({value})
                 lia.db.upsert({

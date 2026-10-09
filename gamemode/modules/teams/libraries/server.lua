@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 function MODULE:OnPlayerJoinClass(client, class, oldClass)
     local info = lia.class.list[class]
     local info2 = lia.class.list[oldClass]
@@ -597,7 +597,7 @@ function MODULE:BuildFactionMemberDetailsPayload(client, factionUniqueID, charID
             trackedKeys[#trackedKeys + 1] = "'" .. lia.db.escape(key) .. "'"
         end
 
-        lia.db.query(string.format("SELECT charID, key, value FROM lia_chardata WHERE charID = %d AND key IN (%s)", charID, table.concat(trackedKeys, ",")), function(extraRows)
+        lia.db.query(string.format("SELECT charID, `key`, `value` FROM lia_chardata WHERE charID = %d AND `key` IN (%s)", charID, table.concat(trackedKeys, ",")), function(extraRows)
             local charData = {}
             for _, extraRow in ipairs(extraRows or {}) do
                 charData[extraRow.key] = decodeTrackedFactionRow(extraRow.value)

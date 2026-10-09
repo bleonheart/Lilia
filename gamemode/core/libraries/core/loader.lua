@@ -756,9 +756,11 @@ end
 
 if SERVER then
     local function SetupDatabase()
+        print("Connecting to database...")
         hook.Run("SetupDatabase")
         lia.db.connect(function()
             lia.db.loadTables()
+            print("Database connected successfully.")
             hook.Run("DatabaseConnected")
         end)
     end

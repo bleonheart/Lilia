@@ -1,4 +1,4 @@
-lia.admin = lia.admin or {}
+﻿lia.admin = lia.admin or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.privileges = lia.admin.privileges or {}
 lia.admin.privilegeCategories = lia.admin.privilegeCategories or {}
@@ -619,21 +619,31 @@ end
 function lia.admin.save(noNetwork)
     sanitizeBaseGroups(lia.admin.groups, "lia.admin.save")
     rebuildPrivileges()
-    local rows = {}
+    local values = {}
     for name, data in pairs(lia.admin.groups) do
-        local info = istable(data._info) and data._info or {}
-        local privs = table.Copy(data)
-        privs._info = nil
-        rows[#rows + 1] = {
-            usergroup = name,
-            privileges = util.TableToJSON(privs),
-            inheritance = info.inheritance or "user",
-            types = util.TableToJSON(info.types or {})
-        }
+        if isstring(name) and name ~= "" and not name:find("%z") and istable(data) then
+            local info = istable(data._info) and data._info or {}
+            local privileges = table.Copy(data)
+            privileges._info = nil
+            values[#values + 1] = "(" .. table.concat({
+                lia.db.convertDataType(name),
+                lia.db.convertDataType(util.TableToJSON(privileges)),
+                lia.db.convertDataType(info.inheritance or "user"),
+                lia.db.convertDataType(util.TableToJSON(info.types or {}))
+            }, ", ") .. ")"
+        else
+            lia.warning("[Lilia Administration] Skipping invalid usergroup name during database save")
+        end
     end
 
-    lia.db.query("DELETE FROM lia_admin")
-    lia.db.bulkInsert("admin", rows)
+    local queries = {"DELETE FROM " .. lia.db.escapeIdentifier("lia_admin")}
+    if #values > 0 then
+        queries[#queries + 1] = "INSERT INTO " .. lia.db.escapeIdentifier("lia_admin") .. " (`usergroup`, `privileges`, `inheritance`, `types`) VALUES " .. table.concat(values, ", ")
+    end
+
+    lia.db.transaction(queries):next(nil, function(err)
+        lia.error("[Lilia Administration] Failed to save admin usergroups: " .. tostring(err))
+    end)
     if noNetwork or lia.admin._loading then return end
     lia.net.ready = lia.net.ready or setmetatable({}, {
         __mode = "k"
@@ -807,16 +817,19 @@ function lia.admin.load()
     lia.db.select("*", "admin"):next(function(res)
         local rows = res and res.results or {}
         local groups = {}
+        local corruptedGroups = false
         for _, row in ipairs(rows or {}) do
             local name = row.usergroup or row.usergroups or row.group
-            if isstring(name) and name ~= "" then
-                local privs = util.JSONToTable(row.privileges or "") or {}
-                privs._info = {
+            if isstring(name) and name:find("%z") then
+                corruptedGroups = true
+            elseif isstring(name) and name ~= "" then
+                local privileges = util.JSONToTable(row.privileges or "") or {}
+                privileges._info = {
                     inheritance = row.inheritance or "user",
                     types = util.JSONToTable(row.types or "") or {}
                 }
 
-                groups[name] = privs
+                groups[name] = privileges
             end
         end
 
@@ -829,7 +842,7 @@ function lia.admin.load()
 
         local sanitized = sanitizeBaseGroups(lia.admin.groups, "lia.admin.load")
         rebuildPrivileges()
-        local shouldSave = created or sanitized or lia.admin._privilegeSavePending
+        local shouldSave = created or sanitized or corruptedGroups or lia.admin._privilegeSavePending
         lia.admin._loading = false
         lia.admin._loaded = true
         if shouldSave then
