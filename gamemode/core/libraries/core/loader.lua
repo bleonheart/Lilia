@@ -434,7 +434,7 @@ local function versionCompare(localVersion, remoteVersion)
 end
 
 local publicURL = "https://liliaframework.github.io/versioning/modules.json"
-local privateURL = "https://bleonheart.github.io/modules.json"
+local privateURL = "https://bleonheart.github.io/.jsons/modules.json"
 local versionURL = "https://liliaframework.github.io/versioning/lilia.json"
 function lia.loader.checkForUpdates()
     local publicModules = {}

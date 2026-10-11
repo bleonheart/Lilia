@@ -262,7 +262,7 @@ else
         if IsValid(lia.derma.menu_radial) then lia.derma.menu_radial:Remove() end
         local radial = vgui.Create("liaRadialPanel")
         lia.derma.menu_radial = radial
-        radial:SetCenterText(titleText or (isInteraction and "Interaction Menu" or "Personal Actions"), "Select Option")
+        radial:SetCenterText(titleText or (isInteraction and "Interaction Menu" or "Personal Actions"), "Click center to go back")
         local oldThink = radial.Think
         local oldOnRemove = radial.OnRemove
         function radial:Think()
@@ -279,6 +279,9 @@ else
             hook.Run("InteractionMenuClosed")
         end
 
+        local validOptions = {}
+        local categoryNames = {}
+        local categories = {}
         for id, option in pairs(options or {}) do
             if istable(option) then
                 local valid = preFiltered or (option.type == (isInteraction and "interaction" or "action"))
@@ -289,29 +292,80 @@ else
                 end
 
                 if valid and (preFiltered or not option.shouldShow or option.shouldShow(client, isInteraction and ent or nil)) then
-                    radial:AddOption(option.displayName or option.label or option.name or id, function()
-                        if not option.serverOnly then
-                            local callback = option.callback or option.onRun
-                            if callback then
-                                if isInteraction then
-                                    local target = ent
-                                    if ent:IsPlayer() and ent:IsBot() and client:Team() == FACTION_STAFF then target = client end
-                                    callback(client, target)
-                                else
-                                    callback(client, ent)
-                                end
-                            end
-                        end
+                    local category = option.category or "Unsorted"
+                    if not categories[category] then
+                        categories[category] = {}
+                        table.insert(categoryNames, category)
+                    end
 
-                        if option.serverOnly and netMsg then
-                            net.Start(netMsg)
-                            net.WriteString(id)
-                            net.WriteBool(IsValid(ent))
-                            if IsValid(ent) then net.WriteEntity(ent) end
-                            net.SendToServer()
-                        end
-                    end, option.icon, option.description or option.desc)
+                    table.insert(categories[category], {
+                        id = id,
+                        option = option
+                    })
+                    table.insert(validOptions, {
+                        id = id,
+                        option = option
+                    })
                 end
+            end
+        end
+
+        table.sort(categoryNames, function(a, b)
+            if a == "Unsorted" then return false end
+            if b == "Unsorted" then return true end
+            return a < b
+        end)
+
+        local function addOption(targetMenu, id, option)
+            targetMenu:AddOption(option.displayName or option.label or option.name or id, function()
+                if not option.serverOnly then
+                    local callback = option.callback or option.onRun
+                    if callback then
+                        if isInteraction then
+                            local target = ent
+                            if ent:IsPlayer() and ent:IsBot() and client:Team() == FACTION_STAFF then target = client end
+                            callback(client, target)
+                        else
+                            callback(client, ent)
+                        end
+                    end
+                end
+
+                if option.serverOnly and netMsg then
+                    net.Start(netMsg)
+                    net.WriteString(id)
+                    net.WriteBool(IsValid(ent))
+                    if IsValid(ent) then net.WriteEntity(ent) end
+                    net.SendToServer()
+                end
+            end, option.icon, option.description or option.desc)
+        end
+
+        local useCategoryMenus = #categoryNames > 1 or categoryNames[1] and categoryNames[1] ~= "Unsorted"
+        if useCategoryMenus then
+            for _, categoryName in ipairs(categoryNames) do
+                local submenu = radial:CreateSubMenu(categoryName, "Select an option")
+                table.sort(categories[categoryName], function(a, b)
+                    local aName = a.option.displayName or a.option.label or a.option.name or a.id
+                    local bName = b.option.displayName or b.option.label or b.option.name or b.id
+                    return aName < bName
+                end)
+
+                for _, entry in ipairs(categories[categoryName]) do
+                    addOption(submenu, entry.id, entry.option)
+                end
+
+                radial:AddSubMenuOption(categoryName, submenu)
+            end
+        else
+            table.sort(validOptions, function(a, b)
+                local aName = a.option.displayName or a.option.label or a.option.name or a.id
+                local bName = b.option.displayName or b.option.label or b.option.name or b.id
+                return aName < bName
+            end)
+
+            for _, entry in ipairs(validOptions) do
+                addOption(radial, entry.id, entry.option)
             end
         end
 

@@ -5,6 +5,7 @@ local math_sin = math.sin
 local math_atan2 = math.atan2
 local math_sqrt = math.sqrt
 local math_min = math.min
+local math_floor = math.floor
 function PANEL:Init(options)
     options = options or {}
     self.options = {}
@@ -26,6 +27,8 @@ function PANEL:Init(options)
     self.hoverAnim = 0
     self.centerText = "Menu"
     self.centerDesc = "Select Option"
+    self.rootCenterText = self.centerText
+    self.rootCenterDesc = self.centerDesc
     self.font = "LiliaFont.20"
     self.descFont = "LiliaFont.16"
     self.titleFont = "LiliaFont.28"
@@ -66,19 +69,17 @@ function PANEL:Init(options)
                 local optionCount = #self:GetCurrentOptions()
                 if optionCount > 0 then
                     local sectorSize = math_rad(360) / optionCount
-                    local selectedIndex = math.floor(angle / sectorSize) + 1
+                    local selectedIndex = math_floor(angle / sectorSize) + 1
                     if selectedIndex <= optionCount then
                         self:SelectOption(selectedIndex)
                         lia.webcontent.playButtonSound()
                     end
                 end
             elseif dist <= self.innerRadius then
-                if #self.menuStack > 0 then
-                    self:GoBack()
-                    lia.webcontent.playButtonSound()
-                else
-                    self:Remove()
-                end
+                -- The center is always the navigation control: go to the
+                -- previous radial level, or close the root menu.
+                if #self.menuStack > 0 then self:GoBack() else self:Remove() end
+                lia.webcontent.playButtonSound()
             elseif dist >= self.radius then
                 self:Remove()
             end
@@ -94,7 +95,7 @@ function PANEL:Init(options)
             local optionCount = #self:GetCurrentOptions()
             if optionCount > 0 then
                 local sectorSize = math_rad(360) / optionCount
-                hovered = math.floor(angle / sectorSize) + 1
+                hovered = math_floor(angle / sectorSize) + 1
                 if hovered > optionCount then hovered = nil end
             end
         end
@@ -145,12 +146,17 @@ function PANEL:Paint(w, h)
     local optionCount = #self:GetCurrentOptions()
     if optionCount > 0 then
         local sectorSize = math_rad(360) / optionCount
+        local dividerColor = ColorAlpha(lia.color.theme.theme, (lia.color.getCurrentTheme() == 'light' and 125 or 90) * alpha)
         for i, option in ipairs(self:GetCurrentOptions()) do
             local startAngle = (i - 1) * sectorSize
             local midAngle = startAngle + sectorSize / 2
             local isHovered = self.hoverOption == i
             local textX = centerX + (currentInnerRadius + (currentRadius - currentInnerRadius) / 2) * math_cos(midAngle)
             local textY = centerY + (currentInnerRadius + (currentRadius - currentInnerRadius) / 2) * math_sin(midAngle)
+            -- Align labels with their wedge so densely packed options use the
+            -- full radial depth instead of colliding along the circumference.
+            local textAngle = math.deg(midAngle)
+            if textAngle > 90 and textAngle < 270 then textAngle = textAngle + 180 end
             local baseColor = lia.color.getCurrentTheme() == 'light' and Color(30, 30, 30) or Color(255, 255, 255)
             local optionTextColor = ColorAlpha(baseColor, (isHovered and 255 or 200) * alpha)
             if option.icon and option.icon ~= false and option.icon ~= nil then
@@ -158,12 +164,22 @@ function PANEL:Paint(w, h)
                 local iconSize = 32 * (ScrW() / 1920) * self.scale * self.scaleAnim
                 local iconColor = ColorAlpha(color_white, self.currentAlpha)
                 lia.derma.drawMaterial(0, textX - iconSize / 2, textY - iconSize - 8 * (ScrH() / 1080) * self.scale * self.paddingScale, iconSize, iconSize, iconColor, iconMat)
-                draw.SimpleText(option.text, self.font, textX, textY + 4 * (ScrH() / 1080) * self.scale * self.paddingScale, optionTextColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                if option.desc and isHovered then draw.SimpleText(option.desc, self.descFont, textX, textY + 20 * (ScrH() / 1080) * self.scale * self.paddingScale, ColorAlpha(baseColor, 180 * self.hoverAnim * alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+                self:DrawRotatedText(option.text, self.font, textX, textY + 4 * (ScrH() / 1080) * self.scale * self.paddingScale, textAngle, optionTextColor)
+                if option.desc and isHovered then self:DrawRotatedText(option.desc, self.descFont, textX, textY + 20 * (ScrH() / 1080) * self.scale * self.paddingScale, textAngle, ColorAlpha(baseColor, 180 * self.hoverAnim * alpha)) end
             else
-                draw.SimpleText(option.text, self.font, textX, textY - 8 * (ScrH() / 1080) * self.scale * self.paddingScale, optionTextColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                if option.desc and isHovered then draw.SimpleText(option.desc, self.descFont, textX, textY + 8 * (ScrH() / 1080) * self.scale * self.paddingScale, ColorAlpha(baseColor, 180 * self.hoverAnim * alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+                self:DrawRotatedText(option.text, self.font, textX, textY - 8 * (ScrH() / 1080) * self.scale * self.paddingScale, textAngle, optionTextColor)
+                if option.desc and isHovered then self:DrawRotatedText(option.desc, self.descFont, textX, textY + 8 * (ScrH() / 1080) * self.scale * self.paddingScale, textAngle, ColorAlpha(baseColor, 180 * self.hoverAnim * alpha)) end
             end
+
+            -- Make the angle ranges visible instead of leaving the sections
+            -- implicit in the mouse hit-testing.
+            local dividerAngle = startAngle
+            local dividerInnerX = centerX + currentInnerRadius * math_cos(dividerAngle)
+            local dividerInnerY = centerY + currentInnerRadius * math_sin(dividerAngle)
+            local dividerOuterX = centerX + currentRadius * math_cos(dividerAngle)
+            local dividerOuterY = centerY + currentRadius * math_sin(dividerAngle)
+            surface.SetDrawColor(dividerColor)
+            surface.DrawLine(dividerInnerX, dividerInnerY, dividerOuterX, dividerOuterY)
         end
     end
 
@@ -172,6 +188,15 @@ function PANEL:Paint(w, h)
         self:DrawCircleOutline(centerX, centerY, currentRadius, lineHighlightColor, 1)
         self:DrawCircleOutline(centerX, centerY, currentInnerRadius, lineHighlightColor, 1)
     end
+end
+
+function PANEL:DrawRotatedText(text, font, x, y, angle, color)
+    local matrix = Matrix()
+    matrix:Translate(Vector(x, y, 0))
+    matrix:Rotate(Angle(0, angle, 0))
+    cam.PushModelMatrix(matrix, true)
+    draw.SimpleText(text, font, 0, 0, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    cam.PopModelMatrix()
 end
 
 function PANEL:DrawCircleOutline(cx, cy, radius, color)
@@ -222,6 +247,8 @@ end
 function PANEL:SetCenterText(title, desc)
     self.centerText = title or "Menu"
     self.centerDesc = desc or "Select Option"
+    self.rootCenterText = self.centerText
+    self.rootCenterDesc = self.centerDesc
 end
 
 function PANEL:IsMouseOver()
@@ -252,11 +279,11 @@ end
 
 function PANEL:UpdateCenterText()
     if self.currentMenu then
-        self.centerText = self.currentMenu.title or "Menu"
-        self.centerDesc = self.currentMenu.desc or "Select Option"
+        self.centerText = "Back"
+        self.centerDesc = "Previous Menu"
     else
-        self.centerText = "Menu"
-        self.centerDesc = "Select Option"
+        self.centerText = self.rootCenterText or "Menu"
+        self.centerDesc = self.rootCenterDesc or "Select Option"
     end
 end
 
