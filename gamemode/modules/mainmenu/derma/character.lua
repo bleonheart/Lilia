@@ -372,7 +372,7 @@ function PANEL:createWelcomeSidePanel()
 
     local changeTitle, changeText = changelogText()
     local rightW = math.Clamp(ScrW() * 0.23, 360, 520)
-    local rightH = math.min(changeText and 344 or 202, ScrH() - 48)
+    local rightH = math.min(changeText and 390 or 250, ScrH() - 48)
     local rightX = ScrW() - rightW - math.max(32, ScrW() * 0.04)
     local mainMenuHeight = math.Clamp(ScrH() * 0.58, 440, 640)
     local rightY = ScrH() * 0.5 - mainMenuHeight * 0.5
@@ -435,21 +435,23 @@ function PANEL:createWelcomeSidePanel()
 
     addLabel(characterCount() == 0 and "WELCOME" or "WELCOME BACK", "LiliaFont.30", mmText(), pad, 19, innerW, 38)
     local greeting = addLabel("", "LiliaFont.17", mmMuted(), pad, 58, innerW, 24)
-    drawDivider(91)
+    drawDivider(80)
     local cardW = math.floor((innerW - 10) * 0.5)
     local function addInfoCard(x, y, heading)
         local card = panel:Add("DPanel")
         card:SetPos(x, y)
-        card:SetSize(cardW, 72)
+        card:SetSize(cardW, 64)
         card.Paint = function(_, w, h) mmPaintBlock(w, h, false) end
-        addLabel(heading, "LiliaFont.14", mmMuted(), x + 12, y + 9, cardW - 24, 20)
-        return addLabel("", "LiliaFont.22", mmText(), x + 12, y + 32, cardW - 24, 29)
+        addLabel(heading, "LiliaFont.14", mmMuted(), x + 12, y + 8, cardW - 24, 19)
+        return addLabel("", "LiliaFont.22", mmText(), x + 12, y + 29, cardW - 24, 27)
     end
 
-    local playtime = addInfoCard(pad, 110, "TOTAL PLAYTIME")
-    local characters = addInfoCard(pad + cardW + 10, 110, "CHARACTERS")
-    if changeText and rightH >= 296 then
-        local changeY = 203
+    local playtime = addInfoCard(pad, 94, "TOTAL PLAYTIME")
+    local characters = addInfoCard(pad + cardW + 10, 94, "CHARACTERS")
+    local playerCount = addInfoCard(pad, 168, "PLAYER COUNT")
+    local currentMap = addInfoCard(pad + cardW + 10, 168, "MAP")
+    if changeText and rightH >= 382 then
+        local changeY = 254
         addLabel(fitText(changeTitle, "LiliaFont.14", innerW), "LiliaFont.14", mmAccent(), pad, changeY, innerW, 21)
         local changeCard = panel:Add("DPanel")
         changeCard:SetPos(pad, changeY + 26)
@@ -464,7 +466,7 @@ function PANEL:createWelcomeSidePanel()
         changeLabel:SetText(string.Trim(changeText))
     end
 
-    local previousName, previousCount, previousLimit, previousMinutes
+    local previousName, previousCount, previousLimit, previousMinutes, previousPopulation, previousCapacity, previousMap
     greeting.Think = function()
         if not IsValid(client) then return end
         local name = client.steamName and client:steamName() or client:SteamName() or client:Nick() or "Player"
@@ -479,6 +481,19 @@ function PANEL:createWelcomeSidePanel()
         if minutes ~= previousMinutes then
             previousMinutes = minutes
             playtime:SetText(formatPlaytime(client.getPlayTime and client:getPlayTime() or 0))
+        end
+
+        local population = #player.GetAll()
+        local capacity = game.MaxPlayers()
+        if population ~= previousPopulation or capacity ~= previousCapacity then
+            previousPopulation, previousCapacity = population, capacity
+            playerCount:SetText(string.format("%d / %d", population, capacity))
+        end
+
+        local mapName = game.GetMap() or "Unknown"
+        if mapName ~= previousMap then
+            previousMap = mapName
+            currentMap:SetText(fitText(mapName, "LiliaFont.22", cardW - 24))
         end
     end
 end
