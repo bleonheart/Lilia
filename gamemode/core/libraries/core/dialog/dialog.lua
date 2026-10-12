@@ -147,7 +147,7 @@ end
 local function getFactionByRequirementToken(token)
     token = trimToString(token)
     if token == "" or not lia.faction then return nil end
-    local direct = lia.faction.get and lia.faction.get(token) or nil
+    local direct = lia.faction.get(token)
     if direct then return direct end
     local tokenLower = string.lower(token)
     for _, faction in pairs(lia.faction.teams or {}) do
@@ -317,7 +317,7 @@ local function getGeneratedDialogTypeID(npc, preferredTypeID)
     if IsValid(npc) then
         local currentTypeID = trimToString(npc:getNetVar("uniqueID", npc.uniqueID))
         if currentTypeID ~= "" then
-            local currentData = lia.dialog.getNPCData and lia.dialog.getNPCData(currentTypeID) or nil
+            local currentData = lia.dialog.getNPCData(currentTypeID)
             if lia.dialog.isGeneratedDialogData(currentData) then return currentTypeID end
         end
         return "custom_dialog_" .. tostring(npc:EntIndex())
@@ -992,7 +992,7 @@ else
         end
 
         local isCarDealerNPC = canConfigureDialogType and (currentType == "cardealer" or (IsValid(npc) and npc.uniqueID == "cardealer"))
-        if isCarDealerNPC and lia.cardealer and isfunction(lia.cardealer.openCategoryConfigUI) then
+        if isCarDealerNPC then
             local categoriesBtn = vgui.Create("liaButton", scroll)
             categoriesBtn:Dock(TOP)
             categoriesBtn:SetTall(35)

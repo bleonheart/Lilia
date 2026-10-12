@@ -317,8 +317,7 @@ end, {
     category = "Core",
     type = "Table",
     options = function()
-        if lia.font and isfunction(lia.font.getAvailableFonts) then return lia.font.getAvailableFonts() end
-        return {"Montserrat Medium"}
+        return lia.font.getAvailableFonts()
     end
 })
 

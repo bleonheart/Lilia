@@ -259,11 +259,11 @@ net.Receive("liaRequestNPCSelection", function(_, client)
     if IsValid(npcEntity) and IsValid(client) then
         local character = client:getChar()
         if character then
-            if lia.dialog.isGeneratedDialogSelection and lia.dialog.isGeneratedDialogSelection(uniqueID) then
+            if lia.dialog.isGeneratedDialogSelection(uniqueID) then
                 local hasManageNPCs = client:hasPrivilege("canManageNPCs")
                 local hasManageProperties = client:hasPrivilege("canManageProperties")
                 if not hasManageNPCs and not hasManageProperties then return end
-                uniqueID = lia.dialog.ensureGeneratedDialogType and select(1, lia.dialog.ensureGeneratedDialogType(npcEntity, nil, npcEntity.NPCName)) or nil
+                uniqueID = select(1, lia.dialog.ensureGeneratedDialogType(npcEntity, nil, npcEntity.NPCName))
                 if not uniqueID then return end
             end
 

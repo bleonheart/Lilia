@@ -41,10 +41,8 @@ end
 local function getCreationFactionIndex(value)
     local index = tonumber(value)
     if index and lia.faction and lia.faction.indices and lia.faction.indices[index] then return index end
-    if lia.faction and isfunction(lia.faction.get) then
-        local faction = lia.faction.get(value)
-        if faction then return faction.index end
-    end
+    local faction = lia.faction.get(value)
+    if faction then return faction.index end
 end
 
 local function getValidDefaultCreationClass(value, factionValue)
@@ -89,9 +87,9 @@ hook.Add("OverrideFactionModelCustomization", "SchemaCharacterCreatorClassModelC
 
     if istable(faction.allowedSkins) then skinAllowed = true end
     if istable(faction.allowedBodygroups) then bodygroupsAllowed = true end
-    local creationClass = lia.faction and lia.faction.getCharacterCreationClass and lia.faction.getCharacterCreationClass(faction, context.class) or nil
-    local modelData = lia.faction and lia.faction.getCharacterCreationModelInfo and lia.faction.getCharacterCreationModelInfo(faction, creationClass, context.model) or nil
-    local parsed = modelData and lia.faction and lia.faction.getModelData and lia.faction.getModelData(context.model or 1, modelData) or nil
+    local creationClass = lia.faction.getCharacterCreationClass(faction, context.class)
+    local modelData = lia.faction.getCharacterCreationModelInfo(faction, creationClass, context.model)
+    local parsed = modelData and lia.faction.getModelData(context.model or 1, modelData) or nil
     if parsed then
         if istable(parsed.allowedSkins) then skinAllowed = true end
         if istable(parsed.allowedBodygroups) then bodygroupsAllowed = true end

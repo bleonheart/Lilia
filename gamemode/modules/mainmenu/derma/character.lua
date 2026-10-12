@@ -48,7 +48,7 @@ local function mmNegative(alpha)
 end
 
 local function mmDrawPanel(x, y, w, h, radius, bg, outline)
-    if lia.derma and lia.derma.rect and lia.derma.SHAPE_IOS then
+    if lia.derma.SHAPE_IOS then
         lia.derma.rect(x, y, w, h):Rad(radius or 6):Color(bg):Shape(lia.derma.SHAPE_IOS):Draw()
         if outline then lia.derma.rect(x, y, w, h):Rad(radius or 6):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
     else
@@ -1242,7 +1242,7 @@ function PANEL:createStartButton()
         end
 
         function btn:OnCursorEntered()
-            if IsValid(lia.gui.character) and isfunction(lia.gui.character.hoverSound) then lia.gui.character:hoverSound() end
+            if IsValid(lia.gui.character) then lia.gui.character:hoverSound() end
         end
 
         btn.DoClick = entry.doClick
@@ -1428,7 +1428,7 @@ function PANEL:createCharacterSelection()
         end
 
         function btn:OnCursorEntered()
-            if IsValid(lia.gui.character) and isfunction(lia.gui.character.hoverSound) then lia.gui.character:hoverSound() end
+            if IsValid(lia.gui.character) then lia.gui.character:hoverSound() end
         end
 
         btn.DoClick = doClick
@@ -1661,7 +1661,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         end
 
         function createBtn:OnCursorEntered()
-            if IsValid(lia.gui.character) and isfunction(lia.gui.character.hoverSound) then lia.gui.character:hoverSound() end
+            if IsValid(lia.gui.character) then lia.gui.character:hoverSound() end
         end
 
         createBtn.DoClick = function() self:openCharacterCreationWithTransition() end
@@ -1781,7 +1781,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         end
 
         function btn:OnCursorEntered()
-            if IsValid(lia.gui.character) and isfunction(lia.gui.character.hoverSound) then lia.gui.character:hoverSound() end
+            if IsValid(lia.gui.character) then lia.gui.character:hoverSound() end
         end
 
         btn.DoClick = doClick
@@ -2199,11 +2199,11 @@ function PANEL:showConfirmation(message, onConfirm, onCancel)
     confirmButton:SetContentAlignment(5)
     function confirmButton:OnCursorEntered()
         self.BaseClass.OnCursorEntered(self)
-        if lia.gui.character and isfunction(lia.gui.character.hoverSound) then lia.gui.character:hoverSound() end
+        if IsValid(lia.gui.character) then lia.gui.character:hoverSound() end
     end
 
     confirmButton.DoClick = function()
-        if lia.gui.character and isfunction(lia.gui.character.clickSound) then lia.gui.character:clickSound() end
+        if IsValid(lia.gui.character) then lia.gui.character:clickSound() end
         if isfunction(onConfirm) then onConfirm() end
         frame:Remove()
     end
@@ -2215,16 +2215,16 @@ function PANEL:showConfirmation(message, onConfirm, onCancel)
     cancelButton:SetContentAlignment(5)
     function cancelButton:OnCursorEntered()
         self.BaseClass.OnCursorEntered(self)
-        if lia.gui.character and isfunction(lia.gui.character.hoverSound) then lia.gui.character:hoverSound() end
+        if IsValid(lia.gui.character) then lia.gui.character:hoverSound() end
     end
 
     cancelButton.DoClick = function()
-        if lia.gui.character and isfunction(lia.gui.character.clickSound) then lia.gui.character:clickSound() end
+        if IsValid(lia.gui.character) then lia.gui.character:clickSound() end
         if isfunction(onCancel) then onCancel() end
         frame:Remove()
     end
 
-    timer.Simple(0.25, function() if lia.gui.character and isfunction(lia.gui.character.warningSound) then lia.gui.character:warningSound() end end)
+    timer.Simple(0.25, function() if IsValid(lia.gui.character) then lia.gui.character:warningSound() end end)
     timer.Simple(0, function()
         if IsValid(frame) then
             local w, h = frame:GetWide(), frame:GetTall()

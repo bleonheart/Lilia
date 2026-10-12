@@ -338,7 +338,6 @@ function lia.loader.include(path, realm)
 end
 
 function lia.loader.includeLibraryItems(path)
-    if not lia.item or not isfunction(lia.item.loadFromDir) then return end
     path = path:gsub("\\", "/")
     local libraryPath = path:match("^(.-)/core%.lua$")
     local itemsPath = libraryPath and libraryPath .. "/items"

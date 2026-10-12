@@ -216,7 +216,6 @@ end
 lia.inventory = lia.inventory or {}
 local menuBagRedirectWrapper
 local function installMenuBagRedirect()
-    if not lia.inventory or not isfunction(lia.inventory.showDual) then return end
     if lia.inventory.showDual == menuBagRedirectWrapper then return end
     local showDual = lia.inventory.showDual
     menuBagRedirectWrapper = function(inventory1, inventory2, parent)

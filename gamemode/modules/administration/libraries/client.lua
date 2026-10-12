@@ -1368,7 +1368,7 @@ function MODULE:FocusPlayerEntity(data)
         direction = direction
     }
 
-    if IsValid(lia.gui.menu) and isfunction(lia.gui.menu.remove) then lia.gui.menu:remove() end
+    if IsValid(lia.gui.menu) then lia.gui.menu:remove() end
 end
 
 function MODULE:SetPlayerEntityWaypoint(data)
@@ -1999,7 +1999,7 @@ function MODULE:OpenPlayerEntities(panel)
 
         teleportButton.DoClick = function()
             self:RunPlayerEntityAction(data, 1)
-            if IsValid(lia.gui.menu) and isfunction(lia.gui.menu.remove) then lia.gui.menu:remove() end
+            if IsValid(lia.gui.menu) then lia.gui.menu:remove() end
         end
 
         local waypointButton = createButton(actions, "Place Waypoint", "icon16/map.png")
@@ -2560,10 +2560,7 @@ function MODULE:PopulateAdminTabs(pages)
 
                     local function getCharacterPlayTime(row)
                         local seconds = tonumber(getValue(row, "PlayTime", "playTime", "playtime")) or 0
-                        if lia.time and isfunction(lia.time.formatDHM) then return lia.time.formatDHM(seconds) end
-                        local hours = math.floor(seconds / 3600)
-                        local minutes = math.floor(seconds % 3600 / 60)
-                        return string.format("%dh %02dm", hours, minutes)
+                        return lia.time.formatDHM(seconds)
                     end
 
                     local function getCharacterMoney(row)

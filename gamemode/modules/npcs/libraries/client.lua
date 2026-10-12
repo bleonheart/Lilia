@@ -29,13 +29,13 @@ net.Receive("liaNpcDialogDeliverResponse", function()
     local npc = net.ReadEntity()
     local responses = net.ReadTable()
     if not IsValid(lia.dialog.vgui) or not responses then return end
-    if lia.dialog.vgui.DisplayServerResponse then lia.dialog.vgui:DisplayServerResponse(responses, npc) end
+    if IsValid(lia.dialog.vgui) then lia.dialog.vgui:DisplayServerResponse(responses, npc) end
 end)
 
 net.Receive("liaNpcDialogNodeResult", function()
     local result = net.ReadTable()
     if not IsValid(lia.dialog.vgui) or not result then return end
-    if lia.dialog.vgui.HandleGeneratedDialogResult then lia.dialog.vgui:HandleGeneratedDialogResult(result) end
+    if IsValid(lia.dialog.vgui) then lia.dialog.vgui:HandleGeneratedDialogResult(result) end
 end)
 
 net.Receive("liaRequestNPCSelection", function()

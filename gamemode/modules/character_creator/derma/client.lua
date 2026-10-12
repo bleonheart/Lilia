@@ -40,7 +40,7 @@ end
 local function getThemeAccent(alpha)
     local theme = getActiveThemePalette()
     local source = theme.maincolor or theme.accent or theme.theme
-    if not IsColor(source) and lia.color and isfunction(lia.color.getMainColor) then source = lia.color.getMainColor() end
+    if not IsColor(source) then source = lia.color.getMainColor() end
     return getThemeColor(source, fallbackAccent, alpha)
 end
 
@@ -69,12 +69,12 @@ end
 local function getThemeNegativeColor(alpha)
     local theme = getActiveThemePalette()
     local source = theme.negative
-    if not IsColor(source) and lia.color and isfunction(lia.color.calculateNegativeColor) then source = lia.color.calculateNegativeColor(getThemeAccent()) end
+    if not IsColor(source) then source = lia.color.calculateNegativeColor(getThemeAccent()) end
     return getThemeColor(source, fallbackNegative, alpha)
 end
 
 local function drawPanel(x, y, w, h, radius, background, outline)
-    if lia.derma and lia.derma.rect and lia.derma.SHAPE_IOS then
+    if lia.derma.SHAPE_IOS then
         lia.derma.rect(x, y, w, h):Rad(radius):Color(background):Shape(lia.derma.SHAPE_IOS):Draw()
         if outline then lia.derma.rect(x, y, w, h):Rad(radius):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw() end
         return
@@ -337,14 +337,14 @@ end
 
 local function getFactionByIndex(index)
     if not index then return nil end
-    return lia.faction.indices and lia.faction.indices[index] or lia.faction.get and lia.faction.get(index) or nil
+    return lia.faction.indices and lia.faction.indices[index] or lia.faction.get(index)
 end
 
 local function getAvailableFactions()
     local output = {}
     for _, faction in pairs(lia.faction.teams or {}) do
         if faction.index == FACTION_STAFF or faction.uniqueID == "staff" then continue end
-        if lia.faction.hasWhitelist and not lia.faction.hasWhitelist(faction.index) then continue end
+        if not lia.faction.hasWhitelist(faction.index) then continue end
         output[#output + 1] = faction
     end
 
@@ -425,7 +425,7 @@ local function getFilteredModels(faction, context)
         local parsed = lia.faction.getModelData(key, raw)
         if not parsed or not isstring(parsed.model) or parsed.model == "" then return end
         if seen[tostring(key) .. "|" .. parsed.model] then return end
-        if respectFilter and lia.faction.isModelUsable and not lia.faction.isModelUsable(parsed.model) then return end
+        if respectFilter and not lia.faction.isModelUsable(parsed.model) then return end
         if respectFilter and hook.Run("FilterCharModels", LocalPlayer(), faction, raw, key) == false then return end
         seen[tostring(key) .. "|" .. parsed.model] = true
         output[#output + 1] = {
@@ -460,16 +460,8 @@ local function resolveBodygroups(modelPath, bodygroups)
     if not isstring(bodygroups) or bodygroups == "" then return output end
     local entity = ClientsideModel(modelPath, RENDERGROUP_OTHER)
     if IsValid(entity) then
-        if lia.util and isfunction(lia.util.resolveBodygroups) then
-            local resolved = lia.util.resolveBodygroups(entity, bodygroups)
-            if istable(resolved) then output = resolved end
-        else
-            local index = 0
-            for digit in bodygroups:gmatch("%d") do
-                output[index] = tonumber(digit) or 0
-                index = index + 1
-            end
-        end
+        local resolved = lia.util.resolveBodygroups(entity, bodygroups)
+        if istable(resolved) then output = resolved end
 
         entity:Remove()
     end
@@ -1518,7 +1510,7 @@ end
 
 function PANEL:Paint(w, h)
     local activeTab = self.tabs and self.tabs[self.currentIndex]
-    if (not activeTab or activeTab.id ~= "appearance") and lia.util and isfunction(lia.util.drawBlackBlur) then lia.util.drawBlackBlur(self, 1, 4, 255, 90) end
+    if not activeTab or activeTab.id ~= "appearance" then lia.util.drawBlackBlur(self, 1, 4, 255, 90) end
     surface.SetDrawColor(getThemeBackgroundColor(42))
     surface.DrawRect(0, 0, w, h)
 end

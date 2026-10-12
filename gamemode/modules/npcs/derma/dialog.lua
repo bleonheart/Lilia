@@ -455,11 +455,11 @@ end
 function PANEL:LoadGeneratedDialog(dialogData)
     if not istable(dialogData) or not istable(dialogData.GeneratedDialog) then return end
     local generatedDialog = dialogData.GeneratedDialog
-    local startNode = lia.dialog.getGeneratedStartNode and lia.dialog.getGeneratedStartNode(generatedDialog)
+    local startNode = lia.dialog.getGeneratedStartNode(generatedDialog)
     if not startNode then return end
     self.generatedDialog = generatedDialog
     self.currentGeneratedNodeID = startNode.id
-    self.generatedOptions = self:BuildGeneratedOptions(lia.dialog.getGeneratedChildNodes and lia.dialog.getGeneratedChildNodes(generatedDialog, startNode.id) or {})
+    self.generatedOptions = self:BuildGeneratedOptions(lia.dialog.getGeneratedChildNodes(generatedDialog, startNode.id) or {})
     self:SetDialogText(startNode.npcText or "")
     self:ClearDialogOptions()
     self:AddDialogOptions(self.generatedOptions, self.activeNPC, true)

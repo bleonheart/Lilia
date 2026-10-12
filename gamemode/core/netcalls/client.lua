@@ -76,7 +76,7 @@ end)
 
 net.Receive("liaClassUpdate", function()
     local joinedClient = net.ReadEntity()
-    if lia.gui.classes and lia.gui.classes:IsVisible() then
+    if IsValid(lia.gui.classes) and lia.gui.classes:IsVisible() then
         if joinedClient == LocalPlayer() then
             lia.gui.classes:loadClasses()
         else

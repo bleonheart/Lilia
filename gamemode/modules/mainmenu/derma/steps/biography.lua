@@ -114,7 +114,7 @@ end
 
 function PANEL:addAttributes()
     if IsValid(self.attribsPanel) then return end
-    if not self._attemptedAttribLoad and lia.attribs and isfunction(lia.attribs.loadFromDir) then
+    if not self._attemptedAttribLoad then
         self._attemptedAttribLoad = true
         local base = (SCHEMA and SCHEMA.folder) and SCHEMA.folder or engine.ActiveGamemode():gsub("\\", "/")
         lia.attribs.loadFromDir(base .. "/schema/attributes")

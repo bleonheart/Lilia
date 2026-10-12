@@ -24,7 +24,7 @@ end
 local function getFrameColors()
     local theme = lia.color.theme or {}
     local accentSource = theme.maincolor or theme.accent or theme.theme
-    if not IsColor(accentSource) and lia.color and isfunction(lia.color.getMainColor) then accentSource = lia.color.getMainColor() end
+    if not IsColor(accentSource) then accentSource = lia.color.getMainColor() end
     local accent = getThemeColor(accentSource, fallbackAccent)
     local text = getThemeColor(theme.text or theme.foreground, fallbackText)
     local background = getThemeColor(theme.background or theme.panel or theme.window, fallbackBackground)

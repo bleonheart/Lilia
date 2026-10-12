@@ -1037,7 +1037,7 @@ function PANEL:initializeGeneralInfoPanel(entity)
         local selectedValue = value or self.animation:GetValue()
         if not isstring(selectedValue) then return end
         if selectedValue == "None" then selectedValue = "" end
-        if lia.vendor.editor.animation then lia.vendor.editor.animation(selectedValue) end
+        lia.vendor.editor.animation(selectedValue)
         timer.Simple(0.1, function() if IsValid(self.animation) then self.animation:SetValue(selectedValue == "" and "None" or selectedValue) end end)
     end
 

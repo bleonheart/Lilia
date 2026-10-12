@@ -39,7 +39,7 @@ local function getOption(name, fallback)
 end
 
 local function getAccent()
-    local theme = lia and lia.color and lia.color.theme
+    local theme = lia.color and lia.color.theme
     return theme and (theme.accent or theme.header or theme.theme) or bronzeFallback
 end
 

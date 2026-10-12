@@ -1707,7 +1707,7 @@ lia.config.add("HUDFont", "HUD Font", "Montserrat Medium", function() if not CLI
     category = "fonts",
     type = "Table",
     options = function()
-        if CLIENT and lia.font and isfunction(lia.font.getAvailableFonts) then return lia.font.getAvailableFonts() end
+        if CLIENT then return lia.font.getAvailableFonts() end
         return {"Montserrat Medium"}
     end
 })
@@ -1771,7 +1771,7 @@ lia.config.add("ClassDisplay", "Display Classes on Characters", true, nil, {
 })
 
 local function refreshScoreboard()
-    if CLIENT and IsValid(lia.gui.score) and lia.gui.score.ApplyConfig then lia.gui.score:ApplyConfig() end
+    if CLIENT and IsValid(lia.gui.score) then lia.gui.score:ApplyConfig() end
 end
 
 lia.config.add("sbWidth", "Scoreboard Width", 0.65, refreshScoreboard, {

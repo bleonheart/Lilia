@@ -44,7 +44,7 @@ end
 
 function lia.faction.cacheModels(models)
     for modelKey, modelData in pairs(models or {}) do
-        local parsed = lia.faction.getModelData and lia.faction.getModelData(modelKey, modelData)
+        local parsed = lia.faction.getModelData(modelKey, modelData)
         if parsed and isstring(parsed.model) and parsed.model ~= "" and lia.faction.isModelUsable(parsed.model) then util.PrecacheModel(parsed.model) end
     end
 end

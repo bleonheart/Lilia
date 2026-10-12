@@ -654,7 +654,7 @@ function QuickPanel:OnClose()
 end
 
 function QuickPanel:ResetQuickDefaults()
-    if not lia.option or not lia.option.stored or not lia.option.set then return end
+    if not lia.option or not lia.option.stored then return end
     for key, option in pairs(lia.option.stored) do
         if option and (option.isQuick or option.data and option.data.isQuick) and option.default ~= nil then lia.option.set(key, option.default) end
     end
@@ -683,7 +683,7 @@ function QuickPanel:populateOptions()
         return false
     end
 
-    local localize = lia.option.localizeValue or L
+    local localize = lia.option.localizeValue
     local categories = {}
     local matchCount = 0
     for _, info in ipairs(allOptions) do
@@ -693,8 +693,8 @@ function QuickPanel:populateOptions()
         local visible = opt.visible == nil or opt.visible == true or isfunction(opt.visible) and opt.visible()
         if visible then
             local categoryName = data.rawCategory or data.category or "general"
-            local displayName = lia.option.getDisplayName and lia.option.getDisplayName(key) or opt.name or key
-            local description = lia.option.getDisplayDesc and lia.option.getDisplayDesc(key) or opt.description or opt.desc or ""
+            local displayName = lia.option.getDisplayName(key) or opt.name or key
+            local description = lia.option.getDisplayDesc(key) or opt.description or opt.desc or ""
             if self:MatchesSearch(key, displayName, description, categoryName) then
                 local section = self:ResolveQuickSection(key, opt, displayName, categoryName)
                 categories[section] = categories[section] or {

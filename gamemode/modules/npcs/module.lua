@@ -9,7 +9,7 @@ properties.Add("liaConfigureNPC", {
     MenuIcon = "icon16/wrench.png",
     Filter = function(_, ent, ply)
         if not IsValid(ent) or not lia.dialog.isDialogNPCEntity(ent) then return false end
-        if not lia.admin or not lia.admin.canUseDebugProperties or not lia.admin.canUseDebugProperties(ply) then return false end
+        if not lia.admin.canUseDebugProperties(ply) then return false end
         if not IsValid(ply) or not ply.hasPrivilege then return false end
         return ply:hasPrivilege("canManageNPCs") or ply:hasPrivilege("canManageProperties")
     end,

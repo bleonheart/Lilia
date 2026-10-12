@@ -1173,14 +1173,16 @@ if SERVER then
         end
     end)
 
-    concommand.Add("bots", function()
-        if LocalPlayer():IsSuperAdmin() then return end
+    concommand.Add("bots", function(ply)
+        if IsValid(ply) and not ply:IsSuperAdmin() then return end
+        if timer.Exists("Bots_Add_Timer") then return end
         timer.Create("Bots_Add_Timer", 2, 0, function()
-            if player.GetCount() < game.MaxPlayers() then
-                game.ConsoleCommand("bot\n")
-            else
+            if player.GetCount() >= game.MaxPlayers() then
                 timer.Remove("Bots_Add_Timer")
+                return
             end
+
+            game.ConsoleCommand("bot\n")
         end)
     end)
 
@@ -3904,29 +3906,23 @@ lia.command.add("exportprivileges", {
         end
 
         local srcs = {}
-        if lia then
+        do
             if lia.admin then
                 table.insert(srcs, lia.admin.privileges)
-                if isfunction(lia.admin.getPrivileges) == "function" then
-                    local ok, r = pcall(lia.admin.getPrivileges, lia.admin)
-                    if ok then table.insert(srcs, r) end
-                end
+                local privileges = lia.admin.getPrivileges(lia.admin)
+                if privileges then table.insert(srcs, privileges) end
             end
 
             if lia.admin then
                 table.insert(srcs, lia.admin.privileges)
-                if isfunction(lia.admin.getPrivileges) then
-                    local ok, r = pcall(lia.admin.getPrivileges, lia.admin)
-                    if ok then table.insert(srcs, r) end
-                end
+                local privileges = lia.admin.getPrivileges(lia.admin)
+                if privileges then table.insert(srcs, privileges) end
             end
 
             if lia.permission then
                 table.insert(srcs, lia.permission.list)
-                if isfunction(lia.permission.getAll) then
-                    local ok, r = pcall(lia.permission.getAll, lia.permission)
-                    if ok then table.insert(srcs, r) end
-                end
+                local permissions = lia.permission.getAll(lia.permission)
+                if permissions then table.insert(srcs, permissions) end
             end
 
             if lia.permissions then table.insert(srcs, lia.permissions) end
