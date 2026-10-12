@@ -1,4 +1,4 @@
-﻿lia.admin = lia.admin or {}
+lia.admin = lia.admin or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.privileges = lia.admin.privileges or {}
 lia.admin.privilegeCategories = lia.admin.privilegeCategories or {}
@@ -87,7 +87,7 @@ local defaultUserTools = {
 local camiPathExceptions = {"lua/sam/",}
 local function isBundledCamiCompatibility(path)
     local normalizedPath = path:gsub("\\", "/"):lower()
-    if normalizedPath == "lilia/gamemode/core/libraries/compatibility/cami/core.lua" or normalizedPath:find("/core/libraries/compatibility/cami/core.lua", 1, true) ~= nil then return true end
+    if normalizedPath == "lilia/gamemode/core/libraries/compatibility/cami/cami.lua" or normalizedPath:find("/core/libraries/compatibility/cami/cami.lua", 1, true) ~= nil then return true end
     for _, exception in ipairs(camiPathExceptions) do
         if normalizedPath:find(exception, 1, true) ~= nil then return true end
     end
