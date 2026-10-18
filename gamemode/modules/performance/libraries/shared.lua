@@ -1,66 +1,53 @@
-local GM = GM or GAMEMODE
 local MODULE = MODULE
 PERFOPUS = PERFOPUS or {}
-PERFOPUS.Metrics = PERFOPUS.Metrics or {}
-PERFOPUS.TimedHooks = PERFOPUS.TimedHooks or {}
-PERFOPUS.TimedEntityMethods = PERFOPUS.TimedEntityMethods or setmetatable({}, {
-    __mode = "k"
-})
+local GM = GM or GAMEMODE
+MODULE.perfopusMetrics = MODULE.perfopusMetrics or {}
+MODULE.perfopusTimedHooks = MODULE.perfopusTimedHooks or {}
+MODULE.perfopusTimedEntityMethods = MODULE.perfopusTimedEntityMethods or setmetatable({}, {__mode = "k"})
+MODULE.perfopusOriginals = MODULE.perfopusOriginals or {}
+MODULE.perfopusStarted = MODULE.perfopusStarted or false
+MODULE.perfopusRefreshRate = MODULE.perfopusRefreshRate or 2
+MODULE.perfopusFrozen = MODULE.perfopusFrozen or false
 
-PERFOPUS.Originals = PERFOPUS.Originals or {}
-PERFOPUS.Started = PERFOPUS.Started or false
-PERFOPUS.REFRESH_RATE = GetConVar("sh_perfopus_refresh_rate") or CreateConVar("sh_perfopus_refresh_rate", "2", bit.bor(FCVAR_ARCHIVE, FCVAR_REPLICATED))
-PERFOPUS.FREEZE = GetConVar("sh_perfopus_freeze") or CreateConVar("sh_perfopus_freeze", "0", bit.bor(FCVAR_ARCHIVE, FCVAR_REPLICATED))
 local function pack(...)
-    return {
-        n = select("#", ...),
-        ...
-    }
+    return {n = select("#", ...), ...}
 end
 
 local function normalizeSource(source)
     return tostring(source or "unknown"):gsub("\\", "/")
 end
 
-function PERFOPUS.IsOwnSource(source)
-    local normalized = normalizeSource(source):lower()
-    return normalized:find("/modules/perfopus/", 1, true) ~= nil or normalized:find("/perfopus/libraries/", 1, true) ~= nil
+function MODULE:IsOwnSource(source)
+    return normalizeSource(source):lower():find("/modules/performance/", 1, true) ~= nil
 end
 
-function PERFOPUS.GetSource(func)
+function MODULE:GetSource(func)
     if not isfunction(func) then return "unknown" end
     local info = debug.getinfo(func, "S")
     return info and normalizeSource(info.short_src) or "unknown"
 end
 
-function PERFOPUS.CanViewMetrics(client)
-    if not IsValid(client) then return false end
-    if isfunction(client.hasPrivilege) then return client:hasPrivilege("viewPerformanceMetrics") end
-    return client:IsSuperAdmin()
+function MODULE:CanViewMetrics(client)
+    return IsValid(client) and isfunction(client.hasPrivilege) and client:hasPrivilege("viewPerformanceMetrics") or false
 end
 
-function PERFOPUS.TakeMeasurement(elapsed, name, source)
+function MODULE:TakeMeasurement(elapsed, name, source)
     if not isnumber(elapsed) or elapsed < 0 then return end
     source = normalizeSource(source)
-    if PERFOPUS.IsOwnSource(source) then return end
-    local sourceMetrics = PERFOPUS.Metrics[source]
+    if self:IsOwnSource(source) then return end
+    local sourceMetrics = self.perfopusMetrics[source]
     if not sourceMetrics then
         sourceMetrics = {}
-        PERFOPUS.Metrics[source] = sourceMetrics
+        self.perfopusMetrics[source] = sourceMetrics
     end
 
     sourceMetrics[name] = (sourceMetrics[name] or 0) + elapsed
 end
 
-function PERFOPUS.MakeToolTipString(funcs, limit)
+function MODULE:MakeToolTipString(funcs, limit)
     local metrics = {}
     for name, elapsed in pairs(funcs or {}) do
-        if elapsed > 0 then
-            metrics[#metrics + 1] = {
-                name = name,
-                time = elapsed
-            }
-        end
+        if elapsed > 0 then metrics[#metrics + 1] = {name = name, time = elapsed} end
     end
 
     table.sort(metrics, function(a, b) return a.time > b.time end)
@@ -73,10 +60,10 @@ function PERFOPUS.MakeToolTipString(funcs, limit)
     return table.concat(lines, "\n")
 end
 
-function PERFOPUS.GetReadableMetrics()
+function MODULE:GetReadableMetrics()
     local realm = SERVER and 1 or 0
     local readable = {}
-    for source, funcs in pairs(PERFOPUS.Metrics) do
+    for source, funcs in pairs(self.perfopusMetrics) do
         local copiedFuncs = {}
         local total = 0
         for name, elapsed in pairs(funcs) do
@@ -84,69 +71,61 @@ function PERFOPUS.GetReadableMetrics()
             total = total + elapsed
         end
 
-        readable[source] = {
-            funcs = copiedFuncs,
-            realm = realm,
-            time = total
-        }
+        readable[source] = {funcs = copiedFuncs, realm = realm, time = total}
     end
     return readable
 end
 
-function PERFOPUS.TimeThisHook(hookType, hookID, listener)
+function MODULE:TimeThisHook(hookType, hookID)
     if hookID == nil then return end
     if isstring(hookID) and hookID:sub(1, 8) == "PERFOPUS" then return end
     local hookTable = hook.GetTable()[hookType]
     if not hookTable then return end
     local hookFunc = hookTable[hookID]
     if not isfunction(hookFunc) then return end
-    local source = PERFOPUS.GetSource(hookFunc)
-    if PERFOPUS.IsOwnSource(source) then return end
-    PERFOPUS.TimedHooks[hookType] = PERFOPUS.TimedHooks[hookType] or {}
-    local previous = PERFOPUS.TimedHooks[hookType][hookID]
+    local source = self:GetSource(hookFunc)
+    if self:IsOwnSource(source) then return end
+    self.perfopusTimedHooks[hookType] = self.perfopusTimedHooks[hookType] or {}
+    local previous = self.perfopusTimedHooks[hookType][hookID]
     if previous and hookFunc == previous.wrapper then return end
     local original = hookFunc
     local wrapper = function(...)
         local started = SysTime()
         local results = pack(original(...))
-        listener(SysTime() - started, "HOOK: " .. tostring(hookType) .. " - " .. tostring(hookID), source)
+        self:TakeMeasurement(SysTime() - started, "HOOK: " .. tostring(hookType) .. " - " .. tostring(hookID), source)
         return unpack(results, 1, results.n)
     end
 
-    PERFOPUS.TimedHooks[hookType][hookID] = {
-        original = original,
-        wrapper = wrapper
-    }
-
-    local add = PERFOPUS.Originals.hookAdd or hook.Add
+    self.perfopusTimedHooks[hookType][hookID] = {original = original, wrapper = wrapper}
+    local add = self.perfopusOriginals.hookAdd or hook.Add
     add(hookType, hookID, wrapper)
 end
 
-function PERFOPUS.ListenForNewHooks()
-    if PERFOPUS.HookListenerInstalled then return end
-    PERFOPUS.Originals.hookAdd = PERFOPUS.Originals.hookAdd or hook.Add
-    local original = PERFOPUS.Originals.hookAdd
+function MODULE:ListenForNewHooks()
+    if self.perfopusHookListenerInstalled then return end
+    self.perfopusOriginals.hookAdd = self.perfopusOriginals.hookAdd or hook.Add
+    local original = self.perfopusOriginals.hookAdd
     hook.Add = function(hookType, hookID, func)
         local result = original(hookType, hookID, func)
-        if PERFOPUS.Started and isfunction(func) then PERFOPUS.TimeThisHook(hookType, hookID, PERFOPUS.TakeMeasurement) end
+        if self.perfopusStarted and isfunction(func) then self:TimeThisHook(hookType, hookID) end
         return result
     end
 
-    PERFOPUS.HookListenerInstalled = true
+    self.perfopusHookListenerInstalled = true
 end
 
-function PERFOPUS.TimeThisEntMethod(ent, methodName, listener)
+function MODULE:TimeThisEntMethod(ent, methodName)
     if not IsValid(ent) or methodName == nil then return end
     local method = ent[methodName]
     if not isfunction(method) then return end
     local info = debug.getinfo(method, "S")
     if not info or info.what == "C" then return end
     local source = normalizeSource(info.short_src)
-    if PERFOPUS.IsOwnSource(source) then return end
-    local entityMethods = PERFOPUS.TimedEntityMethods[ent]
+    if self:IsOwnSource(source) then return end
+    local entityMethods = self.perfopusTimedEntityMethods[ent]
     if not entityMethods then
         entityMethods = {}
-        PERFOPUS.TimedEntityMethods[ent] = entityMethods
+        self.perfopusTimedEntityMethods[ent] = entityMethods
     end
 
     local previous = entityMethods[methodName]
@@ -155,87 +134,85 @@ function PERFOPUS.TimeThisEntMethod(ent, methodName, listener)
     local wrapper = function(...)
         local started = SysTime()
         local results = pack(original(...))
-        listener(SysTime() - started, "METHOD: " .. tostring(methodName), source)
+        self:TakeMeasurement(SysTime() - started, "METHOD: " .. tostring(methodName), source)
         return unpack(results, 1, results.n)
     end
 
-    entityMethods[methodName] = {
-        original = original,
-        wrapper = wrapper
-    }
-
+    entityMethods[methodName] = {original = original, wrapper = wrapper}
     local entTable = ent:GetTable()
     if entTable then entTable[methodName] = wrapper end
 end
 
-function PERFOPUS.TimeThisEntity(ent, listener)
+function MODULE:TimeThisEntity(ent)
     if not IsValid(ent) then return end
     local entTable = ent:GetTable()
     if not entTable then return end
     for methodName, value in pairs(entTable) do
-        if isfunction(value) then PERFOPUS.TimeThisEntMethod(ent, methodName, listener) end
+        if isfunction(value) then self:TimeThisEntMethod(ent, methodName) end
     end
 end
 
-function PERFOPUS.ListenForNewEntityMethods()
-    if PERFOPUS.EntityListenerInstalled then return end
+function MODULE:ListenForNewEntityMethods()
+    if self.perfopusEntityListenerInstalled then return end
     local entityMeta = FindMetaTable("Entity")
     if not entityMeta or not isfunction(entityMeta.__newindex) then return end
-    PERFOPUS.Originals.entityNewIndex = PERFOPUS.Originals.entityNewIndex or entityMeta.__newindex
-    local original = PERFOPUS.Originals.entityNewIndex
+    self.perfopusOriginals.entityNewIndex = self.perfopusOriginals.entityNewIndex or entityMeta.__newindex
+    local original = self.perfopusOriginals.entityNewIndex
     entityMeta.__newindex = function(ent, key, value)
         local result = original(ent, key, value)
-        if PERFOPUS.Started and isfunction(value) then timer.Simple(0, function() if IsValid(ent) then PERFOPUS.TimeThisEntMethod(ent, key, PERFOPUS.TakeMeasurement) end end) end
+        if self.perfopusStarted and isfunction(value) then
+            timer.Simple(0, function() if IsValid(ent) then self:TimeThisEntMethod(ent, key) end end)
+        end
         return result
     end
 
-    PERFOPUS.EntityListenerInstalled = true
+    self.perfopusEntityListenerInstalled = true
 end
 
-function PERFOPUS.ListenForTimersToTime(listener)
-    if PERFOPUS.TimerListenerInstalled then return end
-    PERFOPUS.Originals.timerCreate = PERFOPUS.Originals.timerCreate or timer.Create
-    local original = PERFOPUS.Originals.timerCreate
+function MODULE:ListenForTimersToTime()
+    if self.perfopusTimerListenerInstalled then return end
+    self.perfopusOriginals.timerCreate = self.perfopusOriginals.timerCreate or timer.Create
+    local original = self.perfopusOriginals.timerCreate
     timer.Create = function(identifier, delay, repetitions, func)
-        if not PERFOPUS.Started or not isfunction(func) then return original(identifier, delay, repetitions, func) end
-        local source = PERFOPUS.GetSource(func)
-        if PERFOPUS.IsOwnSource(source) then return original(identifier, delay, repetitions, func) end
+        if not self.perfopusStarted or not isfunction(func) then return original(identifier, delay, repetitions, func) end
+        local source = self:GetSource(func)
+        if self:IsOwnSource(source) then return original(identifier, delay, repetitions, func) end
         local wrapped = function(...)
             local started = SysTime()
             local results = pack(func(...))
-            listener(SysTime() - started, "TIMER: " .. tostring(identifier), source)
+            self:TakeMeasurement(SysTime() - started, "TIMER: " .. tostring(identifier), source)
             return unpack(results, 1, results.n)
         end
         return original(identifier, delay, repetitions, wrapped)
     end
 
-    PERFOPUS.TimerListenerInstalled = true
+    self.perfopusTimerListenerInstalled = true
 end
 
-function PERFOPUS.StartProfiling()
-    if PERFOPUS.Started then return false end
-    PERFOPUS.Metrics = {}
+function MODULE:StartProfiling()
+    if self.perfopusStarted then return false end
+    self.perfopusMetrics = {}
     for hookName, entries in pairs(hook.GetTable()) do
         for hookID in pairs(entries) do
-            PERFOPUS.TimeThisHook(hookName, hookID, PERFOPUS.TakeMeasurement)
+            self:TimeThisHook(hookName, hookID)
         end
     end
 
-    PERFOPUS.ListenForNewHooks()
+    self:ListenForNewHooks()
     for _, ent in ipairs(ents.GetAll()) do
-        PERFOPUS.TimeThisEntity(ent, PERFOPUS.TakeMeasurement)
+        self:TimeThisEntity(ent)
     end
 
-    PERFOPUS.ListenForNewEntityMethods()
-    PERFOPUS.ListenForTimersToTime(PERFOPUS.TakeMeasurement)
-    PERFOPUS.Started = true
+    self:ListenForNewEntityMethods()
+    self:ListenForTimersToTime()
+    self.perfopusStarted = true
     return true
 end
 
-hook.Add("OnEntityCreated", "PERFOPUSProfileEntities", function(ent)
-    if not PERFOPUS.Started then return end
-    timer.Simple(0, function() if IsValid(ent) then PERFOPUS.TimeThisEntity(ent, PERFOPUS.TakeMeasurement) end end)
-end)
+function MODULE:OnEntityCreated(ent)
+    if not self.perfopusStarted then return end
+    timer.Simple(0, function() if IsValid(ent) then self:TimeThisEntity(ent) end end)
+end
 
 function GM:MouthMoveAnimation(ply)
     if lia.config.get("MouthMoveAnimation", true) then

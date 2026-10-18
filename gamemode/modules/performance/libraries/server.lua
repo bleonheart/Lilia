@@ -1,25 +1,47 @@
-local GM = GM or GAMEMODE
+local MODULE = MODULE
+local subscribers = setmetatable({}, {__mode = "k"})
 local nextRefresh = 0
-local function setServerSetting(name, value)
-    if name == "freeze" then
-        RunConsoleCommand("sh_perfopus_freeze", value and "1" or "0")
-        return
-    end
 
-    if name == "refresh" then
-        local refresh = math.Clamp(tonumber(value) or 2, 0.1, 5)
-        RunConsoleCommand("sh_perfopus_refresh_rate", tostring(refresh))
+function MODULE:SendPerfopusState(client)
+    net.Start("liaPerfopusState")
+    net.WriteBool(self.perfopusFrozen)
+    net.WriteFloat(self.perfopusRefreshRate)
+    net.Send(client)
+end
+
+function MODULE:SyncPerfopusState()
+    for client in pairs(subscribers) do
+        if self:CanViewMetrics(client) then
+            self:SendPerfopusState(client)
+        else
+            subscribers[client] = nil
+        end
     end
 end
 
-local function sendMetrics()
-    local readable = PERFOPUS.GetReadableMetrics()
-    for _, client in player.Iterator() do
-        if PERFOPUS.CanViewMetrics(client) and client:GetInfoNum("cl_perfopus_showing_metrics", 0) > 0 then
+function MODULE:SetPerfopusServerSetting(name, value)
+    if name == "freeze" then
+        self.perfopusFrozen = value == true
+    elseif name == "refresh" then
+        if not isnumber(value) or value ~= value or value == math.huge or value == -math.huge then return end
+        self.perfopusRefreshRate = math.Clamp(value, 0.1, 5)
+    else
+        return
+    end
+
+    self:SyncPerfopusState()
+end
+
+function MODULE:SendPerfopusMetrics()
+    local readable = self:GetReadableMetrics()
+    for client in pairs(subscribers) do
+        if not self:CanViewMetrics(client) then
+            subscribers[client] = nil
+        else
             for source, data in pairs(readable) do
                 net.Start("liaPerfopusMetric")
                 net.WriteString(source)
-                net.WriteString(PERFOPUS.MakeToolTipString(data.funcs, 10))
+                net.WriteString(self:MakeToolTipString(data.funcs, 10))
                 net.WriteUInt(data.realm, 1)
                 net.WriteFloat(data.time)
                 net.Send(client)
@@ -29,24 +51,38 @@ local function sendMetrics()
 end
 
 function MODULE:Think()
-    if not PERFOPUS.Started or PERFOPUS.FREEZE:GetBool() then return end
+    if not self.perfopusStarted or self.perfopusFrozen then return end
     if nextRefresh > CurTime() then return end
-    sendMetrics()
-    table.Empty(PERFOPUS.Metrics)
-    nextRefresh = CurTime() + math.Clamp(PERFOPUS.REFRESH_RATE:GetFloat(), 0.1, 5)
+    self:SendPerfopusMetrics()
+    table.Empty(self.perfopusMetrics)
+    nextRefresh = CurTime() + math.Clamp(self.perfopusRefreshRate, 0.1, 5)
 end
 
-net.Receive("liaPerfopusStart", function(_, client)
-    if not PERFOPUS.CanViewMetrics(client) then return end
-    PERFOPUS.StartProfiling()
-end)
+function MODULE:HandlePerfopusStart(client)
+    if not self:CanViewMetrics(client) then return end
+    self:StartProfiling()
+end
 
-net.Receive("liaPerfopusSettings", function(_, client)
-    if not PERFOPUS.CanViewMetrics(client) then return end
+function MODULE:HandlePerfopusSettings(client)
+    if not self:CanViewMetrics(client) then return end
     local setting = net.ReadString()
     if setting == "freeze" then
-        setServerSetting(setting, net.ReadBool())
+        self:SetPerfopusServerSetting(setting, net.ReadBool())
     elseif setting == "refresh" then
-        setServerSetting(setting, net.ReadFloat())
+        self:SetPerfopusServerSetting(setting, net.ReadFloat())
     end
-end)
+end
+
+function MODULE:HandlePerfopusSubscription(client)
+    if not self:CanViewMetrics(client) then return end
+    if net.ReadBool() then
+        subscribers[client] = true
+        self:SendPerfopusState(client)
+    else
+        subscribers[client] = nil
+    end
+end
+
+net.Receive("liaPerfopusStart", function(_, client) MODULE:HandlePerfopusStart(client) end)
+net.Receive("liaPerfopusSettings", function(_, client) MODULE:HandlePerfopusSettings(client) end)
+net.Receive("liaPerfopusSubscription", function(_, client) MODULE:HandlePerfopusSubscription(client) end)

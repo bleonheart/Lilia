@@ -1,4 +1,7 @@
-local GM = GM or GAMEMODE
+local MODULE = MODULE
+MODULE.perfopusHideNative = MODULE.perfopusHideNative or false
+MODULE.perfopusZoom = MODULE.perfopusZoom or 2
+local currentPanel
 local REALM_SV = 1
 local sourceCache = {}
 local serverMetrics = {}
@@ -36,9 +39,6 @@ local iconChart = Material("icon16/chart_bar.png", "smooth")
 local iconTime = Material("icon16/time.png", "smooth")
 local iconFolder = Material("icon16/folder.png", "smooth")
 local iconWarning = Material("icon16/error.png", "smooth")
-PERFOPUS.HIDE_NATIVE = GetConVar("cl_perfopus_hide_native") or CreateClientConVar("cl_perfopus_hide_native", "0", true, false)
-PERFOPUS.SHOWING_METRICS = GetConVar("cl_perfopus_showing_metrics") or CreateClientConVar("cl_perfopus_showing_metrics", "0", false, true)
-PERFOPUS.ZOOM = GetConVar("cl_perfopus_zoom") or CreateClientConVar("cl_perfopus_zoom", "2", true, false)
 local function getThemeColors()
     local theme = lia.color and lia.color.theme or {}
     local accent = theme.accent or theme.theme or lia.config.get("Color") or Color(45, 190, 170)
@@ -68,11 +68,7 @@ local function fitText(value, font, maxWidth)
     return "..." .. text
 end
 
-function PERFOPUS.ClearSourceCache()
-    table.Empty(sourceCache)
-end
-
-function PERFOPUS.IsAddonSource(source)
+function MODULE:IsAddonSource(source)
     local cached = sourceCache[source]
     if cached ~= nil then return cached end
     local normalized = tostring(source or ""):lower():gsub("\\", "/")
@@ -94,18 +90,18 @@ function PERFOPUS.IsAddonSource(source)
     return true
 end
 
-function PERFOPUS.FilterMetrics(metrics)
-    if not PERFOPUS.HIDE_NATIVE:GetBool() then return metrics end
+function MODULE:FilterMetrics(metrics)
+    if not self.perfopusHideNative then return metrics end
     local filtered = {}
     for source, data in pairs(metrics) do
-        if PERFOPUS.IsAddonSource(source) then filtered[source] = data end
+        if self:IsAddonSource(source) then filtered[source] = data end
     end
     return filtered
 end
 
-local function mergeMetrics()
+function MODULE:MergePerfopusMetrics()
     local rows = {}
-    for source, data in pairs(PERFOPUS.FilterMetrics(PERFOPUS.GetReadableMetrics())) do
+    for source, data in pairs(self:FilterMetrics(self:GetReadableMetrics())) do
         rows[#rows + 1] = {
             source = source,
             funcs = data.funcs or {},
@@ -114,7 +110,7 @@ local function mergeMetrics()
         }
     end
 
-    for source, data in pairs(PERFOPUS.FilterMetrics(serverMetrics)) do
+    for source, data in pairs(self:FilterMetrics(serverMetrics)) do
         rows[#rows + 1] = {
             source = source,
             funcs = data.funcs or {},
@@ -128,7 +124,7 @@ local function mergeMetrics()
     return rows
 end
 
-local function getMetricSummary(rows)
+function MODULE:GetPerfopusMetricSummary(rows)
     local total = 0
     local serverTotal = 0
     local clientTotal = 0
@@ -143,7 +139,7 @@ local function getMetricSummary(rows)
     return total, serverTotal, clientTotal
 end
 
-local function createMetricRow(parent, data, maxTime)
+function MODULE:CreatePerfopusMetricRow(parent, data, maxTime)
     local row = parent:Add("DPanel")
     row:Dock(TOP)
     row:SetTall(62)
@@ -163,27 +159,27 @@ local function createMetricRow(parent, data, maxTime)
         local sourceWidth = math.max(80, w - sourceX - 120)
         draw.SimpleText(fitText(data.source, "LiliaFont.17", sourceWidth), "LiliaFont.17", sourceX, 13, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         draw.SimpleText(string.format("%.4f ms", data.time * 1000), "LiliaFont.17", w - 14, 13, textColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
-        local zoom = math.max(PERFOPUS.ZOOM:GetFloat(), 0.1)
+        local zoom = math.max(MODULE.perfopusZoom, 0.1)
         local share = maxTime > 0 and math.Clamp((data.time / maxTime) * (zoom / 2), 0, 1) or 0
         drawPanel(sourceX, 41, math.max(w - sourceX - 14, 1), 6, 3, Color(255, 255, 255, 8))
         drawPanel(sourceX, 41, math.max((w - sourceX - 14) * share, 1), 6, 3, Color(accent.r, accent.g, accent.b, hovered and 110 or 72))
     end
 
     local tooltip = data.tooltipstr
-    if not tooltip or tooltip == "" then tooltip = PERFOPUS.MakeToolTipString(data.funcs, 10) end
+    if not tooltip or tooltip == "" then tooltip = MODULE:MakeToolTipString(data.funcs, 10) end
     if tooltip and tooltip ~= "" then
         row:SetTooltip("Most Time Consuming:\n" .. tooltip)
         row:SetTooltipDelay(0)
     end
 end
 
-function PERFOPUS.RefreshMetrics(panel)
-    if not IsValid(panel) or not PERFOPUS.SHOWING_METRICS:GetBool() then return end
+function MODULE:RefreshMetrics(panel)
+    if not IsValid(panel) or currentPanel ~= panel then return end
     local list = panel.MetricList
     if not IsValid(list) then return end
     list:Clear()
-    local rows = mergeMetrics()
-    local total, serverTotal, clientTotal = getMetricSummary(rows)
+    local rows = self:MergePerfopusMetrics()
+    local total, serverTotal, clientTotal = self:GetPerfopusMetricSummary(rows)
     panel.MetricCount = #rows
     panel.TotalMetricTime = total
     panel.ServerMetricTime = serverTotal
@@ -196,29 +192,29 @@ function PERFOPUS.RefreshMetrics(panel)
             local accent = getThemeColors()
             drawPanel(0, 0, w, h, 8, Color(5, 18, 23, 185), Color(accent.r, accent.g, accent.b, 45))
             drawIcon(iconChart, w * 0.5 - 16, 29, 32, Color(150, 175, 176))
-            draw.SimpleText(PERFOPUS.Started and "Collecting samples..." or "Profiler is not running", "LiliaFont.20", w * 0.5, 78, Color(210, 225, 225), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-            draw.SimpleText(PERFOPUS.Started and "Metrics will appear after the next refresh." or "Start Perfopus from the controls panel to begin profiling.", "LiliaFont.15", w * 0.5, 108, Color(145, 166, 167), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(MODULE.perfopusStarted and "Collecting samples..." or "Profiler is not running", "LiliaFont.20", w * 0.5, 78, Color(210, 225, 225), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(MODULE.perfopusStarted and "Metrics will appear after the next refresh." or "Start Perfopus from the controls panel to begin profiling.", "LiliaFont.15", w * 0.5, 108, Color(145, 166, 167), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
         return
     end
 
     local maxTime = rows[1].time or 0
     for _, data in ipairs(rows) do
-        createMetricRow(list, data, maxTime)
+        self:CreatePerfopusMetricRow(list, data, maxTime)
     end
 end
 
-function PERFOPUS.ReceiveServerMetrics(source, tooltipstr, realm, elapsed)
+function MODULE:ReceiveServerMetrics(source, tooltipstr, realm, elapsed)
     serverMetrics[source] = {
         tooltipstr = tooltipstr,
         realm = realm,
         time = elapsed,
         funcs = {},
-        expires = CurTime() + math.max(PERFOPUS.REFRESH_RATE:GetFloat(), 0.1) + 1
+        expires = CurTime() + math.max(self.perfopusRefreshRate, 0.1) + 1
     }
 end
 
-local function sendServerSetting(setting, value)
+function MODULE:SendPerfopusSetting(setting, value)
     net.Start("liaPerfopusSettings")
     net.WriteString(setting)
     if setting == "freeze" then
@@ -230,28 +226,25 @@ local function sendServerSetting(setting, value)
     net.SendToServer()
 end
 
-local function startPerfopus(panel)
-    if PERFOPUS.Started then
-        RunConsoleCommand("cl_perfopus_showing_metrics", "1")
-        if PERFOPUS.CanViewMetrics(LocalPlayer()) then
+function MODULE:PromptStartPerfopus(panel)
+    if self.perfopusStarted then
+        if self:CanViewMetrics(LocalPlayer()) then
             net.Start("liaPerfopusStart")
             net.SendToServer()
         end
 
-        PERFOPUS.RefreshMetrics(panel)
+        self:RefreshMetrics(panel)
         return
     end
 
     Derma_Query("Start Perfopus? Profiling adds overhead and cannot be fully stopped without changing map.", "Start Perfopus", "Start", function()
-        PERFOPUS.StartProfiling()
-        PERFOPUS.ClearSourceCache()
-        RunConsoleCommand("cl_perfopus_showing_metrics", "1")
-        if PERFOPUS.CanViewMetrics(LocalPlayer()) then
+        MODULE:StartProfiling()
+        if MODULE:CanViewMetrics(LocalPlayer()) then
             net.Start("liaPerfopusStart")
             net.SendToServer()
         end
 
-        if IsValid(panel) then PERFOPUS.BuildPanel(panel) end
+        if IsValid(panel) then MODULE:BuildPanel(panel) end
     end, "Cancel")
 end
 
@@ -340,13 +333,15 @@ local function createSummaryCard(parent, title, icon, valueFunc, subtitleFunc)
     return card
 end
 
-function PERFOPUS.BuildPanel(parent)
+function MODULE:BuildPanel(parent)
     parent:Clear()
     parent:DockPadding(0, 0, 0, 0)
     parent.OnRemove = function(panel)
-        if PERFOPUS.CurrentPanel ~= panel then return end
-        RunConsoleCommand("cl_perfopus_showing_metrics", "0")
-        PERFOPUS.CurrentPanel = nil
+        if currentPanel ~= panel then return end
+        currentPanel = nil
+        net.Start("liaPerfopusSubscription")
+        net.WriteBool(false)
+        net.SendToServer()
     end
 
     local header = parent:Add("DPanel")
@@ -361,8 +356,8 @@ function PERFOPUS.BuildPanel(parent)
         drawIcon(iconChart, 22, 22, 26, accent)
         draw.SimpleText("Performance Metrics", "LiliaFont.25", 62, 17, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         draw.SimpleText("Lua hook, timer and entity method profiler", "LiliaFont.15", 62, 51, Color(145, 168, 169), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        local statusText = PERFOPUS.Started and "RUNNING" or "STOPPED"
-        local statusColor = PERFOPUS.Started and accent or Color(150, 165, 166)
+        local statusText = MODULE.perfopusStarted and "RUNNING" or "STOPPED"
+        local statusColor = MODULE.perfopusStarted and accent or Color(150, 165, 166)
         local badgeW = 100
         local badgeX = w - badgeW - 18
         drawPanel(badgeX, 21, badgeW, 30, 6, Color(statusColor.r, statusColor.g, statusColor.b, 15), Color(statusColor.r, statusColor.g, statusColor.b, 78))
@@ -376,8 +371,8 @@ function PERFOPUS.BuildPanel(parent)
     summary:SetTall(88)
     summary:DockMargin(0, 0, 0, 12)
     summary.Paint = function() end
-    local totalCard = createSummaryCard(summary, "Sample Cost", iconTime, function() return string.format("%.3f ms", (parent.TotalMetricTime or 0) * 1000) end, function() return string.format("%.2fs window", PERFOPUS.REFRESH_RATE:GetFloat()) end)
-    local sourceCard = createSummaryCard(summary, "Sources", iconFolder, function() return tostring(parent.MetricCount or 0) end, function() return PERFOPUS.HIDE_NATIVE:GetBool() and "ADDONS ONLY" or "ALL LUA" end)
+    local totalCard = createSummaryCard(summary, "Sample Cost", iconTime, function() return string.format("%.3f ms", (parent.TotalMetricTime or 0) * 1000) end, function() return string.format("%.2fs window", MODULE.perfopusRefreshRate) end)
+    local sourceCard = createSummaryCard(summary, "Sources", iconFolder, function() return tostring(parent.MetricCount or 0) end, function() return MODULE.perfopusHideNative and "ADDONS ONLY" or "ALL LUA" end)
     local realmCard = createSummaryCard(summary, "Realm Split", iconChart, function() return string.format("S %.2f / C %.2f", (parent.ServerMetricTime or 0) * 1000, (parent.ClientMetricTime or 0) * 1000) end, function() return "MILLISECONDS" end)
     summary.PerformLayout = function(_, w, h)
         local gap = 10
@@ -410,23 +405,22 @@ function PERFOPUS.BuildPanel(parent)
     startButton:DockMargin(0, 0, 0, 12)
     startButton:SetRadius(7)
     startButton:SetIcon(iconPlay, 16)
-    startButton:SetText(PERFOPUS.Started and "Profiler Running" or "Start Perfopus")
+    startButton:SetText(MODULE.perfopusStarted and "Profiler Running" or "Start Perfopus")
     startButton.DoClick = function()
         lia.webcontent.playButtonSound()
-        startPerfopus(parent)
+        MODULE:PromptStartPerfopus(parent)
     end
 
-    createToggleRow(controls, "Freeze Samples", "Keep the current measurements visible", PERFOPUS.FREEZE:GetBool(), function(value) sendServerSetting("freeze", value) end)
-    createToggleRow(controls, "Hide Native Activity", "Only show addon and gamemode Lua", PERFOPUS.HIDE_NATIVE:GetBool(), function(value)
-        RunConsoleCommand("cl_perfopus_hide_native", value and "1" or "0")
-        PERFOPUS.ClearSourceCache()
-        PERFOPUS.RefreshMetrics(parent)
+    createToggleRow(controls, "Freeze Samples", "Keep the current measurements visible", MODULE.perfopusFrozen, function(value) MODULE:SendPerfopusSetting("freeze", value) end)
+    createToggleRow(controls, "Hide Native Activity", "Only show addon and gamemode Lua", MODULE.perfopusHideNative, function(value)
+        MODULE.perfopusHideNative = value
+        MODULE:RefreshMetrics(parent)
     end)
 
     createSectionTitle(controls, "Display", "Sampling window and graph scale")
     local refreshTimer = "PERFOPUSRefreshSetting"
-    createSliderRow(controls, "Refresh Rate", "How often samples are replaced", 0.1, 5, 2, PERFOPUS.REFRESH_RATE:GetFloat(), function(value) timer.Create(refreshTimer, 0.15, 1, function() sendServerSetting("refresh", value) end) end, function(value) return string.format("%.2fs", value) end)
-    createSliderRow(controls, "Graph Zoom", "Scales the relative activity display", 0.5, 10, 1, PERFOPUS.ZOOM:GetFloat(), function(value) RunConsoleCommand("cl_perfopus_zoom", tostring(math.Clamp(value, 0.5, 10))) end, function(value) return string.format("%.1fx", value) end)
+    createSliderRow(controls, "Refresh Rate", "How often samples are replaced", 0.1, 5, 2, MODULE.perfopusRefreshRate, function(value) timer.Create(refreshTimer, 0.15, 1, function() MODULE:SendPerfopusSetting("refresh", value) end) end, function(value) return string.format("%.2fs", value) end)
+    createSliderRow(controls, "Graph Zoom", "Scales the relative activity display", 0.5, 10, 1, MODULE.perfopusZoom, function(value) MODULE.perfopusZoom = math.Clamp(value, 0.5, 10) end, function(value) return string.format("%.1fx", value) end)
     local legend = controls:Add("DPanel")
     legend:Dock(TOP)
     legend:SetTall(72)
@@ -466,44 +460,48 @@ function PERFOPUS.BuildPanel(parent)
     parent.MetricList = metrics:GetCanvas()
     parent.MetricList:DockPadding(0, 0, 4, 0)
     parent.MetricList.Paint = function() end
-    PERFOPUS.CurrentPanel = parent
-    RunConsoleCommand("cl_perfopus_showing_metrics", "1")
-    PERFOPUS.RefreshMetrics(parent)
+    currentPanel = parent
+    net.Start("liaPerfopusSubscription")
+    net.WriteBool(true)
+    net.SendToServer()
+    MODULE:RefreshMetrics(parent)
 end
 
 function MODULE:CreateMenuButtons(tabs)
     tabs["perfopus"] = {
         name = "Performance Metrics",
         icon = "icon16/chart_bar.png",
-        shouldShow = function() return PERFOPUS.CanViewMetrics(LocalPlayer()) end,
-        func = function(panel) PERFOPUS.BuildPanel(panel) end
+        shouldShow = function() return self:CanViewMetrics(LocalPlayer()) end,
+        func = function(panel) self:BuildPanel(panel) end
     }
 end
 
 function MODULE:F1MenuClosed()
-    RunConsoleCommand("cl_perfopus_showing_metrics", "0")
-    PERFOPUS.CurrentPanel = nil
+    currentPanel = nil
+    net.Start("liaPerfopusSubscription")
+    net.WriteBool(false)
+    net.SendToServer()
 end
 
 function MODULE:Think()
-    if not PERFOPUS.Started or PERFOPUS.FREEZE:GetBool() then return end
+    if not self.perfopusStarted or self.perfopusFrozen then return end
     if nextRefresh > CurTime() then return end
     local now = CurTime()
     for source, data in pairs(serverMetrics) do
         if data.expires and data.expires < now then serverMetrics[source] = nil end
     end
 
-    if IsValid(PERFOPUS.CurrentPanel) then PERFOPUS.RefreshMetrics(PERFOPUS.CurrentPanel) end
-    table.Empty(PERFOPUS.Metrics)
-    nextRefresh = CurTime() + math.Clamp(PERFOPUS.REFRESH_RATE:GetFloat(), 0.1, 5)
+    if IsValid(currentPanel) then self:RefreshMetrics(currentPanel) end
+    table.Empty(self.perfopusMetrics)
+    nextRefresh = CurTime() + math.Clamp(self.perfopusRefreshRate, 0.1, 5)
 end
 
 net.Receive("liaPerfopusMetric", function()
-    if not PERFOPUS.CanViewMetrics(LocalPlayer()) then return end
-    PERFOPUS.ReceiveServerMetrics(net.ReadString(), net.ReadString(), net.ReadUInt(1), net.ReadFloat())
+    if not MODULE:CanViewMetrics(LocalPlayer()) then return end
+    MODULE:ReceiveServerMetrics(net.ReadString(), net.ReadString(), net.ReadUInt(1), net.ReadFloat())
 end)
 
-cvars.AddChangeCallback("cl_perfopus_hide_native", function()
-    PERFOPUS.ClearSourceCache()
-    if IsValid(PERFOPUS.CurrentPanel) then timer.Simple(0, function() if IsValid(PERFOPUS.CurrentPanel) then PERFOPUS.RefreshMetrics(PERFOPUS.CurrentPanel) end end) end
-end, "PERFOPUSHideNative")
+net.Receive("liaPerfopusState", function()
+    MODULE.perfopusFrozen = net.ReadBool()
+    MODULE.perfopusRefreshRate = math.Clamp(net.ReadFloat(), 0.1, 5)
+end)
