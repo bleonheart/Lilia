@@ -1,5 +1,4 @@
 local MODULE = MODULE
-PERFOPUS = PERFOPUS or {}
 local GM = GM or GAMEMODE
 MODULE.perfopusMetrics = MODULE.perfopusMetrics or {}
 MODULE.perfopusTimedHooks = MODULE.perfopusTimedHooks or {}
