@@ -1232,6 +1232,8 @@ function PANEL:createStartButton()
         btn:SetPos(pad, cursorY)
         btn:SetSize(innerW, btnH)
         btn.liaToolTip = entry.tooltip and entry.tooltip ~= ""
+        btn.liaMainMenuTooltip = btn.liaToolTip
+        btn.liaMainMenuTooltipText = entry.tooltip
         if btn.liaToolTip then btn:SetTooltip("<font=LiliaFont.16>" .. entry.tooltip .. "</font>") end
         btn.Paint = function(s, bw, bh)
             local hovered = s:IsHovered()

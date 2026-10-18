@@ -1,6 +1,6 @@
-MODULE.name = "Perfopus Performance Metrics"
-MODULE.author = "Rammel, Zippy, bloodycop"
-MODULE.desc = "Profiles Lua hooks, timers, and entity methods and displays the results in the Lilia F1 menu."
+MODULE.name = "Performance"
+MODULE.author = "Samael"
+MODULE.desc = "Performance Tweaks and Monitoring."
 MODULE.NetworkStrings = {"liaPerfopusStart", "liaPerfopusMetric", "liaPerfopusSettings"}
 MODULE.Privileges = {
     ["viewPerformanceMetrics"] = {

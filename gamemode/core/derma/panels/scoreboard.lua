@@ -1,11 +1,13 @@
-﻿local PANEL = {}
+local PANEL = {}
 local fallbackBackground = Color(7, 14, 23)
 local fallbackText = Color(230, 239, 239)
 local fallbackAccent = Color(76, 164, 224)
 local rowHeight = math.Clamp(ScrH() * 0.068, 60, 76)
 local factionHeaderHeight = math.Clamp(ScrH() * 0.062, 56, 70)
-local classHeaderHeight = 36
-local rowGap = 6
+local classHeaderHeight = 48
+local scoreboardHeaderTitleFont = "LiliaFont.22"
+local scoreboardHeaderMetaFont = "LiliaFont.16"
+
 local function themeColor(value, fallback, alpha)
     value = IsColor(value) and value or fallback
     return Color(value.r, value.g, value.b, alpha or value.a or 255)
@@ -17,9 +19,7 @@ end
 
 local function getAccent(alpha)
     local theme = getTheme()
-    local accent = theme.maincolor or theme.accent or theme.theme
-    if not IsColor(accent) and lia.color and isfunction(lia.color.getMainColor) then accent = lia.color.getMainColor() end
-    return themeColor(accent, fallbackAccent, alpha)
+    return themeColor(theme.accent or theme.theme or lia.config.get("Color"), fallbackAccent, alpha)
 end
 
 local function getText(alpha)
@@ -90,23 +90,6 @@ local function wrap(text, maxWidth, font)
     return lines
 end
 
-local function tintColor(base, accent, amount, alpha)
-    return Color(math.Clamp(base.r + (accent.r - base.r) * amount, 0, 255), math.Clamp(base.g + (accent.g - base.g) * amount, 0, 255), math.Clamp(base.b + (accent.b - base.b) * amount, 0, 255), alpha or base.a)
-end
-
-local function resolveHeaderColor(primary, fallback)
-    if IsColor(primary) then return Color(primary.r, primary.g, primary.b, primary.a or 255) end
-    if istable(primary) then
-        if isnumber(primary.r) and isnumber(primary.g) and isnumber(primary.b) then return Color(primary.r, primary.g, primary.b, primary.a or 255) end
-        if isnumber(primary[1]) and isnumber(primary[2]) and isnumber(primary[3]) then return Color(primary[1], primary[2], primary[3], primary[4] or 255) end
-    end
-    return Color(fallback.r, fallback.g, fallback.b, fallback.a or 255)
-end
-
-local function getColorLuminance(color)
-    return color.r * 0.2126 + color.g * 0.7152 + color.b * 0.0722
-end
-
 local function getPingColor(ping)
     if ping <= 60 then return Color(92, 225, 180) end
     if ping <= 120 then return Color(239, 198, 98) end
@@ -139,23 +122,18 @@ local function getPlayerRankText(ply, char)
     return rank
 end
 
-local function paintScoreboardHeader(header, w, h, accentColor)
-    paintSection(w, h, accentColor, header:IsHovered())
-    surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 145)
+local function paintScoreboardHeader(header, w, h)
+    local accent = getAccent()
+    paintSection(w, h, accent, header:IsHovered())
+    surface.SetDrawColor(getAccent(145))
     surface.DrawRect(0, 0, 3, h)
 end
 
 function PANEL:ApplyConfig()
     local screenW, screenH = ScrW(), ScrH()
-    local safeWidth = screenW * 0.92
-    local configuredWidth = math.Clamp(screenW * lia.config.get("sbWidth", 0.65), math.min(520, safeWidth), safeWidth)
-    self.maximumWidth = configuredWidth
-    self.minimumWidth = math.min(configuredWidth, math.min(620, safeWidth))
-    self.maximumHeight = math.Clamp(screenH * lia.config.get("sbHeight", 0.68), math.min(220, screenH * 0.88), screenH * 0.88)
-    self.minimumHeight = math.min(self.maximumHeight, 180)
-    self.targetWidth = math.Clamp(screenW * 0.50, self.minimumWidth, self.maximumWidth)
-    self.targetHeight = math.min(self.maximumHeight, 230)
-    self:SetSize(self.targetWidth, self.targetHeight)
+    local width = math.Clamp(screenW * lia.config.get("sbWidth", 0.66), math.min(520, screenW * 0.92), screenW * 0.92)
+    local height = math.Clamp(screenH * lia.config.get("sbHeight", 0.68), math.min(220, screenH * 0.88), screenH * 0.88)
+    self:SetSize(math.Round(width), math.Round(height))
     self:PositionFrame()
 end
 
@@ -172,37 +150,6 @@ function PANEL:PositionFrame()
     end
 end
 
-function PANEL:UpdateFrameSize()
-    local currentW, currentH = self:GetSize()
-    local targetW = self.targetWidth or currentW
-    local targetH = self.targetHeight or currentH
-    if math.abs(currentW - targetW) < 0.75 then
-        currentW = targetW
-    else
-        currentW = Lerp(math.Clamp(FrameTime() * 12, 0, 1), currentW, targetW)
-    end
-
-    if math.abs(currentH - targetH) < 0.75 then
-        currentH = targetH
-    else
-        currentH = Lerp(math.Clamp(FrameTime() * 12, 0, 1), currentH, targetH)
-    end
-
-    if currentW ~= self:GetWide() or currentH ~= self:GetTall() then
-        self:SetSize(math.Round(currentW), math.Round(currentH))
-        self:PositionFrame()
-    end
-end
-
-function PANEL:UpdateTargetSize(contentHeight, memberCount)
-    local screenW = ScrW()
-    local factor = memberCount >= 5 and 0.60 or memberCount >= 3 and 0.55 or 0.50
-    self.targetWidth = math.Clamp(screenW * factor, self.minimumWidth, self.maximumWidth)
-    local chromeHeight = self.serverHeader:GetTall() + 6 + self.footer:GetTall() + 10 + 4
-    local padding = 16
-    self.targetHeight = math.Clamp(chromeHeight + contentHeight + padding, self.minimumHeight, self.maximumHeight)
-end
-
 function PANEL:ShowAnimated()
     self:SetVisible(true)
     self:SetAlpha(0)
@@ -210,15 +157,15 @@ function PANEL:ShowAnimated()
     self.nextUpdate = 0
 end
 
-local function paintServerHeader(_, w, h, accentColor)
-    paintBox(w, h, getSurface(0.028, 245), Color(accentColor.r, accentColor.g, accentColor.b, 95), 7)
-    surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 150)
+local function paintServerHeader(_, w, h)
+    paintBox(w, h, getSurface(0.028, 245), getAccent(95), 7)
+    surface.SetDrawColor(getAccent(150))
     surface.DrawRect(0, h - 2, w, 2)
 end
 
-local function paintClassHeader(header, w, h, accentColor)
-    paintSection(w, h, accentColor, header:IsHovered())
-    surface.SetDrawColor(accentColor.r, accentColor.g, accentColor.b, 100)
+local function paintClassHeader(header, w, h)
+    paintSection(w, h, getAccent(), header:IsHovered())
+    surface.SetDrawColor(getAccent(100))
     surface.DrawRect(0, 0, 2, h)
 end
 
@@ -244,8 +191,7 @@ function PANEL:Init()
     self.serverHeader:DockMargin(0, 0, 0, 6)
     self.serverHeader:SetTall(math.Clamp(ScrH() * 0.07, 64, 78))
     self.serverHeader:SetMouseInputEnabled(false)
-    local accentColor = getAccent()
-    self.serverHeader.Paint = function(header, w, h) paintServerHeader(header, w, h, accentColor) end
+    self.serverHeader.Paint = function(header, w, h) paintServerHeader(header, w, h) end
     local schemaLogoMaterial = SCHEMA and getValidMaterial(SCHEMA.icon) or nil
     if schemaLogoMaterial then
         self.serverLogo = self.serverHeader:Add("DImage")
@@ -253,17 +199,11 @@ function PANEL:Init()
     end
 
     self.serverTitle = self.serverHeader:Add("DLabel")
-    self.serverTitle:SetFont("LiliaFont.22")
+    self.serverTitle:SetFont(scoreboardHeaderTitleFont)
     self.serverTitle:SetTextColor(getText())
     self.serverTitle:SetText(GetHostName())
     self.serverTitle:SizeToContents()
     self.serverTitle:SetMouseInputEnabled(false)
-    self.serverSubtitle = self.serverHeader:Add("DLabel")
-    self.serverSubtitle:SetFont("LiliaFont.16")
-    self.serverSubtitle:SetTextColor(getMuted())
-    self.serverSubtitle:SetText("PLAYER DIRECTORY")
-    self.serverSubtitle:SizeToContents()
-    self.serverSubtitle:SetMouseInputEnabled(false)
     self.onlineBadge = self.serverHeader:Add("DPanel")
     self.onlineBadge:SetMouseInputEnabled(false)
     self.onlineBadge.Paint = function(_, w, h)
@@ -287,28 +227,13 @@ function PANEL:Init()
         end
 
         self.serverTitle:SizeToContents()
-        self.serverSubtitle:SizeToContents()
-        self.serverTitle:SetPos(titleX, h * 0.24 - 3)
-        self.serverSubtitle:SetPos(titleX, h * 0.65)
+        self.serverTitle:SetPos(titleX, (h - self.serverTitle:GetTall()) * 0.5)
         local badgeW = math.Clamp(w * 0.12, 120, 150)
         local badgeH = math.Clamp(h * 0.54, 36, 42)
         self.onlineBadge:SetSize(badgeW, badgeH)
         self.onlineBadge:SetPos(w - padding - badgeW, (h - badgeH) * 0.5)
         self.onlineLabel:SetPos(24, 0)
         self.onlineLabel:SetSize(badgeW - 30, badgeH)
-    end
-
-    self.footer = self:Add("DPanel")
-    self.footer:Dock(BOTTOM)
-    self.footer:DockMargin(18, 0, 18, 10)
-    self.footer:SetTall(39)
-    self.footer.Paint = function(_, w, h)
-        surface.SetDrawColor(getAccent(55))
-        surface.DrawRect(0, 0, w, 1)
-        local count = self.displayedCount or 0
-        local noun = self.staffOnly and (count == 1 and "STAFF MEMBER" or "STAFF MEMBERS") or (count == 1 and "PLAYER" or "PLAYERS")
-        draw.SimpleText("SHOWING " .. count .. " ACTIVE " .. noun, "LiliaFont.14", 0, h * 0.65, getMuted(), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-        draw.SimpleText("LIVE DIRECTORY", "LiliaFont.14", w, h * 0.65, getAccent(), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
     end
 
     local scroll = self:Add("liaScrollPanel")
@@ -318,8 +243,14 @@ function PANEL:Init()
     scroll.VBar.Paint = function() end
     scroll.VBar.btnUp.Paint = function() end
     scroll.VBar.btnDown.Paint = function() end
-    scroll.VBar.btnGrip.Paint = function(grip, w, h) draw.RoundedBox(4, 1, 0, w - 2, h, getAccent(grip:IsHovered() and 175 or 100)) end
-    scroll.Paint = function(_, w, h) if (self.displayedCount or 0) == 0 then draw.SimpleText("NO ACTIVE CHARACTERS", "LiliaFont.17", w * 0.5, h * 0.5, getMuted(), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end end
+    scroll.VBar.btnGrip.Paint = function(grip, w, h)
+        draw.RoundedBox(4, 1, 0, w - 2, h, getAccent(grip:IsHovered() and 175 or 100))
+    end
+    scroll.Paint = function(_, w, h)
+        if (self.displayedCount or 0) == 0 then
+            draw.SimpleText("NO ACTIVE CHARACTERS", "LiliaFont.17", w * 0.5, h * 0.5, getMuted(), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        end
+    end
     self:ShowAnimated()
     local layout = scroll:Add("DListLayout")
     layout:Dock(TOP)
@@ -336,7 +267,6 @@ function PANEL:Init()
     table.sort(sortedFactions, function(a, b) return (a.data.scoreboardPriority or 999) < (b.data.scoreboardPriority or 999) end)
     for _, factionInfo in ipairs(sortedFactions) do
         local facID, facData = factionInfo.id, factionInfo.data
-        local facColor = team.GetColor(facID)
         local factionTitle = string.upper(tostring(facData.name))
         local factionSubtitle = facData.scoreboardSubtitle and tostring(facData.scoreboardSubtitle) or (factionTitle == "STAFF ON DUTY" and "Staff members currently available." or "")
         local facCat = layout:Add("DCollapsibleCategory")
@@ -353,7 +283,7 @@ function PANEL:Init()
             facCat.Header:SetTall(factionHeaderHeight)
             facCat.Header.Paint = function() end
             facCat.Header.PaintOver = function(_, w, h)
-                paintScoreboardHeader(facCat.Header, w, h, facColor)
+                paintScoreboardHeader(facCat.Header, w, h)
                 local logoSize = IsValid(factionLogo) and factionLogo:GetMaterial() and math.min(h - 18, 46) or 0
                 local textX = logoSize > 0 and 18 + logoSize + 14 or 18
                 if logoSize > 0 then
@@ -363,13 +293,13 @@ function PANEL:Init()
                 end
 
                 if factionSubtitle ~= "" then
-                    draw.SimpleText(factionTitle, "LiliaFont.22", textX, h * 0.32, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                    draw.SimpleText(factionSubtitle, "LiliaFont.16", textX, h * 0.72, getMuted(), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(string.upper(tostring(factionTitle)), scoreboardHeaderTitleFont, textX, h * 0.32, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(factionSubtitle, scoreboardHeaderMetaFont, textX, h * 0.72, getMuted(), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 else
-                    draw.SimpleText(factionTitle, "LiliaFont.22", textX, h * 0.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(string.upper(tostring(factionTitle)), scoreboardHeaderTitleFont, textX, h * 0.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 end
 
-                if IsValid(factionMemberLabel) then draw.SimpleText(factionMemberLabel:GetText(), "LiliaFont.16", w - 16, h * 0.5, getAccent(), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER) end
+                if IsValid(factionMemberLabel) then draw.SimpleText(factionMemberLabel:GetText(), scoreboardHeaderMetaFont, w - 16, h * 0.5, getAccent(), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER) end
             end
 
             local factionLogoMaterial = getValidMaterial(facData.logo)
@@ -379,20 +309,20 @@ function PANEL:Init()
             end
 
             factionTitleLabel = facCat.Header:Add("DLabel")
-            factionTitleLabel:SetFont("LiliaFont.22")
+            factionTitleLabel:SetFont(scoreboardHeaderTitleFont)
             factionTitleLabel:SetTextColor(getText())
             factionTitleLabel:SetExpensiveShadow(1, Color(0, 0, 0, 180))
-            factionTitleLabel:SetText(factionTitle)
+            factionTitleLabel:SetText(string.upper(tostring(factionTitle)))
             factionTitleLabel:SizeToContents()
             factionTitleLabel:SetMouseInputEnabled(false)
             factionSubtitleLabel = facCat.Header:Add("DLabel")
-            factionSubtitleLabel:SetFont("LiliaFont.16")
+            factionSubtitleLabel:SetFont(scoreboardHeaderMetaFont)
             factionSubtitleLabel:SetTextColor(getMuted())
             factionSubtitleLabel:SetText(factionSubtitle)
             factionSubtitleLabel:SizeToContents()
             factionSubtitleLabel:SetMouseInputEnabled(false)
             factionMemberLabel = facCat.Header:Add("DLabel")
-            factionMemberLabel:SetFont("LiliaFont.16")
+            factionMemberLabel:SetFont(scoreboardHeaderMetaFont)
             factionMemberLabel:SetTextColor(getAccent())
             factionMemberLabel:SetContentAlignment(6)
             factionMemberLabel:SetMouseInputEnabled(false)
@@ -446,9 +376,6 @@ function PANEL:Init()
                 cat:SetLabel("")
                 cat:SetExpanded(true)
                 cat:DockMargin(8, 3, 8, 0)
-                local classColor = resolveHeaderColor(clsData.color, facColor)
-                if getColorLuminance(classColor) < 45 then classColor = Color(accentColor.r, accentColor.g, accentColor.b, accentColor.a or 255) end
-                local headerClassColor = Color(classColor.r, classColor.g, classColor.b, classColor.a or 255)
                 local list
                 local classLogo
                 local classLabel
@@ -456,7 +383,7 @@ function PANEL:Init()
                     cat.Header:SetTall(classHeaderHeight)
                     cat.Header.Paint = function(header, w, h) end
                     cat.Header.PaintOver = function(_, w, h)
-                        paintClassHeader(cat.Header, w, h, headerClassColor)
+                        paintClassHeader(cat.Header, w, h)
                         local centerY = h * 0.5
                         surface.SetDrawColor(getAccent())
                         if cat:GetExpanded() then
@@ -476,9 +403,9 @@ function PANEL:Init()
                             textX = textX + 30
                         end
 
-                        draw.SimpleText(string.upper(tostring(clsData.name)), "LiliaFont.15b", textX, centerY, getMuted(), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(string.upper(tostring(clsData.name)), scoreboardHeaderTitleFont, textX, centerY, getText(), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                         local count = IsValid(list) and list:ChildCount() or 0
-                        draw.SimpleText(count == 1 and "1 PLAYER" or count .. " PLAYERS", "LiliaFont.16", w - 14, centerY, getAccent(), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(count == 1 and "1 PLAYER" or count .. " PLAYERS", scoreboardHeaderMetaFont, w - 14, centerY, getAccent(), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
                     end
 
                     local classLogoMaterial = getValidMaterial(clsData.logo)
@@ -488,7 +415,7 @@ function PANEL:Init()
                     end
 
                     classLabel = cat.Header:Add("DLabel")
-                    classLabel:SetFont("LiliaFont.15b")
+                    classLabel:SetFont(scoreboardHeaderTitleFont)
                     classLabel:SetTextColor(color_white)
                     classLabel:SetExpensiveShadow(1, Color(0, 0, 0, 170))
                     classLabel:SetText(string.upper(tostring(clsData.name)))
@@ -522,7 +449,6 @@ end
 
 function PANEL:Think()
     if not self:IsVisible() then return end
-    self:UpdateFrameSize()
     if IsValid(self.onlineLabel) then
         local online = player.GetCount()
         self.onlineLabel:SetText(online .. " Online")
@@ -555,50 +481,32 @@ function PANEL:Think()
         end
     end
 
-    local contentHeight, displayedCount, visibleFactions = 4, 0, 0
-    local singleFactionTitle
+    local displayedCount = 0
     for _, facCont in pairs(self.factionLists) do
         local facCat = facCont:GetParent()
         local directCount = facCont.noClass:ChildCount()
         local memberCount = directCount
-        local expandedContentHeight = directCount * (rowHeight + rowGap)
         for _, list in pairs(facCont.classLists) do
             local count = list:ChildCount()
             memberCount = memberCount + count
             if IsValid(list.category) then
                 list.category:SetVisible(count > 0)
-                if count > 0 then
-                    expandedContentHeight = expandedContentHeight + classHeaderHeight + 3
-                    if list.category:GetExpanded() then expandedContentHeight = expandedContentHeight + count * (rowHeight + rowGap) end
-                end
-            else
-                expandedContentHeight = expandedContentHeight + count * (rowHeight + rowGap)
             end
         end
 
-        if IsValid(facCont.memberLabel) then facCont.memberLabel:SetText(memberCount == 1 and "1 MEMBER" or memberCount .. " MEMBERS") end
+        if IsValid(facCont.memberLabel) then
+            facCont.memberLabel:SetText(memberCount == 1 and "1 MEMBER" or memberCount .. " MEMBERS")
+        end
+
         if IsValid(facCat) then
             facCat:SetVisible(memberCount > 0)
-            if memberCount > 0 then
-                visibleFactions = visibleFactions + 1
-                singleFactionTitle = facCont.factionTitle
-                contentHeight = contentHeight + factionHeaderHeight + 7
-                if facCat:GetExpanded() then contentHeight = contentHeight + expandedContentHeight end
-            end
         end
 
         displayedCount = displayedCount + memberCount
     end
 
     self.displayedCount = displayedCount
-    self.staffOnly = visibleFactions == 1 and singleFactionTitle == "STAFF ON DUTY"
-    if IsValid(self.serverSubtitle) then
-        local subtitle = self.staffOnly and "STAFF DIRECTORY" or "PLAYER DIRECTORY"
-        if self.serverSubtitle:GetText() ~= subtitle then self.serverSubtitle:SetText(subtitle) end
-    end
 
-    if displayedCount == 0 then contentHeight = math.max(contentHeight, 42) end
-    self:UpdateTargetSize(contentHeight, displayedCount)
     self.nextUpdate = CurTime() + 0.12
 end
 
@@ -733,7 +641,6 @@ function PANEL:addPlayer(ply, parent)
         surface.DrawOutlinedRect(0, top, w, 30, 1)
         draw.SimpleText(label:GetText(), "LiliaFont.16", w * 0.5, h * 0.5, getAccent(), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
-
     slot.ping = vgui.Create("DLabel", slot)
     slot.ping:SetFont("LiliaFont.16")
     slot.ping:SetContentAlignment(5)

@@ -700,6 +700,22 @@ function GM:HUDPaint()
 end
 
 function GM:TooltipInitialize(var, panel)
+    if panel.liaMainMenuTooltip then
+        local text = panel.liaMainMenuTooltipText or ""
+        surface.SetFont("LiliaFont.16")
+        local textWidth = surface.GetTextSize(text)
+        local tooltipWidth = math.min(math.ceil(textWidth) + 28, math.min(380, math.max(ScrW() - 24, 180)))
+        var.tooltipPaddingX = 14
+        var.tooltipPaddingY = 10
+        var.markupObject = lia.markup.parse(var:GetText(), tooltipWidth - var.tooltipPaddingX * 2)
+        var:SetText("")
+        var:SetSize(tooltipWidth, math.max(44, var.markupObject:getHeight() + var.tooltipPaddingY * 2))
+        var:SetAlpha(0)
+        var:AlphaTo(255, 0.2, 0)
+        var.isMainMenuTooltip = true
+        return
+    end
+
     if panel.liaToolTip or panel.itemID then
         local tooltipWidth = math.max(ScrW() * 0.15, 200)
         var.markupObject = lia.markup.parse(var:GetText(), tooltipWidth)
@@ -715,6 +731,22 @@ function GM:TooltipInitialize(var, panel)
 end
 
 function GM:TooltipPaint(var, w, h)
+    if var.isMainMenuTooltip then
+        local background = Color(27, 30, 42, 248)
+        local outline = Color(61, 68, 90, 185)
+        if lia.derma.SHAPE_IOS then
+            lia.derma.rect(0, 0, w, h):Rad(3):Color(background):Shape(lia.derma.SHAPE_IOS):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(3):Color(outline):Shape(lia.derma.SHAPE_IOS):Outline(1):Draw()
+        else
+            draw.RoundedBox(3, 0, 0, w, h, background)
+            surface.SetDrawColor(outline)
+            surface.DrawOutlinedRect(0, 0, w, h, 1)
+        end
+
+        if var.markupObject then var.markupObject:draw(var.tooltipPaddingX or 14, math.floor((h - var.markupObject:getHeight()) * 0.5)) end
+        return true
+    end
+
     if var.isItemTooltip then
         local paddingX = var.tooltipPaddingX or 6
         local paddingY = var.tooltipPaddingY or 8
@@ -734,7 +766,7 @@ function GM:TooltipPaint(var, w, h)
 end
 
 function GM:TooltipLayout(var)
-    return var.isItemTooltip
+    return var.isItemTooltip or var.isMainMenuTooltip
 end
 
 function GM:DrawLiliaModelView(client, entity)

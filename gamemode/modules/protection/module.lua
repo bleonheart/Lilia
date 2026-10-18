@@ -2,7 +2,7 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides anti-cheat and anti-exploit protections."
-MODULE.NetworkStrings = {"liaVerifyCheats", "liaRequestEntityTabData", "liaEntityTabData"}
+MODULE.NetworkStrings = {"liaVerifyCheats"}
 MODULE.Privileges = {
     ["canSeeAltingNotifications"] = {
         Name = "Can See Alting Notifications",
