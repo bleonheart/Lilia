@@ -15,15 +15,28 @@ if SERVER then
         net.Send(client)
     end
 else
-    local function isCharacterCreationOverridden()
-        return hook.Run("IsCharacterCreationOverridden") == true
+    function MODULE:OpenCharacterMenu()
+        local creator = lia.gui.schemaCharacterCreator
+        if IsValid(creator) then return IsValid(creator.sourceMenu) and creator.sourceMenu or creator end
+        return vgui.Create("liaCharacter")
     end
 
-    function MODULE:OpenCharacterMenu()
-        local panel = hook.Run("OpenCharacterMenuOverride")
-        if panel ~= nil then return panel end
-        if isCharacterCreationOverridden() then return end
-        return vgui.Create("liaCharacter")
+    function MODULE:OpenCharacterCreator(sourceMenu)
+        local creator = lia.gui.schemaCharacterCreator
+        if IsValid(creator) then
+            if IsValid(sourceMenu) and not IsValid(creator.sourceMenu) then creator:SetSourceMenu(sourceMenu) end
+            return creator
+        end
+        local client = LocalPlayer()
+        if not IsValid(client) then return nil, "Character creation is not available yet." end
+        local allowed, reason = hook.Run("CanPlayerCreateChar", client)
+        if allowed == false then return nil, reason or "You cannot create another character." end
+        allowed, reason = hook.Run("ShouldMenuButtonShow", "create")
+        if allowed == false then return nil, reason or "Character creation is unavailable." end
+        creator = vgui.Create("liaSchemaCharacterCreator")
+        if not IsValid(creator) then return nil, "Failed to open the character creator." end
+        if IsValid(sourceMenu) then creator:SetSourceMenu(sourceMenu) end
+        return creator
     end
 
     function MODULE:PlayerButtonDown(_, button)
@@ -36,6 +49,8 @@ else
     function MODULE:ResetCharacterPanel()
         local charPanel = lia.gui.character
         local client = LocalPlayer()
+        if IsValid(lia.gui.schemaCharacterCreator) then return end
+        if IsValid(charPanel) and charPanel.inCharacterCreation then return end
         if IsValid(charPanel) and charPanel.isLoadMode and charPanel.availableCharacters and #charPanel.availableCharacters > 0 then return end
         if IsValid(charPanel) then charPanel:Remove() end
         if IsValid(client) and not client:getChar() then self:OpenCharacterMenu() end
@@ -190,13 +205,13 @@ else
     end
 
     function MODULE:CharListLoaded()
-        if IsValid(lia.gui.character) and not lia.gui.character.isLoadMode then lia.gui.character:createStartButton() end
+        if IsValid(lia.gui.character) and not lia.gui.character.isLoadMode and not lia.gui.character.inCharacterCreation then lia.gui.character:createStartButton() end
     end
 
     function MODULE:OnReloaded()
         timer.Simple(0.1, function()
             local client = LocalPlayer()
-            if IsValid(client) and not client:getChar() and not IsValid(lia.gui.character) then self:OpenCharacterMenu() end
+            if IsValid(client) and not client:getChar() and not IsValid(lia.gui.character) and not IsValid(lia.gui.schemaCharacterCreator) then self:OpenCharacterMenu() end
         end)
     end
 
@@ -262,4 +277,119 @@ function MODULE:GetMaxPlayerChar(client)
         end
         return maxChars + staffCount + extraChars
     end
+end
+
+MODULE.creationTabs = MODULE.creationTabs or {}
+MODULE.creationContext = MODULE.creationContext or {}
+function MODULE:RefreshCreationTabs()
+    local tabs = {}
+    hook.Run("RegisterCharacterCreationTabs", tabs, self)
+    self.creationTabs = {}
+    for id, data in pairs(tabs) do
+        if not isstring(id) or id == "" then continue end
+        if not istable(data) or not isstring(data.name) or not isfunction(data.onCreate) then continue end
+        data.id = id
+        data.order = tonumber(data.order) or 100
+        self.creationTabs[id] = data
+    end
+    return self.creationTabs
+end
+
+function MODULE:GetCreationTabs()
+    local tabs = {}
+    for _, tab in pairs(self.creationTabs) do
+        tabs[#tabs + 1] = tab
+    end
+
+    table.sort(tabs, function(a, b)
+        if a.order == b.order then return a.id < b.id end
+        return a.order < b.order
+    end)
+    return tabs
+end
+
+function MODULE:GetCreationContext()
+    return self.creationContext
+end
+
+function MODULE:SetCreationContext(key, value)
+    self.creationContext[key] = value
+end
+
+local function getCreationFactionIndex(value)
+    local index = tonumber(value)
+    if index and lia.faction and lia.faction.indices and lia.faction.indices[index] then return index end
+    local faction = lia.faction.get(value)
+    if faction then return faction.index end
+end
+
+local function getValidDefaultCreationClass(value, factionValue)
+    local index = tonumber(value)
+    if not index or index <= 0 or not lia.class or not lia.class.list then return nil end
+    local class = lia.class.list[index]
+    local factionIndex = getCreationFactionIndex(factionValue)
+    if not class or not factionIndex or class.faction ~= factionIndex or not class.isDefault then return nil end
+    return class
+end
+
+local function installCreationClassValidation()
+    local classVar = lia.char and lia.char.vars and lia.char.vars.class
+    if not classVar or classVar.schemaCreatorClassValidation then return end
+    local previousValidate = classVar.onValidate
+    classVar.onValidate = function(value, data, client)
+        if isfunction(previousValidate) then
+            local result = {previousValidate(value, data, client)}
+            if result[1] == false then return unpack(result) end
+        end
+
+        if value == nil or tonumber(value) == 0 then return true end
+        if not getValidDefaultCreationClass(value, data and data.faction) then return false, "invalid", "class" end
+        return true
+    end
+
+    classVar.schemaCreatorClassValidation = true
+end
+
+installCreationClassValidation()
+hook.Add("PostGamemodeLoaded", "liaMainMenuInstallCreationClassValidation", installCreationClassValidation)
+hook.Add("OverrideFactionModelCustomization", "liaMainMenuCreatorClassModelCustomization", function(_, faction, context, skinAllowed, bodygroupsAllowed)
+    if not faction or not istable(context) then return end
+    local classIndex = tonumber(context.class)
+    local class = classIndex and lia.class and lia.class.list and lia.class.list[classIndex] or nil
+    if class and class.faction == faction.index then
+        if class.skinAllowed ~= nil then skinAllowed = class.skinAllowed == true end
+        if class.bodygroupsAllowed ~= nil then bodygroupsAllowed = class.bodygroupsAllowed == true end
+        if istable(class.allowedSkins) then skinAllowed = true end
+        if istable(class.allowedBodygroups) then bodygroupsAllowed = true end
+    end
+
+    if istable(faction.allowedSkins) then skinAllowed = true end
+    if istable(faction.allowedBodygroups) then bodygroupsAllowed = true end
+    local creationClass = lia.faction.getCharacterCreationClass(faction, context.class)
+    local modelData = lia.faction.getCharacterCreationModelInfo(faction, creationClass, context.model)
+    local parsed = modelData and lia.faction.getModelData(context.model or 1, modelData) or nil
+    if parsed then
+        if istable(parsed.allowedSkins) then skinAllowed = true end
+        if istable(parsed.allowedBodygroups) then bodygroupsAllowed = true end
+    end
+    return skinAllowed, bodygroupsAllowed
+end)
+
+if SERVER then
+    hook.Add("OnCharCreated", "liaMainMenuApplyCreationClass", function(client, character, originalData)
+        local class = getValidDefaultCreationClass(originalData and originalData.class, originalData and originalData.faction)
+        if not class or not character then return end
+        timer.Simple(0.4, function()
+            if not character or not character.getClass or not character.setClass then return end
+            local oldClass = character:getClass()
+            if oldClass == class.index then return end
+            character:setClass(class.index)
+            if IsValid(client) then
+                hook.Run("OnPlayerJoinClass", client, class.index, oldClass)
+                if character.sync then character:sync(client) end
+            end
+
+            if character.save then character:save() end
+        end)
+    end)
 end
