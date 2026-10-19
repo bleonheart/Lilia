@@ -200,6 +200,11 @@ function MODULE:ListenForTimersToTime()
     self.timerProfilerInstalled = true
 end
 
+function MODULE:ClearProfileMetrics()
+    table.Empty(self.profileMetrics)
+    table.Empty(self.profileCounts)
+end
+
 function MODULE:StartProfiling()
     if self.profilingStarted then
         self.profilingCollecting = true

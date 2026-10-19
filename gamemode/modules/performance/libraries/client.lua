@@ -161,32 +161,51 @@ function MODULE:ToggleProfiling(realm, panel)
     if realm == 0 then
         if self.profilingCollecting then
             self:PauseProfiling()
-        elseif self.profilingStarted then
-            self:StartProfiling()
         else
-            Derma_Query("Client Lua instrumentation adds overhead. Stopping collection will not unload wrappers until the map changes.", "Start Client Profiler", "Start", function()
-                MODULE:StartProfiling()
-                if IsValid(panel) then MODULE:RefreshMetrics(panel) end
-            end, "Cancel")
-            return
+            self:StartProfiling()
         end
-    elseif self.serverProfilingCollecting then
+    elseif realm == 1 then
         net.Start("liaPerformanceProfileStart")
-        net.WriteBool(false)
-        net.SendToServer()
-    elseif self.serverProfilingStarted then
-        net.Start("liaPerformanceProfileStart")
-        net.WriteBool(true)
+        net.WriteBool(not self.serverProfilingCollecting)
         net.SendToServer()
     else
-        Derma_Query("Server Lua instrumentation adds overhead. Stopping collection will not unload wrappers until the map changes.", "Start Server Profiler", "Start", function()
-            net.Start("liaPerformanceProfileStart")
-            net.WriteBool(true)
-            net.SendToServer()
-        end, "Cancel")
         return
     end
     if IsValid(panel) then self:RefreshMetrics(panel) end
+end
+
+function MODULE:ClearDisplayedMetrics(realm, panel)
+    if realm == 0 then
+        self:ClearProfileMetrics()
+        clientMetrics = {}
+    elseif realm == 1 then
+        serverMetrics = {}
+    else
+        return
+    end
+
+    if not IsValid(panel) then return end
+    if panel.FrozenRows then
+        for i = #panel.FrozenRows, 1, -1 do
+            if panel.FrozenRows[i].realm == realm then table.remove(panel.FrozenRows, i) end
+        end
+    end
+
+    if panel.SelectedData and panel.SelectedData.realm == realm then
+        panel.SelectedKey = nil
+        panel.SelectedData = nil
+    end
+
+    self:RefreshMetrics(panel)
+end
+
+function MODULE:ClearRealmMetrics(realm, panel)
+    if realm == 0 then
+        self:ClearDisplayedMetrics(realm, panel)
+    elseif realm == 1 then
+        net.Start("liaPerformanceProfileClear")
+        net.SendToServer()
+    end
 end
 
 function MODULE:ReceiveServerMetrics(source, time, calls, funcs, counts)
@@ -258,11 +277,17 @@ function MODULE:CreateRealmCard(parent, realm, dashboard)
         drawPanel(0, 0, w, h, 4, fill, edge)
         draw.SimpleText(running and ("Pause " .. (isServer and "Server" or "Client") .. " Profiler") or ("Start " .. (isServer and "Server" or "Client") .. " Profiler"), "LiliaFont.15", w * 0.5, h * 0.5, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
+    local clear = createButton(card, "Clear " .. (isServer and "Server" or "Client"), function()
+        MODULE:ClearRealmMetrics(realm, dashboard)
+    end, 36)
     card.PerformLayout = function(_, w, h)
         stats:SetPos(12, 66)
         stats:SetSize(w - 24, math.max(60, h - 120))
+        local clearWidth = math.min(128, math.max(100, math.floor((w - 32) * 0.3)))
         action:SetPos(12, h - 46)
-        action:SetSize(w - 24, 34)
+        action:SetSize(w - clearWidth - 32, 34)
+        clear:SetPos(w - clearWidth - 12, h - 46)
+        clear:SetSize(clearWidth, 34)
     end
     return card
 end
@@ -445,19 +470,6 @@ function MODULE:BuildPanel(parent)
         net.WriteBool(false)
         net.SendToServer()
     end
-    local header = parent:Add("DPanel")
-    header:Dock(TOP)
-    header:SetTall(66)
-    header:DockMargin(0, 0, 0, 9)
-    header.Paint = function(_, w, h)
-        local accent, textColor = getThemeColors()
-        drawPanel(0, 0, w, h, 5, Color(5, 19, 25, 195), Color(accent.r, accent.g, accent.b, 58))
-        surface.SetDrawColor(accent) surface.DrawRect(0, 8, 3, h - 16)
-        drawIcon(iconChart, 16, 15, 25, accent)
-        draw.SimpleText("Performance Metrics", "LiliaFont.24", 50, 11, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        draw.SimpleText("Monitor Lua execution and identify expensive callbacks.", "LiliaFont.14", 50, 41, mutedColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-        draw.SimpleText("Pausing does not unload profiler wrappers until a map change.", "LiliaFont.13", w - 15, 47, mutedColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
-    end
     local dashboard = parent:Add("DPanel")
     dashboard:Dock(TOP)
     dashboard:SetTall(191)
@@ -575,12 +587,13 @@ function MODULE:BuildPanel(parent)
     MODULE:RefreshMetrics(parent)
 end
 
-function MODULE:CreateMenuButtons(tabs)
-    tabs["performance"] = {
+function MODULE:PopulateAdminTabs(pages)
+    pages[#pages + 1] = {
         name = "Performance Metrics",
+        description = "Monitor Lua execution and identify expensive callbacks.",
         icon = "icon16/chart_bar.png",
         shouldShow = function() return self:CanViewMetrics(LocalPlayer()) end,
-        func = function(panel) self:BuildPanel(panel) end
+        drawFunc = function(panel) self:BuildPanel(panel) end
     }
 end
 
@@ -622,6 +635,10 @@ net.Receive("liaPerformanceProfileMetric", function()
         counts[name] = net.ReadUInt(32)
     end
     MODULE:ReceiveServerMetrics(source, time, calls, funcs, counts)
+end)
+
+net.Receive("liaPerformanceProfileClear", function()
+    MODULE:ClearDisplayedMetrics(1, currentPanel)
 end)
 
 net.Receive("liaPerformanceProfileState", function()

@@ -87,6 +87,23 @@ function MODULE:HandleProfilingStart(client)
     self:SyncProfilerState()
 end
 
+function MODULE:HandleProfilerClear(client)
+    if not self:CanViewMetrics(client) then return end
+    self:ClearProfileMetrics()
+    for subscriber in pairs(subscribers) do
+        if self:CanViewMetrics(subscriber) then
+            net.Start("liaPerformanceProfileClear")
+            net.Send(subscriber)
+        else
+            subscribers[subscriber] = nil
+        end
+    end
+    if not subscribers[client] then
+        net.Start("liaPerformanceProfileClear")
+        net.Send(client)
+    end
+end
+
 function MODULE:HandleProfilerSettings(client)
     if not self:CanViewMetrics(client) then return end
     local setting = net.ReadString()
@@ -108,5 +125,6 @@ function MODULE:HandleProfilerSubscription(client)
 end
 
 net.Receive("liaPerformanceProfileStart", function(_, client) MODULE:HandleProfilingStart(client) end)
+net.Receive("liaPerformanceProfileClear", function(_, client) MODULE:HandleProfilerClear(client) end)
 net.Receive("liaPerformanceProfileSettings", function(_, client) MODULE:HandleProfilerSettings(client) end)
 net.Receive("liaPerformanceProfileSubscription", function(_, client) MODULE:HandleProfilerSubscription(client) end)

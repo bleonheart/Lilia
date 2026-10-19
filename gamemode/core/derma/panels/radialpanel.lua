@@ -41,7 +41,11 @@ function PANEL:Init(options)
     options = options or {}
     self.options = {}
     self.menuStack = {}
+    self.pageStack = {}
     self.currentMenu = nil
+    self.currentPage = 1
+    self.maxOptionsPerPage = math_max(1, math_floor(options.max_options_per_page or 8))
+    self.pageCache = nil
     local baseRadius = options.radius or 280
     local baseInnerRadius = options.inner_radius or 96
     local scale = 1
@@ -154,6 +158,13 @@ end
 
 function PANEL:OnMouseReleased()
     self:MouseCapture(false)
+end
+
+function PANEL:OnMouseWheeled(delta)
+    if self:ChangePage(delta > 0 and -1 or 1) then
+        lia.webcontent.playButtonSound()
+        return true
+    end
 end
 
 function PANEL:DrawFittedText(text, font, x, y, maxWidth, textColor)
@@ -279,6 +290,10 @@ function PANEL:Paint(w, h)
     local outlineColor = ColorAlpha(lia.color.theme.theme, (isLight and 100 or 60) * alpha)
     self:DrawCircleOutline(centerX, centerY, currentRadius, outlineColor)
     self:DrawCircleOutline(centerX, centerY, currentInnerRadius, outlineColor)
+    local pageCount = self:GetPageCount()
+    if pageCount > 1 then
+        draw.SimpleText(string.format("Page %d / %d  |  Scroll to navigate", self.currentPage, pageCount), self.descFont, centerX, centerY + currentRadius + 24 * textScale, ColorAlpha(textColor, 190 * alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
 end
 
 function PANEL:DrawCircleOutline(cx, cy, radius, outlineColor)
@@ -303,15 +318,21 @@ function PANEL:AddOption(text, func, icon, desc, submenu)
         desc = desc,
         submenu = submenu
     }
+    self.pageCache = nil
     return #self.options
 end
 
 function PANEL:SelectOption(index)
     local option = self:GetCurrentOptions()[index]
     if not option then return end
-    if option.submenu then
+    if option.pageDelta then
+        self:ChangePage(option.pageDelta)
+    elseif option.submenu then
         self.menuStack[#self.menuStack + 1] = self.currentMenu or false
+        self.pageStack[#self.pageStack + 1] = self.currentPage
         self.currentMenu = option.submenu
+        self.currentPage = 1
+        self.pageCache = nil
         self.hoverOption = nil
         self.hoverLevels = {}
         self:UpdateCenterText()
@@ -342,16 +363,69 @@ function PANEL:OnRemove()
     if lia.derma.menu_radial == self then lia.derma.menu_radial = nil end
 end
 
+function PANEL:GetPageCount()
+    local options = self.currentMenu and self.currentMenu.options or self.options
+    return math_max(1, math_ceil(#options / self.maxOptionsPerPage))
+end
+
 function PANEL:GetCurrentOptions()
-    if self.currentMenu then return self.currentMenu.options or {} end
-    return self.options
+    local options = self.currentMenu and self.currentMenu.options or self.options
+    local count = #options
+    local pageCount = self:GetPageCount()
+    self.currentPage = math.Clamp(self.currentPage, 1, pageCount)
+    if pageCount == 1 then return options end
+    local cached = self.pageCache
+    if cached and cached.source == options and cached.count == count and cached.page == self.currentPage then return cached.options end
+    local pageSize = math_ceil(count / pageCount)
+    local visible = {}
+    if self.currentPage > 1 then
+        visible[#visible + 1] = {
+            text = "Previous",
+            desc = string.format("Page %d of %d", self.currentPage - 1, pageCount),
+            pageDelta = -1
+        }
+    end
+
+    for index = (self.currentPage - 1) * pageSize + 1, math_min(self.currentPage * pageSize, count) do
+        visible[#visible + 1] = options[index]
+    end
+
+    if self.currentPage < pageCount then
+        visible[#visible + 1] = {
+            text = "Next",
+            desc = string.format("Page %d of %d", self.currentPage + 1, pageCount),
+            pageDelta = 1
+        }
+    end
+
+    self.pageCache = {
+        source = options,
+        count = count,
+        page = self.currentPage,
+        options = visible
+    }
+    return visible
+end
+
+function PANEL:ChangePage(delta)
+    local nextPage = math.Clamp(self.currentPage + delta, 1, self:GetPageCount())
+    if nextPage == self.currentPage then return false end
+    self.currentPage = nextPage
+    self.pageCache = nil
+    self.hoverOption = nil
+    self.hoverAnim = 0
+    self.hoverLevels = {}
+    return true
 end
 
 function PANEL:GoBack()
     if #self.menuStack == 0 then return end
     local previousMenu = table.remove(self.menuStack)
     self.currentMenu = previousMenu or nil
+    self.currentPage = table.remove(self.pageStack) or 1
+    self.pageCache = nil
     self.hoverOption = nil
+    self.hoverAnim = 0
     self.hoverLevels = {}
     self:UpdateCenterText()
 end

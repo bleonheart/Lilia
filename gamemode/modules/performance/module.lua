@@ -1,7 +1,7 @@
 MODULE.name = "Performance"
-MODULE.author = "Samael"
-MODULE.desc = "Performance Tweaks and Monitoring."
-MODULE.NetworkStrings = {"liaPerformanceProfileStart", "liaPerformanceProfileMetric", "liaPerformanceProfileSettings", "liaPerformanceProfileSubscription", "liaPerformanceProfileState"}
+MODULE.author = "Rammel, Zippy, bloodycop"
+MODULE.desc = "Profiles Lua hooks, timers, and entity methods and displays the results in the Lilia F1 menu."
+MODULE.NetworkStrings = {"liaPerformanceProfileStart", "liaPerformanceProfileClear", "liaPerformanceProfileMetric", "liaPerformanceProfileSettings", "liaPerformanceProfileSubscription", "liaPerformanceProfileState"}
 MODULE.Privileges = {
     ["viewPerformanceMetrics"] = {
         Name = "View Performance Metrics",
