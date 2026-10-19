@@ -2044,10 +2044,7 @@ if SERVER then
         net.WriteFloat(fadeIn)
         net.WriteFloat(fadeOut)
         net.Send(target)
-        if IsValid(client) then
-        else
-            print(string.format("[Lilia] Applied blind fade to %s.", target:Name()))
-        end
+        if not IsValid(client) then print(string.format("[Lilia] Applied blind fade to %s.", target:Name())) end
     end)
 
     registerAdminConsoleCommand("blindfadeall", function(client, arguments)
@@ -2070,10 +2067,7 @@ if SERVER then
             end
         end
 
-        if IsValid(client) then
-        else
-            print("[Lilia] Applied blind fade to all non-staff-faction players.")
-        end
+        if not IsValid(client) then print("[Lilia] Applied blind fade to all non-staff-faction players.") end
     end)
 
     registerAdminConsoleCommand("charvoicetoggle", function(client, arguments)
@@ -3076,7 +3070,6 @@ lia.command.add("charwipeoffline", {
                 return
             end
 
-            local charName = data[1].name
             for _, ply in player.Iterator() do
                 if ply:getChar() and ply:getChar():getID() == charID then
                     ply:Kick("Your character has been wiped from the database.")
@@ -5728,7 +5721,6 @@ lia.command.add("plytransfer", {
         local targetChar = targetPlayer:getChar()
         if hook.Run("CanCharBeTransfered", targetChar, faction, targetPlayer:Team()) == false then return end
         local oldFaction = targetChar:getFaction()
-        local oldFactionName = lia.faction.indices[oldFaction] and lia.faction.indices[oldFaction].name or oldFaction
         hook.Run("TrackFactionTransfer", targetChar, oldFaction, faction, client, "commandTransfer")
         targetChar.vars.faction = faction.uniqueID
         targetChar:setFaction(faction.index)

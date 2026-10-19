@@ -213,7 +213,6 @@ net.Receive("liaSpawnMenuGiveItem", function(_, client)
     if not client:hasPrivilege("canUseItemSpawner") then return end
     local targetChar = lia.char.getBySteamID(targetID)
     if not targetChar then return end
-    local target = targetChar:getPlayer()
     targetChar:getInv():add(id)
 end)
 

@@ -601,12 +601,7 @@ function lia.admin.hasAccess(ply, privilege)
     local defaultGroups = lia.admin.DefaultGroups or {}
     local superadminLevel = defaultGroups.superadmin or 3
     local adminLevel = defaultGroups.admin or 3
-    if not lia.admin.privileges[privilege] then
-        if SERVER then
-            local playerInfo = IsValid(ply) and ply:Nick() .. " (" .. ply:SteamID() .. ")" or "Unknown"
-        end
-        return groupLevel >= adminLevel
-    end
+    if not lia.admin.privileges[privilege] then return groupLevel >= adminLevel end
 
     if groupLevel >= superadminLevel then return true end
     local g = lia.admin.groups and lia.admin.groups[grp] or nil
@@ -1061,11 +1056,7 @@ if SERVER then
             end
         end
 
-        local function logAdminAction(logType, ...)
-            if IsValid(admin) then
-            else
-            end
-        end
+        local function logAdminAction() end
 
         local privilegeID = lia.admin.getCommandPrivilegeID(cmd)
         if not isConsoleAdmin and not lia.admin.hasAccess(admin, privilegeID) then

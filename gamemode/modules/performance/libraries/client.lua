@@ -269,11 +269,11 @@ function MODULE:CreateRealmCard(parent, realm, dashboard)
         local running = isServer and MODULE.serverProfilingCollecting or MODULE.profilingCollecting
         return running and ("Pause " .. (isServer and "Server" or "Client") .. " Profiler") or ("Start " .. (isServer and "Server" or "Client") .. " Profiler")
     end, function() MODULE:ToggleProfiling(realm, dashboard) end, 36, false, false)
-    action.Paint = function(self, w, h)
+    action.Paint = function(panel, w, h)
         local running = isServer and MODULE.serverProfilingCollecting or MODULE.profilingCollecting
         local accent, textColor = getThemeColors()
-        local edge = running and Color(188, 78, 87, 142) or Color(accent.r, accent.g, accent.b, self:IsHovered() and 145 or 75)
-        local fill = running and Color(58, 27, 34, self:IsHovered() and 215 or 180) or Color(8, 30, 39, self:IsHovered() and 245 or 215)
+        local edge = running and Color(188, 78, 87, 142) or Color(accent.r, accent.g, accent.b, panel:IsHovered() and 145 or 75)
+        local fill = running and Color(58, 27, 34, panel:IsHovered() and 215 or 180) or Color(8, 30, 39, panel:IsHovered() and 245 or 215)
         drawPanel(0, 0, w, h, 4, fill, edge)
         draw.SimpleText(running and ("Pause " .. (isServer and "Server" or "Client") .. " Profiler") or ("Start " .. (isServer and "Server" or "Client") .. " Profiler"), "LiliaFont.15", w * 0.5, h * 0.5, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
@@ -297,13 +297,13 @@ function MODULE:CreateMetricRow(parent, data, maxTime, dashboard)
     row:Dock(TOP)
     row:SetTall(35)
     row:SetText("")
-    row.Paint = function(self, w, h)
+    row.Paint = function(panel, w, h)
         local accent, textColor = getThemeColors()
         local selected = dashboard.SelectedKey == data.key
-        if selected or self:IsHovered() then
+        if selected or panel:IsHovered() then
             drawPanel(0, 0, w, h, 2, Color(22, 39, 51, selected and 243 or 185), Color(accent.r, accent.g, accent.b, selected and 145 or 62))
             if selected then surface.SetDrawColor(accent) surface.DrawRect(0, 0, 3, h) end
-        elseif self.rowIndex % 2 == 0 then
+        elseif panel.rowIndex % 2 == 0 then
             surface.SetDrawColor(16, 36, 42, 135)
             surface.DrawRect(0, 0, w, h)
         end
@@ -501,11 +501,11 @@ function MODULE:BuildPanel(parent)
     search:SetFont("LiliaFont.15")
     search:SetText("")
     search:SetUpdateOnType(true)
-    search.Paint = function(self, w, h)
+    search.Paint = function(entry, w, h)
         local accent = getThemeColors()
         drawPanel(0, 0, w, h, 4, Color(20, 31, 40, 225), Color(accent.r, accent.g, accent.b, 45))
-        if self:GetText() == "" and not self:HasFocus() then draw.SimpleText("Search sources...", "LiliaFont.15", 11, h * 0.5, mutedColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
-        self:DrawTextEntryText(Color(223, 235, 240), accent, Color(223, 235, 240))
+        if entry:GetText() == "" and not entry:HasFocus() then draw.SimpleText("Search sources...", "LiliaFont.15", 11, h * 0.5, mutedColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
+        entry:DrawTextEntryText(Color(223, 235, 240), accent, Color(223, 235, 240))
     end
     search.OnValueChange = function(_, value)
         parent.SearchText = value

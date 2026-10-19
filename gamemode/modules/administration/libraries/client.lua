@@ -2469,7 +2469,7 @@ function MODULE:PopulateAdminTabs(pages)
 
         pages[#pages + 1] = {
             name = "Player Entities",
-            icon = lia.webcontent.get("playerentities.png"),
+            icon = "icon16/brick.png",
             drawFunc = function(panel) self:OpenPlayerEntities(panel) end
         }
     end
@@ -2478,7 +2478,7 @@ function MODULE:PopulateAdminTabs(pages)
     if canListCharacters then
         table.insert(pages, {
             name = "Character List",
-            icon = lia.webcontent.get("characterlist.png"),
+            icon = "icon16/application_view_list.png",
             drawFunc = function(panel)
                 panelRef = panel
                 panel:Clear()
@@ -3179,7 +3179,7 @@ function MODULE:PopulateAdminTabs(pages)
     if casePermissions.any then
         table.insert(pages, {
             name = "Staff Cases",
-            icon = lia.webcontent.get("staffcases.png"),
+            icon = "icon16/report.png",
             drawFunc = function(panel) self:OpenStaffCases(panel) end
         })
     end
@@ -3921,7 +3921,7 @@ hook.Add("PopulateAdminTabs", "liaStaffCharacterPermissions", function(pages)
     if not IsValid(client) or not lia.admin.hasAccess(client, "manageUsergroups") then return end
     pages[#pages + 1] = {
         name = "Staff Character Permissions",
-        icon = lia.webcontent.get("staffcharacterpermissions.png"),
+        icon = "icon16/user_edit.png",
         drawFunc = function(panel)
             panel:Clear()
             panel:DockPadding(12, 12, 12, 12)
@@ -4421,7 +4421,7 @@ hook.Add("PopulateAdminTabs", "liaToolPermissionTiers", function(pages)
     if not IsValid(client) or not client:hasPrivilege("manageUsergroups") then return end
     pages[#pages + 1] = {
         name = "Tool Permissions",
-        icon = lia.webcontent.get("toolpermissions.png"),
+        icon = "icon16/wrench.png",
         drawFunc = function(panel)
             panel:Clear()
             panel:DockPadding(12, 12, 12, 12)

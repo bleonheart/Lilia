@@ -300,11 +300,6 @@ function GM:CanPlayerDropItem(client, item)
     return true
 end
 
-local logTypeMap = {
-    ooc = "chatOOC",
-    looc = "chatLOOC"
-}
-
 function GM:CheckPassword(steamID64, ipAddress, serverPassword, clientPassword, playerName)
     local steamID = util.SteamIDFrom64(steamID64)
     if serverPassword ~= "" and serverPassword ~= clientPassword then
@@ -323,13 +318,7 @@ function GM:PlayerSay(client, message)
         return ""
     end
 
-    local logType = logTypeMap[chatType] or "chat"
     lia.chat.send(client, chatType, message, anonymous)
-    if lia.chat.classes[chatType] then
-        if logType == "chat" then
-        else
-        end
-    end
 
     hook.Run("PostPlayerSay", client, message, chatType, anonymous)
     return ""

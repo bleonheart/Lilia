@@ -799,7 +799,7 @@ function lia.db.convertDataType(value, noEscape)
     return tostring(value)
 end
 
-local function condition(operator, value)
+local function makeCondition(operator, value)
     return {
         [conditionMarker] = true,
         operator = operator,
@@ -808,51 +808,51 @@ local function condition(operator, value)
 end
 
 function lia.db.eq(value)
-    return condition("=", value)
+    return makeCondition("=", value)
 end
 
 function lia.db.neq(value)
-    return condition("<>", value)
+    return makeCondition("<>", value)
 end
 
 function lia.db.gt(value)
-    return condition(">", value)
+    return makeCondition(">", value)
 end
 
 function lia.db.gte(value)
-    return condition(">=", value)
+    return makeCondition(">=", value)
 end
 
 function lia.db.lt(value)
-    return condition("<", value)
+    return makeCondition("<", value)
 end
 
 function lia.db.lte(value)
-    return condition("<=", value)
+    return makeCondition("<=", value)
 end
 
 function lia.db.like(value)
-    return condition("LIKE", value)
+    return makeCondition("LIKE", value)
 end
 
 function lia.db.notLike(value)
-    return condition("NOT LIKE", value)
+    return makeCondition("NOT LIKE", value)
 end
 
 function lia.db.inList(values)
-    return condition("IN", values)
+    return makeCondition("IN", values)
 end
 
 function lia.db.notInList(values)
-    return condition("NOT IN", values)
+    return makeCondition("NOT IN", values)
 end
 
 function lia.db.isNull()
-    return condition("IS NULL")
+    return makeCondition("IS NULL")
 end
 
 function lia.db.isNotNull()
-    return condition("IS NOT NULL")
+    return makeCondition("IS NOT NULL")
 end
 
 local function logicalGroup(logic, ...)
@@ -1370,12 +1370,12 @@ end
 function lia.db.transaction(queries)
     if not istable(queries) then return deferred.reject("Database transaction requires a table of queries") end
     local compiled = {}
-    local ok, err = pcall(function()
+    local ok, compileError = pcall(function()
         for index, operation in ipairs(queries) do
             compiled[index] = compileTransactionQuery(operation)
         end
     end)
-    if not ok then return deferred.reject(err) end
+    if not ok then return deferred.reject(compileError) end
     queries = compiled
     if lia.db.module == "mysqloo" then return lia.db.modules.mysqloo.transaction(queries) end
     local d = deferred.new()

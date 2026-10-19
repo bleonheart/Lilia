@@ -54,11 +54,35 @@ local function drawIcon(material, x, y, size, color)
     surface.DrawTexturedRect(x, y, size, size)
 end
 
+local icon16Names = {
+    characters = "user.png",
+    classes = "group.png",
+    information = "information.png",
+    inventory = "box.png",
+    logs = "page_white_text.png",
+    settings = "cog.png",
+    themes = "color_wheel.png",
+    you = "user.png",
+    onlinestaff = "group.png",
+    playerentities = "brick.png",
+    characterlist = "application_view_list.png",
+    staffcases = "report.png",
+    staffcharacterpermissions = "user_edit.png",
+    toolpermissions = "wrench.png",
+    factionmanagement = "group_edit.png",
+    chatfilter = "comment_delete.png"
+}
+
 local function resolveIconMaterial(icon, fallback)
-    if not icon then return fallback end
-    if type(icon) == "IMaterial" then return icon end
-    if isstring(icon) and icon ~= "" then return Material(icon, "smooth") end
-    return fallback
+    local iconName = type(icon) == "IMaterial" and icon:GetName() or isstring(icon) and icon or ""
+    if iconName:match("^icon16/[%w_%-]+%.png$") then
+        return type(icon) == "IMaterial" and icon or Material(iconName, "smooth")
+    end
+
+    local name = iconName:match("([^/]+)%.png$")
+    local mapped = name and icon16Names[name:lower()]
+    if mapped then return Material("icon16/" .. mapped, "smooth") end
+    return fallback or Material("icon16/bullet_white.png", "smooth")
 end
 
 local function getFieldValue(panel, name)
@@ -240,12 +264,13 @@ function PANEL:Init()
 end
 
 function PANEL:CreateStatCard(parent, title, icon, valueFunc)
+    local iconMaterial = resolveIconMaterial(icon)
     local card = parent:Add("DPanel")
     card.Paint = function(_, w, h)
         local accent = getThemeColors()
         drawPanel(0, 0, w, h, 9, Color(9, 24, 29, 238), Color(accent.r, accent.g, accent.b, 80))
-        drawIcon(icon, 22, 20, 40, accent)
-        draw.SimpleText(string.upper(title), "LiliaFont.17", 76, 28, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+        drawIcon(iconMaterial, 22, 32, 16, accent)
+        draw.SimpleText(string.upper(title), "LiliaFont.17", 54, 28, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         draw.SimpleText(valueFunc() or "", "LiliaFont.25", 22, h - 60, Color(242, 247, 247), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
     return card
@@ -273,6 +298,7 @@ function PANEL:GetRankText()
 end
 
 function PANEL:CreateIdentityAction(parent, width, icon, title, value, doClick)
+    local iconMaterial = resolveIconMaterial(icon)
     local panelType = isfunction(doClick) and "DButton" or "DPanel"
     local action = parent:Add(panelType)
     action:Dock(LEFT)
@@ -285,11 +311,12 @@ function PANEL:CreateIdentityAction(parent, width, icon, title, value, doClick)
         local borderAlpha = hovered and 100 or 60
         local background = hovered and Color(16, 34, 40, 235) or Color(13, 30, 35, 225)
         drawPanel(0, 0, w, h, 6, background, Color(accent.r, accent.g, accent.b, borderAlpha))
+        drawIcon(iconMaterial, 16, math.floor((h - 16) * 0.5), 16, Color(165, 187, 188))
         if title ~= "" then
-            draw.SimpleText(title, "LiliaFont.16", 16, 8, Color(165, 187, 188), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-            draw.SimpleText(value or "", "LiliaFont.18", 16, h - 8, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+            draw.SimpleText(title, "LiliaFont.16", 42, 8, Color(165, 187, 188), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            draw.SimpleText(value or "", "LiliaFont.18", 42, h - 8, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
         else
-            draw.SimpleText(value or "", "LiliaFont.18", 16, h * 0.5, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText(value or "", "LiliaFont.18", 42, h * 0.5, Color(230, 239, 239), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end
     end
 
@@ -559,7 +586,7 @@ function PANEL:Init()
     self.topBar = self:Add("DPanel")
     self.topBar:Dock(TOP)
     self.topBar:SetTall(74)
-    local schemaIconMat = SCHEMA and SCHEMA.icon and Material(SCHEMA.icon, "smooth") or Material("lilia.png", "smooth")
+    local schemaIconMat = Material("icon16/house.png", "smooth")
     local schemaName = SCHEMA and SCHEMA.name
     self.topBar.Paint = function(_, w, h)
         local accent = getThemeColors()
@@ -574,9 +601,7 @@ function PANEL:Init()
     self.brandPanel = self.topBar:Add("DPanel")
     self.brandPanel:SetSize(420, 58)
     self.brandPanel.Paint = function(_, w, h)
-        surface.SetMaterial(schemaIconMat)
-        surface.SetDrawColor(255, 255, 255, 245)
-        surface.DrawTexturedRect(0, 6, 46, 46)
+        drawIcon(schemaIconMat, 15, 21, 16, Color(255, 255, 255, 245))
         draw.SimpleText(tostring(schemaName), "LiliaFont.25", 58, h * 0.5, Color(244, 248, 248), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 
@@ -644,27 +669,27 @@ function PANEL:Init()
     local utilityButtons = {
         {
             key = "characters",
-            icon = lia.webcontent.get("characters.png"),
+            icon = Material("icon16/user.png", "smooth"),
             tooltip = "characters"
         },
         {
             key = "Logs",
-            icon = lia.webcontent.get("logs.png"),
+            icon = Material("icon16/page_white_text.png", "smooth"),
             tooltip = "Logs"
         },
         {
             key = "Information",
-            icon = lia.webcontent.get("information.png"),
+            icon = Material("icon16/information.png", "smooth"),
             tooltip = "Information"
         },
         {
             key = "Settings",
-            icon = lia.webcontent.get("settings.png"),
+            icon = Material("icon16/cog.png", "smooth"),
             tooltip = "Settings"
         },
         {
             key = "Themes",
-            icon = lia.webcontent.get("themes.png"),
+            icon = Material("icon16/color_wheel.png", "smooth"),
             tooltip = "Themes"
         }
     }
@@ -679,7 +704,7 @@ function PANEL:Init()
         button:SetText("")
         button:SetTooltip(localizeMenuLabel(data.tooltip))
         button._key = key
-        button._icon = data.icon
+        button._icon = resolveIconMaterial(data.icon)
         button.Paint = function(s, w, h)
             local accent = getThemeColors()
             local active = self.activeTabKey == s._key
@@ -690,7 +715,7 @@ function PANEL:Init()
                 drawPanel(0, 0, w, h, 6, background, outline)
             end
 
-            drawIcon(s._icon, math.floor((w - 22) * 0.5), math.floor((h - 22) * 0.5), 22, active and Color(244, 248, 248) or hovered and Color(220, 232, 232) or Color(175, 195, 195))
+            drawIcon(s._icon, math.floor((w - 16) * 0.5), math.floor((h - 16) * 0.5), 16, active and Color(244, 248, 248) or hovered and Color(220, 232, 232) or Color(175, 195, 195))
         end
 
         button.DoClick = function() if self.tabList and self.tabList[key] then self:setActiveTab(key) end end
@@ -846,7 +871,7 @@ function PANEL:Init()
 
             table.insert(adminPages, 1, {
                 name = "onlineStaff",
-                icon = lia.webcontent.get("onlinestaff.png")
+                icon = Material("icon16/group.png", "smooth")
             })
 
             self.adminSidebarPages = adminPages
@@ -887,7 +912,7 @@ function PANEL:AddSidebarButton(key, name, icon)
             surface.DrawRect(0, 7, 3, h - 14)
         end
 
-        drawIcon(s._icon, 16, 14, 24, active and Color(245, 249, 249) or Color(165, 186, 186))
+        drawIcon(s._icon, 20, 18, 16, active and Color(245, 249, 249) or Color(165, 186, 186))
         draw.SimpleText(s._label, "LiliaFont.17", 54, h * 0.5, active and Color(245, 249, 249) or Color(191, 207, 207), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 
@@ -936,7 +961,7 @@ function PANEL:AddAdminSidebarButton(index, page)
             surface.DrawRect(0, 7, 3, h - 14)
         end
 
-        drawIcon(s._icon, 16, 14, 24, active and Color(245, 249, 249) or Color(165, 186, 186))
+        drawIcon(s._icon, 20, 18, 16, active and Color(245, 249, 249) or Color(165, 186, 186))
         draw.SimpleText(s._label, "LiliaFont.17", 54, h * 0.5, active and Color(245, 249, 249) or Color(191, 207, 207), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 
@@ -1157,7 +1182,7 @@ function PANEL:Init()
 
     if IsValid(self.filterCombo.DropButton) then
         self.filterCombo.DropButton:SetWide(30)
-        self.filterCombo.DropButton.Paint = function(_, panelW, panelH) draw.SimpleText("▼", "LiliaFont.17", panelW * 0.5, panelH * 0.5, Color(190, 210, 210), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+        self.filterCombo.DropButton.Paint = function(_, panelW, panelH) drawIcon(Material("icon16/arrow_down.png", "smooth"), math.floor((panelW - 16) * 0.5), math.floor((panelH - 16) * 0.5), 16, Color(190, 210, 210)) end
     end
 
     self.searchWrap = self.searchRow:Add("DPanel")
@@ -1274,7 +1299,7 @@ function PANEL:RebuildClassList()
                 surface.DrawRect(0, 7, 3, panelH - 14)
             end
 
-            drawIcon(s._icon, 16, 16, 24, active and Color(240, 247, 247) or Color(175, 196, 196))
+            drawIcon(s._icon, 20, 20, 16, active and Color(240, 247, 247) or Color(175, 196, 196))
             draw.SimpleText(s._className, "LiliaFont.18", 54, 11, active and Color(244, 248, 248) or Color(220, 232, 232), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             draw.SimpleText(s._factionName, "LiliaFont.15", 54, 33, s._canBe and accent or Color(135, 156, 157), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         end
@@ -1326,13 +1351,10 @@ function PANEL:populateClassDetails(cl, canBe)
     desc:SetTextColor(Color(185, 204, 204))
     desc:SetWrap(true)
     desc:SetContentAlignment(7)
-    if cl.logo then
-        local logo = header:Add("DImage")
-        logo:SetSize(72, 72)
-        logo:SetImage(cl.logo)
-        logo:SetKeepAspect(true)
-        header.PerformLayout = function(_, panelW) logo:SetPos(panelW - 84, 24) end
-    end
+    local logo = header:Add("DImage")
+    logo:SetSize(16, 16)
+    logo:SetImage(canBe and "icon16/group.png" or "icon16/lock.png")
+    header.PerformLayout = function(_, panelW) logo:SetPos(panelW - 56, 54) end
 
     local detailsScroll = self.detailsPanel:Add("liaScrollPanel")
     detailsScroll:Dock(FILL)
@@ -1640,7 +1662,7 @@ function PANEL:addJoinButton(parent, cl, canBe)
         local accent, textColor = getThemeColors()
         local available = canBe or isCurrent
         local icon = available and Material("icon16/accept.png", "smooth") or Material("icon16/lock.png", "smooth")
-        drawIcon(icon, 14, 15, 18, available and accent or Color(145, 160, 160))
+        drawIcon(icon, 15, 16, 16, available and accent or Color(145, 160, 160))
         draw.SimpleText(titleText, "LiliaFont.20", 42, 12, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         draw.SimpleText(subtitleText, "LiliaFont.15", 14, 43, Color(155, 178, 179), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
@@ -1779,7 +1801,7 @@ end)
 hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
     tabs["You"] = {
         name = "You",
-        icon = lia.webcontent.get("you.png"),
+        icon = Material("icon16/user.png", "smooth"),
         func = function(statusPanel)
             statusPanel.info = vgui.Create("liaCharInfo", statusPanel)
             statusPanel.info:Dock(FILL)
@@ -1791,7 +1813,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
     tabs["Information"] = {
         name = "Information",
-        icon = lia.webcontent.get("information.png"),
+        icon = Material("icon16/information.png", "smooth"),
         func = function(infoTabPanel)
             infoTabPanel:Clear()
             local frame = infoTabPanel:Add("DPanel")
@@ -1886,7 +1908,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
     tabs["Settings"] = {
         name = "Settings",
-        icon = lia.webcontent.get("settings.png"),
+        icon = Material("icon16/cog.png", "smooth"),
         func = function(settingsPanel)
             settingsPanel:Clear()
             local frame = settingsPanel:Add("EditablePanel")
@@ -2064,7 +2086,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
                 table.insert(pages, 1, {
                     name = "onlineStaff",
-                    icon = lia.webcontent.get("onlinestaff.png"),
+                    icon = Material("icon16/group.png", "smooth"),
                     drawFunc = function(panel)
                         panel:Clear()
                         panel.originalStaffData = {}
@@ -2212,8 +2234,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                                 drawPanel(0, 0, w, h, 6, Color(3, 16, 21, 185), Color(accent.r, accent.g, accent.b, 68))
                                 surface.SetDrawColor(accent.r, accent.g, accent.b, 235)
                                 surface.DrawRect(0, 0, 3, h)
-                                drawIcon(Material("icon16/user.png", "smooth"), 26, math.floor(h * 0.5) - 28, 56, color_white)
-                                local textX = 104
+                                drawIcon(Material("icon16/user.png", "smooth"), 46, math.floor(h * 0.5) - 8, 16, color_white)
+                                local textX = 86
                                 draw.SimpleText(displayName, "LiliaFont.25", textX, 24, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                                 draw.SimpleText(characterName .. "  •  " .. usergroup, "LiliaFont.17", textX, 73, Color(185, 204, 204), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                                 local badgeW = 120
@@ -2277,7 +2299,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                                         surface.DrawRect(0, 7, 3, h - 14)
                                     end
 
-                                    drawIcon(Material("icon16/user.png", "smooth"), 14, 18, 28, active and color_white or Color(175, 196, 196))
+                                    drawIcon(Material("icon16/user.png", "smooth"), 20, 24, 16, active and color_white or Color(175, 196, 196))
                                     draw.SimpleText(displayName, "LiliaFont.18", 54, 12, active and color_white or Color(220, 232, 232), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                                     draw.SimpleText(usergroup, "LiliaFont.15", 54, 38, Color(185, 204, 204), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                                     local statusColor = isOnDuty and currentAccent or Color(135, 156, 157)
@@ -2391,7 +2413,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
     if hasThemesPrivilege then
         tabs["Themes"] = {
             name = "Themes",
-            icon = lia.webcontent.get("themes.png"),
+            icon = Material("icon16/color_wheel.png", "smooth"),
             func = function(themesPanel)
                 themesPanel:Clear()
                 local function getLocalizedThemeName(themeID)
@@ -2655,7 +2677,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                                 local outline = isSelected and Color(accent.r, accent.g, accent.b, 145) or Color(accent.r, accent.g, accent.b, 68)
                                 drawPanel(0, 0, w, h, 6, background, outline)
                                 if isSelected then
-                                    draw.SimpleText("✓", "LiliaFont.24", 24, h * 0.5, Color(accent.r, accent.g, accent.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                                    drawIcon(Material("icon16/accept.png", "smooth"), 16, math.floor((h - 16) * 0.5), 16, accent)
                                 else
                                     surface.SetDrawColor(98, 126, 130, 180)
                                     surface.DrawOutlinedRect(16, h * 0.5 - 8, 16, 16, 1)

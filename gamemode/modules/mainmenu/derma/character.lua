@@ -42,12 +42,6 @@ local function mmMuted(alpha)
     return mmMix(mmText(255), mmBg(255), 0.40, alpha or 190)
 end
 
-local function mmNegative(alpha)
-    local theme = mmTheme()
-    local src = theme.negative or Color(205, 74, 74)
-    return mmColor(src, Color(205, 74, 74), alpha)
-end
-
 local function mmDrawPanel(x, y, w, h, radius, bg, outline)
     if lia.derma.SHAPE_IOS then
         lia.derma.rect(x, y, w, h):Rad(radius or 6):Color(bg):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -1084,7 +1078,6 @@ function PANEL:createStartButton()
     self:showContent(false)
     self.tabs:SetVisible(false)
     self.content:SetVisible(false)
-    local accent = mmAccent()
     local w = math.Clamp(ScrW() * 0.24, 340, 470)
     local h = math.Clamp(ScrH() * 0.58, 440, 640)
     local x = math.max(32, ScrW() * 0.035)
@@ -1372,7 +1365,6 @@ function PANEL:createCharacterSelection()
         end
     end
 
-    local accent = mmAccent()
     local leftW = math.Clamp(ScrW() * 0.24, 340, 470)
     local leftH = math.Clamp(ScrH() * 0.58, 440, 640)
     local leftX = math.max(32, ScrW() * 0.035)
@@ -2771,13 +2763,7 @@ local function getSelectedModelData(context)
     local choices = getCreationModelChoices(faction, context)
     local selectedKey = context.model
     local raw = selectedKey ~= nil and choices[selectedKey] or nil
-    if raw == nil then
-        for key, choice in pairs(choices) do
-            selectedKey = key
-            raw = choice
-            break
-        end
-    end
+    if raw == nil then selectedKey, raw = next(choices) end
 
     if raw == nil then return faction, nil, nil end
     local parsed = lia.faction.getModelData(selectedKey, raw)
@@ -3089,12 +3075,12 @@ function PANEL:BuildTabNavigation()
         local button = self.tabNavigation:Add("DButton")
         button:SetText("")
         button._hover = 0
-        button.Think = function(self) self._hover = Lerp(FrameTime() * 12, self._hover or 0, self:IsHovered() and 1 or 0) end
-        button.Paint = function(button, w, h)
+        button.Think = function(panel) panel._hover = Lerp(FrameTime() * 12, panel._hover or 0, panel:IsHovered() and 1 or 0) end
+        button.Paint = function(panel, w, h)
             local active = self.currentIndex == tabIndex
             local complete = self:IsTabComplete(tab)
             local accent = getThemeAccent()
-            local hover = button._hover or 0
+            local hover = panel._hover or 0
             drawPanel(0, 0, w, h, 6, active and Color(accent.r, accent.g, accent.b, 30) or getThemeSurface(0.05, 225), Color(accent.r, accent.g, accent.b, active and 190 or 45 + hover * 75))
             if active then
                 surface.SetDrawColor(accent.r, accent.g, accent.b, 230)
@@ -4592,7 +4578,6 @@ hook.Add("RegisterCharacterCreationTabs", "liaSchemaCharacterCreatorBuiltins", f
                 local contentBottom = h
                 local hasCustomization = #self.customControls > 0
                 self.customWrap:SetVisible(hasCustomization)
-                local customHeight = 0
                 if hasCustomization then
                     local customGap = 10
                     local controlWidth = 210
@@ -4602,8 +4587,7 @@ hook.Add("RegisterCharacterCreationTabs", "liaSchemaCharacterCreatorBuiltins", f
                     local columns = math.Clamp(math.floor((available + customGap) / (controlWidth + customGap)), 1, 4)
                     local rows = math.max(math.ceil(#self.customControls / columns), 1)
                     local visibleRows = math.min(rows, 2)
-                    customHeight = 64 + visibleRows * 72 + 12
-                    customHeight = math.Clamp(customHeight, 142, 220)
+                    local customHeight = math.Clamp(64 + visibleRows * 72 + 12, 142, 220)
                     self.customWrap:SetPos(0, h - customHeight)
                     self.customWrap:SetSize(w, customHeight)
                     self.customHeader:SetPos(innerX + 12, 8)
