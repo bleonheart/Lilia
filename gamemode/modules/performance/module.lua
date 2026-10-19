@@ -1,13 +1,13 @@
 MODULE.name = "Performance"
 MODULE.author = "Samael"
 MODULE.desc = "Performance Tweaks and Monitoring."
-MODULE.NetworkStrings = {"liaPerfopusStart", "liaPerfopusMetric", "liaPerfopusSettings"}
+MODULE.NetworkStrings = {"liaPerformanceProfileStart", "liaPerformanceProfileMetric", "liaPerformanceProfileSettings", "liaPerformanceProfileSubscription", "liaPerformanceProfileState"}
 MODULE.Privileges = {
     ["viewPerformanceMetrics"] = {
         Name = "View Performance Metrics",
         MinAccess = "superadmin",
         Category = "Development",
-        Description = "Allows access to the Perfopus profiler and its F1 performance metrics tab."
+        Description = "Allows access to the Lua profiler and its F1 performance metrics tab."
     }
 }
 

@@ -2,48 +2,66 @@ local MODULE = MODULE
 local subscribers = setmetatable({}, {__mode = "k"})
 local nextRefresh = 0
 
-function MODULE:SendPerfopusState(client)
-    net.Start("liaPerfopusState")
-    net.WriteBool(self.perfopusFrozen)
-    net.WriteFloat(self.perfopusRefreshRate)
+function MODULE:SendProfilerState(client)
+    net.Start("liaPerformanceProfileState")
+    net.WriteBool(self.profilingFrozen)
+    net.WriteFloat(self.profileRefreshRate)
+    net.WriteBool(self.profilingStarted)
+    net.WriteBool(self.profilingCollecting)
     net.Send(client)
 end
 
-function MODULE:SyncPerfopusState()
+function MODULE:SyncProfilerState()
     for client in pairs(subscribers) do
         if self:CanViewMetrics(client) then
-            self:SendPerfopusState(client)
+            self:SendProfilerState(client)
         else
             subscribers[client] = nil
         end
     end
 end
 
-function MODULE:SetPerfopusServerSetting(name, value)
+function MODULE:SetProfilerSetting(name, value)
     if name == "freeze" then
-        self.perfopusFrozen = value == true
+        self.profilingFrozen = value == true
     elseif name == "refresh" then
         if not isnumber(value) or value ~= value or value == math.huge or value == -math.huge then return end
-        self.perfopusRefreshRate = math.Clamp(value, 0.1, 5)
+        self.profileRefreshRate = math.Clamp(value, 0.1, 5)
     else
         return
     end
-
-    self:SyncPerfopusState()
+    self:SyncProfilerState()
 end
 
-function MODULE:SendPerfopusMetrics()
-    local readable = self:GetReadableMetrics()
+function MODULE:SendProfilerMetrics()
+    local metrics = {}
+    for source, data in pairs(self:GetReadableMetrics()) do
+        metrics[#metrics + 1] = {source = source, data = data}
+    end
+    table.sort(metrics, function(a, b) return a.data.time > b.data.time end)
     for client in pairs(subscribers) do
         if not self:CanViewMetrics(client) then
             subscribers[client] = nil
         else
-            for source, data in pairs(readable) do
-                net.Start("liaPerfopusMetric")
-                net.WriteString(source)
-                net.WriteString(self:MakeToolTipString(data.funcs, 10))
-                net.WriteUInt(data.realm, 1)
+            for i = 1, math.min(#metrics, 128) do
+                local entry = metrics[i]
+                local data = entry.data
+                local callbacks = {}
+                for name, elapsed in pairs(data.funcs) do
+                    callbacks[#callbacks + 1] = {name = name, elapsed = elapsed, calls = (data.counts or {})[name] or 0}
+                end
+                table.sort(callbacks, function(a, b) return a.elapsed > b.elapsed end)
+                net.Start("liaPerformanceProfileMetric")
+                net.WriteString(entry.source)
                 net.WriteFloat(data.time)
+                net.WriteUInt(math.min(data.calls or 0, 4294967295), 32)
+                net.WriteUInt(math.min(#callbacks, 10), 4)
+                for j = 1, math.min(#callbacks, 10) do
+                    local callback = callbacks[j]
+                    net.WriteString(callback.name)
+                    net.WriteFloat(callback.elapsed)
+                    net.WriteUInt(math.min(callback.calls, 4294967295), 32)
+                end
                 net.Send(client)
             end
         end
@@ -51,38 +69,44 @@ function MODULE:SendPerfopusMetrics()
 end
 
 function MODULE:Think()
-    if not self.perfopusStarted or self.perfopusFrozen then return end
+    if not self.profilingCollecting or self.profilingFrozen then return end
     if nextRefresh > CurTime() then return end
-    self:SendPerfopusMetrics()
-    table.Empty(self.perfopusMetrics)
-    nextRefresh = CurTime() + math.Clamp(self.perfopusRefreshRate, 0.1, 5)
+    self:SendProfilerMetrics()
+    table.Empty(self.profileMetrics)
+    table.Empty(self.profileCounts)
+    nextRefresh = CurTime() + math.Clamp(self.profileRefreshRate, 0.1, 5)
 end
 
-function MODULE:HandlePerfopusStart(client)
+function MODULE:HandleProfilingStart(client)
     if not self:CanViewMetrics(client) then return end
-    self:StartProfiling()
+    if net.ReadBool() then
+        self:StartProfiling()
+    else
+        self:PauseProfiling()
+    end
+    self:SyncProfilerState()
 end
 
-function MODULE:HandlePerfopusSettings(client)
+function MODULE:HandleProfilerSettings(client)
     if not self:CanViewMetrics(client) then return end
     local setting = net.ReadString()
     if setting == "freeze" then
-        self:SetPerfopusServerSetting(setting, net.ReadBool())
+        self:SetProfilerSetting(setting, net.ReadBool())
     elseif setting == "refresh" then
-        self:SetPerfopusServerSetting(setting, net.ReadFloat())
+        self:SetProfilerSetting(setting, net.ReadFloat())
     end
 end
 
-function MODULE:HandlePerfopusSubscription(client)
+function MODULE:HandleProfilerSubscription(client)
     if not self:CanViewMetrics(client) then return end
     if net.ReadBool() then
         subscribers[client] = true
-        self:SendPerfopusState(client)
+        self:SendProfilerState(client)
     else
         subscribers[client] = nil
     end
 end
 
-net.Receive("liaPerfopusStart", function(_, client) MODULE:HandlePerfopusStart(client) end)
-net.Receive("liaPerfopusSettings", function(_, client) MODULE:HandlePerfopusSettings(client) end)
-net.Receive("liaPerfopusSubscription", function(_, client) MODULE:HandlePerfopusSubscription(client) end)
+net.Receive("liaPerformanceProfileStart", function(_, client) MODULE:HandleProfilingStart(client) end)
+net.Receive("liaPerformanceProfileSettings", function(_, client) MODULE:HandleProfilerSettings(client) end)
+net.Receive("liaPerformanceProfileSubscription", function(_, client) MODULE:HandleProfilerSubscription(client) end)

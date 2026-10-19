@@ -33,6 +33,7 @@ else
         if allowed == false then return nil, reason or "You cannot create another character." end
         allowed, reason = hook.Run("ShouldMenuButtonShow", "create")
         if allowed == false then return nil, reason or "Character creation is unavailable." end
+        if not vgui.GetControlTable("liaSchemaCharacterCreator") then return nil, "The character creator interface is unavailable." end
         creator = vgui.Create("liaSchemaCharacterCreator")
         if not IsValid(creator) then return nil, "Failed to open the character creator." end
         if IsValid(sourceMenu) then creator:SetSourceMenu(sourceMenu) end

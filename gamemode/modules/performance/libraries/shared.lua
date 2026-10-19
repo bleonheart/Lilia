@@ -1,12 +1,14 @@
 local MODULE = MODULE
 local GM = GM or GAMEMODE
-MODULE.perfopusMetrics = MODULE.perfopusMetrics or {}
-MODULE.perfopusTimedHooks = MODULE.perfopusTimedHooks or {}
-MODULE.perfopusTimedEntityMethods = MODULE.perfopusTimedEntityMethods or setmetatable({}, {__mode = "k"})
-MODULE.perfopusOriginals = MODULE.perfopusOriginals or {}
-MODULE.perfopusStarted = MODULE.perfopusStarted or false
-MODULE.perfopusRefreshRate = MODULE.perfopusRefreshRate or 2
-MODULE.perfopusFrozen = MODULE.perfopusFrozen or false
+MODULE.profileMetrics = MODULE.profileMetrics or {}
+MODULE.profileCounts = MODULE.profileCounts or {}
+MODULE.profiledHooks = MODULE.profiledHooks or {}
+MODULE.profiledEntityMethods = MODULE.profiledEntityMethods or setmetatable({}, {__mode = "k"})
+MODULE.originalProfileFunctions = MODULE.originalProfileFunctions or {}
+MODULE.profilingStarted = MODULE.profilingStarted or false
+if MODULE.profilingCollecting == nil then MODULE.profilingCollecting = MODULE.profilingStarted end
+MODULE.profileRefreshRate = MODULE.profileRefreshRate or 2
+MODULE.profilingFrozen = MODULE.profilingFrozen or false
 
 local function pack(...)
     return {n = select("#", ...), ...}
@@ -31,16 +33,22 @@ function MODULE:CanViewMetrics(client)
 end
 
 function MODULE:TakeMeasurement(elapsed, name, source)
-    if not isnumber(elapsed) or elapsed < 0 then return end
+    if not self.profilingCollecting or not isnumber(elapsed) or elapsed < 0 then return end
     source = normalizeSource(source)
     if self:IsOwnSource(source) then return end
-    local sourceMetrics = self.perfopusMetrics[source]
+    local sourceMetrics = self.profileMetrics[source]
     if not sourceMetrics then
         sourceMetrics = {}
-        self.perfopusMetrics[source] = sourceMetrics
+        self.profileMetrics[source] = sourceMetrics
     end
 
     sourceMetrics[name] = (sourceMetrics[name] or 0) + elapsed
+    local counts = self.profileCounts[source]
+    if not counts then
+        counts = {}
+        self.profileCounts[source] = counts
+    end
+    counts[name] = (counts[name] or 0) + 1
 end
 
 function MODULE:MakeToolTipString(funcs, limit)
@@ -62,30 +70,34 @@ end
 function MODULE:GetReadableMetrics()
     local realm = SERVER and 1 or 0
     local readable = {}
-    for source, funcs in pairs(self.perfopusMetrics) do
+    for source, funcs in pairs(self.profileMetrics) do
         local copiedFuncs = {}
         local total = 0
+        local calls = 0
+        local copiedCounts = {}
+        local sourceCounts = self.profileCounts[source] or {}
         for name, elapsed in pairs(funcs) do
             copiedFuncs[name] = elapsed
             total = total + elapsed
+            copiedCounts[name] = sourceCounts[name] or 0
+            calls = calls + copiedCounts[name]
         end
 
-        readable[source] = {funcs = copiedFuncs, realm = realm, time = total}
+        readable[source] = {funcs = copiedFuncs, counts = copiedCounts, calls = calls, realm = realm, time = total}
     end
     return readable
 end
 
 function MODULE:TimeThisHook(hookType, hookID)
     if hookID == nil then return end
-    if isstring(hookID) and hookID:sub(1, 8) == "PERFOPUS" then return end
     local hookTable = hook.GetTable()[hookType]
     if not hookTable then return end
     local hookFunc = hookTable[hookID]
     if not isfunction(hookFunc) then return end
     local source = self:GetSource(hookFunc)
     if self:IsOwnSource(source) then return end
-    self.perfopusTimedHooks[hookType] = self.perfopusTimedHooks[hookType] or {}
-    local previous = self.perfopusTimedHooks[hookType][hookID]
+    self.profiledHooks[hookType] = self.profiledHooks[hookType] or {}
+    local previous = self.profiledHooks[hookType][hookID]
     if previous and hookFunc == previous.wrapper then return end
     local original = hookFunc
     local wrapper = function(...)
@@ -95,22 +107,22 @@ function MODULE:TimeThisHook(hookType, hookID)
         return unpack(results, 1, results.n)
     end
 
-    self.perfopusTimedHooks[hookType][hookID] = {original = original, wrapper = wrapper}
-    local add = self.perfopusOriginals.hookAdd or hook.Add
+    self.profiledHooks[hookType][hookID] = {original = original, wrapper = wrapper}
+    local add = self.originalProfileFunctions.hookAdd or hook.Add
     add(hookType, hookID, wrapper)
 end
 
 function MODULE:ListenForNewHooks()
-    if self.perfopusHookListenerInstalled then return end
-    self.perfopusOriginals.hookAdd = self.perfopusOriginals.hookAdd or hook.Add
-    local original = self.perfopusOriginals.hookAdd
+    if self.hookProfilerInstalled then return end
+    self.originalProfileFunctions.hookAdd = self.originalProfileFunctions.hookAdd or hook.Add
+    local original = self.originalProfileFunctions.hookAdd
     hook.Add = function(hookType, hookID, func)
         local result = original(hookType, hookID, func)
-        if self.perfopusStarted and isfunction(func) then self:TimeThisHook(hookType, hookID) end
+        if self.profilingStarted and isfunction(func) then self:TimeThisHook(hookType, hookID) end
         return result
     end
 
-    self.perfopusHookListenerInstalled = true
+    self.hookProfilerInstalled = true
 end
 
 function MODULE:TimeThisEntMethod(ent, methodName)
@@ -121,10 +133,10 @@ function MODULE:TimeThisEntMethod(ent, methodName)
     if not info or info.what == "C" then return end
     local source = normalizeSource(info.short_src)
     if self:IsOwnSource(source) then return end
-    local entityMethods = self.perfopusTimedEntityMethods[ent]
+    local entityMethods = self.profiledEntityMethods[ent]
     if not entityMethods then
         entityMethods = {}
-        self.perfopusTimedEntityMethods[ent] = entityMethods
+        self.profiledEntityMethods[ent] = entityMethods
     end
 
     local previous = entityMethods[methodName]
@@ -152,28 +164,28 @@ function MODULE:TimeThisEntity(ent)
 end
 
 function MODULE:ListenForNewEntityMethods()
-    if self.perfopusEntityListenerInstalled then return end
+    if self.entityProfilerInstalled then return end
     local entityMeta = FindMetaTable("Entity")
     if not entityMeta or not isfunction(entityMeta.__newindex) then return end
-    self.perfopusOriginals.entityNewIndex = self.perfopusOriginals.entityNewIndex or entityMeta.__newindex
-    local original = self.perfopusOriginals.entityNewIndex
+    self.originalProfileFunctions.entityNewIndex = self.originalProfileFunctions.entityNewIndex or entityMeta.__newindex
+    local original = self.originalProfileFunctions.entityNewIndex
     entityMeta.__newindex = function(ent, key, value)
         local result = original(ent, key, value)
-        if self.perfopusStarted and isfunction(value) then
+        if self.profilingStarted and isfunction(value) then
             timer.Simple(0, function() if IsValid(ent) then self:TimeThisEntMethod(ent, key) end end)
         end
         return result
     end
 
-    self.perfopusEntityListenerInstalled = true
+    self.entityProfilerInstalled = true
 end
 
 function MODULE:ListenForTimersToTime()
-    if self.perfopusTimerListenerInstalled then return end
-    self.perfopusOriginals.timerCreate = self.perfopusOriginals.timerCreate or timer.Create
-    local original = self.perfopusOriginals.timerCreate
+    if self.timerProfilerInstalled then return end
+    self.originalProfileFunctions.timerCreate = self.originalProfileFunctions.timerCreate or timer.Create
+    local original = self.originalProfileFunctions.timerCreate
     timer.Create = function(identifier, delay, repetitions, func)
-        if not self.perfopusStarted or not isfunction(func) then return original(identifier, delay, repetitions, func) end
+        if not self.profilingStarted or not isfunction(func) then return original(identifier, delay, repetitions, func) end
         local source = self:GetSource(func)
         if self:IsOwnSource(source) then return original(identifier, delay, repetitions, func) end
         local wrapped = function(...)
@@ -185,12 +197,16 @@ function MODULE:ListenForTimersToTime()
         return original(identifier, delay, repetitions, wrapped)
     end
 
-    self.perfopusTimerListenerInstalled = true
+    self.timerProfilerInstalled = true
 end
 
 function MODULE:StartProfiling()
-    if self.perfopusStarted then return false end
-    self.perfopusMetrics = {}
+    if self.profilingStarted then
+        self.profilingCollecting = true
+        return true
+    end
+    self.profileMetrics = {}
+    self.profileCounts = {}
     for hookName, entries in pairs(hook.GetTable()) do
         for hookID in pairs(entries) do
             self:TimeThisHook(hookName, hookID)
@@ -204,12 +220,19 @@ function MODULE:StartProfiling()
 
     self:ListenForNewEntityMethods()
     self:ListenForTimersToTime()
-    self.perfopusStarted = true
+    self.profilingStarted = true
+    self.profilingCollecting = true
+    return true
+end
+
+function MODULE:PauseProfiling()
+    if not self.profilingStarted then return false end
+    self.profilingCollecting = false
     return true
 end
 
 function MODULE:OnEntityCreated(ent)
-    if not self.perfopusStarted then return end
+    if not self.profilingStarted then return end
     timer.Simple(0, function() if IsValid(ent) then self:TimeThisEntity(ent) end end)
 end
 
