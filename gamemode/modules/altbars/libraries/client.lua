@@ -209,4 +209,17 @@ function lia.bar.drawAction(text, duration)
     panel:SetMouseInputEnabled(false)
 end
 
-hook.Add("HUDPaintBackground", "liaBarDraw", lia.bar.drawAll)
+local overrideDrawBar = lia.bar.drawBar
+local overrideDrawAll = lia.bar.drawAll
+local overrideDrawAction = lia.bar.drawAction
+
+local function applyBarOverrides()
+    lia.bar.drawBar = overrideDrawBar
+    lia.bar.drawAll = overrideDrawAll
+    lia.bar.drawAction = overrideDrawAction
+    hook.Remove("HUDPaintBackground", "liaBarDraw")
+    hook.Add("HUDPaintBackground", "liaAltBarsOverride", overrideDrawAll)
+end
+
+applyBarOverrides()
+hook.Add("InitializedModules", "liaAltBarsInstall", applyBarOverrides)
