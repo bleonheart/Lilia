@@ -2,7 +2,7 @@ MODULE.name = "Main Menu"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Creates the in-game main menu used for selecting, creating, and managing player characters before entering the world."
-MODULE.NetworkStrings = {"liaMainCharacterSet",}
+MODULE.NetworkStrings = {"liaMainCharacterSet", "liaSetMainCharacter", "liaStaffDiscordPrompt",}
 if SERVER then
     function MODULE:SyncCharList(client)
         if not client.liaCharList then return end

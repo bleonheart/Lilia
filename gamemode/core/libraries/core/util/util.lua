@@ -319,27 +319,185 @@ function lia.util.setPositionCallback(name, data)
     end
 end
 
-if SERVER then
-    function lia.util.sendTableUI(client, title, columns, data, options, characterID)
+function lia.util.createTableUI(payload, client)
+    if not istable(payload) then return end
+    if SERVER then
         if not IsValid(client) or not client:IsPlayer() then return end
         local localizedColumns = {}
-        for i, colInfo in ipairs(columns or {}) do
+        for i, colInfo in ipairs(payload.columns or {}) do
             local localizedColInfo = table.Copy(colInfo)
             if localizedColInfo.name then localizedColInfo.name = tostring(localizedColInfo.name) end
             localizedColumns[i] = localizedColInfo
         end
 
-        local tableUIData = {
-            title = title and tostring(title) or "Table List",
+        lia.net.writeBigTable(client, "liaCreateTableUI", {
+            title = payload.title and tostring(payload.title) or "Table List",
             columns = localizedColumns,
-            data = data,
-            options = options or {},
-            characterID = characterID
-        }
+            data = payload.data,
+            options = payload.options or {},
+            characterID = payload.characterID
+        })
+    else
+        local title = payload.title
+        local columns = payload.columns or {}
+        local data = payload.data or {}
+        local options = payload.options
+        local characterID = payload.characterID
+        local frameWidth, frameHeight = ScrW() * 0.8, ScrH() * 0.8
+        local frame = vgui.Create("liaFrame")
+        frame:SetTitle(title and tostring(title) or "Table List")
+        frame:SetSize(frameWidth, frameHeight)
+        frame:Center()
+        frame:MakePopup()
+        frame:ShowCloseButton(true)
+        frame.Paint = function(self, w, h)
+            lia.util.drawBlur(self, 4)
+            draw.RoundedBox(0, 0, 0, w, h, Color(20, 20, 20, 120))
+        end
 
-        lia.net.writeBigTable(client, "liaSendTableUI", tableUIData)
+        local listView = frame:Add("liaTable")
+        listView:Dock(FILL)
+        for _, colInfo in ipairs(columns or {}) do
+            local localizedName = colInfo.name and tostring(colInfo.name) or "N/A"
+            listView:AddColumn(localizedName, colInfo.width, colInfo.align, colInfo.sortable)
+        end
+
+        for _, row in ipairs(data) do
+            local lineData = {}
+            for _, colInfo in ipairs(columns) do
+                table.insert(lineData, row[colInfo.field] or "N/A")
+            end
+
+            local line = listView:AddLine(unpack(lineData))
+            line.rowData = row
+        end
+
+        listView:ForceCommit()
+        listView:AddMenuOption("Copy Row", function(rowData)
+            local rowString = ""
+            for key, value in pairs(rowData) do
+                value = tostring(value or "N/A")
+                key = tostring(key)
+                rowString = rowString .. key:gsub("^%l", string.upper) .. " " .. value .. " | "
+            end
+
+            rowString = rowString:sub(1, -4)
+            SetClipboardText(rowString)
+        end)
+
+        for _, option in ipairs(istable(options) and options or {}) do
+            listView:AddMenuOption(option.name and tostring(option.name) or option.name, function(rowData, rowIndex)
+                if not option.net then return end
+                if option.ExtraFields then
+                    local inputPanel = vgui.Create("liaFrame")
+                    inputPanel:SetTitle(string.format("%s Options", option.name))
+                    inputPanel:SetSize(300, 300 + #table.GetKeys(option.ExtraFields) * 35)
+                    inputPanel:Center()
+                    inputPanel:MakePopup()
+                    local form = vgui.Create("DForm", inputPanel)
+                    form:Dock(FILL)
+                    form:SetLabel("")
+                    form.Paint = function() end
+                    local inputs = {}
+                    for fName, fType in pairs(option.ExtraFields) do
+                        local label = vgui.Create("DLabel", form)
+                        label:SetText(fName)
+                        label:Dock(TOP)
+                        label:DockMargin(5, 10, 5, 0)
+                        form:AddItem(label)
+                        if isstring(fType) and fType == "text" then
+                            local entry = vgui.Create("DTextEntry", form)
+                            entry:Dock(TOP)
+                            entry:DockMargin(5, 5, 5, 0)
+                            entry:SetPlaceholderText(string.format("Type %s", fName))
+                            form:AddItem(entry)
+                            inputs[fName] = {
+                                panel = entry,
+                                ftype = "text"
+                            }
+                        elseif isstring(fType) and fType == "combo" then
+                            local combo = vgui.Create("liaComboBox", form)
+                            combo:Dock(TOP)
+                            combo:DockMargin(5, 5, 5, 0)
+                            combo:PostInit()
+                            combo:SetValue(string.format("Select %s", fName))
+                            form:AddItem(combo)
+                            inputs[fName] = {
+                                panel = combo,
+                                ftype = "combo"
+                            }
+                        elseif istable(fType) then
+                            local combo = vgui.Create("liaComboBox", form)
+                            combo:Dock(TOP)
+                            combo:DockMargin(5, 5, 5, 0)
+                            combo:PostInit()
+                            combo:SetValue(string.format("Select %s", fName))
+                            for _, choice in ipairs(fType) do
+                                combo:AddChoice(choice)
+                            end
+
+                            combo:FinishAddingOptions()
+                            form:AddItem(combo)
+                            inputs[fName] = {
+                                panel = combo,
+                                ftype = "combo"
+                            }
+                        end
+                    end
+
+                    local submitButton = vgui.Create("DButton", form)
+                    submitButton:SetText("Submit")
+                    submitButton:Dock(TOP)
+                    submitButton:DockMargin(5, 10, 5, 0)
+                    form:AddItem(submitButton)
+                    submitButton.DoClick = function()
+                        local values = {}
+                        for fName, info in pairs(inputs) do
+                            if not IsValid(info.panel) then continue end
+                            if info.ftype == "text" then
+                                values[fName] = info.panel:GetValue() or ""
+                            elseif info.ftype == "combo" then
+                                values[fName] = info.panel:GetSelected() or ""
+                            end
+                        end
+
+                        net.Start(option.net)
+                        net.WriteInt(characterID, 32)
+                        net.WriteTable(rowData)
+                        for _, fVal in pairs(values) do
+                            if isnumber(fVal) then
+                                net.WriteInt(fVal, 32)
+                            else
+                                net.WriteString(fVal)
+                            end
+                        end
+
+                        net.SendToServer()
+                        inputPanel:Close()
+                        frame:Remove()
+                    end
+                else
+                    net.Start(option.net)
+                    net.WriteInt(characterID, 32)
+                    net.WriteTable(rowData)
+                    net.SendToServer()
+                    frame:Remove()
+                end
+            end)
+        end
+
+        timer.Simple(0.1, function()
+            if IsValid(frame) and IsValid(listView) then
+                frame:InvalidateLayout(true)
+                listView:InvalidateLayout(true)
+                frame:SizeToChildren(false, true)
+            end
+        end)
+        return frame, listView
     end
+end
 
+if SERVER then
     function lia.util.findEmptySpace(entity, filter, spacing, size, height, tolerance)
         spacing = spacing or 32
         size = size or 3
@@ -544,160 +702,6 @@ else
     end
 
     lia.util.requestArguments = lia.derma.requestArguments
-    function lia.util.createTableUI(title, columns, data, options, charID)
-        local frameWidth, frameHeight = ScrW() * 0.8, ScrH() * 0.8
-        local frame = vgui.Create("liaFrame")
-        frame:SetTitle(title and tostring(title) or "Table List")
-        frame:SetSize(frameWidth, frameHeight)
-        frame:Center()
-        frame:MakePopup()
-        frame:ShowCloseButton(true)
-        frame.Paint = function(self, w, h)
-            lia.util.drawBlur(self, 4)
-            draw.RoundedBox(0, 0, 0, w, h, Color(20, 20, 20, 120))
-        end
-
-        local listView = frame:Add("liaTable")
-        listView:Dock(FILL)
-        for _, colInfo in ipairs(columns or {}) do
-            local localizedName = colInfo.name and tostring(colInfo.name) or "N/A"
-            listView:AddColumn(localizedName, colInfo.width, colInfo.align, colInfo.sortable)
-        end
-
-        for _, row in ipairs(data) do
-            local lineData = {}
-            for _, colInfo in ipairs(columns) do
-                table.insert(lineData, row[colInfo.field] or "N/A")
-            end
-
-            local line = listView:AddLine(unpack(lineData))
-            line.rowData = row
-        end
-
-        listView:ForceCommit()
-        listView:AddMenuOption("Copy Row", function(rowData)
-            local rowString = ""
-            for key, value in pairs(rowData) do
-                value = tostring(value or "N/A")
-                key = tostring(key)
-                rowString = rowString .. key:gsub("^%l", string.upper) .. " " .. value .. " | "
-            end
-
-            rowString = rowString:sub(1, -4)
-            SetClipboardText(rowString)
-        end)
-
-        for _, option in ipairs(istable(options) and options or {}) do
-            listView:AddMenuOption(option.name and tostring(option.name) or option.name, function(rowData, rowIndex)
-                if not option.net then return end
-                if option.ExtraFields then
-                    local inputPanel = vgui.Create("liaFrame")
-                    inputPanel:SetTitle(string.format("%s Options", option.name))
-                    inputPanel:SetSize(300, 300 + #table.GetKeys(option.ExtraFields) * 35)
-                    inputPanel:Center()
-                    inputPanel:MakePopup()
-                    local form = vgui.Create("DForm", inputPanel)
-                    form:Dock(FILL)
-                    form:SetLabel("")
-                    form.Paint = function() end
-                    local inputs = {}
-                    for fName, fType in pairs(option.ExtraFields) do
-                        local label = vgui.Create("DLabel", form)
-                        label:SetText(fName)
-                        label:Dock(TOP)
-                        label:DockMargin(5, 10, 5, 0)
-                        form:AddItem(label)
-                        if isstring(fType) and fType == "text" then
-                            local entry = vgui.Create("DTextEntry", form)
-                            entry:Dock(TOP)
-                            entry:DockMargin(5, 5, 5, 0)
-                            entry:SetPlaceholderText(string.format("Type %s", fName))
-                            form:AddItem(entry)
-                            inputs[fName] = {
-                                panel = entry,
-                                ftype = "text"
-                            }
-                        elseif isstring(fType) and fType == "combo" then
-                            local combo = vgui.Create("liaComboBox", form)
-                            combo:Dock(TOP)
-                            combo:DockMargin(5, 5, 5, 0)
-                            combo:PostInit()
-                            combo:SetValue(string.format("Select %s", fName))
-                            form:AddItem(combo)
-                            inputs[fName] = {
-                                panel = combo,
-                                ftype = "combo"
-                            }
-                        elseif istable(fType) then
-                            local combo = vgui.Create("liaComboBox", form)
-                            combo:Dock(TOP)
-                            combo:DockMargin(5, 5, 5, 0)
-                            combo:PostInit()
-                            combo:SetValue(string.format("Select %s", fName))
-                            for _, choice in ipairs(fType) do
-                                combo:AddChoice(choice)
-                            end
-
-                            combo:FinishAddingOptions()
-                            form:AddItem(combo)
-                            inputs[fName] = {
-                                panel = combo,
-                                ftype = "combo"
-                            }
-                        end
-                    end
-
-                    local submitButton = vgui.Create("DButton", form)
-                    submitButton:SetText("Submit")
-                    submitButton:Dock(TOP)
-                    submitButton:DockMargin(5, 10, 5, 0)
-                    form:AddItem(submitButton)
-                    submitButton.DoClick = function()
-                        local values = {}
-                        for fName, info in pairs(inputs) do
-                            if not IsValid(info.panel) then continue end
-                            if info.ftype == "text" then
-                                values[fName] = info.panel:GetValue() or ""
-                            elseif info.ftype == "combo" then
-                                values[fName] = info.panel:GetSelected() or ""
-                            end
-                        end
-
-                        net.Start(option.net)
-                        net.WriteInt(charID, 32)
-                        net.WriteTable(rowData)
-                        for _, fVal in pairs(values) do
-                            if isnumber(fVal) then
-                                net.WriteInt(fVal, 32)
-                            else
-                                net.WriteString(fVal)
-                            end
-                        end
-
-                        net.SendToServer()
-                        inputPanel:Close()
-                        frame:Remove()
-                    end
-                else
-                    net.Start(option.net)
-                    net.WriteInt(charID, 32)
-                    net.WriteTable(rowData)
-                    net.SendToServer()
-                    frame:Remove()
-                end
-            end)
-        end
-
-        timer.Simple(0.1, function()
-            if IsValid(frame) and IsValid(listView) then
-                frame:InvalidateLayout(true)
-                listView:InvalidateLayout(true)
-                frame:SizeToChildren(false, true)
-            end
-        end)
-        return frame, listView
-    end
-
     function lia.util.openOptionsMenu(title, options)
         if not istable(options) then return end
         local entries = {}

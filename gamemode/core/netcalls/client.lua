@@ -627,7 +627,7 @@ net.Receive("liaOpenInvMenu", function()
     if panels and panels[1] and panels[2] then panels[2]:SetTitle(string.format("%s's Inventory", target:getChar():getName())) end
 end)
 
-lia.net.readBigTable("liaSendTableUI", function(data) lia.util.createTableUI(data.title, data.columns, data.data, data.options, data.characterID) end)
+lia.net.readBigTable("liaCreateTableUI", function(data) lia.util.createTableUI(data) end)
 net.Receive("liaOptionsRequest", function()
     local id = net.ReadUInt(32)
     local title = net.ReadString()

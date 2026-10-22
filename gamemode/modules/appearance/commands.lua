@@ -26,20 +26,24 @@ lia.command.add("listbodygroups", {
         end
 
         if #bodygroups > 0 then
-            lia.util.sendTableUI(client, string.format("Bodygroups for %s", target:Nick()), {
-                {
-                    name = "groupID",
-                    field = "group"
+            lia.util.createTableUI({
+                title = string.format("Bodygroups for %s", target:Nick()),
+                columns = {
+                    {
+                        name = "groupID",
+                        field = "group"
+                    },
+                    {
+                        name = "name",
+                        field = "name"
+                    },
+                    {
+                        name = "range",
+                        field = "range"
+                    }
                 },
-                {
-                    name = "name",
-                    field = "name"
-                },
-                {
-                    name = "range",
-                    field = "range"
-                }
-            }, bodygroups)
+                data = bodygroups,
+            }, client)
         else
             client:notifyInfo(string.format("No bodygroups available for this model."))
         end

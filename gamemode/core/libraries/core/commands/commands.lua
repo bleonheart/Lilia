@@ -4253,33 +4253,39 @@ lia.command.add("checkattributes", {
             })
         end
 
-        lia.util.sendTableUI(client, "characterAttributes", {
-            {
-                name = "attributeName",
-                field = "name"
-            },
-            {
-                name = "currentValue",
-                field = "current"
-            },
-            {
-                name = "maxValue",
-                field = "max"
-            },
-            {
-                name = "progress",
-                field = "progress"
-            }
-        }, attributesData, {
-            {
-                name = "changeAttribute",
-                ExtraFields = {
-                    ["Amount"] = "text",
-                    ["Mode"] = {"Add", "set"}
+        lia.util.createTableUI({
+            title = "characterAttributes",
+            columns = {
+                {
+                    name = "attributeName",
+                    field = "name"
                 },
-                net = "ChangeAttribute"
-            }
-        }, client:getChar():getID())
+                {
+                    name = "currentValue",
+                    field = "current"
+                },
+                {
+                    name = "maxValue",
+                    field = "max"
+                },
+                {
+                    name = "progress",
+                    field = "progress"
+                }
+            },
+            data = attributesData,
+            options = {
+                {
+                    name = "changeAttribute",
+                    ExtraFields = {
+                        ["Amount"] = "text",
+                        ["Mode"] = {"Add", "set"}
+                    },
+                    net = "ChangeAttribute"
+                }
+            },
+            characterID = client:getChar():getID(),
+        }, client)
     end
 })
 
@@ -5053,16 +5059,20 @@ lia.command.add("doorinfo", {
                 }
             }
 
-            lia.util.sendTableUI(client, "Door" .. " " .. "Information", {
-                {
-                    name = "doorInfoProperty",
-                    field = "property"
+            lia.util.createTableUI({
+                title = "Door" .. " " .. "Information",
+                columns = {
+                    {
+                        name = "doorInfoProperty",
+                        field = "property"
+                    },
+                    {
+                        name = "doorInfoValue",
+                        field = "value"
+                    }
                 },
-                {
-                    name = "doorInfoValue",
-                    field = "value"
-                }
-            }, infoData)
+                data = infoData,
+            }, client)
         else
             client:notifyError(string.format("You are not looking at a valid door."))
         end
@@ -5622,16 +5632,20 @@ lia.command.add("listdoorids", {
             })
         end
 
-        lia.util.sendTableUI(client, string.format("Door IDs on map %s", game.GetMap()), {
-            {
-                name = "Door ID",
-                field = "property"
+        lia.util.createTableUI({
+            title = string.format("Door IDs on map %s", game.GetMap()),
+            columns = {
+                {
+                    name = "Door ID",
+                    field = "property"
+                },
+                {
+                    name = "Details Column",
+                    field = "value"
+                }
             },
-            {
-                name = "Details Column",
-                field = "value"
-            }
-        }, doorList)
+            data = doorList,
+        }, client)
     end
 })
 
@@ -6378,20 +6392,24 @@ lia.command.add("viewtickets", {
                 }
             end
 
-            lia.util.sendTableUI(client, string.format("Tickets for %s", displayName), {
-                {
-                    name = "timestamp",
-                    field = "timestamp"
+            lia.util.createTableUI({
+                title = string.format("Tickets for %s", displayName),
+                columns = {
+                    {
+                        name = "timestamp",
+                        field = "timestamp"
+                    },
+                    {
+                        name = "admin",
+                        field = "admin"
+                    },
+                    {
+                        name = "message",
+                        field = "message"
+                    }
                 },
-                {
-                    name = "admin",
-                    field = "admin"
-                },
-                {
-                    name = "message",
-                    field = "message"
-                }
-            }, ticketsData)
+                data = ticketsData,
+            }, client)
         end)
     end
 })
@@ -6448,32 +6466,36 @@ lia.command.add("plyviewclaims", {
                 }
             }
 
-            lia.util.sendTableUI(client, string.format("Claims for %s", target:Nick()), {
-                {
-                    name = "steamID",
-                    field = "steamID"
+            lia.util.createTableUI({
+                title = string.format("Claims for %s", target:Nick()),
+                columns = {
+                    {
+                        name = "steamID",
+                        field = "steamID"
+                    },
+                    {
+                        name = "adminName",
+                        field = "name"
+                    },
+                    {
+                        name = "totalClaims",
+                        field = "claims"
+                    },
+                    {
+                        name = "lastClaimDate",
+                        field = "lastclaim"
+                    },
+                    {
+                        name = "timeSinceLastClaim",
+                        field = "timeSinceLastClaim"
+                    },
+                    {
+                        name = "claimedFor",
+                        field = "claimedFor"
+                    }
                 },
-                {
-                    name = "adminName",
-                    field = "name"
-                },
-                {
-                    name = "totalClaims",
-                    field = "claims"
-                },
-                {
-                    name = "lastClaimDate",
-                    field = "lastclaim"
-                },
-                {
-                    name = "timeSinceLastClaim",
-                    field = "timeSinceLastClaim"
-                },
-                {
-                    name = "claimedFor",
-                    field = "claimedFor"
-                }
-            }, claimsData)
+                data = claimsData,
+            }, client)
         end)
     end
 })
@@ -6506,32 +6528,36 @@ lia.command.add("viewallclaims", {
                 })
             end
 
-            lia.util.sendTableUI(client, "adminClaimsTitle", {
-                {
-                    name = "steamID",
-                    field = "steamID"
+            lia.util.createTableUI({
+                title = "adminClaimsTitle",
+                columns = {
+                    {
+                        name = "steamID",
+                        field = "steamID"
+                    },
+                    {
+                        name = "adminName",
+                        field = "name"
+                    },
+                    {
+                        name = "totalClaims",
+                        field = "claims"
+                    },
+                    {
+                        name = "lastClaimDate",
+                        field = "lastclaim"
+                    },
+                    {
+                        name = "timeSinceLastClaim",
+                        field = "timeSinceLastClaim"
+                    },
+                    {
+                        name = "claimedFor",
+                        field = "claimedFor"
+                    }
                 },
-                {
-                    name = "adminName",
-                    field = "name"
-                },
-                {
-                    name = "totalClaims",
-                    field = "claims"
-                },
-                {
-                    name = "lastClaimDate",
-                    field = "lastclaim"
-                },
-                {
-                    name = "timeSinceLastClaim",
-                    field = "timeSinceLastClaim"
-                },
-                {
-                    name = "claimedFor",
-                    field = "claimedFor"
-                }
-            }, claimsData)
+                data = claimsData,
+            }, client)
         end)
     end
 })
@@ -6564,32 +6590,36 @@ lia.command.add("viewclaims", {
                 })
             end
 
-            lia.util.sendTableUI(client, "adminClaimsTitle", {
-                {
-                    name = "steamID",
-                    field = "steamID"
+            lia.util.createTableUI({
+                title = "adminClaimsTitle",
+                columns = {
+                    {
+                        name = "steamID",
+                        field = "steamID"
+                    },
+                    {
+                        name = "adminName",
+                        field = "name"
+                    },
+                    {
+                        name = "totalClaims",
+                        field = "claims"
+                    },
+                    {
+                        name = "lastClaimDate",
+                        field = "lastclaim"
+                    },
+                    {
+                        name = "timeSinceLastClaim",
+                        field = "timeSinceLastClaim"
+                    },
+                    {
+                        name = "claimedFor",
+                        field = "claimedFor"
+                    }
                 },
-                {
-                    name = "adminName",
-                    field = "name"
-                },
-                {
-                    name = "totalClaims",
-                    field = "claims"
-                },
-                {
-                    name = "lastClaimDate",
-                    field = "lastclaim"
-                },
-                {
-                    name = "timeSinceLastClaim",
-                    field = "timeSinceLastClaim"
-                },
-                {
-                    name = "claimedFor",
-                    field = "claimedFor"
-                }
-            }, claimsData)
+                data = claimsData,
+            }, client)
         end)
     end
 })
@@ -6715,33 +6745,39 @@ lia.command.add("viewwarns", {
                 })
             end
 
-            lia.util.sendTableUI(client, string.format("%s's Warnings", displayName), {
-                {
-                    name = "id",
-                    field = "index"
+            lia.util.createTableUI({
+                title = string.format("%s's Warnings", displayName),
+                columns = {
+                    {
+                        name = "id",
+                        field = "index"
+                    },
+                    {
+                        name = "timestamp",
+                        field = "timestamp"
+                    },
+                    {
+                        name = "admin",
+                        field = "admin"
+                    },
+                    {
+                        name = "warningMessage",
+                        field = "warningMessage"
+                    },
+                    {
+                        name = "Severity",
+                        field = "severity"
+                    }
                 },
-                {
-                    name = "timestamp",
-                    field = "timestamp"
+                data = warningList,
+                options = {
+                    {
+                        name = string.format("Remove %s", "Warning"),
+                        net = "liaRequestRemoveWarning"
+                    }
                 },
-                {
-                    name = "admin",
-                    field = "admin"
-                },
-                {
-                    name = "warningMessage",
-                    field = "warningMessage"
-                },
-                {
-                    name = "Severity",
-                    field = "severity"
-                }
-            }, warningList, {
-                {
-                    name = string.format("Remove %s", "Warning"),
-                    net = "liaRequestRemoveWarning"
-                }
-            }, target:getChar():getID())
+                characterID = target:getChar():getID(),
+            }, client)
         end)
     end
 })
@@ -6791,28 +6827,32 @@ lia.command.add("viewwarnsissued", {
                 }
             end
 
-            lia.util.sendTableUI(client, string.format("Warnings Issued by %s", displayName), {
-                {
-                    name = "id",
-                    field = "index"
+            lia.util.createTableUI({
+                title = string.format("Warnings Issued by %s", displayName),
+                columns = {
+                    {
+                        name = "id",
+                        field = "index"
+                    },
+                    {
+                        name = "timestamp",
+                        field = "timestamp"
+                    },
+                    {
+                        name = "player",
+                        field = "player"
+                    },
+                    {
+                        name = "warningMessage",
+                        field = "warningMessage"
+                    },
+                    {
+                        name = "Severity",
+                        field = "severity"
+                    }
                 },
-                {
-                    name = "timestamp",
-                    field = "timestamp"
-                },
-                {
-                    name = "player",
-                    field = "player"
-                },
-                {
-                    name = "warningMessage",
-                    field = "warningMessage"
-                },
-                {
-                    name = "Severity",
-                    field = "severity"
-                }
-            }, warningList)
+                data = warningList,
+            }, client)
         end)
     end
 })
