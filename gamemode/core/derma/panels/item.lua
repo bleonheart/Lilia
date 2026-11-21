@@ -1,7 +1,15 @@
 ﻿local PANEL = {}
 local renderedIcons = {}
+
+local function getItemValue(item, method, key, default)
+    local accessor = item and item[method]
+    if isfunction(accessor) then return accessor(item) end
+    return item and item[key] or default
+end
+
 local function renderNewIcon(panel, itemTable)
-    if itemTable.iconCam and (not renderedIcons[string.lower(itemTable.model)] or itemTable.forceRender) then
+    local model = itemTable.model or ""
+    if itemTable.iconCam and (not renderedIcons[string.lower(model)] or itemTable.forceRender) then
         local iconCam = itemTable.iconCam
         iconCam = {
             cam_pos = iconCam.pos,
@@ -9,7 +17,7 @@ local function renderNewIcon(panel, itemTable)
             cam_fov = iconCam.fov
         }
 
-        renderedIcons[string.lower(itemTable.model)] = true
+        renderedIcons[string.lower(model)] = true
         panel.Icon:RebuildSpawnIconEx(iconCam)
         itemTable.forceRender = nil
     end
@@ -140,7 +148,7 @@ function PANEL:setItemType(itemTypeOrID)
     assert(item, string.format("Invalid item type or ID %s", item and item.name or itemTypeOrID))
     self.liaToolTip = true
     self.itemTable = item
-    self:SetModel(item:getModel())
+    self:SetModel(getItemValue(item, "getModel", "model", ""))
     local paintMat = hook.Run("PaintItem", item)
     local entity
     if self.Icon and self.Icon.GetEntity then
@@ -150,9 +158,9 @@ function PANEL:setItemType(itemTypeOrID)
     end
 
     if IsValid(entity) then
-        local skin = item:getSkin()
+        local skin = getItemValue(item, "getSkin", "skin")
         if skin and isnumber(skin) then entity:SetSkin(skin) end
-        local bodygroups = item:getBodygroups()
+        local bodygroups = getItemValue(item, "getBodygroups", "bodygroups", {})
         if bodygroups and istable(bodygroups) then lia.util.applyBodygroups(entity, bodygroups) end
         if isstring(paintMat) and paintMat ~= "" then
             entity:SetMaterial(paintMat)
@@ -181,8 +189,11 @@ end
 
 function PANEL:updateTooltip()
     local lines = {}
-    lines[#lines + 1] = "<font=LiliaFont.16b>" .. self.itemTable:getName() .. "</font>"
-    local rarity = self.itemTable:getData("rarity") or self.itemTable.rarity
+    local item = self.itemTable
+    local name = getItemValue(item, "getName", "name", item and item.uniqueID or "Unknown item")
+    local desc = getItemValue(item, "getDesc", "desc", "")
+    lines[#lines + 1] = "<font=LiliaFont.16b>" .. tostring(name) .. "</font>"
+    local rarity = isfunction(item and item.getData) and item:getData("rarity") or item and item.rarity
     if rarity and rarity ~= "" then
         local rarityText = rarity
         local rarityColors = lia.item and lia.item.rarities
@@ -191,7 +202,7 @@ function PANEL:updateTooltip()
         lines[#lines + 1] = "<font=LiliaFont.16>" .. rarityText .. "</font>"
     end
 
-    lines[#lines + 1] = "<font=LiliaFont.16>" .. self.itemTable:getDesc() .. "</font>"
+    lines[#lines + 1] = "<font=LiliaFont.16>" .. tostring(desc) .. "</font>"
     self:SetTooltip(table.concat(lines, "\n"))
 end
 

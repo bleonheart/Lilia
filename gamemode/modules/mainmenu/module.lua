@@ -16,6 +16,9 @@ if SERVER then
     end
 else
     function MODULE:OpenCharacterMenu()
+        local panel = hook.Run("OpenCharacterMenuOverride")
+        if panel ~= nil then return panel end
+        if hook.Run("IsCharacterCreationOverridden") == true then return end
         local creator = lia.gui.schemaCharacterCreator
         if IsValid(creator) then return IsValid(creator.sourceMenu) and creator.sourceMenu or creator end
         return vgui.Create("liaCharacter")

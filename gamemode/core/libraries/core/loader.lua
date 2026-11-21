@@ -9,43 +9,43 @@ lia.reloadInProgress = false
 lia.isReloading = false
 local FilesToLoad = {
     {
-        path = "lilia/gamemode/core/libraries/core/keybind/keybind.lua",
+        path = "lilia/gamemode/core/libraries/core/keybind.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/playerinteract/playerinteract.lua",
+        path = "lilia/gamemode/core/libraries/core/playerinteract.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/sit/sit.lua",
+        path = "lilia/gamemode/core/libraries/core/sit.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/dialog/dialog.lua",
+        path = "lilia/gamemode/core/libraries/core/dialog.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/admin/admin.lua",
+        path = "lilia/gamemode/core/libraries/core/admin.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/workshop/workshop.lua",
+        path = "lilia/gamemode/core/libraries/core/workshop.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/fonts/fonts.lua",
+        path = "lilia/gamemode/core/libraries/core/fonts.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/option/option.lua",
+        path = "lilia/gamemode/core/libraries/core/option.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/util/util.lua",
+        path = "lilia/gamemode/core/libraries/core/util.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/notice/notice.lua",
+        path = "lilia/gamemode/core/libraries/core/notice.lua",
         realm = "shared"
     },
     {
@@ -53,7 +53,7 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/character/character.lua",
+        path = "lilia/gamemode/core/libraries/core/character.lua",
         realm = "shared"
     },
     {
@@ -69,27 +69,27 @@ local FilesToLoad = {
         realm = "server"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/logger/logger.lua",
+        path = "lilia/gamemode/core/libraries/core/logger.lua",
         realm = "server"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/modularity/modularity.lua",
+        path = "lilia/gamemode/core/libraries/core/modularity.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/chatbox/chatbox.lua",
+        path = "lilia/gamemode/core/libraries/core/chatbox.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/commands/commands.lua",
+        path = "lilia/gamemode/core/libraries/core/commands.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/flags/flags.lua",
+        path = "lilia/gamemode/core/libraries/core/flags.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/inventory/inventory.lua",
+        path = "lilia/gamemode/core/libraries/core/inventory.lua",
         realm = "shared"
     },
     {
@@ -101,47 +101,47 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/item/item.lua",
+        path = "lilia/gamemode/core/libraries/core/item.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/webcontent/webcontent.lua",
+        path = "lilia/gamemode/core/libraries/core/webcontent.lua",
         realm = "client"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/attributes/attributes.lua",
+        path = "lilia/gamemode/core/libraries/core/attributes.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/factions/factions.lua",
+        path = "lilia/gamemode/core/libraries/core/factions.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/classes/classes.lua",
+        path = "lilia/gamemode/core/libraries/core/classes.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/camera/camera.lua",
+        path = "lilia/gamemode/core/libraries/core/camera.lua",
         realm = "client"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/view/view.lua",
+        path = "lilia/gamemode/core/libraries/core/view.lua",
         realm = "client"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/currency/currency.lua",
+        path = "lilia/gamemode/core/libraries/core/currency.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/vendor/vendor.lua",
+        path = "lilia/gamemode/core/libraries/core/vendor.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/doors/doors.lua",
+        path = "lilia/gamemode/core/libraries/core/doors.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/time/time.lua",
+        path = "lilia/gamemode/core/libraries/core/time.lua",
         realm = "shared"
     },
     {
@@ -157,15 +157,15 @@ local FilesToLoad = {
         realm = "client"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/darkrp/darkrp.lua",
+        path = "lilia/gamemode/core/libraries/core/darkrp.lua",
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/menu/menu.lua",
+        path = "lilia/gamemode/core/libraries/core/menu.lua",
         realm = "client"
     },
     {
-        path = "lilia/gamemode/core/libraries/core/bars/bars.lua",
+        path = "lilia/gamemode/core/libraries/core/bars.lua",
         realm = "client"
     },
     {
@@ -387,7 +387,7 @@ function lia.loader.includeGroupedDir(dir, raw, recursive, forceRealm)
     end
 end
 
-lia.loader.include("lilia/gamemode/core/libraries/core/languages/languages.lua", "shared")
+lia.loader.include("lilia/gamemode/core/libraries/core/languages.lua", "shared")
 local hasChttp = util.IsBinaryModuleInstalled("chttp")
 if hasChttp then require("chttp") end
 local function fetchURL(url, onSuccess, onError)
@@ -550,13 +550,13 @@ function lia.loader.checkForUpdates()
 end
 
 lia.loader.includeDir("lilia/gamemode/core/libraries/thirdparty", true, true)
-lia.loader.include("lilia/gamemode/core/libraries/core/net/net.lua", "shared")
-lia.loader.include("lilia/gamemode/core/libraries/core/config/config.lua", "shared")
-lia.loader.include("lilia/gamemode/core/libraries/core/color/color.lua", "shared")
-lia.loader.include("lilia/gamemode/core/libraries/core/derma/derma.lua", "client")
+lia.loader.include("lilia/gamemode/core/libraries/core/net.lua", "shared")
+lia.loader.include("lilia/gamemode/core/libraries/core/config.lua", "shared")
+lia.loader.include("lilia/gamemode/core/libraries/core/color.lua", "shared")
+lia.loader.include("lilia/gamemode/core/libraries/core/derma.lua", "client")
 lia.loader.includeDir("lilia/gamemode/core/derma", true, true, "client")
-lia.loader.include("lilia/gamemode/core/libraries/core/database/database.lua", "server")
-lia.loader.include("lilia/gamemode/core/libraries/core/data/data.lua", "shared")
+lia.loader.include("lilia/gamemode/core/libraries/core/database.lua", "server")
+lia.loader.include("lilia/gamemode/core/libraries/core/data.lua", "shared")
 function lia.error(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. "Error" .. "] ")
     MsgC(Color(255, 0, 0), tostring(msg), "\n")
