@@ -1,68 +1,106 @@
 lia.workshop = lia.workshop or {}
 lia.workshop.ids = lia.workshop.ids or {}
 lia.workshop.known = lia.workshop.known or {}
+local function validWorkshopID(id)
+    id = tostring(id or "")
+    if not id:match("^%d+$") or #id > 20 or id == "0" then return nil end
+    return id
+end
+
 if SERVER then
     lia.workshop.ids["3527535922"] = true
-    function lia.workshop.addWorkshop(id)
-        id = tostring(id)
-        if not lia.workshop.ids[id] then
-            lia.bootstrap("Workshop Downloader", string.format("Downloading workshop %s", id))
-            lia.workshop.ids[id] = true
-        end
-    end
 
-    local function addKnown(id)
-        id = tostring(id)
-        if not lia.workshop.known[id] then
-            lia.workshop.known[id] = true
-            lia.bootstrap("Workshop Downloader", string.format("Added workshop %s to download list", id))
+    function lia.workshop.addWorkshop(id)
+        id = validWorkshopID(id)
+        if not id or lia.workshop.ids[id] then return end
+        lia.workshop.ids[id] = true
+        if not lia.workshop.cache then return end
+        lia.workshop.cache[id] = true
+        for _, client in ipairs(player.GetHumans()) do
+            lia.workshop.send(client)
         end
     end
 
     function lia.workshop.gather()
-        local ids = table.Copy(lia.workshop.ids)
-        for _, addon in pairs(engine.GetAddons() or {}) do
-            if addon.mounted and addon.wsid then ids[tostring(addon.wsid)] = true end
+        local ids = {}
+        for id in pairs(lia.workshop.ids) do
+            id = validWorkshopID(id)
+            if id then ids[id] = true end
         end
 
-        for _, module in pairs(lia.module.list) do
-            local wc = module.WorkshopContent
-            if wc then
-                if isstring(wc) then
-                    ids[wc] = true
-                else
-                    for _, v in ipairs(wc) do
-                        ids[tostring(v)] = true
-                    end
+        for id in pairs(liaWorkshopRegisteredIDs or {}) do
+            id = validWorkshopID(id)
+            if id then ids[id] = true end
+        end
+
+        for _, addon in ipairs(engine.GetAddons() or {}) do
+            local id = validWorkshopID(addon.wsid or addon.workshopid)
+            if addon.mounted and id then ids[id] = true end
+        end
+
+        for _, module in pairs(lia.module.list or {}) do
+            local content = module.WorkshopContent
+            if isstring(content) then
+                local id = validWorkshopID(content)
+                if id then ids[id] = true end
+            elseif istable(content) then
+                for _, value in ipairs(content) do
+                    local id = validWorkshopID(value)
+                    if id then ids[id] = true end
                 end
             end
         end
 
         for id in pairs(ids) do
-            addKnown(id)
+            lia.workshop.known[id] = true
         end
+
         return ids
     end
 
-    hook.Add("InitializedModules", "liaWorkshopInitializedModules", function() lia.workshop.cache = lia.workshop.gather() end)
-    function lia.workshop.send(ply)
-        net.Start("liaWorkshopDownloaderStart")
+    function lia.workshop.send(client)
+        if not IsValid(client) then return end
+        lia.workshop.cache = lia.workshop.gather()
+        net.Start("liaWorkshopDownloaderInfo")
         net.WriteTable(lia.workshop.cache)
-        net.Send(ply)
+        net.Send(client)
     end
 
-    hook.Add("PlayerInitialSpawn", "liaWorkshopInit", function(ply)
+    hook.Add("InitializedModules", "liaWorkshopInitializedModules", function()
+        lia.workshop.cache = lia.workshop.gather()
+    end)
+
+    hook.Add("liaWorkshopResourceRegistered", "liaWorkshopTrackResourceRegistration", function(id)
+        lia.workshop.addWorkshop(id)
+    end)
+
+    hook.Add("PlayerInitialSpawn", "liaWorkshopInit", function(client)
         timer.Simple(2, function()
-            if IsValid(ply) then
-                net.Start("liaWorkshopDownloaderInfo")
-                net.WriteTable(lia.workshop.cache or {})
-                net.Send(ply)
-            end
+            if IsValid(client) then lia.workshop.send(client) end
         end)
     end)
 else
-    lia.workshop.serverIds = lia.workshop.serverIds or {}
-    lia.workshop.serverIds["3527535922"] = true
+    lia.workshop.serverIds = lia.workshop.serverIds or { ["3527535922"] = true }
+    lia.workshop.sessionMounts = lia.workshop.sessionMounts or {}
+    local savedPath = "lilia/workshop/mounts.json"
+    local savedMounts = util.JSONToTable(file.Read(savedPath, "DATA") or "") or {}
+    local queue = {}
+    local jobs = {}
+    local active = 0
+    local function saveMounts()
+        file.CreateDir("lilia")
+        file.CreateDir("lilia/workshop")
+        file.Write(savedPath, util.TableToJSON(savedMounts))
+    end
+
+    local function mounted(id)
+        if lia.workshop.sessionMounts[id] then return true end
+        for _, addon in ipairs(engine.GetAddons() or {}) do
+            if tostring(addon.wsid or addon.workshopid) == id and addon.mounted then return true end
+        end
+        return false
+    end
+
     local function formatSize(bytes)
         if not bytes or bytes <= 0 then return "0 B" end
         local units = {"B", "KB", "MB", "GB", "TB"}
@@ -78,191 +116,168 @@ else
         lia.debug("[Workshop]", "ID=", tostring(id), "Stage=", tostring(stage), ...)
     end
 
-    local function debugMountedFiles(id, files)
-        if not istable(files) then
-            workshopDebug(id, "MountGMA files", "No file table returned", "type=" .. type(files))
-            return
-        end
+    local processQueue
+    processQueue = function()
+        while active < 2 and #queue > 0 do
+            local job = table.remove(queue, 1)
+            active = active + 1
+            local timerName = "liaWorkshopMountTimeout_" .. job.id
+            local function finish(success, message)
+                if job.done then return end
+                job.done = true
+                timer.Remove(timerName)
+                jobs[job.id] = nil
+                active = active - 1
+                if success then
+                    lia.workshop.sessionMounts[job.id] = true
+                    savedMounts[job.id] = true
+                    saveMounts()
+                else
+                    workshopDebug(job.id, "Mount failed", tostring(message))
+                end
 
-        local models = {}
-        local materials = 0
-        local luaFiles = 0
-        local sounds = 0
-        local maps = 0
-        for _, path in ipairs(files) do
-            local lower = tostring(path):lower()
-            if lower:StartWith("models/") and lower:EndsWith(".mdl") then
-                models[#models + 1] = path
-            elseif lower:StartWith("materials/") then
-                materials = materials + 1
-            elseif lower:StartWith("lua/") then
-                luaFiles = luaFiles + 1
-            elseif lower:StartWith("sound/") then
-                sounds = sounds + 1
-            elseif lower:StartWith("maps/") then
-                maps = maps + 1
+                for _, callback in ipairs(job.callbacks) do
+                    local ok, err = pcall(callback, success, message)
+                    if not ok then workshopDebug(job.id, "Mount callback failed", err) end
+                end
+
+                hook.Run("liaWorkshopMountStatusChanged", job.id, success)
+                timer.Simple(0, processQueue)
+            end
+
+            if mounted(job.id) then
+                finish(true, "Already mounted")
+            else
+                local tryDownload
+                tryDownload = function()
+                    job.attempts = job.attempts + 1
+                    local ok, err = pcall(steamworks.DownloadUGC, job.id, function(path)
+                        if job.done then return end
+                        if not isstring(path) or path == "" then
+                            if job.attempts < 2 then
+                                timer.Simple(2, function()
+                                    if not job.done then tryDownload() end
+                                end)
+                            else
+                                finish(false, "Steam Workshop download failed")
+                            end
+                            return
+                        end
+
+                        local ok, success, files = pcall(game.MountGMA, path)
+                        if not ok or not success then
+                            finish(false, "Unable to mount the downloaded GMA")
+                            return
+                        end
+
+                        workshopDebug(job.id, "Mounted", "files=" .. tostring(istable(files) and #files or 0))
+                        finish(true, "Mounted")
+                    end)
+                    if not ok then finish(false, tostring(err)) end
+                end
+
+                timer.Create(timerName, 300, 1, function() finish(false, "Workshop download timed out") end)
+                tryDownload()
             end
         end
-
-        workshopDebug(id, "Mounted file summary", "total=" .. #files, "models=" .. #models, "materials=" .. materials, "lua=" .. luaFiles, "sounds=" .. sounds, "maps=" .. maps)
-        for i = 1, math.min(#models, 15) do
-            local model = models[i]
-            workshopDebug(id, "Model check", model, "GAME exists=" .. tostring(file.Exists(model, "GAME")), "valid=" .. tostring(util.IsValidModel(model)))
-        end
-
-        if #models > 15 then workshopDebug(id, "Model check", "... " .. (#models - 15) .. " additional models omitted") end
-    end
-
-    local function debugAddonState(id, stage)
-        local found = false
-        for _, addon in pairs(engine.GetAddons() or {}) do
-            if tostring(addon.wsid or addon.workshopid) == tostring(id) then
-                found = true
-                workshopDebug(id, stage, "engine.GetAddons match", "title=" .. tostring(addon.title), "mounted=" .. tostring(addon.mounted), "downloaded=" .. tostring(addon.downloaded), "file=" .. tostring(addon.file))
-            end
-        end
-
-        if not found then workshopDebug(id, stage, "No engine.GetAddons entry found") end
-    end
-
-    local function mounted(id)
-        for _, addon in pairs(engine.GetAddons() or {}) do
-            if tostring(addon.wsid or addon.workshopid) == tostring(id) and addon.mounted then return true end
-        end
-        return false
     end
 
     function lia.workshop.downloadAndMount(id, callback)
-        workshopDebug(id, "DownloadUGC", "Starting download")
-        debugAddonState(id, "Before DownloadUGC")
-        steamworks.DownloadUGC(id, function(path)
-            workshopDebug(id, "DownloadUGC callback", "path=" .. tostring(path), "type=" .. type(path))
-            if not isstring(path) or path == "" then
-                workshopDebug(id, "DownloadUGC", "FAILED: empty or invalid path")
-                if isfunction(callback) then callback(false) end
-                return
-            end
-
-            workshopDebug(id, "MountGMA", "Attempting mount", path)
-            debugAddonState(id, "Immediately before MountGMA")
-            local success, files = game.MountGMA(path)
-            workshopDebug(id, "MountGMA result", "success=" .. tostring(success), "returnedFiles=" .. tostring(istable(files) and #files or 0))
-            debugMountedFiles(id, files)
-            debugAddonState(id, "Immediately after MountGMA")
-            timer.Simple(1, function()
-                workshopDebug(id, "Mount +1s", "mounted()=" .. tostring(mounted(id)))
-                debugAddonState(id, "MountGMA +1s")
-                debugMountedFiles(id, files)
-            end)
-
-            timer.Simple(5, function()
-                workshopDebug(id, "Mount +5s", "mounted()=" .. tostring(mounted(id)))
-                debugAddonState(id, "MountGMA +5s")
-                debugMountedFiles(id, files)
-            end)
-
-            if not success then
-                workshopDebug(id, "MountGMA", "FAILED")
-                if isfunction(callback) then callback(false) end
-                return
-            end
-
-            if isfunction(callback) then callback(true) end
-        end)
-    end
-
-    local function gmaDir()
-        local dir = "lilia/workshop"
-        if not file.IsDir(dir, "DATA") then file.CreateDir(dir) end
-        return dir
-    end
-
-    local function gmaPath(id)
-        return gmaDir() .. "/" .. id .. ".gma"
-    end
-
-    local function mountLocal(id)
-        local rel = gmaPath(id)
-        if not file.Exists(rel, "DATA") then
-            workshopDebug(id, "mountLocal", "Cached GMA does not exist", rel)
-            return false
+        id = validWorkshopID(id)
+        if not id then
+            if isfunction(callback) then callback(false, "Invalid Workshop ID") end
+            return
         end
 
-        workshopDebug(id, "mountLocal", "Attempting cached mount", "data/" .. rel)
-        debugAddonState(id, "Before cached MountGMA")
-        local success, files = game.MountGMA("data/" .. rel)
-        workshopDebug(id, "mountLocal", "MountGMA success=" .. tostring(success), "returnedFiles=" .. tostring(istable(files) and #files or 0))
-        debugMountedFiles(id, files)
-        debugAddonState(id, "Immediately after cached MountGMA")
-        timer.Simple(1, function()
-            workshopDebug(id, "Cached mount +1s", "mounted()=" .. tostring(mounted(id)))
-            debugAddonState(id, "Cached MountGMA +1s")
-            debugMountedFiles(id, files)
-        end)
-        return success == true
+        if mounted(id) then
+            if isfunction(callback) then callback(true, "Already mounted") end
+            return
+        end
+
+        local job = jobs[id]
+        if job then
+            if isfunction(callback) then job.callbacks[#job.callbacks + 1] = callback end
+            return
+        end
+
+        job = {id = id, attempts = 0, callbacks = {}}
+        if isfunction(callback) then job.callbacks[1] = callback end
+        jobs[id] = job
+        queue[#queue + 1] = job
+        processQueue()
     end
 
     function lia.workshop.hasContentToDownload()
         for id in pairs(lia.workshop.serverIds or {}) do
-            if not mounted(id) and not mountLocal(id) then return true end
+            if not mounted(id) then return true end
         end
         return false
     end
 
     function lia.workshop.mountContent()
-        local ids = lia.workshop.serverIds or {}
-        local needed = {}
-        for id in pairs(ids) do
-            if not mounted(id) and not mountLocal(id) then needed[#needed + 1] = id end
+        local ids = {}
+        for id in pairs(lia.workshop.serverIds or {}) do
+            if not mounted(id) then ids[#ids + 1] = id end
         end
 
-        if #needed == 0 then
-            lia.bootstrap("Workshop Downloader", "All workshop addons already installed. Skipping download.")
+        if #ids == 0 then
+            lia.bootstrap("Workshop Downloader", "All workshop addons are mounted.")
             return
         end
 
-        local pending, totalSize = #needed, 0
-        for _, id in ipairs(needed) do
-            steamworks.FileInfo(id, function(fi)
-                if fi and fi.size then totalSize = totalSize + fi.size end
+        local pending = #ids
+        local bytes = 0
+        for _, id in ipairs(ids) do
+            steamworks.FileInfo(id, function(info)
+                if info then bytes = bytes + (tonumber(info.size) or 0) end
                 pending = pending - 1
-                if pending <= 0 then
-                    lia.derma.requestPopupQuestion(string.format("Download %s of workshop content?", formatSize(totalSize)), {
-                        {
-                            "Yes",
-                            function()
-                                net.Start("liaWorkshopDownloaderRequest")
-                                net.SendToServer()
-                            end
-                        },
-                        {"No"}
-                    })
-                end
+                if pending ~= 0 then return end
+                lia.derma.requestPopupQuestion(string.format("Download and mount %d addon%s (%s)?", #ids, #ids == 1 and "" or "s", formatSize(bytes)), {
+                    {"Mount", function()
+                        for _, workshopID in ipairs(ids) do lia.workshop.downloadAndMount(workshopID) end
+                    end},
+                    {"Cancel"}
+                })
             end)
         end
     end
 
     function lia.workshop.remountContent()
-        local ids = lia.workshop.serverIds or {}
-        local hasMissingContent = false
-        local remountedAny = false
-        for id in pairs(ids) do
+        local pending = 0
+        for id in pairs(lia.workshop.serverIds or {}) do
             if not mounted(id) then
-                if mountLocal(id) then
-                    remountedAny = true
-                else
-                    hasMissingContent = true
-                end
+                pending = pending + 1
+                lia.workshop.downloadAndMount(id, function(success, reason)
+                    if not success then workshopDebug(id, "Remount failed", reason) end
+                end)
             end
         end
 
-        if hasMissingContent then
-            lia.workshop.mountContent()
-            return
+        if pending == 0 then lia.bootstrap("Workshop Downloader", "All workshop addons are mounted.") end
+    end
+
+    local function updateServerIDs()
+        local received = net.ReadTable()
+        if not istable(received) then return end
+        local ids = {}
+        for key, value in pairs(received) do
+            local id = validWorkshopID(value == true and key or value)
+            if id then ids[id] = true end
         end
 
-        if remountedAny or not lia.workshop.hasContentToDownload() then lia.bootstrap("Workshop Downloader", "All workshop addons already installed. Skipping download.") end
+        lia.workshop.serverIds = ids
+        hook.Run("liaWorkshopIDsUpdated")
+        for id in pairs(ids) do
+            if savedMounts[id] and not mounted(id) then
+                lia.workshop.downloadAndMount(id, function(success, reason)
+                    if not success then workshopDebug(id, "Restore failed", reason) end
+                end)
+            end
+        end
     end
+
+    net.Receive("liaWorkshopDownloaderInfo", updateServerIDs)
+    net.Receive("liaWorkshopDownloaderStart", updateServerIDs)
 
     local workshopSearchIcon = Material("icon16/magnifier.png", "smooth")
     local workshopLinkIcon = Material("icon16/world_go.png", "smooth")
@@ -706,6 +721,10 @@ window.addEventListener('resize',reportWorkshopHeight);
                     listCanvas = listScroll
                 end
 
+                hook.Add("liaWorkshopIDsUpdated", root, function(self)
+                    if IsValid(self) and IsValid(parent) then lia.workshop.createBrowser(parent, options) end
+                end)
+
                 if addonCount <= 0 then
                     if countLabel then countLabel:SetText("0 addons") end
                     local empty = listCanvas:Add("DLabel")
@@ -756,6 +775,8 @@ window.addEventListener('resize',reportWorkshopHeight);
                     return true
                 end
 
+                local selectedRecord
+                local rebuildDetail
                 local function applyFilters()
                     local query = string.Trim(searchEntry:GetValue() or ""):lower()
                     for _, record in ipairs(records) do
@@ -767,13 +788,28 @@ window.addEventListener('resize',reportWorkshopHeight);
                     updateCount()
                 end
 
+                hook.Add("liaWorkshopMountStatusChanged", root, function(self, id, success)
+                    if not IsValid(self) then return end
+                    for _, record in ipairs(records) do
+                        if record.id == id then
+                            record.mounted = success or mounted(id)
+                            if record.mounted then record.selected = false end
+                            record.searchText = string.format("%s %s %s", record.title, record.id, record.mounted and "mounted" or "not mounted"):lower()
+                            updateSelectedSize()
+                            applyFilters()
+                            if selectedRecord == record and rebuildDetail then rebuildDetail(record) end
+                            break
+                        end
+                    end
+                end)
+
                 searchEntry.OnChange = applyFilters
                 filter.OnSelect = function(_, _, _, data)
                     selectedFilter = data or "all"
                     applyFilters()
                 end
 
-                local function rebuildDetail(record)
+                rebuildDetail = function(record)
                     detailPanel:Clear()
                     local accent, textColor = getWorkshopThemeColors(palette)
                     local header = detailPanel:Add("DPanel")
@@ -800,9 +836,12 @@ window.addEventListener('resize',reportWorkshopHeight);
                         if IsValid(mountButton) then mountButton:Remove() end
                         local label = record.mounted and "MOUNTED" or string.upper(tostring("Mount"))
                         mountButton = createWorkshopButton(header, label, workshopMountIcon, true, function()
-                            lia.workshop.downloadAndMount(record.id, function(success)
+                            mountButton:SetEnabled(false)
+                            lia.workshop.downloadAndMount(record.id, function(success, reason)
+                                if not IsValid(root) then return end
                                 if not success then
-                                    LocalPlayer():notifyError(string.format("Failed to download workshop addon: %s", record.title or record.id))
+                                    LocalPlayer():notifyError(string.format("Failed to mount %s: %s", record.title, tostring(reason)))
+                                    buildMountButton()
                                     return
                                 end
 
@@ -888,7 +927,6 @@ window.addEventListener('resize',reportWorkshopHeight);
                     end
                 end
 
-                local selectedRecord
                 local function selectRecord(record)
                     if selectedCard and IsValid(selectedCard) then selectedCard.selected = false end
                     selectedCard = record.card
@@ -915,40 +953,112 @@ window.addEventListener('resize',reportWorkshopHeight);
                     return list
                 end
 
+                local function confirmWorkshopMount(count, bytes, callback)
+                    local overlay = root:Add("EditablePanel")
+                    overlay:SetPos(0, 0)
+                    overlay:SetSize(root:GetSize())
+                    overlay:SetZPos(32000)
+                    overlay:SetMouseInputEnabled(true)
+                    overlay:SetKeyboardInputEnabled(true)
+                    overlay.Paint = function(_, w, h)
+                        surface.SetDrawColor(0, 0, 0, 185)
+                        surface.DrawRect(0, 0, w, h)
+                    end
+
+                    overlay.Think = function(self)
+                        if not IsValid(root) then return end
+                        if self:GetWide() ~= root:GetWide() or self:GetTall() ~= root:GetTall() then
+                            self:SetSize(root:GetSize())
+                        end
+                    end
+
+                    overlay.OnKeyCodePressed = function(self, key)
+                        if key == KEY_ESCAPE then self:Remove() end
+                    end
+
+                    local dialog = overlay:Add("DPanel")
+                    dialog.Paint = function(_, w, h)
+                        local accent, textColor = getWorkshopThemeColors(palette)
+                        drawBrowserPanel(0, 0, w, h, 7, palette and palette.surface or Color(22, 26, 37, 252), Color(accent.r, accent.g, accent.b, 110), palette)
+                        draw.SimpleText("CONFIRM MOUNT", "LiliaFont.20", 22, 19, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                        surface.SetDrawColor(accent.r, accent.g, accent.b, 60)
+                        surface.DrawRect(22, 55, w - 44, 1)
+                        draw.SimpleText(string.format("%d addon%s", count, count == 1 and "" or "s"), "LiliaFont.20", 22, 81, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(formatSize(bytes), "LiliaFont.20", w - 22, 81, textColor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText("Download and mount this content now?", "LiliaFont.17", 22, 112, palette and palette.muted or Color(170, 190, 191), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    end
+
+                    local confirm = createWorkshopButton(dialog, "MOUNT", workshopMountIcon, true, function()
+                        overlay:Remove()
+                        callback()
+                    end, palette)
+                    local cancel = createWorkshopButton(dialog, "CANCEL", nil, false, function() overlay:Remove() end, palette)
+                    dialog.PerformLayout = function(_, w, h)
+                        confirm:SetPos(22, h - 60)
+                        confirm:SetSize(math.floor((w - 52) * 0.5), 38)
+                        cancel:SetPos(30 + math.floor((w - 52) * 0.5), h - 60)
+                        cancel:SetSize(math.floor((w - 52) * 0.5), 38)
+                    end
+
+                    overlay.PerformLayout = function(_, w, h)
+                        dialog:SetSize(math.min(460, math.max(260, w - 24)), 202)
+                        dialog:SetPos(math.floor((w - dialog:GetWide()) * 0.5), math.floor((h - dialog:GetTall()) * 0.5))
+                    end
+
+                    overlay:InvalidateLayout(true)
+                    overlay:MakePopup()
+                    overlay:MoveToFront()
+                end
+
                 local function mountRecords(list)
                     if #list == 0 then
-                        lia.workshop.remountContent()
+                        LocalPlayer():notifyInfo("There are no unmounted addons to mount.")
                         return
                     end
 
-                    local totalSize = 0
-                    for _, record in ipairs(list) do totalSize = totalSize + (record.info and record.info.size or 0) end
-                    lia.derma.requestPopupQuestion(string.format("Download %d workshop addon%s (%s)?", #list, #list == 1 and "" or "s", formatSize(totalSize)), {
-                        {
-                            "Yes",
-                            function()
-                                local pending = #list
-                                for _, record in ipairs(list) do
-                                    lia.workshop.downloadAndMount(record.id, function(success)
-                                        if success then
-                                            record.mounted = true
-                                            record.selected = false
-                                            record.searchText = string.format("%s %s mounted", record.title, record.id):lower()
-                                            updateSelectedSize()
-                                            if IsValid(record.card) then record.card:InvalidateLayout(true) end
-                                        end
+                    local bytes = 0
+                    for _, record in ipairs(list) do
+                        bytes = bytes + (tonumber(record.info.size) or 0)
+                    end
 
-                                        pending = pending - 1
-                                        if pending <= 0 and IsValid(root) then
-                                            applyFilters()
-                                            if selectedRecord then rebuildDetail(selectedRecord) end
-                                        end
-                                    end)
+                    confirmWorkshopMount(#list, bytes, function()
+                        local pending = #list
+                        local mountedCount = 0
+                        local failedCount = 0
+                        for _, record in ipairs(list) do
+                            lia.workshop.downloadAndMount(record.id, function(success, reason)
+                                pending = pending - 1
+                                if success then
+                                    mountedCount = mountedCount + 1
+                                else
+                                    failedCount = failedCount + 1
+                                    workshopDebug(record.id, "Batch mount failed", reason)
                                 end
-                            end
-                        },
-                        {"No"}
-                    })
+
+                                if IsValid(root) then
+                                    if success then
+                                        record.mounted = true
+                                        record.selected = false
+                                        record.searchText = string.format("%s %s mounted", record.title, record.id):lower()
+                                        updateSelectedSize()
+                                    end
+
+                                    if pending == 0 then
+                                        applyFilters()
+                                        if selectedRecord then rebuildDetail(selectedRecord) end
+                                    end
+                                end
+
+                                if pending == 0 then
+                                    if failedCount > 0 then
+                                        LocalPlayer():notifyError(string.format("Mounted %d addon%s; %d failed. You can retry failed mounts.", mountedCount, mountedCount == 1 and "" or "s", failedCount))
+                                    else
+                                        LocalPlayer():notify(string.format("Successfully mounted %d addon%s.", mountedCount, mountedCount == 1 and "" or "s"))
+                                    end
+                                end
+                            end)
+                        end
+                    end)
                 end
 
                 if mountMode then
@@ -1057,12 +1167,10 @@ window.addEventListener('resize',reportWorkshopHeight);
                 local function populate()
                     local rows = {}
                     for id, fi in pairs(info) do
-                        if fi then
-                            rows[#rows + 1] = {
-                                id = id,
-                                info = fi
-                            }
-                        end
+                        rows[#rows + 1] = {
+                            id = id,
+                            info = fi or {title = "Workshop addon " .. id}
+                        }
                     end
 
                     table.sort(rows, function(a, b) return tostring(a.info.title or a.id):lower() < tostring(b.info.title or b.id):lower() end)
@@ -1072,8 +1180,8 @@ window.addEventListener('resize',reportWorkshopHeight);
                             id = tostring(row.id),
                             info = fi,
                             title = tostring(fi.title or string.format("ID: %s", row.id)),
-                            sizeText = fi.size and formatSize(fi.size) or "0 B",
-                            mounted = mounted(row.id),
+                            sizeText = fi.size and formatSize(tonumber(fi.size)) or "Unknown",
+                            mounted = mounted(tostring(row.id)),
                             selected = false
                         }
 
@@ -1087,8 +1195,8 @@ window.addEventListener('resize',reportWorkshopHeight);
 
                 for id in pairs(ids) do
                     steamworks.FileInfo(id, function(fi)
-                        info[id] = fi
-                        if fi and fi.size then totalSize = totalSize + fi.size end
+                        info[id] = fi or false
+                        if fi and fi.size then totalSize = totalSize + (tonumber(fi.size) or 0) end
                         pending = pending - 1
                         if pending <= 0 and IsValid(root) then populate() end
                     end, true)

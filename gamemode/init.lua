@@ -4,6 +4,19 @@ DeriveGamemode("sandbox")
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("core/libraries/core/loader.lua")
+liaWorkshopRegisteredIDs = liaWorkshopRegisteredIDs or {}
+liaWorkshopOriginalAddWorkshop = liaWorkshopOriginalAddWorkshop or resource.AddWorkshop
+resource.AddWorkshop = function(id)
+    local result = liaWorkshopOriginalAddWorkshop(id)
+    local workshopID = tostring(id)
+    if workshopID:match("^%d+$") and #workshopID <= 20 and workshopID ~= "0" then
+        liaWorkshopRegisteredIDs[workshopID] = true
+        hook.Run("liaWorkshopResourceRegistered", workshopID)
+    end
+
+    return result
+end
+
 include("shared.lua")
 for _, fontFile in ipairs(fontFiles) do
     resource.AddSingleFile(fontFile)
