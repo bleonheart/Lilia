@@ -1088,7 +1088,6 @@ function PANEL:createStartButton()
     self.menuPanel.Paint = function(_, pw, ph) mmPaintContainer(pw, ph) end
     mmAnimateIn(self.menuPanel, x, y, -14, 0, 0.34, 0)
     local discordURL = lia.config.get("DiscordURL", "")
-    local workshopURL = lia.config.get("Workshop", "")
     local buttonsData = {}
     local hasStaffChar, hasNonStaffChar = false, false
     if lia.characters and #lia.characters > 0 then
@@ -1160,21 +1159,10 @@ function PANEL:createStartButton()
         end)
     end
 
-    if workshopURL ~= "" then
-        addEntry("System", "workshop", "Workshop", "View our Workshop collection.", function()
-            self:clickSound()
-            gui.OpenURL(workshopURL)
-        end)
-    end
-
-    local needsDownload = lia.workshop.hasContentToDownload()
-    addEntry("System", "mount", "Mount Content", needsDownload and "Mount required Workshop content." or "Remount Workshop addons.", function()
+    addEntry("System", "mount", "Workshop", "Browse and mount Workshop addons.", function()
         self:clickSound()
-        if not needsDownload then
-            lia.workshop.remountContent()
-        else
-            lia.workshop.mountContent()
-        end
+        if IsValid(lia.gui.workshopMount) then lia.gui.workshopMount:Remove() end
+        lia.gui.workshopMount = vgui.Create("liaWorkshopMountMenu")
     end)
 
     addEntry("System", "disconnect", "Disconnect", "Leave the server and return to desktop.", function()
@@ -1446,14 +1434,10 @@ function PANEL:createCharacterSelection()
     end
 
     addSectionLabel("System")
-    local needsDownload = lia.workshop.hasContentToDownload()
-    addMenuButton("Mount Content", needsDownload and "Mount required Workshop content." or "Remount Workshop addons.", function()
+    addMenuButton("Workshop", "Browse and mount Workshop addons.", function()
         self:clickSound()
-        if not needsDownload then
-            lia.workshop.remountContent()
-        else
-            lia.workshop.mountContent()
-        end
+        if IsValid(lia.gui.workshopMount) then lia.gui.workshopMount:Remove() end
+        lia.gui.workshopMount = vgui.Create("liaWorkshopMountMenu")
     end)
 
     addMenuButton("Disconnect", "Leave the server and return to desktop.", function()
@@ -2283,6 +2267,73 @@ function PANEL:showConfirmation(message, onConfirm, onCancel)
     return frame
 end
 
+local MountPanel = {}
+function MountPanel:Init()
+    self:SetSize(ScrW(), ScrH())
+    self:MakePopup()
+    self.Paint = function(_, w, h)
+        surface.SetDrawColor(0, 0, 0, 210)
+        surface.DrawRect(0, 0, w, h)
+    end
+
+    self.OnRemove = function()
+        if lia.gui.workshopMount == self then lia.gui.workshopMount = nil end
+    end
+
+    local width = math.Clamp(ScrW() * 0.62, 760, 1120)
+    local height = math.Clamp(ScrH() * 0.74, 520, 760)
+    local root = self:Add("DPanel")
+    root:SetSize(width, height)
+    root.Paint = function(_, w, h) mmDrawPanel(0, 0, w, h, 7, mmSurface(0.02, 246), mmAccent(70)) end
+    mmAnimateIn(root, (ScrW() - width) * 0.5, (ScrH() - height) * 0.5, 0, 14, 0.26, 0)
+    local bar = root:Add("DPanel")
+    bar:Dock(TOP)
+    bar:SetTall(46)
+    bar.Paint = function(_, w, h)
+        draw.SimpleText("WORKSHOP", "LiliaFont.17", 16, h * 0.5, mmText(), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        surface.SetDrawColor(mmAccent(55))
+        surface.DrawRect(16, h - 1, w - 32, 1)
+    end
+
+    local close = bar:Add("DButton")
+    close:SetText("")
+    close:SetSize(96, 32)
+    close.Paint = function(s, w, h)
+        mmPaintBlock(w, h, s:IsHovered())
+        draw.SimpleText("CLOSE", "LiliaFont.16", w * 0.5, h * 0.5, mmText(), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+
+    close.PerformLayout = function()
+        close:SetPos(bar:GetWide() - 108, 7)
+    end
+
+    close.DoClick = function()
+        if IsValid(lia.gui.character) then lia.gui.character:clickSound() end
+        self:Remove()
+    end
+
+    local content = root:Add("DPanel")
+    content:Dock(FILL)
+    content.Paint = function() end
+    lia.workshop.createBrowser(content, {
+        mountMode = true,
+        collectionURL = lia.config.get("Workshop", ""),
+        palette = {
+            accent = mmAccent(),
+            text = mmText(),
+            muted = mmMuted(),
+            surface = mmSurface(0.02, 246),
+            surfaceAlt = mmSurface(0.055, 244),
+            drawPanel = mmDrawPanel
+        }
+    })
+end
+
+function MountPanel:OnKeyCodePressed(key)
+    if key == KEY_ESCAPE then self:Remove() end
+end
+
+vgui.Register("liaWorkshopMountMenu", MountPanel, "EditablePanel")
 vgui.Register("liaCharacter", PANEL, "EditablePanel")
 end
 
