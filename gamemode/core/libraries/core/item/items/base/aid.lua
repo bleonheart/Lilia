@@ -54,7 +54,7 @@ local function applyAidEffects(item, target, staminaTarget)
 end
 
 ITEM.functions.use = {
-    name = "use",
+    name = "Use",
     sound = "items/medshot4.wav",
     onRun = function(item)
         local client = item.player
@@ -63,7 +63,7 @@ ITEM.functions.use = {
 }
 
 ITEM.functions.target = {
-    name = "itemUseOnTarget",
+    name = "Use on Target",
     sound = "items/medshot4.wav",
     onRun = function(item)
         local client = item.player

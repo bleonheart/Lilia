@@ -97,7 +97,7 @@ function MODULE:HandleItemTransferRequest(client, itemID, x, y, invID, rotated)
     if not oldInventory or not oldInventory.items[itemID] then return end
     local transferAllowed, transferReason = hook.Run("CanItemBeTransfered", item, oldInventory, newInventory, client)
     if transferAllowed == false then
-        client:notifyErrorLocalized(transferReason or "notNow")
+        client:notifyError(transferReason or "You are not allowed to do this right now.")
         return
     end
 
@@ -111,13 +111,13 @@ function MODULE:HandleItemTransferRequest(client, itemID, x, y, invID, rotated)
     local canAccessTransfer, accessReason = oldInventory:canAccess("transfer", context)
     if not newInventory then return hook.Run("ItemDraggedOutOfInventory", client, item) end
     if not canAccessTransfer then
-        if isstring(accessReason) then client:notifyErrorLocalized(accessReason) end
+        if isstring(accessReason) then client:notifyError(accessReason) end
         return
     end
 
     local canAccessTransferTo, accessReasonTo = newInventory:canAccess("transfer", context)
     if not canAccessTransferTo then
-        if isstring(accessReasonTo) then client:notifyErrorLocalized(accessReasonTo) end
+        if isstring(accessReasonTo) then client:notifyError(accessReasonTo) end
         return
     end
 

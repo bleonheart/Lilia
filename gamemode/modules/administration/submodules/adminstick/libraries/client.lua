@@ -427,13 +427,13 @@ local function CreateOrganizedAdminStickMenu(tgt, stores, existingMenu)
             local isStaffOnDuty = cl:isStaffOnDuty()
             if categoryKey == "moderation" and tgt:IsPlayer() and (hasAlwaysSpawnAdminStick or isStaffOnDuty) then
                 hasContent = true
-            elseif categoryKey == "characterManagement" and tgt:IsPlayer() then
+            elseif categoryKey == "Character Management" and tgt:IsPlayer() then
                 hasContent = true
             elseif categoryKey == "flagManagement" and tgt:IsPlayer() and (hasAlwaysSpawnAdminStick or isStaffOnDuty) then
                 hasContent = true
-            elseif categoryKey == "doorManagement" and tgt:isDoor() then
+            elseif categoryKey == "Door Management" and tgt:isDoor() then
                 hasContent = true
-            elseif categoryKey == "storageManagement" and tgt.isStorageEntity then
+            elseif categoryKey == "Storage Management" and tgt.isStorageEntity then
                 hasContent = true
             elseif categoryKey == "utility" and tgt:IsPlayer() then
                 hasContent = true
@@ -723,7 +723,7 @@ local function IncludeAdminMenu(tgt, menu, stores)
     if not permission then return end
     local modCategory = GetOrCreateCategoryMenu(menu, "moderation", stores)
     if not modCategory then return end
-    local modSubCategory = GetOrCreateSubCategoryMenu(modCategory, "moderation", "moderationTools", stores)
+    local modSubCategory = GetOrCreateSubCategoryMenu(modCategory, "moderation", "Moderation Tools", stores)
     if not modSubCategory then return end
     appendDeferredMenuBuild(modSubCategory, function(submenu)
         local mods = {}
@@ -911,7 +911,7 @@ end
 
 local function IncludeCharacterManagement(tgt, menu, stores)
     local cl = LocalPlayer()
-    local charCategory = GetOrCreateCategoryMenu(menu, "characterManagement", stores)
+    local charCategory = GetOrCreateCategoryMenu(menu, "Character Management", stores)
     if not charCategory then return end
     local canManageCharacterInformation = cl:hasPrivilege("manageCharacterInformation")
     if canManageCharacterInformation then
@@ -935,9 +935,9 @@ local function IncludeFlagManagement(tgt, menu, stores)
     local cl = LocalPlayer()
     local canManageFlags = cl:hasPrivilege("manageFlags")
     if not canManageFlags then return end
-    local charCategory = GetOrCreateCategoryMenu(menu, "characterManagement", stores)
+    local charCategory = GetOrCreateCategoryMenu(menu, "Character Management", stores)
     if not charCategory then return end
-    local cf = GetOrCreateSubCategoryMenu(charCategory, "characterManagement", "flags", stores)
+    local cf = GetOrCreateSubCategoryMenu(charCategory, "Character Management", "Flags", stores)
     if not cf then return end
     appendDeferredMenuBuild(cf, function(submenu)
         local charObj = tgt:getChar()
@@ -1147,8 +1147,8 @@ local function RegisterDefaultAdminStickListHooks()
 
         table.insert(lists, {
             name = "Copy",
-            category = "moderation",
-            subcategory = "moderationTools",
+            category = "Moderation",
+            subcategory = "Moderation Tools",
             items = copyItems
         })
 
@@ -1173,7 +1173,7 @@ local function RegisterDefaultAdminStickListHooks()
 
             table.insert(lists, {
                 name = "Storage",
-                category = "storageManagement",
+                category = "Storage Management",
                 subcategory = "storageActions",
                 items = storageOptions
             })
@@ -1267,13 +1267,13 @@ local function drawAdminStickPanel(x, y, w, h, radius, color, outline)
     end
 end
 
-local function adminStickCopyText(value, notifyKey)
+local function adminStickCopyText(value, notifyMessage)
     if value == nil then return end
     value = tostring(value)
     if value == "" or value == "BOT" then return end
     SetClipboardText(value)
     local client = LocalPlayer()
-    if IsValid(client) and client.notifySuccessLocalized then client:notifySuccessLocalized(notifyKey or "copied") end
+    if IsValid(client) and client.notifySuccess then client:notifySuccess(notifyMessage or "Copied to clipboard.") end
 end
 
 local function adminStickGetTargetName(target)
@@ -1648,7 +1648,7 @@ function ADMIN_STICK_PANEL:Think()
         return
     end
 
-    if self.activeCategory == "doorAccess" and self.target.isDoor and self.target:isDoor() then self:RefreshDoorAccessState() end
+    if self.activeCategory == "Door Access" and self.target.isDoor and self.target:isDoor() then self:RefreshDoorAccessState() end
     if (self.activeCategory == "playerWhitelists" or self.activeCategory == "playerFactionTransfer") and self.target:IsPlayer() and (self.nextPlayerStateRequest or 0) <= CurTime() then
         self.nextPlayerStateRequest = CurTime() + 1.5
         requestAdminStickPlayerState(self.target)
@@ -2164,7 +2164,7 @@ function ADMIN_STICK_PANEL:BuildQuickActions()
         self.quickActions[#self.quickActions + 1] = {
             label = "Copy CharID",
             icon = "icon16/page_copy.png",
-            callback = function() adminStickCopyText(charID, "adminStickCopiedCharID") end
+            callback = function() adminStickCopyText(charID, "Character ID copied to clipboard.") end
         }
 
         self.quickActions[#self.quickActions + 1] = {
@@ -2262,12 +2262,12 @@ function ADMIN_STICK_PANEL:BuildCategories()
     if IsValid(self.target) and self.target.isDoor and self.target:isDoor() then
         self.categories.doorAccess = {
             name = "Door Access",
-            icon = GetIconForCategory("doorAccess"),
+            icon = GetIconForCategory("Door Access"),
             count = 0,
             isDoorAccess = true
         }
 
-        self.categoryOrder[#self.categoryOrder + 1] = "doorAccess"
+        self.categoryOrder[#self.categoryOrder + 1] = "Door Access"
     end
 
     if IsValid(self.target) and self.target:IsPlayer() then
@@ -2333,7 +2333,7 @@ function ADMIN_STICK_PANEL:CreateCategoryButton(category)
 end
 
 function ADMIN_STICK_PANEL:RebuildActions()
-    local isDoorAccess = self.activeCategory == "doorAccess"
+    local isDoorAccess = self.activeCategory == "Door Access"
     local isPlayerWhitelists = self.activeCategory == "playerWhitelists"
     local isPlayerFactionTransfer = self.activeCategory == "playerFactionTransfer"
     local isSpecialCategory = isDoorAccess or isPlayerWhitelists or isPlayerFactionTransfer
@@ -2462,7 +2462,7 @@ function ADMIN_STICK_PANEL:BuildActionArgumentFields(parent, action)
         entry:SetFont("LiliaFont.16")
         entry:SetText(state[argument.name] or "")
         entry:SetUpdateOnType(true)
-        entry:SetPlaceholderText(string.format("%s (%s)", tostring(argument.name or "argument"), tostring(argument.type or "string")))
+        entry:SetPlaceholderText(string.format("%s (%s)", tostring(argument.name or "Argument"), tostring(argument.type or "String")))
         entry:SetCursorColor(getAdminStickTheme())
         if argument.type == "number" or argument.type == "int" or argument.type == "float" then entry:SetNumeric(true) end
         entry.OnValueChange = function(_, value) state[argument.name] = value end

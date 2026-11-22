@@ -1,6 +1,6 @@
 ENT.Type = "anim"
 ENT.PrintName = "Appearance Wardrobe"
-ENT.Author = "@liliaplayer"
+ENT.Author = "liliaplayer"
 ENT.Spawnable = true
 ENT.AdminOnly = true
 ENT.Category = "Lilia"

@@ -1710,7 +1710,7 @@ function lia.derma.openOptionsMenu(title, options)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 190)
         surface.DrawRect(0, 0, w, 2)
         surface.DrawRect(padding, 18, 3, 20)
-        draw.SimpleText(string.upper(resolveText(title or "options")), config.titleFont or "LiliaFont.20", padding + 16, headerH * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(string.upper(resolveText(title or "Options")), config.titleFont or "LiliaFont.20", padding + 16, headerH * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         surface.SetDrawColor(accent.r, accent.g, accent.b, 45)
         surface.DrawRect(padding, headerH - 1, w - padding * 2, 1)
     end

@@ -1,6 +1,6 @@
 MODULE.name = "NPCs"
 MODULE.author = "Samael"
-MODULE.discord = "@liliaplayer"
+MODULE.discord = "liliaplayer"
 MODULE.desc = "Provides dialog NPCs, conversations, generated dialog trees, configuration, persistence, networking, and UI."
 MODULE.NetworkStrings = {"liaDialogSync", "liaNpcCustomize", "liaNpcDialogServerCallback", "liaNpcDialogRequestResponse", "liaNpcDialogDeliverResponse", "liaNpcDialogNodeSelect", "liaNpcDialogNodeResult", "liaOpenNpcDialog", "liaRequestNPCSelection",}
 properties.Add("liaConfigureNPC", {

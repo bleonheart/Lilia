@@ -1,6 +1,6 @@
 MODULE.name = "Appearance"
 MODULE.author = "Samael"
-MODULE.discord = "@liliaplayer"
+MODULE.discord = "liliaplayer"
 MODULE.desc = "Provides model, skin, and bodygroup customization through one appearance wardrobe entity."
 MODULE.NetworkStrings = {
     "AppearanceMenuOpen",

@@ -341,7 +341,7 @@ hook.Add("CanTool", "Lilia.CanTool", function(client, trace, tool)
             table.insert(reasons, "flag 't'")
         end
 
-        client:notifyErrorLocalized(tier == "disabled" and "toolNoPermission" or "toolNotAllowed", tool, table.concat(reasons, ", "))
+        client:notifyError(string.format(tier == "disabled" and "You do not have permission to access tool '%s'. Missing: %s" or "You are not allowed to use the %s tool.", tool, table.concat(reasons, ", ")))
         return false
     end
 

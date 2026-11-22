@@ -6,7 +6,7 @@
         },
     },
     desc = "Says something in-character.",
-    format = "icFormat",
+    format = "%s says \"%s\"",
     onGetColor = function(speaker)
         local client = LocalPlayer()
         if client:getTracedEntity() == speaker then return (lia.color.theme and lia.color.theme.chatListen) or Color(168, 240, 170) end
@@ -28,7 +28,7 @@ lia.chat.register("meclose", {
         },
     },
     desc = "Displays a close-range emote action.",
-    format = "emoteFormat",
+    format = "**%s %s",
     onGetColor = lia.chat.classes.ic.onGetColor,
     onCanHear = lia.config.get("WhisperRange", 70),
     prefix = {"/meclose", "/actionclose"},
@@ -44,7 +44,7 @@ lia.chat.register("actions", {
         },
     },
     desc = "Displays a general action.",
-    format = "emoteFormat",
+    format = "**%s %s",
     onGetColor = function(speaker)
         local client = LocalPlayer()
         if client:getTracedEntity() == speaker then return (lia.color.theme and lia.color.theme.chatListen) or Color(168, 240, 170) end
@@ -62,7 +62,7 @@ lia.chat.register("mefar", {
         },
     },
     desc = "Displays a far-range emote action.",
-    format = "emoteFormat",
+    format = "**%s %s",
     onGetColor = lia.chat.classes.ic.onGetColor,
     onCanHear = lia.config.get("YellRange", 840),
     prefix = {"/mefar", "/actionfar"},
@@ -102,7 +102,7 @@ lia.chat.register("itfar", {
 
 lia.chat.register("coinflip", {
     desc = "Flips a coin and displays the result.",
-    format = "coinflipFormat",
+    format = "%s flipped a coin and it landed on %s.",
     onCanHear = lia.config.get("TalkRange", 280),
     prefix = {"/coinflip"},
     onGetColor = function(speaker)
@@ -122,7 +122,7 @@ lia.chat.register("me", {
         },
     },
     desc = "Performs an emote action.",
-    format = "emoteFormat",
+    format = "**%s %s",
     onGetColor = lia.chat.classes.ic.onGetColor,
     onCanHear = function(speaker, listener)
         if speaker == listener then return true end
@@ -142,7 +142,7 @@ lia.chat.register("globalme", {
         },
     },
     desc = "Performs an globally seen emote action.",
-    format = "emoteFormat",
+    format = "**%s %s",
     onGetColor = lia.chat.classes.ic.onGetColor,
     onCanHear = function() return true end,
     prefix = {"/globalme"},
@@ -177,7 +177,7 @@ lia.chat.register("w", {
         },
     },
     desc = "Whispers a message.",
-    format = "whisperFormat",
+    format = "%s whispers \"%s\"",
     onGetColor = lia.chat.classes.ic.onGetColor,
     onCanHear = function(speaker, listener)
         if speaker == listener then return true end
@@ -195,7 +195,7 @@ lia.chat.register("y", {
         },
     },
     desc = "Yells a message.",
-    format = "yellFormat",
+    format = "%s yells \"%s\"",
     onGetColor = lia.chat.classes.ic.onGetColor,
     onCanHear = function(speaker, listener)
         if speaker == listener then return true end
@@ -248,7 +248,7 @@ lia.chat.register("looc", {
 
 lia.chat.register("roll", {
     desc = "Rolls a dice and displays the result.",
-    format = "rollFormat",
+    format = "%s has rolled %s.",
     onGetColor = function(speaker)
         local client = LocalPlayer()
         if client:getTracedEntity() == speaker then return (lia.color.theme and lia.color.theme.chatListen) or Color(168, 240, 170) end
@@ -266,16 +266,16 @@ lia.chat.register("roll", {
 lia.chat.register("pm", {
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "message",
+            name = "Message",
             type = "string"
         },
     },
     desc = "Sends a private message to a specified player.",
-    format = "pmFormat",
+    format = "[PM] %s: %s.",
     onGetColor = function(speaker)
         local client = LocalPlayer()
         if client:getTracedEntity() == speaker then return (lia.color.theme and lia.color.theme.chatListen) or Color(168, 240, 170) end
@@ -392,7 +392,7 @@ lia.chat.register("me's", {
         },
     },
     desc = "Displays an action in possessive form.",
-    format = "mePossessiveFormat",
+    format = "**%s's %s",
     onCanHear = lia.config.get("TalkRange", 280),
     onChatAdd = function(speaker, text, anonymous)
         local texCol = (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150)
@@ -412,7 +412,7 @@ lia.chat.register("mefarfar", {
         },
     },
     desc = "Displays an exaggerated far-range action.",
-    format = "emoteFormat",
+    format = "**%s %s",
     onChatAdd = function(speaker, text, anonymous)
         local texCol = (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150)
         if LocalPlayer():getTracedEntity() == speaker then texCol = (lia.color.theme and lia.color.theme.chatListen) or Color(168, 240, 170) end

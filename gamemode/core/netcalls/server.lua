@@ -286,9 +286,9 @@ net.Receive("liaCharChoose", function(_, client)
                 local isStaffFaction = result and (result.faction == "staff" or tonumber(result.faction) == FACTION_STAFF) or false
                 local allowStaffChar = isStaffFaction and client:hasPrivilege("createStaffCharacter")
                 lia.debug("[Permissions]", "Permission Check for net.Receive liaCharacterChoose staff fallback", "dbResultExists=", tostring(result ~= nil), "targetFactionIsStaff=", tostring(isStaffFaction), "hasPrivilege(createStaffCharacter)=", tostring(client:hasPrivilege("createStaffCharacter")), "finalResult=", tostring(allowStaffChar))
-                if not allowStaffChar then return response(false, "invalidChar") end
+                if not allowStaffChar then return response(false, "Invalid character.") end
                 lia.char.loadSingleCharacter(id, client, function(character)
-                    if not character then return response(false, "invalidChar") end
+                    if not character then return response(false, "Invalid character.") end
                     local status, reason = hook.Run("CanPlayerUseChar", client, character)
                     if status == false then
                         if reason[1] == "@" then reason = reason:sub(2) end
@@ -318,7 +318,7 @@ net.Receive("liaCharChoose", function(_, client)
         end
 
         lia.char.loadSingleCharacter(id, client, function(character)
-            if not character then return response(false, "invalidChar") end
+            if not character then return response(false, "Invalid character.") end
             local status, result = hook.Run("CanPlayerUseChar", client, character)
             if status == false then
                 if result[1] == "@" then result = result:sub(2) end
@@ -347,7 +347,7 @@ net.Receive("liaCharChoose", function(_, client)
     end
 
     local character = lia.char.getCharacter(id, client)
-    if not character or character:getPlayer() ~= client then return response(false, "invalidChar") end
+    if not character or character:getPlayer() ~= client then return response(false, "Invalid character.") end
     local status, result = hook.Run("CanPlayerUseChar", client, character)
     if status == false then
         if result[1] == "@" then result = result:sub(2) end
@@ -387,7 +387,7 @@ net.Receive("liaCharCreate", function(_, client)
         data[net.ReadString()] = net.ReadType()
     end
 
-    if not (istable(data) and data.faction == FACTION_STAFF) and hook.Run("CanPlayerCreateChar", client, data) == false then return response(nil, "maxCharactersReached") end
+    if not (istable(data) and data.faction == FACTION_STAFF) and hook.Run("CanPlayerCreateChar", client, data) == false then return response(nil, "You have reached the maximum number of characters.") end
     local originalData = table.Copy(data)
     local newData = {}
     for key in pairs(data) do
@@ -404,7 +404,7 @@ net.Receive("liaCharCreate", function(_, client)
         if isfunction(charVar.onValidate) then
             local result = {charVar.onValidate(value, data, client)}
             if result[1] == false then
-                result[2] = result[2] or "validationError"
+                result[2] = result[2] or "Validation error."
                 return response(nil, unpack(result, 2))
             end
         end

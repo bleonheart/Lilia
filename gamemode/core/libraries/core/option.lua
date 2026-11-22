@@ -809,7 +809,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
     end
 
     pages[#pages + 1] = {
-        name = "options",
+        name = "Options",
         shouldShow = function() return true end,
         drawFunc = function(parent) drawOptionsPage(parent) end
     }

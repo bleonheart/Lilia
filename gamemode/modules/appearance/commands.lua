@@ -3,7 +3,7 @@ lia.command.add("listbodygroups", {
     desc = "List the available bodygroups for a target player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -30,15 +30,15 @@ lia.command.add("listbodygroups", {
                 title = string.format("Bodygroups for %s", target:Nick()),
                 columns = {
                     {
-                        name = "groupID",
+                        name = "Group ID",
                         field = "group"
                     },
                     {
-                        name = "name",
+                        name = "Name",
                         field = "name"
                     },
                     {
-                        name = "range",
+                        name = "Range",
                         field = "range"
                     }
                 },
@@ -56,7 +56,7 @@ lia.command.add("chareditbodygroups", {
     desc = "Open the bodygroup editor for a player's character.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         }
     },
@@ -81,7 +81,7 @@ lia.command.add("charsetbodygroup", {
     desc = "Set a specific bodygroup on a player's model.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -129,11 +129,11 @@ lia.command.add("charsetskin", {
     desc = "Set a player's skin.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "skin",
+            name = "Skin",
             type = "string"
         },
     },

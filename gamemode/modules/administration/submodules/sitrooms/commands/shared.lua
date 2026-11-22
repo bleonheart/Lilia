@@ -38,7 +38,7 @@ lia.command.add("sendtositroom", {
     desc = "Send a player to an Administration Room",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -90,7 +90,7 @@ lia.command.add("returnsitroom", {
     desc = "Returns you or the specified player to their previous position before teleporting to an administration room.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },

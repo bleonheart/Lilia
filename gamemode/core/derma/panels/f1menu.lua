@@ -74,14 +74,18 @@ local icon16Names = {
 }
 
 local function resolveIconMaterial(icon, fallback)
-    local iconName = type(icon) == "IMaterial" and icon:GetName() or isstring(icon) and icon or ""
-    if iconName:match("^icon16/[%w_%-]+%.png$") then
-        return type(icon) == "IMaterial" and icon or Material(iconName, "smooth")
+    if type(icon) == "IMaterial" then
+        if not icon:IsError() then return icon end
+        return fallback or Material("icon16/bullet_white.png", "smooth")
     end
 
-    local name = iconName:match("([^/]+)%.png$")
+    if not isstring(icon) or icon == "" then return fallback or Material("icon16/bullet_white.png", "smooth") end
+    if icon:match("^icon16/[%w_%-]+%.png$") then return Material(icon, "smooth") end
+    local name = icon:match("([^/]+)%.png$")
     local mapped = name and icon16Names[name:lower()]
     if mapped then return Material("icon16/" .. mapped, "smooth") end
+    local material = Material(icon, "smooth")
+    if not material:IsError() then return material end
     return fallback or Material("icon16/bullet_white.png", "smooth")
 end
 
@@ -103,9 +107,9 @@ local sidebarIcons = {
     ["Characters"] = Material("icon16/user.png", "smooth"),
     ["Classes"] = Material("icon16/group.png", "smooth"),
     ["Information"] = Material("icon16/information.png", "smooth"),
-    ["@inventory"] = Material("icon16/box.png", "smooth"),
-    ["@logisticslogs"] = Material("icon16/page_white_text.png", "smooth"),
-    ["@logisticsstorage"] = Material("icon16/database.png", "smooth"),
+    ["Inventory"] = Material("icon16/box.png", "smooth"),
+    ["Logistics Logs"] = Material("icon16/page_white_text.png", "smooth"),
+    ["Logistics Storage"] = Material("icon16/database.png", "smooth"),
     ["Settings"] = Material("icon16/cog.png", "smooth"),
     ["Themes"] = Material("icon16/color_wheel.png", "smooth"),
     ["You"] = Material("icon16/user.png", "smooth")
@@ -352,10 +356,11 @@ end
 function PANEL:CreateTextEntryWithBackgroundAndLabel(parent, name, labelText, marginBot, valueFunc, icon)
     local entry = parent:Add("DPanel")
     entry:Dock(FILL)
-    local contentX = 18
+    local contentX = icon and 42 or 18
     entry.Paint = function(_, w, h)
         local accent = getThemeColors()
         drawPanel(0, 0, w, h, 8, Color(10, 25, 30, 232), Color(accent.r, accent.g, accent.b, 45))
+        if icon then drawIcon(icon, 16, 13, 16, accent) end
     end
 
     local lbl = entry:Add("DLabel")
@@ -412,10 +417,11 @@ end
 function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, minFunc, maxFunc, margin, valueFunc, icon)
     local entry = parent:Add("DPanel")
     entry:Dock(FILL)
-    local contentX = 16
+    local contentX = icon and 42 or 16
     entry.Paint = function(_, w, h)
         local accent = getThemeColors()
         drawPanel(0, 0, w, h, 8, Color(10, 25, 30, 232), Color(accent.r, accent.g, accent.b, 45))
+        if icon then drawIcon(icon, 14, 11, 16, accent) end
         draw.SimpleText(labelText or "", "LiliaFont.17", contentX, 12, Color(165, 187, 188), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
     end
 
@@ -586,7 +592,7 @@ function PANEL:Init()
     self.topBar = self:Add("DPanel")
     self.topBar:Dock(TOP)
     self.topBar:SetTall(74)
-    local schemaIconMat = Material("icon16/house.png", "smooth")
+    local schemaIconMat = resolveIconMaterial(SCHEMA and SCHEMA.icon, Material("icon16/house.png", "smooth"))
     local schemaName = SCHEMA and SCHEMA.name
     self.topBar.Paint = function(_, w, h)
         local accent = getThemeColors()
@@ -670,7 +676,7 @@ function PANEL:Init()
         {
             key = "characters",
             icon = Material("icon16/user.png", "smooth"),
-            tooltip = "characters"
+            tooltip = "Characters"
         },
         {
             key = "Logs",
@@ -870,7 +876,7 @@ function PANEL:Init()
             end)
 
             table.insert(adminPages, 1, {
-                name = "onlineStaff",
+                name = "Online Staff",
                 icon = Material("icon16/group.png", "smooth")
             })
 
@@ -1851,6 +1857,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             for i, page in ipairs(pages) do
                 local index = i
                 local pageData = page
+                local pageIcon = pageData.icon and resolveIconMaterial(pageData.icon)
                 local tabButton = tabContainer:Add("DButton")
                 tabButton:SetText("")
                 tabButton.Paint = function(s, w, h)
@@ -1868,7 +1875,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                     end
 
                     local color = active and textColor or hovered and Color(215, 229, 229) or Color(165, 188, 189)
-                    draw.SimpleText(string.upper(tostring(localizeMenuLabel(pageData.name))), "LiliaFont.18", w * 0.5, h * 0.5, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    if pageIcon then drawIcon(pageIcon, 12, math.floor((h - 16) * 0.5), 16, color) end
+                    draw.SimpleText(string.upper(tostring(localizeMenuLabel(pageData.name))), "LiliaFont.18", pageIcon and w * 0.5 + 8 or w * 0.5, h * 0.5, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 end
 
                 tabButton.DoClick = function()
@@ -2085,7 +2093,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 end)
 
                 table.insert(pages, 1, {
-                    name = "onlineStaff",
+                    name = "Online Staff",
                     icon = Material("icon16/group.png", "smooth"),
                     drawFunc = function(panel)
                         panel:Clear()

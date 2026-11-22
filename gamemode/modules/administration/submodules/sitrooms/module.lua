@@ -1,6 +1,6 @@
 MODULE.Name = "Admin Sitrooms"
 MODULE.author = "Samael"
-MODULE.discord = "@liliaplayer"
+MODULE.discord = "liliaplayer"
 MODULE.desc = "Provides administration room management, teleportation, configuration, and UI."
 MODULE.NetworkStrings = {"liaManagesitrooms", "liaManagesitroomsAction"}
 MODULE.Privileges = {

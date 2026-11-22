@@ -50,7 +50,7 @@ function lia.chat.register(chatType, data)
     end
 
     data.color = data.color or (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150)
-    data.format = data.format or "chatFormat"
+    data.format = data.format or "%s: \"%s\""
     data.onChatAdd = data.onChatAdd or function(speaker, text, anonymous) chat.AddText(lia.chat.timestamp(false), (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), string.format(tostring(data.format), anonymous and "Someone" or hook.Run("GetDisplayedName", speaker, chatType) or IsValid(speaker) and speaker:Name() or "Console", text)) end
     if data.prefix then
         local rawPrefixes = istable(data.prefix) and data.prefix or {data.prefix}

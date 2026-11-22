@@ -1016,7 +1016,7 @@ else
             end
 
             pages[#pages + 1] = {
-                name = "configuration",
+                name = "Configuration",
                 shouldShow = function() return hook.Run("CanPlayerModifyConfig", LocalPlayer()) ~= false end,
                 drawFunc = function(parent) drawConfigPage(parent, regularConfigs, "Configuration", "Manage core server settings, keybinds, options, and item configuration.", true) end
             }
@@ -1704,7 +1704,7 @@ lia.config.add("DeleteDroppedItemsOnLeave", "Delete Dropped Items On Leave", fal
 
 lia.config.add("HUDFont", "HUD Font", "Montserrat Medium", function() if not CLIENT then return end end, {
     desc = "Font used for HUD-painted text and overlays.",
-    category = "fonts",
+    category = "Fonts",
     type = "Table",
     options = function()
         if CLIENT then return lia.font.getAvailableFonts() end

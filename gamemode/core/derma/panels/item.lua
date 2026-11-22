@@ -124,7 +124,7 @@ function PANEL:openActionMenu()
 
                     subMenu:AddOption(tostring(subOption.name), buildActionFunc(v, k, itemTable, subOption, optionKey), subOption.icon or "icon16/brick.png")
                 else
-                    subMenu:AddOption(tostring(optionFunc.name or "subOption"), buildActionFunc(v, k, itemTable, optionFunc), optionFunc.icon or "icon16/brick.png")
+                    subMenu:AddOption(tostring(optionFunc.name or "Sub Option"), buildActionFunc(v, k, itemTable, optionFunc), optionFunc.icon or "icon16/brick.png")
                 end
             end
         else

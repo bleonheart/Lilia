@@ -1,6 +1,6 @@
 MODULE.name = "Main Menu"
 MODULE.author = "Samael"
-MODULE.discord = "@liliaplayer"
+MODULE.discord = "liliaplayer"
 MODULE.desc = "Creates the in-game main menu used for selecting, creating, and managing player characters before entering the world."
 MODULE.NetworkStrings = {"liaMainCharacterSet", "liaSetMainCharacter", "liaStaffDiscordPrompt",}
 if SERVER then
@@ -157,7 +157,7 @@ else
             if id > 0 then
                 d:resolve(id)
             else
-                d:reject(lia.lang.resolve(reason))
+                d:reject(tostring(reason))
             end
         end)
 
@@ -200,7 +200,7 @@ else
             LocalPlayer():notifyError(string.format("No main character set."))
             return
         end
-        return self:ChooseCharacter(mainCharID):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
+        return self:ChooseCharacter(mainCharID):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end)
     end
 
     function MODULE:LiliaLoaded()
@@ -234,7 +234,7 @@ else
 
     function MODULE:CreateMenuButtons(tabs)
         tabs["characters"] = {
-            name = "characters",
+            name = "Characters",
             icon = "icon16/user.png",
             func = function()
                 if isInThirdPerson() then
@@ -347,7 +347,7 @@ local function installCreationClassValidation()
         end
 
         if value == nil or tonumber(value) == 0 then return true end
-        if not getValidDefaultCreationClass(value, data and data.faction) then return false, "invalid", "class" end
+        if not getValidDefaultCreationClass(value, data and data.faction) then return false, "Invalid class." end
         return true
     end
 

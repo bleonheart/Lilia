@@ -737,7 +737,7 @@ else
         local titleLabel = frame:Add("DLabel")
         titleLabel:SetPos(0, 8)
         titleLabel:SetSize(frameW, 20)
-        titleLabel:SetText(tostring(title or "options"))
+        titleLabel:SetText(tostring(title or "Options"))
         titleLabel:SetFont("LiliaFont.17")
         titleLabel:SetColor(color_white)
         titleLabel:SetContentAlignment(5)

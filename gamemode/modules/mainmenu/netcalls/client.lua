@@ -18,7 +18,7 @@ net.Receive("liaStaffDiscordPrompt", function()
             net.SendToServer()
         elseif discord == false then
             net.Start("liaStaffDiscordResponse")
-            net.WriteString("not provided")
+            net.WriteString("Not provided")
             net.SendToServer()
         else
             LocalPlayer():notifyError(string.format("Discord username cannot be empty!"))

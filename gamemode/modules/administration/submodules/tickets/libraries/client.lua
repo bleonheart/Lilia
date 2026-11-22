@@ -106,15 +106,15 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
         claimCase = Material("icon16/shield.png")
     }
 
-    local function createButton(textKey, clickFunc, disabled, primary)
+    local function createButton(label, clickFunc, disabled, primary, icon)
         local btn = vgui.Create("DButton", actionPanel)
         btn:Dock(TOP)
         btn:DockMargin(0, 0, 0, actionGap)
         btn:SetTall(30)
         btn:SetText("")
         btn.Disabled = disabled
-        btn.label = tostring(textKey)
-        btn.icon = buttonIcons[textKey]
+        btn.label = tostring(label)
+        btn.icon = icon
         btn.primary = primary
         btn.Paint = function(button, w, h)
             local accent = getThemeAccent()
@@ -147,13 +147,13 @@ function MODULE:CreateTicketFrame(requester, message, claimed)
     end
 
     local isLocalPlayer = requester == LocalPlayer()
-    createButton("goTo", function() lia.admin.execCommand("goto", requester) end, isLocalPlayer)
-    createButton("returnText", function() lia.admin.execCommand("return", requester) end, isLocalPlayer)
-    createButton("freeze", function() lia.admin.execCommand("freeze", requester) end, isLocalPlayer)
-    createButton("bring", function() lia.admin.execCommand("bring", requester) end, isLocalPlayer)
+    createButton("Goto", function() lia.admin.execCommand("goto", requester) end, isLocalPlayer, nil, buttonIcons.goTo)
+    createButton("Return", function() lia.admin.execCommand("return", requester) end, isLocalPlayer, nil, buttonIcons.returnText)
+    createButton("Freeze", function() lia.admin.execCommand("freeze", requester) end, isLocalPlayer)
+    createButton("Bring", function() lia.admin.execCommand("bring", requester) end, isLocalPlayer)
     local shouldClose = claimedByLocal
     local claimButton
-    claimButton = createButton(claimedByLocal and "closeCase" or "claimCase", function()
+    claimButton = createButton(claimedByLocal and "Close Case" or "Claim Case", function()
         if not IsValid(frm) then return end
         if not shouldClose then
             if claimedValid and claimed ~= LocalPlayer() then

@@ -22,7 +22,7 @@ lia.item.WeaponsBlackList = lia.item.WeaponsBlackList or {
 
 local DefaultFunctions = {
     drop = {
-        tip = "dropTip",
+        tip = "Drops the item.",
         icon = "icon16/world.png",
         onRun = function(item)
             local client = item.player
@@ -57,10 +57,10 @@ local DefaultFunctions = {
                 if not IsValid(client) then return end
                 d:resolve()
             end):catch(function(err)
-                if err == "noFit" then
+                if err == "This item can not fit in your inventory." or err == "noFit" then
                     client:notifyError(string.format("This item can't fit in your inventory. (%sx%s)", item:getWidth(), item:getHeight()))
                 else
-                    client:notifyErrorLocalized(err)
+                    client:notifyError(err)
                 end
 
                 client.itemTakeTransaction = nil
@@ -71,7 +71,7 @@ local DefaultFunctions = {
         onCanRun = function(item) return IsValid(item.entity) end
     },
     rotate = {
-        tip = "rotateTip",
+        tip = "Rotates the item.",
         icon = "icon16/arrow_rotate_clockwise.png",
         onRun = function(item, data)
             local inv = lia.item.getInv(item.invID)
@@ -111,7 +111,7 @@ local DefaultFunctions = {
         onCanRun = function(item) return not IsValid(item.entity) and item.width ~= item.height and not item:getData("equip", false) end
     },
     giveForward = {
-        tip = "giveForwardTip",
+        tip = "Gives the item to the player in front of you.",
         icon = "icon16/arrow_up.png",
         onRun = function(item)
             local function canTransferItemsFromInventoryUsingGiveForward(_, action)
@@ -140,7 +140,7 @@ local DefaultFunctions = {
                         if not res then return end
                         res:next(function()
                             if not IsValid(client) then return end
-                            if istable(res) and isstring(res.error) then return client:notifyErrorLocalized(res.error) end
+                            if istable(res) and isstring(res.error) then return client:notifyError(res.error) end
                             client:EmitSound("physics/cardboard/cardboard_box_impact_soft2.wav", 50)
                             client:doGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_GMOD_GESTURE_ITEM_PLACE, true)
                         end)

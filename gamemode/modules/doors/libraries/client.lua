@@ -305,9 +305,9 @@ function MODULE:GetAdminStickLists(tgt, lists)
     if #addFactionItems > 0 then
         table.insert(lists, {
             name = "Add Factions",
-            category = "doorManagement",
-            subcategory = "factions",
-            subSubcategory = "addFactions",
+            category = "Door Management",
+            subcategory = "Factions",
+            subSubcategory = "Add Factions",
             items = addFactionItems
         })
     end
@@ -327,8 +327,8 @@ function MODULE:GetAdminStickLists(tgt, lists)
     if #removeFactionItems > 0 then
         table.insert(lists, {
             name = string.format("Remove %s", "Factions"),
-            category = "doorManagement",
-            subcategory = "factions",
+            category = "Door Management",
+            subcategory = "Factions",
             subSubcategory = "removeFactions",
             items = removeFactionItems
         })
@@ -356,9 +356,9 @@ function MODULE:GetAdminStickLists(tgt, lists)
     if #addClassItems > 0 then
         table.insert(lists, {
             name = "Add Classes",
-            category = "doorManagement",
-            subcategory = "classes",
-            subSubcategory = "addClasses",
+            category = "Door Management",
+            subcategory = "Classes",
+            subSubcategory = "Add Classes",
             items = addClassItems
         })
     end
@@ -387,8 +387,8 @@ function MODULE:GetAdminStickLists(tgt, lists)
     if #removeClassItems > 0 then
         table.insert(lists, {
             name = string.format("Remove %s", "Classes"),
-            category = "doorManagement",
-            subcategory = "classes",
+            category = "Door Management",
+            subcategory = "Classes",
             subSubcategory = "removeClasses",
             items = removeClassItems
         })
@@ -416,7 +416,7 @@ appendDoorAdminFallbackRows = function(entity, doorData, infoRows)
     }
 
     infoRows[#infoRows + 1] = {
-        label = "hidden",
+        label = "Hidden",
         value = doorData.hidden and "Yes" or "No"
     }
 

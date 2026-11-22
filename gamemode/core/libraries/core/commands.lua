@@ -139,7 +139,7 @@ end
 
 function lia.command.hasAccess(client, command, data)
     if not data then data = lia.command.list[command] end
-    if not data then return false, "unknown" end
+    if not data then return false, "Unknown command." end
     local privilegeID = data.privilege or string.lower("command_" .. command)
     local superAdminOnly = data.superAdminOnly
     local adminOnly = data.adminOnly
@@ -243,9 +243,9 @@ if SERVER then
             if isstring(result) then
                 if IsValid(client) then
                     if result:sub(1, 1) == "@" then
-                        client:notifyInfoLocalized(result:sub(2), unpack(results, 2))
+                        client:notifyInfo(L(result:sub(2), unpack(results, 2)))
                     else
-                        client:notifyErrorLocalized(result)
+                        client:notifyError(result)
                     end
                 end
             end
@@ -622,7 +622,7 @@ if CLIENT then
 
     hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(pages)
         table.insert(pages, {
-            name = "commands",
+            name = "Commands",
             shouldShow = function() return true end,
             drawFunc = function(parent)
                 parent:Clear()
@@ -740,7 +740,7 @@ if CLIENT then
                     if not arguments or #arguments == 0 then return "None" end
                     local names = {}
                     for _, argument in ipairs(arguments) do
-                        local name = tostring(argument.name or argument.type or "argument")
+                        local name = tostring(argument.name or argument.type or "Argument")
                         if argument.optional then name = name .. " (optional)" end
                         names[#names + 1] = name
                     end
@@ -1282,7 +1282,7 @@ lia.command.add("plygetplaytime", {
     adminOnly = true,
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1316,7 +1316,7 @@ lia.command.add("plycheckid", {
     adminOnly = true,
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1369,7 +1369,7 @@ lia.command.add("charkill", {
     desc = "Opens the PK case menu to permanently kill a character.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         }
     },
@@ -1446,7 +1446,7 @@ lia.command.add("plyban", {
     desc = "Ban a player from the server for a duration.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -1455,7 +1455,7 @@ lia.command.add("plyban", {
             optional = true
         },
         {
-            name = "reason",
+            name = "Reason",
             type = "string"
         },
     },
@@ -1472,11 +1472,11 @@ lia.command.add("plykick", {
     desc = "Kick a player from the server.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "reason",
+            name = "Reason",
             type = "string",
             optional = true
         },
@@ -1494,7 +1494,7 @@ lia.command.add("plykill", {
     desc = "Kill the specified player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1529,7 +1529,7 @@ lia.command.add("plyfreeze", {
     desc = "Freeze a player for an optional duration.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -1546,7 +1546,7 @@ lia.command.add("plyunfreeze", {
     desc = "Unfreeze a player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1558,7 +1558,7 @@ lia.command.add("plyslay", {
     desc = "Slay a player instantly.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1570,7 +1570,7 @@ lia.command.add("plyrespawn", {
     desc = "Force another player to respawn.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1587,7 +1587,7 @@ lia.command.add("plyblind", {
     desc = "Blind a player with a black screen.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -1604,7 +1604,7 @@ lia.command.add("plyunblind", {
     desc = "Remove blindness from a player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1616,7 +1616,7 @@ lia.command.add("plyblindfade", {
     desc = "Fade a player's screen to a color.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -1625,7 +1625,7 @@ lia.command.add("plyblindfade", {
             optional = true
         },
         {
-            name = "color",
+            name = "Color",
             type = "string",
             optional = true
         },
@@ -1679,7 +1679,7 @@ lia.command.add("blindfadeall", {
             optional = true
         },
         {
-            name = "color",
+            name = "Color",
             type = "string",
             optional = true
         },
@@ -1720,7 +1720,7 @@ lia.command.add("plygag", {
     desc = "Gag a player, blocking voice chat.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1732,7 +1732,7 @@ lia.command.add("plyungag", {
     desc = "Ungag a player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1744,7 +1744,7 @@ lia.command.add("plymute", {
     desc = "Mute a player's voice chat.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1756,7 +1756,7 @@ lia.command.add("plyunmute", {
     desc = "Unmute a player's voice chat.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1768,7 +1768,7 @@ lia.command.add("plybring", {
     desc = "Teleport a player to you.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1780,7 +1780,7 @@ lia.command.add("plygoto", {
     desc = "Teleport yourself to a player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1792,7 +1792,7 @@ lia.command.add("plyreturn", {
     desc = "Return a player to their previous position.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player",
             optional = true
         },
@@ -1805,7 +1805,7 @@ lia.command.add("plyjail", {
     desc = "Jail a player by locking and freezing them.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1817,7 +1817,7 @@ lia.command.add("plyunjail", {
     desc = "Release a jailed player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1829,7 +1829,7 @@ lia.command.add("plycloak", {
     desc = "Make a player invisible.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1846,7 +1846,7 @@ lia.command.add("plyuncloak", {
     desc = "Remove invisibility from a player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1863,7 +1863,7 @@ lia.command.add("plygod", {
     desc = "Enable god mode on a player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1880,7 +1880,7 @@ lia.command.add("plyungod", {
     desc = "Disable a player's god mode.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1897,7 +1897,7 @@ lia.command.add("plyignite", {
     desc = "Set a player on fire.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -1914,7 +1914,7 @@ lia.command.add("plyextinguish", {
     desc = "Extinguish the specified player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -1926,7 +1926,7 @@ lia.command.add("plystrip", {
     desc = "Strip all weapons from a player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -2200,7 +2200,7 @@ lia.command.add("plyspectate", {
     desc = "Spectate a player in third person.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -2273,7 +2273,7 @@ lia.command.add("playsound", {
     desc = "Play the specified sound on a specific player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -2331,7 +2331,7 @@ lia.command.add("forcefallover", {
     desc = "Force another player to fall over (go into ragdoll).",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -2364,7 +2364,7 @@ lia.command.add("forcegetup", {
     desc = "Force another player to get up from ragdoll.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -2379,7 +2379,7 @@ lia.command.add("forcegetup", {
         local entity = target:GetRagdollEntity()
         if IsValid(entity) and entity.liaGrace and entity.liaGrace < CurTime() and entity:GetVelocity():Length2D() < 8 and not entity.liaWakingUp then
             entity.liaWakingUp = true
-            target:setAction("gettingUp", 5, function()
+            target:setAction("Getting up", 5, function()
                 if IsValid(entity) then
                     hook.Run("OnCharGetup", target, entity)
                     SafeRemoveEntity(entity)
@@ -2394,7 +2394,7 @@ lia.command.add("chardesc", {
     desc = "Change your character's description.",
     arguments = {
         {
-            name = "desc",
+            name = "Description",
             type = "string",
             optional = true
         },
@@ -2424,7 +2424,7 @@ lia.command.add("chargetup", {
         local entity = client:GetRagdollEntity()
         if IsValid(entity) and entity.liaGrace and entity.liaGrace < CurTime() and entity:GetVelocity():Length2D() < 8 and not entity.liaWakingUp then
             entity.liaWakingUp = true
-            client:setAction("gettingUp", 5, function()
+            client:setAction("Getting up", 5, function()
                 if IsValid(entity) then
                     hook.Run("OnCharGetup", client, entity)
                     SafeRemoveEntity(entity)
@@ -2491,7 +2491,7 @@ lia.command.add("checkinventory", {
     desc = "Check another player's inventory.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -2528,11 +2528,11 @@ lia.command.add("flaggive", {
     desc = "Give the following flags to the player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "flags",
+            name = "Flags",
             type = "string"
         },
     },
@@ -2569,7 +2569,7 @@ lia.command.add("flaggiveall", {
     desc = "Give all possible flags to a character.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -2593,7 +2593,7 @@ lia.command.add("flagtakeall", {
     desc = "Remove all flags from a character.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -2622,11 +2622,11 @@ lia.command.add("flagtake", {
     desc = "Remove the following flags from the player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "flags",
+            name = "Flags",
             type = "string"
         },
     },
@@ -2664,7 +2664,7 @@ lia.command.add("charvoicetoggle", {
     desc = "Toggles voice chat ban for the specified character.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "string"
         },
     },
@@ -2855,7 +2855,7 @@ lia.command.add("clearinv", {
     desc = "Clear a player's entire inventory.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -2881,7 +2881,7 @@ lia.command.add("charkick", {
     desc = "Kick the target's active character to the character menu.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -2915,7 +2915,7 @@ lia.command.add("freezeallprops", {
     desc = "Freeze all props owned by a specific player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -3088,7 +3088,7 @@ lia.command.add("checkmoney", {
     desc = "Check how much money the target player has.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -3114,7 +3114,7 @@ lia.command.add("charsetspeed", {
     desc = "Set a player's run speed.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -3146,11 +3146,11 @@ lia.command.add("charsetmodel", {
     desc = "Set a player's model.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "model",
+            name = "Model",
             type = "string",
             optional = true
         },
@@ -3174,11 +3174,11 @@ lia.command.add("chargiveitem", {
     desc = "Give an item to a player's inventory.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "itemName",
+            name = "Item Name",
             type = "string"
         },
     },
@@ -3219,7 +3219,7 @@ lia.command.add("chargiveitem", {
             target:notifySuccess(string.format("Item created successfully."))
             if target ~= client then client:notifySuccess(string.format("Item created successfully.")) end
         else
-            target:notifyErrorLocalized(err or "unknownError")
+            target:notifyError(err or "Unknown error")
         end
     end
 })
@@ -3229,7 +3229,7 @@ lia.command.add("charsetdesc", {
     desc = "Set a player's character description.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -3267,7 +3267,7 @@ lia.command.add("charsetname", {
     desc = "Set a player's character name.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -3301,7 +3301,7 @@ lia.command.add("charsetscale", {
     desc = "Set a player's model scale.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -3333,7 +3333,7 @@ lia.command.add("charsetjump", {
     desc = "Set a player's jump power.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -3365,7 +3365,7 @@ lia.command.add("charsetmoney", {
     desc = "Set a player's money to a specific amount.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -3397,7 +3397,7 @@ lia.command.add("charaddmoney", {
     desc = "Add a certain amount of money to a player's balance.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -3432,7 +3432,7 @@ lia.command.add("globalbotsay", {
     desc = "Force all bots on the server to say something.",
     arguments = {
         {
-            name = "message",
+            name = "Message",
             type = "string"
         },
     },
@@ -3458,7 +3458,7 @@ lia.command.add("botsay", {
             type = "string"
         },
         {
-            name = "message",
+            name = "Message",
             type = "string"
         },
     },
@@ -3492,11 +3492,11 @@ lia.command.add("forcesay", {
     desc = "Force a player to say something in chat.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "message",
+            name = "Message",
             type = "string"
         },
     },
@@ -3540,11 +3540,11 @@ lia.command.add("pm", {
     desc = "Sends a private message to a specified player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "message",
+            name = "Message",
             type = "string"
         },
     },
@@ -3576,7 +3576,7 @@ lia.command.add("chargetmodel", {
     desc = "Get the model of a player's character.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -3612,7 +3612,7 @@ lia.command.add("checkflags", {
     desc = "Check which flags a player has.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -3642,7 +3642,7 @@ lia.command.add("chargetname", {
     desc = "Get a player's character name.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -3667,7 +3667,7 @@ lia.command.add("chargethealth", {
     desc = "Get a player's current health.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -3692,7 +3692,7 @@ lia.command.add("chargetmoney", {
     desc = "Get how much money a player has.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -3718,7 +3718,7 @@ lia.command.add("chargetinventory", {
     desc = "Get the contents of a player's inventory.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -3755,7 +3755,7 @@ lia.command.add("getallinfos", {
     desc = "Print all character data columns to the console.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -4161,7 +4161,7 @@ lia.command.add("charsetattrib", {
     desc = "Set Attributes",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -4217,7 +4217,7 @@ lia.command.add("checkattributes", {
     desc = "Check Attributes",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -4254,29 +4254,29 @@ lia.command.add("checkattributes", {
         end
 
         lia.util.createTableUI({
-            title = "characterAttributes",
+            title = "Character Attributes",
             columns = {
                 {
-                    name = "attributeName",
+                    name = "Attribute Name",
                     field = "name"
                 },
                 {
-                    name = "currentValue",
+                    name = "Current Value",
                     field = "current"
                 },
                 {
-                    name = "maxValue",
+                    name = "Max Value",
                     field = "max"
                 },
                 {
-                    name = "progress",
+                    name = "Progress",
                     field = "progress"
                 }
             },
             data = attributesData,
             options = {
                 {
-                    name = "changeAttribute",
+                    name = "Change Attribute",
                     ExtraFields = {
                         ["Amount"] = "text",
                         ["Mode"] = {"Add", "set"}
@@ -4293,7 +4293,7 @@ lia.command.add("staffdiscord", {
     desc = "Sets your staff Discord username.",
     arguments = {
         {
-            name = "discord",
+            name = "Discord",
             type = "string"
         }
     },
@@ -4485,7 +4485,7 @@ lia.command.add("charaddattrib", {
     desc = "Add Attributes",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
@@ -4541,7 +4541,7 @@ lia.command.add("banooc", {
     desc = "Bans the specified player from using out-of-character chat.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -4567,7 +4567,7 @@ lia.command.add("unbanooc", {
     desc = "Unbans the specified player from out-of-character chat.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -4629,7 +4629,7 @@ lia.command.add("doorsell", {
     AdminStick = {
         Name = "Sell Door",
         ButtonText = "Sell This Door",
-        Category = "doorActions",
+        Category = "Door Actions",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -4661,7 +4661,7 @@ lia.command.add("admindoorsell", {
     AdminStick = {
         Name = "Admin Sell Door",
         ButtonText = "Force Sell This Door",
-        Category = "doorActions",
+        Category = "Door Actions",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -4695,7 +4695,7 @@ lia.command.add("doortogglelock", {
     AdminStick = {
         Name = "Toggle Door State",
         ButtonText = "Toggle Door Lock",
-        Category = "doorActions",
+        Category = "Door Actions",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -4745,7 +4745,7 @@ lia.command.add("doorbuy", {
     AdminStick = {
         Name = "Buy Door",
         ButtonText = "Buy This Door",
-        Category = "doorActions",
+        Category = "Door Actions",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -4789,7 +4789,7 @@ lia.command.add("doortoggleownable", {
     AdminStick = {
         Name = "Toggle Door Ownable",
         ButtonText = "Toggle Door Ownable",
-        Category = "doorSettings",
+        Category = "Door Settings",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -4811,7 +4811,7 @@ lia.command.add("doortoggleownable", {
                 doorData.noSell = newState and true or nil
                 lia.doors.setData(door, doorData)
                 hook.Run("DoorOwnableToggled", client, door, newState)
-                client:notifySuccessLocalized(newState and "doorMadeUnownable" or "doorMadeOwnable")
+                client:notifySuccess(newState and "This door is now unownable." or "This door is now ownable.")
                 lia.module.get("doors"):SaveData()
             else
                 client:notifyError(string.format("You are not looking at a valid door."))
@@ -4828,7 +4828,7 @@ lia.command.add("doorresetdata", {
     AdminStick = {
         Name = "Reset Door Data",
         ButtonText = "Reset Door Data",
-        Category = "doorMaintenance",
+        Category = "Door Maintenance",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -4860,7 +4860,7 @@ lia.command.add("doortoggleenabled", {
     AdminStick = {
         Name = "Toggle Door Enabled",
         ButtonText = "Toggle Door Enabled",
-        Category = "doorSettings",
+        Category = "Door Settings",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -4872,7 +4872,7 @@ lia.command.add("doortoggleenabled", {
             doorData.disabled = newState and true or nil
             lia.doors.setData(door, doorData)
             hook.Run("DoorEnabledToggled", client, door, newState)
-            client:notifySuccessLocalized(newState and "doorSetDisabled" or "doorSetNotDisabled")
+            client:notifySuccess(newState and "This door is now disabled." or "This door is now enabled.")
             lia.module.get("doors").list["doors"]:SaveData()
         else
             client:notifyError(string.format("You are not looking at a valid door."))
@@ -4886,7 +4886,7 @@ lia.command.add("doortogglehidden", {
     AdminStick = {
         Name = "Toggle Door Hidden",
         ButtonText = "Toggle Door Hidden",
-        Category = "doorSettings",
+        Category = "Door Settings",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -4898,7 +4898,7 @@ lia.command.add("doortogglehidden", {
             doorData.hidden = newState
             lia.doors.setData(door, doorData)
             hook.Run("DoorHiddenToggled", client, door, newState)
-            client:notifySuccessLocalized(newState and "doorSetHidden" or "doorSetNotHidden")
+            client:notifySuccess(newState and "This door is now hidden." or "This door is now visible.")
             lia.module.get("doors"):SaveData()
         else
             client:notifyError(string.format("You are not looking at a valid door."))
@@ -4910,7 +4910,7 @@ lia.command.add("doorsetprice", {
     desc = "Set the price for a door.",
     arguments = {
         {
-            name = "price",
+            name = "Price",
             type = "string"
         },
     },
@@ -4918,7 +4918,7 @@ lia.command.add("doorsetprice", {
     AdminStick = {
         Name = "Set Door Price",
         ButtonText = "Set Door Price",
-        Category = "doorSettings",
+        Category = "Door Settings",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -4946,7 +4946,7 @@ lia.command.add("doorsettitle", {
     desc = "Set the title for a door.",
     arguments = {
         {
-            name = "title",
+            name = "Title",
             type = "string"
         },
     },
@@ -4954,7 +4954,7 @@ lia.command.add("doorsettitle", {
     AdminStick = {
         Name = "Set Door Title",
         ButtonText = "Set Door Title",
-        Category = "doorSettings",
+        Category = "Door Settings",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -4987,7 +4987,7 @@ lia.command.add("savedoors", {
     AdminStick = {
         Name = "Save Doors",
         ButtonText = "Save Door Data",
-        Category = "doorMaintenance",
+        Category = "Door Maintenance",
         TargetClass = "door",
     },
     onRun = function(client)
@@ -5002,7 +5002,7 @@ lia.command.add("doorinfo", {
     AdminStick = {
         Name = "Get Door Information",
         ButtonText = "View Door Info",
-        Category = "doorInformation",
+        Category = "Door Information",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -5063,11 +5063,11 @@ lia.command.add("doorinfo", {
                 title = "Door" .. " " .. "Information",
                 columns = {
                     {
-                        name = "doorInfoProperty",
+                        name = "Property",
                         field = "property"
                     },
                     {
-                        name = "doorInfoValue",
+                        name = "Value",
                         field = "value"
                     }
                 },
@@ -5085,7 +5085,7 @@ lia.command.add("doorsampledata", {
     AdminStick = {
         Name = "Add Sample Data",
         ButtonText = "Copy Door Settings",
-        Category = "doorMaintenance",
+        Category = "Door Maintenance",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -5162,7 +5162,7 @@ lia.command.add("doorrandominfo", {
     AdminStick = {
         Name = "Randomize Door Info",
         ButtonText = "Randomize Door Info",
-        Category = "doorMaintenance",
+        Category = "Door Maintenance",
         TargetClass = "door",
     },
     onRun = function(client, arguments)
@@ -5191,7 +5191,7 @@ lia.command.add("dooraddfaction", {
     desc = "Add a faction restriction to a door, allowing only specific factions to access it.",
     arguments = {
         {
-            name = "faction",
+            name = "Faction",
             type = "string"
         }
     },
@@ -5252,7 +5252,7 @@ lia.command.add("doorremovefaction", {
     desc = "Remove a faction restriction from a door, or clear all restrictions.",
     arguments = {
         {
-            name = "faction",
+            name = "Faction",
             type = "string"
         }
     },
@@ -5312,7 +5312,7 @@ lia.command.add("doorsetclass", {
     desc = "Set a class (job) restriction for a door.",
     arguments = {
         {
-            name = "class",
+            name = "Class",
             type = "string"
         }
     },
@@ -5381,7 +5381,7 @@ lia.command.add("doorremoveclass", {
     desc = "Remove a class (job) restriction from a door.",
     arguments = {
         {
-            name = "class",
+            name = "Class",
             type = "string"
         }
     },
@@ -5575,7 +5575,7 @@ lia.command.add("togglealldoors", {
             end
         end
 
-        client:notifySuccessLocalized(toggleToDisable and "doorDisableAll" or "doorEnableAll", count)
+        client:notifySuccess(string.format(toggleToDisable and "Disabled all doors (%d doors)" or "Enabled all doors (%d doors)", count))
         lia.module.get("doors"):SaveData()
     end
 })
@@ -5655,11 +5655,11 @@ lia.command.add("plytransfer", {
     alias = {"charsetfaction"},
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "faction",
+            name = "Faction",
             type = "table",
             options = function()
                 local options = {}
@@ -5751,11 +5751,11 @@ lia.command.add("plywhitelist", {
     alias = {"factionwhitelist"},
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "faction",
+            name = "Faction",
             type = "table",
             options = function()
                 local options = {}
@@ -5804,11 +5804,11 @@ lia.command.add("plyunwhitelist", {
     alias = {"factionunwhitelist"},
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "faction",
+            name = "Faction",
             type = "table",
             options = function()
                 local options = {}
@@ -5860,7 +5860,7 @@ lia.command.add("beclass", {
     desc = "Changes your current class to the specified class.",
     arguments = {
         {
-            name = "class",
+            name = "Class",
             type = "table",
             options = function()
                 local options = {}
@@ -5871,7 +5871,7 @@ lia.command.add("beclass", {
             end
         },
         {
-            name = "model",
+            name = "Model",
             type = "string",
             optional = true
         }
@@ -5952,11 +5952,11 @@ lia.command.add("setclass", {
     desc = "Sets the specified player's class.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "class",
+            name = "Class",
             type = "table",
             options = function(client, prefix)
                 local options = {}
@@ -6022,11 +6022,11 @@ lia.command.add("classwhitelist", {
     desc = "Grants the specified player whitelist access to a class.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "class",
+            name = "Class",
             type = "table",
             options = function()
                 local options = {}
@@ -6068,11 +6068,11 @@ lia.command.add("classunwhitelist", {
     desc = "Revokes the specified player's whitelist access to a class.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
         {
-            name = "class",
+            name = "Class",
             type = "table",
             options = function()
                 local options = {}
@@ -6114,7 +6114,7 @@ lia.command.add("spawnadd", {
     desc = "Adds a spawn point at your current position for the specified faction.",
     arguments = {
         {
-            name = "faction",
+            name = "Faction",
             type = "table",
             options = function()
                 local options = {}
@@ -6203,7 +6203,7 @@ lia.command.add("spawnremovebyname", {
     desc = "Removes all spawn points for the specified faction.",
     arguments = {
         {
-            name = "faction",
+            name = "Faction",
             type = "table",
             options = function()
                 local options = {}
@@ -6252,7 +6252,7 @@ lia.command.add("returnitems", {
     desc = "Returns items lost on death to the specified player, if any.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -6356,7 +6356,7 @@ lia.command.add("viewtickets", {
     desc = "Displays all tickets requested by the specified player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -6396,15 +6396,15 @@ lia.command.add("viewtickets", {
                 title = string.format("Tickets for %s", displayName),
                 columns = {
                     {
-                        name = "timestamp",
+                        name = "Timestamp",
                         field = "timestamp"
                     },
                     {
-                        name = "admin",
+                        name = "Admin",
                         field = "admin"
                     },
                     {
-                        name = "message",
+                        name = "Message",
                         field = "message"
                     }
                 },
@@ -6419,7 +6419,7 @@ lia.command.add("plyviewclaims", {
     desc = "Displays detailed claim information for the specified player.",
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -6470,27 +6470,27 @@ lia.command.add("plyviewclaims", {
                 title = string.format("Claims for %s", target:Nick()),
                 columns = {
                     {
-                        name = "steamID",
+                        name = "SteamID",
                         field = "steamID"
                     },
                     {
-                        name = "adminName",
+                        name = "Admin Name",
                         field = "name"
                     },
                     {
-                        name = "totalClaims",
+                        name = "Total Claims",
                         field = "claims"
                     },
                     {
-                        name = "lastClaimDate",
+                        name = "Last Claim Date",
                         field = "lastclaim"
                     },
                     {
-                        name = "timeSinceLastClaim",
+                        name = "Time Since Last Claim",
                         field = "timeSinceLastClaim"
                     },
                     {
-                        name = "claimedFor",
+                        name = "Claimed For",
                         field = "claimedFor"
                     }
                 },
@@ -6529,30 +6529,30 @@ lia.command.add("viewallclaims", {
             end
 
             lia.util.createTableUI({
-                title = "adminClaimsTitle",
+                title = "Admin Claims",
                 columns = {
                     {
-                        name = "steamID",
+                        name = "SteamID",
                         field = "steamID"
                     },
                     {
-                        name = "adminName",
+                        name = "Admin Name",
                         field = "name"
                     },
                     {
-                        name = "totalClaims",
+                        name = "Total Claims",
                         field = "claims"
                     },
                     {
-                        name = "lastClaimDate",
+                        name = "Last Claim Date",
                         field = "lastclaim"
                     },
                     {
-                        name = "timeSinceLastClaim",
+                        name = "Time Since Last Claim",
                         field = "timeSinceLastClaim"
                     },
                     {
-                        name = "claimedFor",
+                        name = "Claimed For",
                         field = "claimedFor"
                     }
                 },
@@ -6591,30 +6591,30 @@ lia.command.add("viewclaims", {
             end
 
             lia.util.createTableUI({
-                title = "adminClaimsTitle",
+                title = "Admin Claims",
                 columns = {
                     {
-                        name = "steamID",
+                        name = "SteamID",
                         field = "steamID"
                     },
                     {
-                        name = "adminName",
+                        name = "Admin Name",
                         field = "name"
                     },
                     {
-                        name = "totalClaims",
+                        name = "Total Claims",
                         field = "claims"
                     },
                     {
-                        name = "lastClaimDate",
+                        name = "Last Claim Date",
                         field = "lastclaim"
                     },
                     {
-                        name = "timeSinceLastClaim",
+                        name = "Time Since Last Claim",
                         field = "timeSinceLastClaim"
                     },
                     {
-                        name = "claimedFor",
+                        name = "Claimed For",
                         field = "claimedFor"
                     }
                 },
@@ -6638,7 +6638,7 @@ lia.command.add("warn", {
             optional = true
         },
         {
-            name = "reason",
+            name = "Reason",
             type = "string"
         },
     },
@@ -6753,15 +6753,15 @@ lia.command.add("viewwarns", {
                         field = "index"
                     },
                     {
-                        name = "timestamp",
+                        name = "Timestamp",
                         field = "timestamp"
                     },
                     {
-                        name = "admin",
+                        name = "Admin",
                         field = "admin"
                     },
                     {
-                        name = "warningMessage",
+                        name = "Warning Message",
                         field = "warningMessage"
                     },
                     {
@@ -6792,7 +6792,7 @@ lia.command.add("viewwarnsissued", {
     desc = "Displays all warnings issued by the specified staff member.",
     arguments = {
         {
-            name = "staff",
+            name = "Staff",
             type = "string"
         },
     },
@@ -6835,15 +6835,15 @@ lia.command.add("viewwarnsissued", {
                         field = "index"
                     },
                     {
-                        name = "timestamp",
+                        name = "Timestamp",
                         field = "timestamp"
                     },
                     {
-                        name = "player",
+                        name = "Player",
                         field = "player"
                     },
                     {
-                        name = "warningMessage",
+                        name = "Warning Message",
                         field = "warningMessage"
                     },
                     {
@@ -6861,7 +6861,7 @@ lia.command.add("recogwhisper", {
     adminOnly = true,
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -6882,7 +6882,7 @@ lia.command.add("recognormal", {
     adminOnly = true,
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -6903,7 +6903,7 @@ lia.command.add("recogyell", {
     adminOnly = true,
     arguments = {
         {
-            name = "name",
+            name = "Name",
             type = "player"
         },
     },
@@ -6924,12 +6924,12 @@ lia.command.add("recogbots", {
     superAdminOnly = true,
     arguments = {
         {
-            name = "range",
+            name = "Range",
             type = "string",
             optional = true
         },
         {
-            name = "name",
+            name = "Name",
             type = "string",
             optional = true
         },
@@ -7064,7 +7064,7 @@ lia.command.add("storagepasswordchange", {
     desc = "Change the password on the storage container you're looking at.",
     arguments = {
         {
-            name = "password",
+            name = "Password",
             type = "string"
         },
     },
@@ -7117,17 +7117,17 @@ lia.command.add("listnearbyentities", {
         for _, ent in ipairs(entities) do
             if not IsValid(ent) then continue end
             local class = ent:GetClass()
-            local category = "other"
+            local category = "Other"
             if ent:IsPlayer() then
-                category = "players"
+                category = "Players"
             elseif ent:IsNPC() then
-                category = "npcs"
+                category = "NPCs"
             elseif ent:IsVehicle() then
-                category = "vehicles"
+                category = "Vehicles"
             elseif ent:IsWeapon() then
-                category = "weapons"
+                category = "Weapons"
             elseif class:find("prop_") or class == "lia_item" then
-                category = "props"
+                category = "Props"
             end
 
             table.insert(entityCategories[category], {

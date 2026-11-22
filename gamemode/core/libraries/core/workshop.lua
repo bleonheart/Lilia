@@ -389,7 +389,7 @@ else
 
     hook.Add("CreateInformationButtons", "liaWorkshopInfo", function(pages)
         table.insert(pages, {
-            name = "workshopAddons",
+            name = "Addons",
             shouldShow = function() return true end,
             drawFunc = function(parent)
                 parent:Clear()

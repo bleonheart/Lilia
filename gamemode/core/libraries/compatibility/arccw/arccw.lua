@@ -14,9 +14,9 @@ hook.Add("InitializedModules", "Lilia_ArcCW_OnAttLoad", function()
         local uniqueID = "arccw_att_" .. id:lower()
         local item = lia.item.register(uniqueID, "base_arccw_att", false, nil, true)
         item.name = atttbl.PrintName or id
-        item.desc = atttbl.Description or "arccwAttachmentFallbackDesc"
+        item.desc = atttbl.Description or "An attachment for ArcCW weapons."
         item.model = "models/Items/BoxSRounds.mdl"
-        item.category = "attachments"
+        item.category = "Attachments"
         item.width = 1
         item.height = 1
         item.att = id

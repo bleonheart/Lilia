@@ -36,7 +36,7 @@ end
 local function showMaterialWarning()
     if materialWarningShown then return end
     materialWarningShown = true
-    Derma_Message("Warning: not all materials can be used on entities.", "Warning", "ok")
+    Derma_Message("Warning: not all materials can be used on entities.", "Warning", "Ok")
 end
 
 local function registerContentType(typeName, setupIcon, onClick, menuEntries)

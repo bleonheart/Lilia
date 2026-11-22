@@ -404,9 +404,9 @@ local function getEntityInfoCategory(entity)
 end
 
 local entityInfoOptionByCategory = {
-    players = "drawPlayerHoverInfo",
-    items = "drawItemHoverInfo",
-    entities = "drawEntityHoverInfo"
+    players = "Player Hover Info",
+    items = "Item Hover Info",
+    entities = "Entity Hover Info"
 }
 
 local entityInfoMaxDistanceByCategory = {

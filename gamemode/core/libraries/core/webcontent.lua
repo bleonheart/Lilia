@@ -74,33 +74,33 @@ local function validateURL(url)
     if not host then return false, "URL must use HTTP or HTTPS" end
     host = host:match("^([^:]+)") or host
     local lowerHost = host:lower()
-    if lowerHost == "localhost" or lowerHost:find("%.localhost$") or lowerHost == "::1" then return false, "localhost URLs are not allowed" end
+    if lowerHost == "localhost" or lowerHost:find("%.localhost$") or lowerHost == "::1" then return false, "Localhost URLs are not allowed" end
     local a, b, c, d = host:match("^(%d+)%.(%d+)%.(%d+)%.(%d+)$")
     if a then
         a, b, c, d = tonumber(a), tonumber(b), tonumber(c), tonumber(d)
-        if not a or not b or not c or not d or a > 255 or b > 255 or c > 255 or d > 255 then return false, "invalid IP address" end
-        if a == 10 or a == 127 or a == 0 or (a == 169 and b == 254) or (a == 172 and b >= 16 and b <= 31) or (a == 192 and b == 168) then return false, "private IP URLs are not allowed" end
+        if not a or not b or not c or not d or a > 255 or b > 255 or c > 255 or d > 255 then return false, "Invalid IP address" end
+        if a == 10 or a == 127 or a == 0 or (a == 169 and b == 254) or (a == 172 and b >= 16 and b <= 31) or (a == 192 and b == 168) then return false, "Private IP URLs are not allowed" end
     elseif not host:find("%.") or host:find("%.%.") then
-        return false, "invalid domain"
+        return false, "Invalid domain"
     end
     return true
 end
 
 local function validateSound(path, body)
-    if not body or #body < 44 then return false, "file too small" end
-    if #body > 50 * 1024 * 1024 then return false, "file too large" end
+    if not body or #body < 44 then return false, "File too small" end
+    if #body > 50 * 1024 * 1024 then return false, "File too large" end
     local extension = getExtension(path)
-    if extension == "wav" and (not body:find("^RIFF") or not body:find("WAVE", 1, true)) then return false, "invalid WAV header" end
-    if extension == "mp3" and not body:find("^ID3") and not body:find("\255\251", 1, true) and not body:find("\255\250", 1, true) then return false, "invalid MP3 header" end
-    if extension == "ogg" and not body:find("^OggS") then return false, "invalid OGG header" end
-    return soundExtensions[extension] == true, "unsupported sound format"
+    if extension == "wav" and (not body:find("^RIFF") or not body:find("WAVE", 1, true)) then return false, "Invalid WAV header" end
+    if extension == "mp3" and not body:find("^ID3") and not body:find("\255\251", 1, true) and not body:find("\255\250", 1, true) then return false, "Invalid MP3 header" end
+    if extension == "ogg" and not body:find("^OggS") then return false, "Invalid OGG header" end
+    return soundExtensions[extension] == true, "Unsupported sound format"
 end
 
 local function validateImage(body)
-    if not body or #body < 8 then return nil, "file too small" end
+    if not body or #body < 8 then return nil, "File too small" end
     if body:sub(1, 8) == "\137PNG\r\n\26\n" then return "png" end
     if body:sub(1, 3) == "\255\216\255" then return "jpg" end
-    return nil, "invalid image format"
+    return nil, "Invalid image format"
 end
 
 local function decodeInlineImage(source)
@@ -126,7 +126,7 @@ end
 function lia.webcontent.download(name, url, contentType, callback, flags)
     name, url, contentType, callback, flags = parseArguments(name, url, contentType, callback, flags)
     if not name or not contentType then
-        if callback then callback(nil, false, "invalid name or content type") end
+        if callback then callback(nil, false, "Invalid name or content type") end
         return
     end
 
@@ -258,7 +258,7 @@ end
 function lia.webcontent.register(name, url, contentType, callback, flags)
     name, url, contentType, callback, flags = parseArguments(name, url, contentType, callback, flags)
     if not name or not contentType then
-        if callback then callback(nil, false, "invalid name or content type") end
+        if callback then callback(nil, false, "Invalid name or content type") end
         return
     end
 

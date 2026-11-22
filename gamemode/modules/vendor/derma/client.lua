@@ -1316,9 +1316,9 @@ function PANEL:PerformLayout(width, height)
 end
 
 local VendorText = {
-    [VENDOR_SELLANDBUY] = "buyOnlynSell",
-    [VENDOR_BUYONLY] = "buyOnly",
-    [VENDOR_SELLONLY] = "sellOnly",
+    [VENDOR_SELLANDBUY] = "Buy and Sell",
+    [VENDOR_BUYONLY] = "Buy Only",
+    [VENDOR_SELLONLY] = "Sell Only",
 }
 
 local VendorModeChoices = {
@@ -1486,7 +1486,7 @@ function ROW:CommitBuyPrice()
 
     local value = tonumber(raw)
     if not isnumber(value) then
-        self.editor:notifyNumberError("buy price")
+        self.editor:notifyNumberError("Buy price")
         self:Refresh()
         return
     end
@@ -1506,7 +1506,7 @@ function ROW:CommitSellPrice()
 
     local value = tonumber(raw)
     if not isnumber(value) then
-        self.editor:notifyNumberError("sell price")
+        self.editor:notifyNumberError("Sell price")
         self:Refresh()
         return
     end

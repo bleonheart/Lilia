@@ -16,7 +16,7 @@ local function openRenamePrompt(parent, name)
     txt:Dock(FILL)
     local ok = vgui.Create("liaButton", prompt)
     ok:Dock(BOTTOM)
-    ok:SetText(string.upper("ok"))
+    ok:SetText(string.upper("Ok"))
     ok.DoClick = function()
         local newName = txt:GetValue() or ""
         if newName == "" then return end
@@ -65,8 +65,8 @@ net.Receive("liaManagesitrooms", function()
             end
         end
 
-        makeButton("teleport", 1)
-        makeButton("reposition", 3)
-        makeButton("rename", 2)
+        makeButton("Teleport", 1)
+        makeButton("Reposition", 3)
+        makeButton("Rename", 2)
     end
 end)

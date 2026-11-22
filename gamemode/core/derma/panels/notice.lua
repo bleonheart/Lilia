@@ -1,6 +1,6 @@
 ﻿lia.config.add("CurrencyNotificationImage", "Currency Notification Image", "icon16/money.png", nil, {
     desc = "The material path for the currency icon used in money-type notifications",
-    category = "core",
+    category = "Core",
     type = "string"
 })
 

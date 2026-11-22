@@ -148,14 +148,14 @@ function MODULE:PlayerAuthed(client, steamid)
     local steamName = client:SteamName()
     local steamID = steamid
     if KnownCheaters[steamID64] or KnownCheaters[ownerSteamID64] then
-        lia.adminstrator.applyPunishment(client, "using third-party cheats", false, true, 0)
+        lia.adminstrator.applyPunishment(client, "Using third-party cheats", false, true, 0)
         lia.adminstrator.notifyAdmin(string.format("%s (%s) was banned for cheating or using an alt of a cheater.", steamName, steamID))
         return
     end
 
     lia.db.selectOne({"reason"}, "bans", "playerSteamID = " .. ownerSteamID64):next(function(banRecord)
         if not IsValid(client) or not banRecord then return end
-        lia.adminstrator.applyPunishment(client, "using a family-shared account that is blacklisted", false, true, 0)
+        lia.adminstrator.applyPunishment(client, "Using a family-shared account that is blacklisted", false, true, 0)
         lia.adminstrator.notifyAdmin(string.format("%s (%s) was banned for using a family-shared account that is blacklisted.", steamName, steamID))
     end)
 
@@ -164,7 +164,7 @@ function MODULE:PlayerAuthed(client, steamid)
     local function punishIfBlacklisted(id, isAlt)
         local reason = blacklistedSteamIDs[id]
         if reason and not whitelistedSteamIDs[id] then
-            reason = reason ~= true and reason or "using a family-shared account that is blacklisted"
+            reason = reason ~= true and reason or "Using a family-shared account that is blacklisted"
             lia.adminstrator.applyPunishment(client, reason, false, true, 0)
             if isAlt then
                 lia.adminstrator.notifyAdmin(string.format("%s (%s) was banned for using a family-shared account that is blacklisted.", steamName, steamID))
@@ -175,7 +175,7 @@ function MODULE:PlayerAuthed(client, steamid)
 
     if punishIfBlacklisted(steamID64) then return end
     if lia.config.get("AltsDisabled", false) and client:isFamilySharedAccount() then
-        lia.adminstrator.applyPunishment(client, "family sharing (alts are disabled)", true, false)
+        lia.adminstrator.applyPunishment(client, "Family sharing (alts are disabled)", true, false)
         lia.adminstrator.notifyAdmin(string.format("%s (%s) was kicked for family sharing.", steamName, steamID))
     else
         punishIfBlacklisted(ownerSteamID64, true)

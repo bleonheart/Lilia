@@ -180,7 +180,7 @@ if SERVER then
         return currentInteractionCount ~= lia.playerinteract._lastSyncInteractionCount or currentCategoryCount ~= lia.playerinteract._lastSyncCategoryCount
     end
 
-    lia.playerinteract.addInteraction("giveMoney", {
+    lia.playerinteract.addInteraction("Give Money", {
         serverOnly = true,
         shouldShow = function(client, target) return IsValid(target) and target:IsPlayer() and client:getChar():getMoney() > 0 end,
         onRun = function(client, target)
@@ -221,7 +221,7 @@ if SERVER then
         end
     })
 
-    lia.playerinteract.addAction("changeToWhisper", {
+    lia.playerinteract.addAction("Change To Whisper", {
         category = "Voice",
         shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= "Whispering" end,
         onRun = function(client)
@@ -232,7 +232,7 @@ if SERVER then
         serverOnly = true
     })
 
-    lia.playerinteract.addAction("changeToTalk", {
+    lia.playerinteract.addAction("Change To Talk", {
         category = "Voice",
         shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= VOICE_TALKING end,
         onRun = function(client)
@@ -243,7 +243,7 @@ if SERVER then
         serverOnly = true
     })
 
-    lia.playerinteract.addAction("changeToYell", {
+    lia.playerinteract.addAction("Change To Yell", {
         category = "Voice",
         shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= VOICE_YELLING end,
         onRun = function(client)

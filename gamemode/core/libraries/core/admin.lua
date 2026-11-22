@@ -270,39 +270,39 @@ function getPrivilegeCategory(privilegeName)
     local categoryChecks = {
         {
             match = function(name) return string.match(name, "^tool_") end,
-            category = "staffPermissions"
+            category = "Staff Permissions"
         },
         {
             match = function(name) return string.match(name, "^property_") end,
-            category = "staffPermissions"
+            category = "Staff Permissions"
         },
         {
             match = function(name) return name == "stopSoundForEveryone" end,
-            category = "staffPermissions"
+            category = "Staff Permissions"
         },
         {
             match = function(name) return string.match(name, "simfphys") end,
-            category = "compatibility"
+            category = "Compatibility"
         },
         {
             match = function(name) return string.match(name, "SAM") end,
-            category = "compatibility"
+            category = "Compatibility"
         },
         {
             match = function(name) return string.match(name, "PAC") end,
-            category = "compatibility"
+            category = "Compatibility"
         },
         {
             match = function(name) return string.match(name, "ServerGuard") end,
-            category = "compatibility"
+            category = "Compatibility"
         },
         {
             match = function(name) return name == "receiveCheaterNotifications" end,
-            category = "exploiting"
+            category = "Exploiting"
         },
         {
             match = function(name) return name == "useDisallowedTools" end,
-            category = "staffPermissions"
+            category = "Staff Permissions"
         }
     }
 
@@ -544,10 +544,10 @@ end
 
 function lia.admin.applyPunishment(client, infraction, kick, ban, time, kickKey, banKey)
     local bantime = time or 0
-    kickKey = kickKey or "kickedForInfraction"
-    banKey = banKey or "bannedForInfraction"
-    if kick then lia.admin.execCommand("kick", client, nil, lia.lang.resolve(kickKey, infraction)) end
-    if ban then lia.admin.execCommand("ban", client, bantime, lia.lang.resolve(banKey, infraction)) end
+    kickKey = kickKey or "Kicked for"
+    banKey = banKey or "Banned for"
+    if kick then lia.admin.execCommand("kick", client, nil, string.format(tostring(kickKey) .. " %s", infraction)) end
+    if ban then lia.admin.execCommand("ban", client, bantime, string.format(tostring(banKey) .. " %s", infraction)) end
 end
 
 function lia.admin.hasAccess(ply, privilege)
@@ -921,7 +921,7 @@ if SERVER then
     function lia.admin.notifyAdmin(notification)
         for _, client in player.Iterator() do
             local permission = IsValid(client) and client:hasPrivilege("canSeeAltingNotifications") or false
-            if permission then client:notifyAdminLocalized(notification) end
+            if permission then client:notifyAdmin(notification) end
         end
     end
 
@@ -1045,14 +1045,16 @@ if SERVER then
         local target
         local function notifyAdmin(kind, key, ...)
             if not isstring(key) or key == "" then return end
+            local message = tostring(key)
+            if select("#", ...) > 0 then message = string.format(message, ...) end
             if IsValid(admin) then
                 if kind == "error" then
-                    admin:notifyErrorLocalized(key, ...)
+                    admin:notifyError(message)
                 else
-                    admin:notifySuccessLocalized(key, ...)
+                    admin:notifySuccess(message)
                 end
             elseif SERVER then
-                print("[Lilia] " .. tostring(lia.lang.resolve(key, ...)))
+                print("[Lilia] " .. message)
             end
         end
 
@@ -1060,7 +1062,7 @@ if SERVER then
 
         local privilegeID = lia.admin.getCommandPrivilegeID(cmd)
         if not isConsoleAdmin and not lia.admin.hasAccess(admin, privilegeID) then
-            notifyAdmin("error", "noPerm")
+            notifyAdmin("error", "You are not allowed to do this.")
             return false
         end
 
@@ -1075,19 +1077,19 @@ if SERVER then
         end
 
         if not IsValid(target) then
-            notifyAdmin("error", "targetNotFound")
+            notifyAdmin("error", "Target not found.")
             return false
         end
 
         if lia.admin.isProtectedStaffTarget(cmd, target) then
-            notifyAdmin("error", "staffFactionCommandBlocked")
+            notifyAdmin("error", "You cannot use targeted admin commands on players in the staff faction.")
             return false
         end
 
         local targetInfo = string.format("%s (Steam64ID: %s)", target:Name(), target:SteamID64())
         if cmd == "kick" then
             target:Kick(reason or "No reason specified.")
-            notifyAdmin("success", "plyKicked")
+            notifyAdmin("success", "Player kicked.")
             logAdminAction("plyKick", target:Name())
             staffAction("KICK", string.format("%s kicked %s (Steam64ID: %s)", adminName, target:Name(), target:SteamID64()))
             lia.db.insertTable({
@@ -1102,7 +1104,7 @@ if SERVER then
             return true
         elseif cmd == "ban" then
             target:banPlayer(reason, tonumber(dur) or 0, admin)
-            notifyAdmin("success", "plyBanned")
+            notifyAdmin("success", "Player banned.")
             logAdminAction("plyBan", target:Name())
             staffAction("BAN", string.format("%s banned %s (Steam64ID: %s)", adminName, target:Name(), target:SteamID64()))
             return true
@@ -1110,7 +1112,7 @@ if SERVER then
             local steamid = IsValid(target) and target:SteamID() or tostring(victim)
             if steamid and steamid ~= "" then
                 lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(steamid))
-                notifyAdmin("success", "playerUnbanned")
+                notifyAdmin("success", "Player unbanned.")
                 logAdminAction("plyUnban", steamid)
                 staffAction("UNBAN", string.format("%s unbanned SteamID %s", adminName, steamid))
                 return true
@@ -1118,7 +1120,7 @@ if SERVER then
         elseif cmd == "mute" then
             if target:getChar() then
                 target:setLiliaData("liaMuted", true)
-                notifyAdmin("success", "plyMuted")
+                notifyAdmin("success", "Player muted successfully.")
                 logAdminAction("plyMute", target:Name())
                 lia.db.insertTable({
                     player = target:Name(),
@@ -1137,7 +1139,7 @@ if SERVER then
         elseif cmd == "unmute" then
             if target:getChar() then
                 target:setLiliaData("liaMuted", false)
-                notifyAdmin("success", "plyUnmuted")
+                notifyAdmin("success", "Player unmuted successfully.")
                 logAdminAction("plyUnmute", target:Name())
                 staffAction("UNMUTE", string.format("%s unmuted %s (Steam64ID: %s)", adminName, target:Name(), target:SteamID64()))
                 hook.Run("PlayerUnmuted", target, admin)
@@ -1145,14 +1147,14 @@ if SERVER then
             end
         elseif cmd == "gag" then
             target:setLiliaData("liaGagged", true)
-            notifyAdmin("success", "plyGagged")
+            notifyAdmin("success", "Player gagged successfully.")
             logAdminAction("plyGag", target:Name())
             staffAction("GAG", adminName .. " gagged " .. targetInfo)
             hook.Run("PlayerGagged", target, admin)
             return true
         elseif cmd == "ungag" then
             target:setLiliaData("liaGagged", false)
-            notifyAdmin("success", "plyUngagged")
+            notifyAdmin("success", "Player ungagged successfully.")
             logAdminAction("plyUngag", target:Name())
             staffAction("UNGAG", adminName .. " ungagged " .. targetInfo)
             hook.Run("PlayerUngagged", target, admin)
@@ -1161,26 +1163,26 @@ if SERVER then
             target:Freeze(true)
             local duration = tonumber(dur) or 0
             if duration > 0 then timer.Simple(duration, function() if IsValid(target) then target:Freeze(false) end end) end
-            notifyAdmin("success", "plyFrozen", target:Name())
+            notifyAdmin("success", "%s frozen successfully.", target:Name())
             logAdminAction("plyFreeze", target:Name(), duration)
             staffAction("FREEZE", adminName .. " froze " .. targetInfo)
             return true
         elseif cmd == "unfreeze" then
             target:Freeze(false)
-            notifyAdmin("success", "plyUnfrozen", target:Name())
+            notifyAdmin("success", "%s unfrozen successfully.", target:Name())
             logAdminAction("plyUnfreeze", target:Name())
             staffAction("UNFREEZE", adminName .. " unfroze " .. targetInfo)
             return true
         elseif cmd == "slay" then
             target:Kill()
             timer.Simple(0.05, function() if IsValid(target) and not target:Alive() then hook.Run("PlayerDeath", target, nil, admin) end end)
-            notifyAdmin("success", "plyKilled")
+            notifyAdmin("success", "Player killed.")
             logAdminAction("plySlay", target:Name())
             staffAction("SLAY", adminName .. " slayed " .. targetInfo)
             return true
         elseif cmd == "kill" then
             target:Kill()
-            notifyAdmin("success", "plyKilled")
+            notifyAdmin("success", "Player killed.")
             logAdminAction("plyKill", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
@@ -1203,7 +1205,7 @@ if SERVER then
             returnPositions = returnPositions or {}
             returnPositions[target] = target:GetPos()
             target:SetPos(admin:GetPos() + admin:GetForward() * 50)
-            notifyAdmin("success", "plyBrought", target:Name())
+            notifyAdmin("success", "%s brought successfully.", target:Name())
             logAdminAction("plyBring", target:Name())
             staffAction("BRING", adminName .. " brought " .. targetInfo)
             return true
@@ -1216,7 +1218,7 @@ if SERVER then
             returnPositions = returnPositions or {}
             returnPositions[admin] = admin:GetPos()
             admin:SetPos(target:GetPos() + target:GetForward() * 50)
-            notifyAdmin("success", "plyGoto", target:Name())
+            notifyAdmin("success", "Teleported to %s successfully.", target:Name())
             logAdminAction("plyGoto", target:Name())
             staffAction("GOTO", adminName .. " went to " .. targetInfo)
             return true
@@ -1227,7 +1229,7 @@ if SERVER then
                 (IsValid(target) and target or admin):SetPos(pos)
                 returnPositions[target] = nil
                 returnPositions[admin] = nil
-                notifyAdmin("success", "plyReturned", IsValid(target) and target:Name() or adminName)
+                notifyAdmin("success", "%s returned successfully.", IsValid(target) and target:Name() or adminName)
                 logAdminAction("plyReturn", IsValid(target) and target:Name() or adminName)
                 staffAction("RETURN", adminName .. " returned " .. targetInfo)
                 return true
@@ -1235,7 +1237,7 @@ if SERVER then
         elseif cmd == "jail" then
             target:Lock()
             target:Freeze(true)
-            notifyAdmin("success", "plyJailed", target:Name())
+            notifyAdmin("success", "%s jailed successfully.", target:Name())
             logAdminAction("plyJail", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
@@ -1252,50 +1254,50 @@ if SERVER then
         elseif cmd == "unjail" then
             target:UnLock()
             target:Freeze(false)
-            notifyAdmin("success", "plyUnjailed", target:Name())
+            notifyAdmin("success", "%s unjailed successfully.", target:Name())
             logAdminAction("plyUnjail", target:Name())
             staffAction("UNJAIL", adminName .. " unjailed " .. targetInfo)
             return true
         elseif cmd == "cloak" then
             target:SetNoDraw(true)
-            notifyAdmin("success", "plyCloaked", target:Name())
+            notifyAdmin("success", "%s cloaked successfully.", target:Name())
             logAdminAction("plyCloak", target:Name())
             staffAction("CLOAK", adminName .. " cloaked " .. targetInfo)
             return true
         elseif cmd == "uncloak" then
             target:SetNoDraw(false)
-            notifyAdmin("success", "plyUncloaked", target:Name())
+            notifyAdmin("success", "%s uncloaked successfully.", target:Name())
             logAdminAction("plyUncloak", target:Name())
             staffAction("UNCLOAK", adminName .. " uncloaked " .. targetInfo)
             return true
         elseif cmd == "god" then
             target:GodEnable()
-            notifyAdmin("success", "plyGodded", target:Name())
+            notifyAdmin("success", "%s godded successfully.", target:Name())
             logAdminAction("plyGod", target:Name())
             staffAction("GOD", adminName .. " enabled god mode for " .. targetInfo)
             return true
         elseif cmd == "ungod" then
             target:GodDisable()
-            notifyAdmin("success", "plyUngodded", target:Name())
+            notifyAdmin("success", "%s ungodded successfully.", target:Name())
             logAdminAction("plyUngod", target:Name())
             staffAction("UNGOD", adminName .. " disabled god mode for " .. targetInfo)
             return true
         elseif cmd == "ignite" then
             local duration = tonumber(dur) or 5
             target:Ignite(duration)
-            notifyAdmin("success", "plyIgnited", target:Name())
+            notifyAdmin("success", "%s ignited successfully.", target:Name())
             logAdminAction("plyIgnite", target:Name(), duration)
             staffAction("IGNITE", adminName .. " ignited " .. targetInfo)
             return true
         elseif cmd == "extinguish" or cmd == "unignite" then
             target:Extinguish()
-            notifyAdmin("success", "plyExtinguished", target:Name())
+            notifyAdmin("success", "%s extinguished successfully.", target:Name())
             logAdminAction("plyExtinguish", target:Name())
             staffAction("EXTINGUISH", adminName .. " extinguished " .. targetInfo)
             return true
         elseif cmd == "strip" then
             target:StripWeapons()
-            notifyAdmin("success", "plyStripped", target:Name())
+            notifyAdmin("success", "%s stripped successfully.", target:Name())
             logAdminAction("plyStrip", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
@@ -1312,7 +1314,7 @@ if SERVER then
         elseif cmd == "respawn" then
             target:Spawn()
             target:setLocalVar("lastDeathTime", 0)
-            notifyAdmin("success", "plyRespawned", target:Name())
+            notifyAdmin("success", "%s respawned successfully.", target:Name())
             logAdminAction("plyRespawn", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
@@ -1341,7 +1343,7 @@ if SERVER then
                 end)
             end
 
-            notifyAdmin("success", "plyBlinded", target:Name())
+            notifyAdmin("success", "%s blinded successfully.", target:Name())
             logAdminAction("plyBlind", target:Name(), duration)
             lia.db.insertTable({
                 player = target:Name(),
@@ -1359,7 +1361,7 @@ if SERVER then
             net.Start("liaBlindTarget")
             net.WriteBool(false)
             net.Send(target)
-            notifyAdmin("success", "plyUnblinded", target:Name())
+            notifyAdmin("success", "%s unblinded successfully.", target:Name())
             logAdminAction("plyUnblind", target:Name())
             staffAction("UNBLIND", adminName .. " unblinded " .. targetInfo)
             return true
@@ -1563,7 +1565,7 @@ else
 
     local function promptCreateGroup()
         lia.derma.requestArguments("Create" .. " " .. "Group", {
-            Name = "string",
+            Name = "String",
             Inheritance = {"table", {"user", "admin", "superadmin"}},
             IconPNG = "string",
             Staff = "boolean",
@@ -2146,9 +2148,9 @@ else
             local _, onlineWidth = drawPermissionBadge(getOnlineGroupCount(groupName) .. " online", "LiliaFont.15", badgeX, 74, 8, 2, Color(207, 224, 224), Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 54), false)
             badgeX = badgeX + onlineWidth + 8
             local inheritance = getGroupInheritance(groupName)
-            local _, inheritanceWidth = drawPermissionBadge("inherits " .. getGroupDisplayName(inheritance), "LiliaFont.15", badgeX, 74, 8, 2, Color(207, 224, 224), Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 54), false)
+            local _, inheritanceWidth = drawPermissionBadge("Inherits " .. getGroupDisplayName(inheritance), "LiliaFont.15", badgeX, 74, 8, 2, Color(207, 224, 224), Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 54), false)
             badgeX = badgeX + inheritanceWidth + 8
-            if not state.editable then drawPermissionBadge("built-in", "LiliaFont.15", badgeX, 74, 8, 2, Color(207, 224, 224), Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 54), false) end
+            if not state.editable then drawPermissionBadge("Built-in", "LiliaFont.15", badgeX, 74, 8, 2, Color(207, 224, 224), Color(5, 18, 23, 220), Color(accent.r, accent.g, accent.b, 54), false) end
         end
 
         local headerActions = detailHeader:Add("DPanel")
@@ -2470,7 +2472,7 @@ else
         local permission = IsValid(client) and client:hasPrivilege("manageUsergroups") or false
         if not permission then return end
         pages[#pages + 1] = {
-            name = "userGroups",
+            name = "Permissions",
             icon = "icon16/group.png",
             drawFunc = function(parent)
                 lia.debug("[Permissions UI]", "Opening usergroups page", "localPlayer=", tostring(IsValid(LocalPlayer()) and LocalPlayer():Nick() or "unknown"), "localPlayerUserGroup=", tostring(IsValid(LocalPlayer()) and LocalPlayer():GetUserGroup() or "unknown"))

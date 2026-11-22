@@ -327,7 +327,7 @@ function MODULE:CreateMenuButtons(tabs)
     local joinable = lia.class.retrieveJoinable(LocalPlayer())
     if #joinable >= 1 then
         tabs["classes"] = {
-            name = "classes",
+            name = "Classes",
             icon = "icon16/group.png",
             func = function(panel) panel:Add("liaClasses") end
         }
@@ -339,7 +339,7 @@ function MODULE:CreateMenuButtons(tabs)
     if not character then return end
     if character:hasFlags("F") then
         tabs["factionRoster"] = {
-            name = "factionRoster",
+            name = "Faction Roster",
             icon = "icon16/group_go.png",
             func = function(panel)
                 panel:Clear()

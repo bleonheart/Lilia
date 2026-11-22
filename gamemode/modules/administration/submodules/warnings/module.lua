@@ -1,6 +1,6 @@
 ﻿MODULE.Name = "Warnings"
 MODULE.author = "Samael"
-MODULE.discord = "@liliaplayer"
+MODULE.discord = "liliaplayer"
 MODULE.desc = "Warnings"
 MODULE.NetworkStrings = {"liaRequestRemoveWarning",}
 MODULE.Privileges = {

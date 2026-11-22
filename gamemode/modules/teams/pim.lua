@@ -20,7 +20,7 @@ local function canInviteToClass(client, target)
     return hook.Run("CanInviteToClass", client, target) == true
 end
 
-lia.playerinteract.addInteraction("inviteToFaction", {
+lia.playerinteract.addInteraction("Invite To Faction", {
     serverOnly = true,
     category = "Faction Management",
     shouldShow = canInviteToFaction,
@@ -73,7 +73,7 @@ lia.playerinteract.addInteraction("inviteToFaction", {
     end
 })
 
-lia.playerinteract.addInteraction("inviteToClass", {
+lia.playerinteract.addInteraction("Invite To Class", {
     serverOnly = true,
     category = "Faction Management",
     shouldShow = canInviteToClass,

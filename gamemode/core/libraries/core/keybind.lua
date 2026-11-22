@@ -806,7 +806,7 @@ if CLIENT then
         end
 
         pages[#pages + 1] = {
-            name = "keybinds",
+            name = "Keybinds",
             shouldShow = function() return true end,
             drawFunc = function(parent)
                 parent:Clear()

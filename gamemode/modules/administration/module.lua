@@ -1,6 +1,6 @@
 MODULE.Name = "Administration"
 MODULE.author = "Samael"
-MODULE.discord = "@liliaplayer"
+MODULE.discord = "liliaplayer"
 MODULE.desc = "Provides comprehensive administration tools and staff management features."
 MODULE.NetworkStrings = {"liaFeaturePositions", "liaFeaturePositionsRequest", "liaFullCharListPage", "liaMapEntities", "liaMapEntityAction", "liaModifyCharacterFlags", "liaOnlineStaffData", "liaRequestMapEntities", "liaRequestStaffCases", "liaRequestToolPermissionTiers", "liaRequestStaffCharacterConfiguration", "liaSetFeaturePosition", "liaSetStaffCharacterFlag", "liaSetStaffCharacterPermission", "liaSetToolPermissionTier", "liaSetToolPermissionTiersBatch", "liaResetStaffCharacterConfiguration", "liaResetToolPermissionTiers", "liaSpawnMenuGiveItem", "liaSpawnMenuSpawnItem", "liaStaffCasesSnapshot", "liaStaffCharacterConfiguration", "liaToolPermissionTiers", "liaAdminModeSwapCharacter", "liaBlindFade", "liaCharDeleted", "liaModifyFlags", "liaRemoveFeaturePosition", "liaRequestFullCharListPage", "liaRequestOnlineStaffData",}
 MODULE.Privileges = {
@@ -22,12 +22,12 @@ MODULE.Privileges = {
     ["staffHUD"] = {
         Name = "Staff HUD",
         MinAccess = "superadmin",
-        Category = "developmentHUD",
+        Category = "Development HUD",
     },
     ["developmentHUD"] = {
         Name = "Development HUD",
         MinAccess = "superadmin",
-        Category = "developmentHUD",
+        Category = "Development HUD",
     },
     ["manageVehicleBlacklist"] = {
         Name = "Manage Vehicle Blacklist",

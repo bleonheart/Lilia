@@ -103,8 +103,8 @@ ITEM.functions.Open = {
         local client = item.player
         local canRun = not IsValid(item.entity) and item:getInv() ~= nil
         if SERVER and not canRun then
-            local reason = IsValid(item.entity) and "bagOnGround" or "bagNoInventory"
-            client:notifyErrorLocalized(reason)
+            local reason = IsValid(item.entity) and "You cannot open a bag that's on the ground." or "This bag has no inventory."
+            client:notifyError(reason)
         end
         return canRun
     end
@@ -127,7 +127,7 @@ function ITEM:onCombine(other)
     if not res then return end
     res:next(function(result)
         if not IsValid(client) then return end
-        if istable(result) and isstring(result.error) then return client:notifyErrorLocalized(result.error) end
+        if istable(result) and isstring(result.error) then return client:notifyError(result.error) end
         client:EmitSound(unpack(self.BagSound))
     end)
 end

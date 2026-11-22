@@ -17,7 +17,7 @@ local function CanAddItemIfNotWeightRestricted(inventory, action, context)
     if context.forced then return true end
     local weight = inventory:getWeight()
     local maxWeight = inventory:getMaxWeight()
-    if weight + getItemWeight(context.item, inventory) > maxWeight then return false, "noFit" end
+    if weight + getItemWeight(context.item, inventory) > maxWeight then return false, "This item can not fit in your inventory." end
     return true
 end
 
@@ -93,7 +93,7 @@ if SERVER then
 
         if not item then
             return d:resolve({
-                error = "invalid item type"
+                error = "Invalid item type"
             })
         end
 
@@ -104,7 +104,7 @@ if SERVER then
         }
 
         local canAccess, reason = self:canAccess("add", context)
-        if not canAccess then return d:reject(reason or "noAccess") end
+        if not canAccess then return d:reject(reason or "No Access") end
         if justAddDirectly then
             self:addItem(item)
             return d:resolve(item)

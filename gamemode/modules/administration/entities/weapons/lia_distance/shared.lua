@@ -1,7 +1,7 @@
 ﻿SWEP.Base = "weapon_base"
 SWEP.PrintName = "Distance Tool"
-SWEP.Author = "@liliaplayer"
-SWEP.Contact = "@liliaplayer"
+SWEP.Author = "liliaplayer"
+SWEP.Contact = "liliaplayer"
 SWEP.Instructions = "\nPrimary Fire: Set Point\nSecondary Fire: Reset"
 SWEP.Category = "Lilia"
 SWEP.Spawnable = true

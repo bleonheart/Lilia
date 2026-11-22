@@ -165,7 +165,7 @@ lia.char.registerVar("name", {
     onValidate = function(value, data, client)
         local name, override = hook.Run("GetDefaultCharName", client, data.faction, data)
         if isstring(name) and override then return true end
-        if not isstring(value) or not value:find("%S") then return false, "invalid", "name" end
+        if not isstring(value) or not value:find("%S") then return false, "Invalid name." end
         return true
     end,
     onAdjust = function(client, data, value, newData)
@@ -200,7 +200,7 @@ lia.char.registerVar("desc", {
         if isstring(desc) and override then return true end
         local trimmedValue = string.Trim(value or "")
         local valueWithoutSpaces = string.gsub(trimmedValue, "%s", "")
-        if #valueWithoutSpaces < minLength then return false, "descMinLen", minLength end
+        if #valueWithoutSpaces < minLength then return false, string.format("Description must be at least %s characters long.", minLength) end
         return true
     end,
     onAdjust = function(client, data, value, newData)
@@ -241,10 +241,10 @@ lia.char.registerVar("model", {
                 local canCreateStaffCharacter = data.faction == FACTION_STAFF and client and client:hasPrivilege("createStaffCharacter") or false
                 lia.debug("[Permissions]", "Permission Check for char var model onValidate staff model bypass", "targetFactionIsStaff=", tostring(data.faction == FACTION_STAFF), "clientExists=", tostring(client ~= nil), "hasPrivilege(createStaffCharacter)=", tostring(client and client:hasPrivilege("createStaffCharacter") or false), "finalResult=", tostring(canCreateStaffCharacter))
                 if canCreateStaffCharacter then return true end
-                return false, "needModel"
+                return false, "You need to choose a valid model."
             end
         else
-            return false, "needModel"
+            return false, "You need to choose a valid model."
         end
     end,
     onAdjust = function(client, data, value, newData)
@@ -305,7 +305,7 @@ lia.char.registerVar("skin", {
     default = 0,
     onValidate = function(value)
         if value == nil then return true end
-        if not isnumber(value) then return false, "invalid", "skin" end
+        if not isnumber(value) then return false, "Invalid skin." end
         return true
     end,
     onSet = function(character, value)
@@ -330,7 +330,7 @@ lia.char.registerVar("bodygroups", {
     default = {},
     onValidate = function(value)
         if value == nil then return true end
-        if not istable(value) then return false, "invalid", "bodygroups" end
+        if not istable(value) then return false, "Invalid bodygroups." end
         return true
     end,
     onSet = function(character, value)
@@ -395,15 +395,15 @@ lia.char.registerVar("faction", {
         return faction and faction.index or default or 0
     end,
     onValidate = function(value, _, client)
-        if not lia.faction.indices[value] then return false, "invalid", "faction" end
+        if not lia.faction.indices[value] then return false, "Invalid faction." end
         if value == FACTION_STAFF then
             local canCreateStaffCharacter = client and client:hasPrivilege("createStaffCharacter") or false
             lia.debug("[Permissions]", "Permission Check for char var faction onValidate", "targetFactionIsStaff=", tostring(value == FACTION_STAFF), "clientExists=", tostring(client ~= nil), "hasPrivilege(createStaffCharacter)=", tostring(canCreateStaffCharacter), "finalResult=", tostring(canCreateStaffCharacter))
-            if not client or not canCreateStaffCharacter then return false, "staffFactionRestricted" end
+            if not client or not canCreateStaffCharacter then return false, "You are not allowed to create a staff faction character." end
             return true
         end
 
-        if not client:hasWhitelist(value) then return false, "illegalAccess" end
+        if not client:hasWhitelist(value) then return false, "You are not whitelisted for this faction." end
         return true
     end,
     onAdjust = function(_, _, value, newData) newData.faction = lia.faction.indices[value].uniqueID end
@@ -525,9 +525,9 @@ lia.char.registerVar("attribs", {
 
                 local limits = hook.Run("GetAttributeLimits", client) or {}
                 local points = limits.startingPoints or lia.config.get("StartingAttributePoints", 30)
-                if count > points then return false, "unknownError" end
+                if count > points then return false, "Unknown error." end
             else
-                return false, "unknownError"
+                return false, "Unknown error."
             end
         end
     end,

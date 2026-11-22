@@ -121,7 +121,7 @@ if CLIENT then
 
     hook.Add("CreateInformationButtons", "liaInformationFlagsUnified", function(pages)
         table.insert(pages, {
-            name = "charFlagsTitle",
+            name = "Character Flags",
             shouldShow = function() return true end,
             drawFunc = function(parent)
                 parent:Clear()

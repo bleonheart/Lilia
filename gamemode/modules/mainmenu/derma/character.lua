@@ -1130,7 +1130,7 @@ function PANEL:createStartButton()
     if mainCharID and lia.characters and #lia.characters > 0 and table.HasValue(lia.characters, mainCharID) and (not clientChar or clientChar:getID() ~= mainCharID) then
         addEntry("Character Access", "loadmain", "Load Main Character", "Jump straight into your main character.", function()
             self:clickSound()
-            lia.module.get("mainmenu"):LoadMainCharacter():next(function() end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
+            lia.module.get("mainmenu"):LoadMainCharacter():next(function() end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end)
         end)
     end
 
@@ -1143,7 +1143,7 @@ function PANEL:createStartButton()
                 for _, charID in pairs(lia.characters or {}) do
                     local character = lia.char.getCharacter(charID)
                     if character and character:getFaction() == FACTION_STAFF then
-                        lia.module.get("mainmenu"):ChooseCharacter(character:getID()):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
+                        lia.module.get("mainmenu"):ChooseCharacter(character:getID()):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end)
                         break
                     end
                 end
@@ -1435,7 +1435,7 @@ function PANEL:createCharacterSelection()
                 for _, charID in pairs(lia.characters or {}) do
                     local character = lia.char.getCharacter(charID)
                     if character and character:getFaction() == FACTION_STAFF then
-                        lia.module.get("mainmenu"):ChooseCharacter(character:getID()):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
+                        lia.module.get("mainmenu"):ChooseCharacter(character:getID()):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end)
                         break
                     end
                 end
@@ -1589,7 +1589,7 @@ function PANEL:createStaffCharacter()
         groups = {}
     }
 
-    lia.module.get("mainmenu"):CreateCharacter(staffData):next(function(charID) lia.module.get("mainmenu"):ChooseCharacter(charID):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end) end):catch(function(err) LocalPlayer():notifyErrorLocalized(err or "failedToCreateStaffCharacter") end)
+    lia.module.get("mainmenu"):CreateCharacter(staffData):next(function(charID) lia.module.get("mainmenu"):ChooseCharacter(charID):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end) end):catch(function(err) LocalPlayer():notifyError(err or "Failed to create staff character") end)
 end
 
 function PANEL:updateSelectedCharacter()
@@ -1807,7 +1807,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         end
 
         self:clickSound()
-        lia.module.get("mainmenu"):ChooseCharacter(character:getID()):next(function() if IsValid(self) then self:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
+        lia.module.get("mainmenu"):ChooseCharacter(character:getID()):next(function() if IsValid(self) then self:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyError(err) end end)
     end)
 
     addActionButton("Delete Character", Color(185, 90, 90), function()

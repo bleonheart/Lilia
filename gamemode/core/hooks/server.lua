@@ -251,7 +251,7 @@ function GM:CanPlayerEquipItem(client, item)
         client:notifyWarning(string.format("You are on cooldown!"))
         return false
     elseif inventory and (isBagInventory or inventory.isExternalInventory or inventory.isStorage) then
-        print("[LILIA DEBUG][CanPlayerEquipItem]", "blockedReason=", "forbiddenActionStorage")
+        print("[LILIA DEBUG][CanPlayerEquipItem]", "blockedReason=", "You can't perform this action from storage.")
         client:notifyError(string.format("You can't perform this action from storage."))
         return false
     end
